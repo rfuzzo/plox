@@ -10,30 +10,20 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  cmop:
+  ci:
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
     
     - name: Check
-      run: |
-        cd cmop
-        cargo check --all-features
+      run: cargo check --all-features
     - name: Format
-      run: |
-        cd cmop
-        cargo fmt --all -- --check   
+      run: cargo fmt --all -- --check   
     - name: Clippy
-      run: |
-        cd cmop
-        cargo clippy -- -D warnings
+      run: cargo clippy -- -D warnings
       
     - name: Build
-      run: |
-        cd cmop
-        cargo build --verbose
+      run: cargo build --verbose
     - name: Run tests
-      run: |
-        cd cmop
-        cargo test --verbose
+      run: cargo test --verbose
