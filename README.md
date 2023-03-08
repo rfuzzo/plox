@@ -12,7 +12,7 @@ The rules are hosted in their own repository: https://github.com/rfuzzo/cmop-rul
 
 **PRs are welcome!**
 
-For the rules spec see: (Rules Spec)[./docs/Rules_spec.md]
+For the rules spec see: [Rules Spec](./docs/Rules_spec.md)
 
 ## Usage
 
