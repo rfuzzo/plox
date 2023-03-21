@@ -10,10 +10,21 @@ pub struct Rules {
     pub order: Vec<(String, String)>,
 }
 
-enum RuleKind {
+#[derive(Default)]
+pub enum RuleKind {
+    #[default]
     None,
     Order,
-    //Note,
+    Note,
+}
+
+#[derive(Default)]
+pub enum ExpressionKind {
+    #[default]
+    Exists,
+    And,
+    Any,
+    Not,
 }
 
 pub fn stable_topo_sort_inner(
@@ -115,8 +126,8 @@ where
                         orders.push(current_order.to_owned());
                         current_order.clear();
                     }
-                    //RuleKind::Note => todo!(),
                     RuleKind::None => todo!(),
+                    RuleKind::Note => todo!(),
                 }
 
                 continue;
@@ -131,7 +142,7 @@ where
             if parsing {
                 match current_rule {
                     RuleKind::Order => current_order.push(line),
-                    //RuleKind::Note => todo!(),
+                    RuleKind::Note => todo!(),
                     RuleKind::None => todo!(),
                 }
             }
