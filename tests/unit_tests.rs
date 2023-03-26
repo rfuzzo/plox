@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod unit_tests {
-    use cmop::{topo_sort, ExpressionKind, RuleKind, Rules};
+    use cmop::{topo_sort, Atomic, Conflict, Note, Rule, Rules};
 
     #[test]
     fn test_cycle() {
@@ -68,37 +68,6 @@ mod unit_tests {
         true
     }
 
-    #[derive(Default)]
-    struct Rule {
-        pub kind: RuleKind,
-        pub expr: Expression,
-        pub note: String,
-    }
-
-    #[derive(Default)]
-    struct Expression {
-        pub kind: ExpressionKind,
-        pub names: Vec<Expression>,
-    }
-
-    impl Expression {
-        fn new_from_string(name: String) -> Self {
-            Self {
-                kind: ExpressionKind::Exists,
-                names: vec![Expression::new_from_string(name)],
-            }
-        }
-    }
-
-    /*impl Expression {
-        fn new(names: Vec<String>) -> Self {
-            Self {
-                kind: ExpressionKind::Exists,
-                names,
-            }
-        }
-    }*/
-
     #[test]
     fn test_notes() {
         let mods: Vec<String> = vec!["a", "b", "c", "d", "e", "f", "g"]
@@ -106,48 +75,51 @@ mod unit_tests {
             .map(|e| (*e).into())
             .collect();
 
-        let notes: Vec<_> = vec![("a", "some note"), ("c", "some warning!")]
+        let rules: Vec<_> = vec![("a", "some a"), ("c", "some b"), ("x", "some x!")]
             .iter()
-            .map(|e| Rule {
-                kind: RuleKind::Note,
-                expr: Expression::new_from_string(e.0.into()),
-                note: e.1.into(),
+            .map(|e| Note {
+                comment: e.1.into(),
+                expression: Box::new(Atomic { item: e.0.into() }),
             })
             .collect();
 
-        for rule in notes {
-            if eval_rule(&rule, &mods) {
-                println!("{}", rule.note);
+        let mut warnings: Vec<String> = vec![];
+        for rule in rules {
+            if rule.eval(&mods) {
+                warnings.push(rule.get_comment().into());
             }
         }
+        let expected: Vec<String> = vec!["some a".to_owned(), "some b".into()];
+        assert_eq!(warnings, expected);
     }
 
-    fn eval_rule(rule: &Rule, mods: &[String]) -> bool {
-        match rule.kind {
-            RuleKind::None => panic!("invalid rule"),
-            RuleKind::Order => panic!("invalid rule"),
-            RuleKind::Note => eval(&rule.expr, mods),
-        }
-    }
+    #[test]
+    fn test_conflicts() {
+        let mods: Vec<String> = vec!["a", "b", "c", "d", "e", "f", "g"]
+            .iter()
+            .map(|e| (*e).into())
+            .collect();
 
-    fn eval(expr: &Expression, mods: &[String]) -> bool {
-        match expr.kind {
-            ExpressionKind::Exists => {
-                // there is only one expression and it exists
-                mods.contains(expr.names.first().unwrap())
-            }
-            ExpressionKind::And => {
-                // all expressions evaluate as true
-                todo!()
-            }
-            ExpressionKind::Any => {
-                // one expression evaluate as true
-                todo!()
-            }
-            ExpressionKind::Not => {
-                // expression is not true
-                !eval(expr, mods)
+        let rules: Vec<Conflict> = vec![
+            Conflict {
+                comment: "some a".into(),
+                expression_a: Box::new(Atomic { item: "a".into() }),
+                expression_b: Box::new(Atomic { item: "b".into() }),
+            },
+            Conflict {
+                comment: "some b".into(),
+                expression_a: Box::new(Atomic { item: "b".into() }),
+                expression_b: Box::new(Atomic { item: "x".into() }),
+            },
+        ];
+
+        let mut warnings: Vec<String> = vec![];
+        for rule in rules {
+            if rule.eval(&mods) {
+                warnings.push(rule.get_comment().into());
             }
         }
+        let expected: Vec<String> = vec!["some a".to_owned()];
+        assert_eq!(warnings, expected);
     }
 }

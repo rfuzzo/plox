@@ -10,22 +10,146 @@ pub struct Rules {
     pub order: Vec<(String, String)>,
 }
 
+////////////////////////////////////////////////////////////////////////
+/// RULES
+////////////////////////////////////////////////////////////////////////
+
+// todo replace with pattern matching
 #[derive(Default)]
 pub enum RuleKind {
     #[default]
     None,
     Order,
+
     Note,
+    Conflict,
 }
 
-#[derive(Default)]
-pub enum ExpressionKind {
-    #[default]
-    Exists,
-    And,
-    Any,
-    Not,
+/// A rule as specified in the rules document
+pub trait Rule {
+    /// todo replace with pattern matching
+    fn get_kind(&self) -> RuleKind;
+    // every rule may have a comment describing why it failed
+    fn get_comment(&self) -> &str;
+    // every rule may be evaluated
+    fn eval(&self, items: &[String]) -> bool;
 }
+
+/// A Note Rule
+/// Notes simply check the expression and notify the user if eval is true
+pub struct Note {
+    pub comment: String,
+    pub expression: Box<dyn Expression>,
+}
+impl Rule for Note {
+    fn get_kind(&self) -> RuleKind {
+        RuleKind::Note
+    }
+    fn get_comment(&self) -> &str {
+        &self.comment
+    }
+    /// Notes evaluate as true if the expression evaluates as true
+    fn eval(&self, items: &[String]) -> bool {
+        self.expression.eval(items)
+    }
+}
+
+/// A Conflict Rule
+/// Conflicts evaluate as true if both expressions evaluate as true
+pub struct Conflict {
+    pub comment: String,
+    // todo: make first atomic?
+    pub expression_a: Box<dyn Expression>,
+    pub expression_b: Box<dyn Expression>,
+}
+impl Rule for Conflict {
+    fn get_kind(&self) -> RuleKind {
+        RuleKind::Conflict
+    }
+    fn get_comment(&self) -> &str {
+        &self.comment
+    }
+    /// Conflicts evaluate as true if both expressions evaluate as true
+    fn eval(&self, items: &[String]) -> bool {
+        self.expression_a.eval(items) && self.expression_b.eval(items)
+    }
+}
+
+////////////////////////////////////////////////////////////////////////
+/// EXPRESSIONS
+////////////////////////////////////////////////////////////////////////
+
+/// An expression such as EXISTS, AND, ANY, NOT
+pub trait Expression {
+    fn eval(&self, items: &[String]) -> bool;
+}
+
+/// An atomic expression (EXISTS)
+/// atomics evaluate as true if the input list contains the item
+pub struct Atomic {
+    pub item: String,
+}
+impl Expression for Atomic {
+    /// atomics evaluate as true if the input list contains the item
+    fn eval(&self, items: &[String]) -> bool {
+        // TODO wildcards
+        items.contains(&self.item)
+    }
+}
+
+/// An AND expression
+/// AND evaluates as true if all expressions evaluate as true
+pub struct AND {
+    pub expressions: Vec<Box<dyn Expression>>,
+}
+impl Expression for AND {
+    /// AND evaluates as true if all expressions evaluate as true
+    fn eval(&self, items: &[String]) -> bool {
+        let mut r = true;
+        self.expressions
+            .iter()
+            .map(|e| e.eval(items))
+            .for_each(|e| {
+                r = r && e;
+            });
+        r
+    }
+}
+
+/// An ANY expression
+/// ANY evaluates as true if any expressions evaluates as true
+pub struct ANY {
+    pub expressions: Vec<Box<dyn Expression>>,
+}
+impl Expression for ANY {
+    // ANY evaluate as true if any expressions evaluates as true
+    fn eval(&self, items: &[String]) -> bool {
+        let mut r = false;
+        self.expressions
+            .iter()
+            .map(|e| e.eval(items))
+            .for_each(|e| {
+                r = r || e;
+            });
+        r
+    }
+}
+
+/// A NOT expression
+/// NOT evaluates as true if the wrapped expression evaluates as true
+pub struct NOT {
+    pub expression: Box<dyn Expression>,
+}
+impl Expression for NOT {
+    // NOT evaluates as true if the wrapped expression evaluates as true
+    fn eval(&self, items: &[String]) -> bool {
+        !self.expression.eval(items)
+    }
+}
+
+////////////////////////////////////////////////////////////////////////
+/// LOGIC
+////////////////////////////////////////////////////////////////////////
 
 pub fn stable_topo_sort_inner(
     n: usize,
@@ -128,6 +252,7 @@ where
                     }
                     RuleKind::None => todo!(),
                     RuleKind::Note => todo!(),
+                    RuleKind::Conflict => todo!(),
                 }
 
                 continue;
@@ -144,6 +269,7 @@ where
                     RuleKind::Order => current_order.push(line),
                     RuleKind::Note => todo!(),
                     RuleKind::None => todo!(),
+                    RuleKind::Conflict => todo!(),
                 }
             }
         }
@@ -211,7 +337,6 @@ where
     let archive_path = root.as_ref().join("archive").join("pc").join("mod");
     let mut entries = fs::read_dir(archive_path)?
         .map(|res| res.map(|e| e.path()))
-        .into_iter()
         .filter_map(Result::ok)
         .filter(|e| !e.is_dir())
         .filter(|e| e.extension().is_some())
