@@ -35,7 +35,7 @@ pub trait Rule {
     fn eval(&self, items: &[String]) -> bool;
 }
 
-/// A Note Rule
+/// The Note Rule
 /// Notes simply check the expression and notify the user if eval is true
 pub struct Note {
     pub comment: String,
@@ -54,7 +54,7 @@ impl Rule for Note {
     }
 }
 
-/// A Conflict Rule
+/// The Conflict Rule
 /// Conflicts evaluate as true if both expressions evaluate as true
 pub struct Conflict {
     pub comment: String,
@@ -79,12 +79,12 @@ impl Rule for Conflict {
 /// EXPRESSIONS
 ////////////////////////////////////////////////////////////////////////
 
-/// An expression such as EXISTS, AND, ANY, NOT
+/// An expression such as EXISTS, ALL, ANY, NOT
 pub trait Expression {
     fn eval(&self, items: &[String]) -> bool;
 }
 
-/// An atomic expression (EXISTS)
+/// The atomic expression (EXISTS)
 /// atomics evaluate as true if the input list contains the item
 pub struct Atomic {
     pub item: String,
@@ -97,13 +97,13 @@ impl Expression for Atomic {
     }
 }
 
-/// An AND expression
-/// AND evaluates as true if all expressions evaluate as true
-pub struct AND {
+/// The ALL expression
+/// ALL evaluates as true if all expressions evaluate as true
+pub struct ALL {
     pub expressions: Vec<Box<dyn Expression>>,
 }
-impl Expression for AND {
-    /// AND evaluates as true if all expressions evaluate as true
+impl Expression for ALL {
+    /// ALL evaluates as true if all expressions evaluate as true
     fn eval(&self, items: &[String]) -> bool {
         let mut r = true;
         self.expressions
@@ -116,7 +116,7 @@ impl Expression for AND {
     }
 }
 
-/// An ANY expression
+/// The ANY expression
 /// ANY evaluates as true if any expressions evaluates as true
 pub struct ANY {
     pub expressions: Vec<Box<dyn Expression>>,
@@ -135,7 +135,7 @@ impl Expression for ANY {
     }
 }
 
-/// A NOT expression
+/// The NOT expression
 /// NOT evaluates as true if the wrapped expression evaluates as true
 pub struct NOT {
     pub expression: Box<dyn Expression>,
