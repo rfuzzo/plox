@@ -6,9 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-toposort-scc = "0.5.4"
-clap = { version = "4.1.4",  features = ["derive"] }
+toposort-scc = "0.5"
+clap = { version = "4.1",  features = ["derive"] }
 
 # standard crate data is left out
 [dev-dependencies]
-pretty_assertions = "1.3.0"
+pretty_assertions = "1.3"
