@@ -96,11 +96,26 @@ impl Expression for Atomic {
         items.contains(&self.item)
     }
 }
+impl From<&str> for Atomic {
+    fn from(value: &str) -> Self {
+        Atomic { item: value.into() }
+    }
+}
+impl From<String> for Atomic {
+    fn from(value: String) -> Self {
+        Atomic { item: value }
+    }
+}
 
 /// The ALL expression
 /// ALL evaluates as true if all expressions evaluate as true
 pub struct ALL {
     pub expressions: Vec<Box<dyn Expression>>,
+}
+impl ALL {
+    pub fn new(expressions: Vec<Box<dyn Expression>>) -> Self {
+        Self { expressions }
+    }
 }
 impl Expression for ALL {
     /// ALL evaluates as true if all expressions evaluate as true
@@ -120,6 +135,11 @@ impl Expression for ALL {
 /// ANY evaluates as true if any expressions evaluates as true
 pub struct ANY {
     pub expressions: Vec<Box<dyn Expression>>,
+}
+impl ANY {
+    pub fn new(expressions: Vec<Box<dyn Expression>>) -> Self {
+        Self { expressions }
+    }
 }
 impl Expression for ANY {
     // ANY evaluate as true if any expressions evaluates as true
