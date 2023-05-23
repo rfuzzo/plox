@@ -15,12 +15,8 @@ pub struct Rules {
 ////////////////////////////////////////////////////////////////////////
 
 // todo replace with pattern matching
-#[derive(Default)]
 pub enum RuleKind {
-    #[default]
-    None,
     Order,
-
     Note,
     Conflict,
 }
@@ -160,6 +156,11 @@ impl Expression for ANY {
 pub struct NOT {
     pub expression: Box<dyn Expression>,
 }
+impl NOT {
+    pub fn new(expression: Box<dyn Expression>) -> Self {
+        Self { expression }
+    }
+}
 impl Expression for NOT {
     // NOT evaluates as true if the wrapped expression evaluates as true
     fn eval(&self, items: &[String]) -> bool {
@@ -253,7 +254,7 @@ where
     if let Ok(lines) = read_lines(rules_path) {
         let mut parsing = false;
         let mut current_order: Vec<String> = vec![];
-        let mut current_rule: RuleKind = RuleKind::None;
+        let mut current_rule: Option<RuleKind> = None;
 
         // Consumes the iterator, returns an (Optional) String
         for line in lines.flatten() {
@@ -262,33 +263,35 @@ where
                 continue;
             }
 
-            // order parsing
+            // rule parsing
             if parsing && line.is_empty() {
                 parsing = false;
-                match current_rule {
-                    RuleKind::Order => {
-                        orders.push(current_order.to_owned());
-                        current_order.clear();
+                if current_rule.is_some() {
+                    match current_rule.as_ref().unwrap() {
+                        RuleKind::Order => {
+                            orders.push(current_order.to_owned());
+                            current_order.clear();
+                        }
+                        RuleKind::Note => todo!(),
+                        RuleKind::Conflict => todo!(),
                     }
-                    RuleKind::None => todo!(),
-                    RuleKind::Note => todo!(),
-                    RuleKind::Conflict => todo!(),
                 }
 
                 continue;
             }
 
+            // start order parsing
             if !parsing && line == "[Order]" {
                 parsing = true;
-                current_rule = RuleKind::Order;
+                current_rule = Some(RuleKind::Order);
                 continue;
             }
 
-            if parsing {
-                match current_rule {
+            // finish rule parsing
+            if parsing && current_rule.is_some() {
+                match current_rule.as_ref().unwrap() {
                     RuleKind::Order => current_order.push(line),
                     RuleKind::Note => todo!(),
-                    RuleKind::None => todo!(),
                     RuleKind::Conflict => todo!(),
                 }
             }
