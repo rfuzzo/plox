@@ -17,7 +17,7 @@ mod unit_tests {
     #[test]
     fn test_verify_rules() {
         let rules_path = "./tests/cmop";
-        let rules = parse_rules(rules_path).unwrap();
+        let rules = parse_rules(rules_path).expect("rule parse failed");
 
         let mods = get_mods_from_rules(&rules);
 

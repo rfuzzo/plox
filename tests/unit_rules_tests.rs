@@ -34,17 +34,19 @@ mod unit_rules_tests {
             .map(|e| (*e).into())
             .collect();
 
+        let rule1 = Conflict {
+            comment: "a conflicts with b".into(),
+            expression_a: Box::new(Atomic { item: "a".into() }),
+            expression_b: Box::new(Atomic { item: "b".into() }),
+        };
+        let rule2 = Conflict {
+            comment: "b conflicts with x".into(),
+            expression_a: Box::new(Atomic { item: "b".into() }),
+            expression_b: Box::new(Atomic { item: "x".into() }),
+        };
         let rules: Vec<Conflict> = vec![
-            Conflict {
-                comment: "some a".into(),
-                expression_a: Box::new(Atomic { item: "a".into() }),
-                expression_b: Box::new(Atomic { item: "b".into() }),
-            },
-            Conflict {
-                comment: "some b".into(),
-                expression_a: Box::new(Atomic { item: "b".into() }),
-                expression_b: Box::new(Atomic { item: "x".into() }),
-            },
+            rule1, // a conflicts with a
+            rule2, // b conflicts with x
         ];
 
         let mut warnings: Vec<String> = vec![];
@@ -53,7 +55,7 @@ mod unit_rules_tests {
                 warnings.push(rule.get_comment().into());
             }
         }
-        let expected: Vec<String> = vec!["some a".to_owned()];
+        let expected: Vec<String> = vec!["a conflicts with b".into()];
         assert_eq!(warnings, expected);
     }
 
@@ -64,16 +66,24 @@ mod unit_rules_tests {
             .map(|e| (*e).into())
             .collect();
 
-        let rules: Vec<Conflict> = vec![
-            Conflict {
-                comment: "some a".into(),
+        let rules: Vec<Require> = vec![
+            // a requires b
+            Require {
+                comment: "a requires b".into(),
                 expression_a: Box::new(Atomic { item: "a".into() }),
                 expression_b: Box::new(Atomic { item: "b".into() }),
             },
-            Conflict {
-                comment: "some b".into(),
+            // b requires x
+            Require {
+                comment: "b requires x".into(),
                 expression_a: Box::new(Atomic { item: "b".into() }),
                 expression_b: Box::new(Atomic { item: "x".into() }),
+            },
+            // x requires y
+            Require {
+                comment: "x requires y".into(),
+                expression_a: Box::new(Atomic { item: "x".into() }),
+                expression_b: Box::new(Atomic { item: "y".into() }),
             },
         ];
 
@@ -83,7 +93,7 @@ mod unit_rules_tests {
                 warnings.push(rule.get_comment().into());
             }
         }
-        let expected: Vec<String> = vec!["some a".to_owned()];
+        let expected: Vec<String> = vec!["some b".to_owned()];
         assert_eq!(warnings, expected);
     }
 }

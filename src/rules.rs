@@ -13,6 +13,7 @@ pub enum RuleKind {
     Order,
     Note,
     Conflict,
+    Require,
 }
 
 /// A rule as specified in the rules document
@@ -25,7 +26,7 @@ pub trait Rule {
     fn eval(&self, items: &[String]) -> bool;
 }
 
-/// The Note Rule
+/// The Note Rule <Note for A>
 /// Notes simply check the expression and notify the user if eval is true
 pub struct Note {
     pub comment: String,
@@ -44,7 +45,7 @@ impl Rule for Note {
     }
 }
 
-/// The Conflict Rule
+/// The Conflict Rule <A conflicts with B>
 /// Conflicts evaluate as true if both expressions evaluate as true
 pub struct Conflict {
     pub comment: String,
@@ -62,5 +63,26 @@ impl Rule for Conflict {
     /// Conflicts evaluate as true if both expressions evaluate as true
     fn eval(&self, items: &[String]) -> bool {
         self.expression_a.eval(items) && self.expression_b.eval(items)
+    }
+}
+
+/// The Require Rule <A requires B>
+/// Requires evaluates as true if A is true and B is not true
+pub struct Require {
+    pub comment: String,
+    // todo: make first atomic?
+    pub expression_a: Box<dyn Expression>,
+    pub expression_b: Box<dyn Expression>,
+}
+impl Rule for Require {
+    fn get_kind(&self) -> RuleKind {
+        RuleKind::Require
+    }
+    fn get_comment(&self) -> &str {
+        &self.comment
+    }
+    /// Requires evaluates as true if A is true and B is not true
+    fn eval(&self, items: &[String]) -> bool {
+        self.expression_a.eval(items) && !self.expression_b.eval(items)
     }
 }

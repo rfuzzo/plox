@@ -28,8 +28,6 @@ pub fn stable_topo_sort_inner(
                 let t = result[i].clone();
                 result.remove(i);
                 result.insert(j, t);
-                // todo verbose
-                //println!("[{x}-{y}] {result:?}");
                 return true;
             }
         }
@@ -72,88 +70,89 @@ pub fn topo_sort(mods: &Vec<String>, rules: &Rules) -> Result<Vec<String>, &'sta
     Ok(result)
 }
 
-// custom rules parser
-pub fn parse_rules<P>(rules_dir: P) -> Result<Rules, &'static str>
+/// custom rules parser
+///
+/// # Errors
+///
+/// This function will return an error if .
+pub fn parse_rules<P>(rules_dir: P) -> io::Result<Rules>
 where
     P: AsRef<Path>,
 {
     let mut rules: Rules = Rules::default();
     let mut order: Vec<(String, String)> = vec![];
-
     let mut orders: Vec<Vec<String>> = vec![];
 
     // todo scan directory for user files
     let rules_path = rules_dir.as_ref().join("cmop_rules_base.txt");
-    if let Ok(lines) = read_lines(rules_path) {
-        let mut parsing = false;
-        let mut current_order: Vec<String> = vec![];
-        let mut current_rule: Option<RuleKind> = None;
+    let lines = read_lines(rules_path)?;
+    let mut parsing = false;
+    let mut current_order: Vec<String> = vec![];
+    let mut current_rule: Option<RuleKind> = None;
 
-        // Consumes the iterator, returns an (Optional) String
-        for line in lines.flatten() {
-            // parse each line
-            if line.starts_with(';') {
-                continue;
-            }
+    // Consumes the iterator, returns an (Optional) String
+    for line in lines.flatten() {
+        // parse each line
+        if line.starts_with(';') {
+            continue;
+        }
 
-            // rule parsing
-            if parsing && line.is_empty() {
-                parsing = false;
-                if let Some(current_rule) = &current_rule {
-                    match current_rule {
-                        RuleKind::Order => {
-                            orders.push(current_order.to_owned());
-                            current_order.clear();
-                        }
-                        RuleKind::Note => todo!(),
-                        RuleKind::Conflict => todo!(),
+        // rule parsing
+        if parsing && line.is_empty() {
+            parsing = false;
+            if let Some(current_rule) = &current_rule {
+                match current_rule {
+                    RuleKind::Order => {
+                        orders.push(current_order.to_owned());
+                        current_order.clear();
                     }
+                    RuleKind::Note => todo!(),
+                    RuleKind::Conflict => todo!(),
+                    RuleKind::Require => todo!(),
                 }
-
-                continue;
             }
 
-            // start order parsing
-            if !parsing && line == "[Order]" {
-                parsing = true;
-                current_rule = Some(RuleKind::Order);
-                continue;
-            }
+            continue;
+        }
 
-            // finish rule parsing
-            if parsing {
-                if let Some(current_rule) = &current_rule {
-                    match current_rule {
-                        RuleKind::Order => current_order.push(line),
-                        RuleKind::Note => todo!(),
-                        RuleKind::Conflict => todo!(),
-                    }
+        // start order parsing
+        if !parsing && line == "[Order]" {
+            parsing = true;
+            current_rule = Some(RuleKind::Order);
+            continue;
+        }
+
+        // TODO finish rule parsing
+        if parsing {
+            if let Some(current_rule) = &current_rule {
+                match current_rule {
+                    RuleKind::Order => current_order.push(line),
+                    RuleKind::Note => todo!(),
+                    RuleKind::Conflict => todo!(),
+                    RuleKind::Require => todo!(),
                 }
             }
         }
-        orders.push(current_order.to_owned());
-
-        // process orders
-        for o in orders {
-            match o.len().cmp(&2) {
-                std::cmp::Ordering::Less => continue,
-                std::cmp::Ordering::Equal => order.push((o[0].to_owned(), o[1].to_owned())),
-                std::cmp::Ordering::Greater => {
-                    // add all pairs
-                    for i in 0..o.len() - 1 {
-                        order.push((o[i].to_owned(), o[i + 1].to_owned()));
-                    }
-                }
-            }
-        }
-
-        // set data
-        rules.order = order;
-
-        Ok(rules)
-    } else {
-        Err("failed reading file")
     }
+    orders.push(current_order.to_owned());
+
+    // process orders
+    for o in orders {
+        match o.len().cmp(&2) {
+            std::cmp::Ordering::Less => continue,
+            std::cmp::Ordering::Equal => order.push((o[0].to_owned(), o[1].to_owned())),
+            std::cmp::Ordering::Greater => {
+                // add all pairs
+                for i in 0..o.len() - 1 {
+                    order.push((o[i].to_owned(), o[i + 1].to_owned()));
+                }
+            }
+        }
+    }
+
+    // set data
+    rules.order = order;
+    Ok(rules)
 }
 
 pub fn get_mods_from_rules(rules: &Rules) -> Vec<String> {
@@ -180,14 +179,23 @@ where
     let mut entries = fs::read_dir(archive_path)?
         .map(|res| res.map(|e| e.path()))
         .filter_map(Result::ok)
-        .filter(|e| !e.is_dir())
-        .filter(|e| e.extension().is_some())
-        .filter(|e| e.extension().unwrap().to_str().unwrap().contains("archive"))
-        .map(|e| String::from(e.file_name().unwrap().to_str().unwrap()))
+        .filter_map(|e| {
+            if !e.is_dir() {
+                if let Some(os_ext) = e.extension() {
+                    if let Some(ext) = os_ext.to_ascii_lowercase().to_str() {
+                        if ext.contains("archive") {
+                            if let Some(file_name) = e.file_name().and_then(|n| n.to_str()) {
+                                return Some(file_name.to_owned());
+                            }
+                        }
+                    }
+                }
+            }
+            None
+        })
         .collect::<Vec<_>>();
 
-    // gather mods from mods/<NAME>
-
+    // TODO gather REDmods from mods/<NAME>
     entries.sort();
 
     Ok(entries)
