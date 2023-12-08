@@ -72,15 +72,6 @@ pub fn topo_sort(mods: &Vec<String>, rules: &Rules) -> Result<Vec<String>, &'sta
     Ok(result)
 }
 
-// Returns an Iterator to the Reader of the lines of the file.
-pub fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
-where
-    P: AsRef<Path>,
-{
-    let file = File::open(filename)?;
-    Ok(io::BufReader::new(file).lines())
-}
-
 // custom rules parser
 pub fn parse_rules<P>(rules_dir: P) -> Result<Rules, &'static str>
 where
@@ -165,20 +156,6 @@ where
     }
 }
 
-// read file line by line into vector
-pub fn read_file_as_list<P>(modlist_path: P) -> Vec<String>
-where
-    P: AsRef<Path>,
-{
-    let mut result: Vec<String> = vec![];
-    if let Ok(lines) = read_lines(modlist_path) {
-        for line in lines.flatten() {
-            result.push(line);
-        }
-    }
-    result
-}
-
 pub fn get_mods_from_rules(rules: &Rules) -> Vec<String> {
     let mut result: Vec<String> = vec![];
     for r in rules.order.iter() {
@@ -193,8 +170,6 @@ pub fn get_mods_from_rules(rules: &Rules) -> Vec<String> {
     }
     result
 }
-
-pub fn verify_rules() {}
 
 pub fn gather_mods<P>(root: &P) -> io::Result<Vec<String>>
 where
@@ -216,4 +191,31 @@ where
     entries.sort();
 
     Ok(entries)
+}
+
+////////////////////////////////////////////////////////////////////////
+/// HELPERS
+////////////////////////////////////////////////////////////////////////
+
+// Returns an Iterator to the Reader of the lines of the file.
+pub fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
+where
+    P: AsRef<Path>,
+{
+    let file = File::open(filename)?;
+    Ok(io::BufReader::new(file).lines())
+}
+
+// read file line by line into vector
+pub fn read_file_as_list<P>(modlist_path: P) -> Vec<String>
+where
+    P: AsRef<Path>,
+{
+    let mut result: Vec<String> = vec![];
+    if let Ok(lines) = read_lines(modlist_path) {
+        for line in lines.flatten() {
+            result.push(line);
+        }
+    }
+    result
 }
