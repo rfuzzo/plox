@@ -80,7 +80,7 @@ mod unit_tests {
             .iter()
             .map(|e| Note {
                 comment: e.1.into(),
-                expression: EExpression::Atomic(Atomic { item: e.0.into() }),
+                expression: Atomic { item: e.0.into() }.into(),
             })
             .collect();
 
@@ -104,13 +104,13 @@ mod unit_tests {
         let rules: Vec<Conflict> = vec![
             Conflict {
                 comment: "some a".into(),
-                expression_a: EExpression::Atomic(Atomic { item: "a".into() }),
-                expression_b: EExpression::Atomic(Atomic { item: "b".into() }),
+                expression_a: Atomic { item: "a".into() }.into(),
+                expression_b: Atomic { item: "b".into() }.into(),
             },
             Conflict {
                 comment: "some b".into(),
-                expression_a: EExpression::Atomic(Atomic { item: "b".into() }),
-                expression_b: EExpression::Atomic(Atomic { item: "x".into() }),
+                expression_a: Atomic { item: "b".into() }.into(),
+                expression_b: Atomic { item: "x".into() }.into(),
             },
         ];
 

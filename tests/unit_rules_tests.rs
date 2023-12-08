@@ -13,7 +13,7 @@ mod unit_rules_tests {
             .iter()
             .map(|e| Note {
                 comment: e.1.into(),
-                expression: EExpression::Atomic(Atomic { item: e.0.into() }),
+                expression: Atomic { item: e.0.into() }.into(),
             })
             .collect();
 
@@ -36,13 +36,13 @@ mod unit_rules_tests {
 
         let rule1 = Conflict {
             comment: "a conflicts with b".into(),
-            expression_a: EExpression::Atomic(Atomic { item: "a".into() }),
-            expression_b: EExpression::Atomic(Atomic { item: "b".into() }),
+            expression_a: Atomic { item: "a".into() }.into(),
+            expression_b: Atomic { item: "b".into() }.into(),
         };
         let rule2 = Conflict {
             comment: "b conflicts with x".into(),
-            expression_a: EExpression::Atomic(Atomic { item: "b".into() }),
-            expression_b: EExpression::Atomic(Atomic { item: "x".into() }),
+            expression_a: Atomic { item: "b".into() }.into(),
+            expression_b: Atomic { item: "x".into() }.into(),
         };
         let rules: Vec<Conflict> = vec![
             rule1, // a conflicts with a
@@ -70,20 +70,20 @@ mod unit_rules_tests {
             // a requires b
             Require {
                 comment: "a requires b".into(),
-                expression_a: EExpression::Atomic(Atomic { item: "a".into() }),
-                expression_b: EExpression::Atomic(Atomic { item: "b".into() }),
+                expression_a: Atomic { item: "a".into() }.into(),
+                expression_b: Atomic { item: "b".into() }.into(),
             },
             // b requires x
             Require {
                 comment: "b requires x".into(),
-                expression_a: EExpression::Atomic(Atomic { item: "b".into() }),
-                expression_b: EExpression::Atomic(Atomic { item: "x".into() }),
+                expression_a: Atomic { item: "b".into() }.into(),
+                expression_b: Atomic { item: "x".into() }.into(),
             },
             // x requires y
             Require {
                 comment: "x requires y".into(),
-                expression_a: EExpression::Atomic(Atomic { item: "x".into() }),
-                expression_b: EExpression::Atomic(Atomic { item: "y".into() }),
+                expression_a: Atomic { item: "x".into() }.into(),
+                expression_b: Atomic { item: "y".into() }.into(),
             },
         ];
 

@@ -2,9 +2,9 @@
 /// EXPRESSIONS
 ////////////////////////////////////////////////////////////////////////
 
+// An expression may be evaluated against a load order
 pub trait Expression {
     fn eval(&self, items: &[String]) -> bool;
-    fn as_expr(&self) -> EExpression;
 }
 
 #[derive(Clone)]
@@ -15,6 +15,7 @@ pub enum EExpression {
     NOT(NOT),
 }
 
+// pass-through
 impl EExpression {
     pub fn eval(&self, items: &[String]) -> bool {
         match self {
@@ -25,6 +26,31 @@ impl EExpression {
         }
     }
 }
+// conversions
+impl From<Atomic> for EExpression {
+    fn from(val: Atomic) -> Self {
+        EExpression::Atomic(val)
+    }
+}
+impl From<ALL> for EExpression {
+    fn from(val: ALL) -> Self {
+        EExpression::ALL(val)
+    }
+}
+impl From<ANY> for EExpression {
+    fn from(val: ANY) -> Self {
+        EExpression::ANY(val)
+    }
+}
+impl From<NOT> for EExpression {
+    fn from(val: NOT) -> Self {
+        EExpression::NOT(val)
+    }
+}
+
+////////////////////////////////////////////////////////////////////////
+/// IMPLEMENTATIONS
+////////////////////////////////////////////////////////////////////////
 
 /// The atomic expression (EXISTS)
 /// atomics evaluate as true if the input list contains the item
@@ -37,10 +63,6 @@ impl Expression for Atomic {
     fn eval(&self, items: &[String]) -> bool {
         // TODO wildcards
         items.contains(&self.item)
-    }
-
-    fn as_expr(&self) -> EExpression {
-        EExpression::Atomic(self.clone())
     }
 }
 impl From<&str> for Atomic {
@@ -77,9 +99,6 @@ impl Expression for ALL {
             });
         r
     }
-    fn as_expr(&self) -> EExpression {
-        EExpression::ALL(self.clone())
-    }
 }
 
 /// The ANY expression
@@ -104,10 +123,6 @@ impl Expression for ANY {
                 r = r || e;
             });
         r
-    }
-
-    fn as_expr(&self) -> EExpression {
-        EExpression::ANY(self.clone())
     }
 }
 
@@ -135,8 +150,5 @@ impl Expression for NOT {
     // NOT evaluates as true if the wrapped expression evaluates as true
     fn eval(&self, items: &[String]) -> bool {
         !self.expression.eval(items)
-    }
-    fn as_expr(&self) -> EExpression {
-        EExpression::NOT(self.clone())
     }
 }
