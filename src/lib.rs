@@ -25,7 +25,7 @@ pub fn stable_topo_sort_inner(
             let x = index_dict[result[i].as_str()];
             let y = index_dict[result[j].as_str()];
             if edges.contains(&(x, y)) {
-                let t = result[i].clone();
+                let t = result[i].to_owned();
                 result.remove(i);
                 result.insert(j, t);
                 return true;
@@ -58,7 +58,7 @@ pub fn topo_sort(mods: &Vec<String>, rules: &Rules) -> Result<Vec<String>, &'sta
     }
 
     // sort
-    let mut result: Vec<String> = mods.clone().iter().map(|e| (*e).to_owned()).collect();
+    let mut result: Vec<String> = mods.iter().map(|e| (*e).to_owned()).collect();
     println!("{result:?}");
     loop {
         if !stable_topo_sort_inner(mods.len(), &edges, &index_dict, &mut result) {

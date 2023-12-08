@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////
 /// RULES
 ////////////////////////////////////////////////////////////////////////
-use crate::expressions::Expression;
+use crate::expressions::*;
 
 #[derive(Default)]
 pub struct Rules {
@@ -30,7 +30,7 @@ pub trait Rule {
 /// Notes simply check the expression and notify the user if eval is true
 pub struct Note {
     pub comment: String,
-    pub expression: Box<dyn Expression>,
+    pub expression: EExpression,
 }
 impl Rule for Note {
     fn get_kind(&self) -> RuleKind {
@@ -50,8 +50,8 @@ impl Rule for Note {
 pub struct Conflict {
     pub comment: String,
     // todo: make first atomic?
-    pub expression_a: Box<dyn Expression>,
-    pub expression_b: Box<dyn Expression>,
+    pub expression_a: EExpression,
+    pub expression_b: EExpression,
 }
 impl Rule for Conflict {
     fn get_kind(&self) -> RuleKind {
@@ -71,8 +71,8 @@ impl Rule for Conflict {
 pub struct Require {
     pub comment: String,
     // todo: make first atomic?
-    pub expression_a: Box<dyn Expression>,
-    pub expression_b: Box<dyn Expression>,
+    pub expression_a: EExpression,
+    pub expression_b: EExpression,
 }
 impl Rule for Require {
     fn get_kind(&self) -> RuleKind {
