@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod unit_expressions_tests {
-    use cmop::{Atomic, Expression, ALL, ANY, NOT};
+    use cmop::expressions::*;
 
     #[test]
     fn evaluate_all() {

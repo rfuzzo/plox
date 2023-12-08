@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod unit_tests {
-    use cmop::{topo_sort, Atomic, Conflict, Note, Rule, Rules};
+    use cmop::topo_sort;
+    use cmop::{expressions::*, rules::*};
 
     #[test]
     fn test_cycle() {
