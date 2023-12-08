@@ -93,7 +93,7 @@ mod unit_rules_tests {
                 warnings.push(rule.get_comment().into());
             }
         }
-        let expected: Vec<String> = vec!["some b".to_owned()];
+        let expected: Vec<String> = vec!["b requires x".to_owned()];
         assert_eq!(warnings, expected);
     }
 }
