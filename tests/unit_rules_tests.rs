@@ -4,12 +4,12 @@ mod unit_rules_tests {
 
     #[test]
     fn test_notes() {
-        let mods: Vec<String> = vec!["a", "b", "c", "d", "e", "f", "g"]
+        let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
             .iter()
             .map(|e| (*e).into())
             .collect();
 
-        let rules: Vec<_> = vec![("a", "some a"), ("c", "some b"), ("x", "some x!")]
+        let rules: Vec<_> = [("a", "some a"), ("c", "some b"), ("x", "some x!")]
             .iter()
             .map(|e| Note {
                 comment: e.1.into(),
@@ -29,7 +29,7 @@ mod unit_rules_tests {
 
     #[test]
     fn test_conflicts() {
-        let mods: Vec<String> = vec!["a", "b", "c", "d", "e", "f", "g"]
+        let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
             .iter()
             .map(|e| (*e).into())
             .collect();

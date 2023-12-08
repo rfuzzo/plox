@@ -4,7 +4,7 @@ mod unit_expressions_tests {
 
     #[test]
     fn evaluate_all() {
-        let mods: Vec<String> = vec!["a", "b", "c", "d", "e", "f", "g"]
+        let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
             .iter()
             .map(|e| (*e).into())
             .collect();
@@ -24,7 +24,7 @@ mod unit_expressions_tests {
 
     #[test]
     fn evaluate_any() {
-        let mods: Vec<String> = vec!["a", "b", "c", "d", "e", "f", "g"]
+        let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
             .iter()
             .map(|e| (*e).into())
             .collect();
@@ -44,7 +44,7 @@ mod unit_expressions_tests {
 
     #[test]
     fn evaluate_not() {
-        let mods: Vec<String> = vec!["a", "b", "c", "d", "e", "f", "g"]
+        let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
             .iter()
             .map(|e| (*e).into())
             .collect();

@@ -5,13 +5,13 @@ mod unit_tests {
     #[test]
     fn test_cycle() {
         let rules = Rules {
-            order: vec![("a", "b"), ("b", "c"), ("d", "e"), ("b", "a")]
+            order: [("a", "b"), ("b", "c"), ("d", "e"), ("b", "a")]
                 .iter()
                 .map(|e| (e.0.to_owned(), e.1.to_owned()))
                 .collect(),
         };
 
-        let mods: Vec<String> = vec!["a", "b", "c", "d", "e", "f", "g"]
+        let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
             .iter()
             .map(|e| (*e).into())
             .collect();
@@ -25,7 +25,7 @@ mod unit_tests {
     #[test]
     fn test_ordering() {
         let rules = Rules {
-            order: vec![
+            order: [
                 ("a", "b"),
                 ("b", "c"),
                 ("d", "e"),
@@ -37,7 +37,7 @@ mod unit_tests {
             .collect(),
         };
 
-        let mods = vec!["a", "b", "c", "d", "e", "f", "g"]
+        let mods = ["a", "b", "c", "d", "e", "f", "g"]
             .iter()
             .map(|e| (*e).into())
             .collect();
@@ -70,12 +70,12 @@ mod unit_tests {
 
     #[test]
     fn test_notes() {
-        let mods: Vec<String> = vec!["a", "b", "c", "d", "e", "f", "g"]
+        let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
             .iter()
             .map(|e| (*e).into())
             .collect();
 
-        let rules: Vec<_> = vec![("a", "some a"), ("c", "some b"), ("x", "some x!")]
+        let rules: Vec<_> = [("a", "some a"), ("c", "some b"), ("x", "some x!")]
             .iter()
             .map(|e| Note {
                 comment: e.1.into(),
@@ -95,7 +95,7 @@ mod unit_tests {
 
     #[test]
     fn test_conflicts() {
-        let mods: Vec<String> = vec!["a", "b", "c", "d", "e", "f", "g"]
+        let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
             .iter()
             .map(|e| (*e).into())
             .collect();

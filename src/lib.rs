@@ -266,8 +266,8 @@ where
             // rule parsing
             if parsing && line.is_empty() {
                 parsing = false;
-                if current_rule.is_some() {
-                    match current_rule.as_ref().unwrap() {
+                if let Some(current_rule) = &current_rule {
+                    match current_rule {
                         RuleKind::Order => {
                             orders.push(current_order.to_owned());
                             current_order.clear();
@@ -288,11 +288,13 @@ where
             }
 
             // finish rule parsing
-            if parsing && current_rule.is_some() {
-                match current_rule.as_ref().unwrap() {
-                    RuleKind::Order => current_order.push(line),
-                    RuleKind::Note => todo!(),
-                    RuleKind::Conflict => todo!(),
+            if parsing {
+                if let Some(current_rule) = &current_rule {
+                    match current_rule {
+                        RuleKind::Order => current_order.push(line),
+                        RuleKind::Note => todo!(),
+                        RuleKind::Conflict => todo!(),
+                    }
                 }
             }
         }
