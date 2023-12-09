@@ -74,7 +74,7 @@ mod unit_tests {
 
         let rules: Vec<_> = [("a", "some a"), ("c", "some b"), ("x", "some x!")]
             .iter()
-            .map(|e| Note::new(e.1.into(), Atomic::from(e.0).into()))
+            .map(|e| Note::new(e.1.into(), &[Atomic::from(e.0).into()]))
             .collect();
 
         let mut warnings: Vec<String> = vec![];

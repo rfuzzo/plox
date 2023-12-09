@@ -1,9 +1,6 @@
 #[cfg(test)]
 mod unit_tests {
-    use cmop::{
-        gather_mods, get_mods_from_rules, get_order_from_rules, parse_rules, read_file_as_list,
-        topo_sort,
-    };
+    use cmop::*;
 
     #[test]
     fn test_read_mods() {
@@ -13,13 +10,13 @@ mod unit_tests {
 
     #[test]
     fn test_parse_rules() {
-        let rules_path = "./tests/cmop";
+        let rules_path = "./tests/cmop/rules_order.txt";
         assert!(parse_rules(rules_path).is_ok(), "rules parsing failed")
     }
 
     #[test]
     fn test_verify_rules() {
-        let rules_path = "./tests/cmop";
+        let rules_path = "./tests/cmop/rules_order.txt";
         let rules = parse_rules(rules_path).expect("rule parse failed");
         let order = get_order_from_rules(&rules);
         let mods = get_mods_from_rules(&order);

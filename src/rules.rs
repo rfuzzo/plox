@@ -46,18 +46,18 @@ impl Rule for Order {
 }
 
 /// The Note Rule <Note for A>
-/// Notes simply check the expression and notify the user if eval is true
+/// The [Note] rule prints the given message when any of the following expressions is true.
 #[derive(Default, Clone)]
 pub struct Note {
     pub comment: String,
-    pub expression: Option<EExpression>,
+    pub expressions: Vec<EExpression>,
 }
 
 impl Note {
-    pub fn new(comment: String, expression: EExpression) -> Self {
+    pub fn new(comment: String, expressions: &[EExpression]) -> Self {
         Self {
             comment,
-            expression: Some(expression),
+            expressions: expressions.to_vec(),
         }
     }
 }
@@ -65,10 +65,12 @@ impl Rule for Note {
     fn get_comment(&self) -> &str {
         &self.comment
     }
-    /// Notes evaluate as true if the expression evaluates as true
+    /// Notes evaluate as true if any of the containing expressions evaluates as true
     fn eval(&self, items: &[String]) -> bool {
-        if let Some(expr) = &self.expression {
-            return expr.eval(items);
+        for expr in &self.expressions {
+            if expr.eval(items) {
+                return true;
+            }
         }
         false
     }

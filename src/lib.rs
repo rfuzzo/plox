@@ -1,3 +1,4 @@
+use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::fs::{self, File};
 use std::io::BufRead;
@@ -73,23 +74,30 @@ pub fn topo_sort(
     Ok(result)
 }
 
+pub fn parse_rules_from_dir<P>(rules_dir: P) -> io::Result<Vec<RuleKind>>
+where
+    P: AsRef<Path>,
+{
+    let rules_path = rules_dir.as_ref().join("cmop_rules_base.txt");
+    parse_rules(rules_path)
+}
+
 /// custom rules parser
 ///
 /// # Errors
 ///
 /// This function will return an error if .
-pub fn parse_rules<P>(rules_dir: P) -> io::Result<Vec<RuleKind>>
+pub fn parse_rules<P>(rules_path: P) -> io::Result<Vec<RuleKind>>
 where
     P: AsRef<Path>,
 {
     let mut rules: Vec<RuleKind> = vec![];
 
-    let mut order: Vec<(String, String)> = vec![];
+    // helpers for order rule
     let mut orders: Vec<Vec<String>> = vec![];
     let mut current_order: Vec<String> = vec![];
 
     // todo scan directory for user files
-    let rules_path = rules_dir.as_ref().join("cmop_rules_base.txt");
     let lines = read_lines(rules_path)?;
     let mut parsing = false;
     let mut current_rule: Option<RuleKind> = None;
@@ -106,13 +114,11 @@ where
         if parsing && line.is_empty() {
             parsing = false;
             if let Some(rule) = current_rule.take() {
-                rules.push(rule);
-                // match rule {
-                //     RuleKind::Order(o) => orders.push(current_order.to_owned()),
-                //     RuleKind::Note(n) => rules.push(rule),
-                //     RuleKind::Conflict(c) => rules.push(rule),
-                //     RuleKind::Requires(r) => rules.push(rule),
-                // }
+                if let RuleKind::Order(_o) = rule {
+                    orders.push(current_order.to_owned());
+                } else {
+                    rules.push(rule);
+                }
             } else {
                 // todo error
             }
@@ -148,11 +154,11 @@ where
         if parsing {
             if let Some(current_rule) = &current_rule {
                 match current_rule {
-                    RuleKind::Order(o) => {
+                    RuleKind::Order(_o) => {
                         // order is just a list of names
                         current_order.push(line)
                     }
-                    RuleKind::Note(n) => {
+                    RuleKind::Note(_n) => {
                         // parse rule
                         // first line is the comment
 
@@ -160,10 +166,10 @@ where
 
                         // handle more lines
                     }
-                    RuleKind::Conflict(c) => {
+                    RuleKind::Conflict(_c) => {
                         todo!()
                     }
-                    RuleKind::Requires(r) => {
+                    RuleKind::Requires(_r) => {
                         todo!()
                     }
                 }
@@ -172,15 +178,21 @@ where
     }
     orders.push(current_order.to_owned());
 
-    // process orders
+    // process order rules
     for o in orders {
         match o.len().cmp(&2) {
-            std::cmp::Ordering::Less => continue,
-            std::cmp::Ordering::Equal => order.push((o[0].to_owned(), o[1].to_owned())),
-            std::cmp::Ordering::Greater => {
+            Ordering::Less => continue,
+            Ordering::Equal => rules.push(RuleKind::Order(Order::new(
+                o[0].to_owned(),
+                o[1].to_owned(),
+            ))),
+            Ordering::Greater => {
                 // add all pairs
                 for i in 0..o.len() - 1 {
-                    order.push((o[i].to_owned(), o[i + 1].to_owned()));
+                    rules.push(RuleKind::Order(Order::new(
+                        o[i].to_owned(),
+                        o[i + 1].to_owned(),
+                    )));
                 }
             }
         }
