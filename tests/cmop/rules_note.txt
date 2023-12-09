@@ -1,0 +1,23 @@
+[Note]
+ message
+a
+
+[Note message]
+a
+mod with spaces.archive
+c
+
+[Note message] a b c
+
+[Note message] a "mod with spaces.archive" "c"
+
+[Note message]
+[ALL A.archive [NOT X.archive]]
+[ANY B.archive 7.archive]
+[ALL C.archive elephant.archive potato.archive]
+
+[Note]
+ message
+[ALL A.archive [NOT X.archive]]
+[ANY B.archive 7.archive]
+[ALL C.archive elephant.archive potato.archive]

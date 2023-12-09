@@ -114,39 +114,41 @@ where
         if parsing && line.is_empty() {
             parsing = false;
             if let Some(rule) = current_rule.take() {
+                // Order rule is handled separately
                 if let RuleKind::Order(_o) = rule {
                     orders.push(current_order.to_owned());
+                    current_order.clear();
                 } else {
                     rules.push(rule);
                 }
             } else {
-                // todo error
+                // error and abort
+                panic!("Parsing error: unknown empty new line");
             }
-            current_order.clear();
-
             continue;
         }
 
         // HANDLE RULE START
         // start order parsing
+        let mut r_line = line;
         if !parsing {
-            if line == "[Order]" {
-                parsing = true;
+            if r_line.starts_with("[Order") {
                 current_rule = Some(RuleKind::Order(Order::default()));
-                continue;
-            } else if line == "[Note]" {
-                parsing = true;
+                r_line = r_line["[Order".len()..].to_owned();
+            } else if r_line.starts_with("[Note") {
                 current_rule = Some(RuleKind::Note(Note::default()));
-                continue;
-            } else if line == "[Conflict]" {
-                parsing = true;
+                r_line = r_line["[Note".len()..].to_owned();
+            } else if r_line.starts_with("[Conflict") {
                 current_rule = Some(RuleKind::Conflict(Conflict::default()));
-                continue;
-            } else if line == "[Requires]" {
-                parsing = true;
+                r_line = r_line["[Conflict".len()..].to_owned();
+            } else if r_line.starts_with("[Requires") {
                 current_rule = Some(RuleKind::Requires(Requires::default()));
-                continue;
+                r_line = r_line["[Requires".len()..].to_owned();
+            } else {
+                // unknown rule
+                panic!("Parsing error: unknown rule");
             }
+            parsing = true;
         }
 
         // HANDLE RULE PARSE
@@ -156,15 +158,22 @@ where
                 match current_rule {
                     RuleKind::Order(_o) => {
                         // order is just a list of names
-                        current_order.push(line)
+                        // TODO in-line names?
+                        current_order.push(r_line)
                     }
                     RuleKind::Note(_n) => {
                         // parse rule
-                        // first line is the comment
+                        // Syntax: [Note optional-message] expr-1 expr-2 ... expr-N
+                        // TODO alternative:
+                        // [Note]
+                        //  message
+                        // A.esp
 
-                        // subsequent line is archive name
+                        // subsequent lines are archive names
 
-                        // handle more lines
+                        // parse expressions
+
+                        todo!()
                     }
                     RuleKind::Conflict(_c) => {
                         todo!()

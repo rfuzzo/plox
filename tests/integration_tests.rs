@@ -10,8 +10,17 @@ mod unit_tests {
 
     #[test]
     fn test_parse_rules() {
-        let rules_path = "./tests/cmop/rules_order.txt";
-        assert!(parse_rules(rules_path).is_ok(), "rules parsing failed")
+        assert!(
+            parse_rules("./tests/cmop/rules_order.txt").is_ok(),
+            "rules parsing failed"
+        );
+
+        assert!(
+            parse_rules("./tests/cmop/rules_note.txt").is_ok(),
+            "rules parsing failed"
+        );
+
+        // TODO add other rules
     }
 
     #[test]
