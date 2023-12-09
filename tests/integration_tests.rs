@@ -1,6 +1,9 @@
 #[cfg(test)]
 mod unit_tests {
-    use cmop::{gather_mods, get_mods_from_rules, parse_rules, read_file_as_list, topo_sort};
+    use cmop::{
+        gather_mods, get_mods_from_rules, get_order_from_rules, parse_rules, read_file_as_list,
+        topo_sort,
+    };
 
     #[test]
     fn test_read_mods() {
@@ -18,10 +21,10 @@ mod unit_tests {
     fn test_verify_rules() {
         let rules_path = "./tests/cmop";
         let rules = parse_rules(rules_path).expect("rule parse failed");
+        let order = get_order_from_rules(&rules);
+        let mods = get_mods_from_rules(&order);
 
-        let mods = get_mods_from_rules(&rules);
-
-        assert!(topo_sort(&mods, &rules).is_ok(), "rules contain a cycle")
+        assert!(topo_sort(&mods, &order).is_ok(), "rules contain a cycle")
     }
 
     #[test]

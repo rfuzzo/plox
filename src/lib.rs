@@ -35,7 +35,10 @@ pub fn stable_topo_sort_inner(
     false
 }
 
-pub fn topo_sort(mods: &Vec<String>, rules: &Rules) -> Result<Vec<String>, &'static str> {
+pub fn topo_sort(
+    mods: &Vec<String>,
+    order: &Vec<(String, String)>,
+) -> Result<Vec<String>, &'static str> {
     let mut g = IndexGraph::with_vertices(mods.len());
     let mut index_dict: HashMap<&str, usize> = HashMap::new();
     for (i, m) in mods.iter().enumerate() {
@@ -43,7 +46,7 @@ pub fn topo_sort(mods: &Vec<String>, rules: &Rules) -> Result<Vec<String>, &'sta
     }
     // add edges
     let mut edges: Vec<(usize, usize)> = vec![];
-    for (a, b) in &rules.order {
+    for (a, b) in order {
         if mods.contains(a) && mods.contains(b) {
             let idx_a = index_dict[a.as_str()];
             let idx_b = index_dict[b.as_str()];
@@ -70,37 +73,26 @@ pub fn topo_sort(mods: &Vec<String>, rules: &Rules) -> Result<Vec<String>, &'sta
     Ok(result)
 }
 
-#[derive(PartialEq)]
-enum ERule {
-    Order,
-    Note,
-    Conflict,
-    Requires,
-}
-
 /// custom rules parser
 ///
 /// # Errors
 ///
 /// This function will return an error if .
-pub fn parse_rules<P>(rules_dir: P) -> io::Result<Rules>
+pub fn parse_rules<P>(rules_dir: P) -> io::Result<Vec<RuleKind>>
 where
     P: AsRef<Path>,
 {
-    let mut rules: Rules = Rules::default();
+    let mut rules: Vec<RuleKind> = vec![];
 
     let mut order: Vec<(String, String)> = vec![];
     let mut orders: Vec<Vec<String>> = vec![];
-    let mut warning_rules: Vec<RuleKind> = vec![];
+    let mut current_order: Vec<String> = vec![];
 
     // todo scan directory for user files
     let rules_path = rules_dir.as_ref().join("cmop_rules_base.txt");
     let lines = read_lines(rules_path)?;
     let mut parsing = false;
-    let mut current_rule_type: Option<ERule> = None;
-
-    let mut current_order: Vec<String> = vec![];
-    let mut current_warning_rule: Option<RuleKind> = None;
+    let mut current_rule: Option<RuleKind> = None;
 
     // parse each line
     for line in lines.flatten() {
@@ -109,66 +101,71 @@ where
             continue;
         }
 
+        // HANDLE RULE END
         // new empty lines end a rule block
         if parsing && line.is_empty() {
             parsing = false;
-            if let Some(current_rule) = current_rule_type.take() {
-                // TODO this is stupid
-                if current_rule == ERule::Order {
-                    orders.push(current_order.to_owned());
-                } else if let Some(current_warning_rule) = current_warning_rule.take() {
-                    match current_rule {
-                        ERule::Order => {}
-                        ERule::Note => warning_rules.push(current_warning_rule),
-                        ERule::Conflict => warning_rules.push(current_warning_rule),
-                        ERule::Requires => warning_rules.push(current_warning_rule),
-                    }
-                } else {
-                    // todo error
-                }
-                current_order.clear();
+            if let Some(rule) = current_rule.take() {
+                rules.push(rule);
+                // match rule {
+                //     RuleKind::Order(o) => orders.push(current_order.to_owned()),
+                //     RuleKind::Note(n) => rules.push(rule),
+                //     RuleKind::Conflict(c) => rules.push(rule),
+                //     RuleKind::Requires(r) => rules.push(rule),
+                // }
+            } else {
+                // todo error
             }
+            current_order.clear();
 
             continue;
         }
 
+        // HANDLE RULE START
         // start order parsing
         if !parsing {
             if line == "[Order]" {
                 parsing = true;
-                current_rule_type = Some(ERule::Order);
-
+                current_rule = Some(RuleKind::Order(Order::default()));
                 continue;
             } else if line == "[Note]" {
                 parsing = true;
-                current_rule_type = Some(ERule::Note);
-                current_warning_rule = Some(RuleKind::Note(Note::default()));
+                current_rule = Some(RuleKind::Note(Note::default()));
                 continue;
             } else if line == "[Conflict]" {
                 parsing = true;
-                current_rule_type = Some(ERule::Conflict);
+                current_rule = Some(RuleKind::Conflict(Conflict::default()));
                 continue;
             } else if line == "[Requires]" {
                 parsing = true;
-                current_rule_type = Some(ERule::Requires);
+                current_rule = Some(RuleKind::Requires(Requires::default()));
                 continue;
             }
         }
 
+        // HANDLE RULE PARSE
         // parse current rule
         if parsing {
-            if let Some(current_rule) = &current_rule_type {
+            if let Some(current_rule) = &current_rule {
                 match current_rule {
-                    ERule::Order => {
+                    RuleKind::Order(o) => {
                         // order is just a list of names
                         current_order.push(line)
                     }
-                    ERule::Note => {
+                    RuleKind::Note(n) => {
                         // parse rule
+                        // first line is the comment
+
+                        // subsequent line is archive name
+
+                        // handle more lines
+                    }
+                    RuleKind::Conflict(c) => {
                         todo!()
                     }
-                    ERule::Conflict => todo!(),
-                    ERule::Requires => todo!(),
+                    RuleKind::Requires(r) => {
+                        todo!()
+                    }
                 }
             }
         }
@@ -189,14 +186,12 @@ where
         }
     }
 
-    // set data
-    rules.order = order;
     Ok(rules)
 }
 
-pub fn get_mods_from_rules(rules: &Rules) -> Vec<String> {
+pub fn get_mods_from_rules(order: &[(String, String)]) -> Vec<String> {
     let mut result: Vec<String> = vec![];
-    for r in rules.order.iter() {
+    for r in order.iter() {
         let mut a = r.0.to_owned();
         if !result.contains(&a) {
             result.push(a);
@@ -243,6 +238,17 @@ where
 ////////////////////////////////////////////////////////////////////////
 /// HELPERS
 ////////////////////////////////////////////////////////////////////////
+
+pub fn get_order_from_rules(rules: &Vec<RuleKind>) -> Vec<(String, String)> {
+    let mut order: Vec<(String, String)> = vec![];
+    for r in rules {
+        if let RuleKind::Order(o) = r {
+            order.push((o.name_a.to_owned(), o.name_b.to_owned()));
+        }
+    }
+
+    order
+}
 
 // Returns an Iterator to the Reader of the lines of the file.
 pub fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>

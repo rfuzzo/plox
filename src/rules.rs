@@ -3,14 +3,8 @@
 ////////////////////////////////////////////////////////////////////////
 use crate::expressions::*;
 
-#[derive(Default)]
-pub struct Rules {
-    pub order: Vec<(String, String)>,
-    pub warnings: Vec<RuleKind>,
-}
-
 pub enum RuleKind {
-    //Order(Order), // TODO refactor this into a rule?
+    Order(Order), // TODO refactor this into a rule?
     Note(Note),
     Conflict(Conflict),
     Requires(Requires),
@@ -22,6 +16,33 @@ pub trait Rule {
     fn get_comment(&self) -> &str;
     // every rule may be evaluated
     fn eval(&self, items: &[String]) -> bool;
+}
+
+////////////////////////////////////////////////////////////////////////
+/// IMPLEMENTATIONS
+////////////////////////////////////////////////////////////////////////
+
+/// The Note Rule <Note for A>
+/// Notes simply check the expression and notify the user if eval is true
+#[derive(Default, Clone)]
+pub struct Order {
+    pub name_a: String,
+    pub name_b: String,
+}
+
+impl Order {
+    pub fn new(name_a: String, name_b: String) -> Self {
+        Self { name_a, name_b }
+    }
+}
+impl Rule for Order {
+    fn get_comment(&self) -> &str {
+        ""
+    }
+    /// Notes evaluate as true if the expression evaluates as true
+    fn eval(&self, _items: &[String]) -> bool {
+        false
+    }
 }
 
 /// The Note Rule <Note for A>

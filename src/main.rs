@@ -1,4 +1,5 @@
 use clap::{Parser, Subcommand};
+use cmop::rules::RuleKind;
 use cmop::{gather_mods, get_mods_from_rules, parse_rules, read_file_as_list, topo_sort};
 use std::path::PathBuf;
 use std::process::ExitCode;
@@ -86,7 +87,7 @@ fn sort(
     }
 
     match parse_rules(rules_path) {
-        Ok(rules) => match topo_sort(&mods, &rules) {
+        Ok(rules) => match topo_sort(&mods, &get_order_from_rules(&rules)) {
             Ok(result) => {
                 if dry_run {
                     println!("Dry run...");
@@ -114,14 +115,27 @@ fn sort(
     }
 }
 
+fn get_order_from_rules(rules: &Vec<RuleKind>) -> Vec<(String, String)> {
+    let mut order: Vec<(String, String)> = vec![];
+
+    for r in rules {
+        if let RuleKind::Order(o) = r {
+            order.push((o.name_a.to_owned(), o.name_b.to_owned()));
+        }
+    }
+
+    order
+}
+
 /// Verifies integrity of the specified rules
 fn verify(rules_path: &PathBuf) -> ExitCode {
     //println!("Verifying rules from {} ...", rules_path.display());
 
     match parse_rules(rules_path) {
         Ok(rules) => {
-            let mods = get_mods_from_rules(&rules);
-            match topo_sort(&mods, &rules) {
+            let order = get_order_from_rules(&rules);
+            let mods = get_mods_from_rules(&order);
+            match topo_sort(&mods, &order) {
                 Ok(_) => {
                     println!("true");
                     ExitCode::SUCCESS
