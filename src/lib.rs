@@ -70,6 +70,14 @@ pub fn topo_sort(mods: &Vec<String>, rules: &Rules) -> Result<Vec<String>, &'sta
     Ok(result)
 }
 
+#[derive(PartialEq)]
+enum ERule {
+    Order,
+    Note,
+    Conflict,
+    Requires,
+}
+
 /// custom rules parser
 ///
 /// # Errors
@@ -80,56 +88,87 @@ where
     P: AsRef<Path>,
 {
     let mut rules: Rules = Rules::default();
+
     let mut order: Vec<(String, String)> = vec![];
     let mut orders: Vec<Vec<String>> = vec![];
+    let mut warning_rules: Vec<RuleKind> = vec![];
 
     // todo scan directory for user files
     let rules_path = rules_dir.as_ref().join("cmop_rules_base.txt");
     let lines = read_lines(rules_path)?;
     let mut parsing = false;
-    let mut current_order: Vec<String> = vec![];
-    let mut current_rule: Option<RuleKind> = None;
+    let mut current_rule_type: Option<ERule> = None;
 
-    // Consumes the iterator, returns an (Optional) String
+    let mut current_order: Vec<String> = vec![];
+    let mut current_warning_rule: Option<RuleKind> = None;
+
+    // parse each line
     for line in lines.flatten() {
-        // parse each line
+        // comments
         if line.starts_with(';') {
             continue;
         }
 
-        // rule parsing
+        // new empty lines end a rule block
         if parsing && line.is_empty() {
             parsing = false;
-            if let Some(current_rule) = &current_rule {
-                match current_rule {
-                    RuleKind::Order => {
-                        orders.push(current_order.to_owned());
-                        current_order.clear();
+            if let Some(current_rule) = current_rule_type.take() {
+                // TODO this is stupid
+                if current_rule == ERule::Order {
+                    orders.push(current_order.to_owned());
+                } else if let Some(current_warning_rule) = current_warning_rule.take() {
+                    match current_rule {
+                        ERule::Order => {}
+                        ERule::Note => warning_rules.push(current_warning_rule),
+                        ERule::Conflict => warning_rules.push(current_warning_rule),
+                        ERule::Requires => warning_rules.push(current_warning_rule),
                     }
-                    RuleKind::Note => todo!(),
-                    RuleKind::Conflict => todo!(),
-                    RuleKind::Require => todo!(),
+                } else {
+                    // todo error
                 }
+                current_order.clear();
             }
 
             continue;
         }
 
         // start order parsing
-        if !parsing && line == "[Order]" {
-            parsing = true;
-            current_rule = Some(RuleKind::Order);
-            continue;
+        if !parsing {
+            if line == "[Order]" {
+                parsing = true;
+                current_rule_type = Some(ERule::Order);
+
+                continue;
+            } else if line == "[Note]" {
+                parsing = true;
+                current_rule_type = Some(ERule::Note);
+                current_warning_rule = Some(RuleKind::Note(Note::default()));
+                continue;
+            } else if line == "[Conflict]" {
+                parsing = true;
+                current_rule_type = Some(ERule::Conflict);
+                continue;
+            } else if line == "[Requires]" {
+                parsing = true;
+                current_rule_type = Some(ERule::Requires);
+                continue;
+            }
         }
 
-        // TODO finish rule parsing
+        // parse current rule
         if parsing {
-            if let Some(current_rule) = &current_rule {
+            if let Some(current_rule) = &current_rule_type {
                 match current_rule {
-                    RuleKind::Order => current_order.push(line),
-                    RuleKind::Note => todo!(),
-                    RuleKind::Conflict => todo!(),
-                    RuleKind::Require => todo!(),
+                    ERule::Order => {
+                        // order is just a list of names
+                        current_order.push(line)
+                    }
+                    ERule::Note => {
+                        // parse rule
+                        todo!()
+                    }
+                    ERule::Conflict => todo!(),
+                    ERule::Requires => todo!(),
                 }
             }
         }

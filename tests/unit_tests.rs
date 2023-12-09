@@ -10,6 +10,7 @@ mod unit_tests {
                 .iter()
                 .map(|e| (e.0.to_owned(), e.1.to_owned()))
                 .collect(),
+            warnings: vec![],
         };
 
         let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
@@ -36,6 +37,7 @@ mod unit_tests {
             .iter()
             .map(|e| (e.0.to_owned(), e.1.to_owned()))
             .collect(),
+            warnings: vec![],
         };
 
         let mods = ["a", "b", "c", "d", "e", "f", "g"]
@@ -78,10 +80,7 @@ mod unit_tests {
 
         let rules: Vec<_> = [("a", "some a"), ("c", "some b"), ("x", "some x!")]
             .iter()
-            .map(|e| Note {
-                comment: e.1.into(),
-                expression: Atomic { item: e.0.into() }.into(),
-            })
+            .map(|e| Note::new(e.1.into(), Atomic::from(e.0).into()))
             .collect();
 
         let mut warnings: Vec<String> = vec![];
@@ -102,16 +101,16 @@ mod unit_tests {
             .collect();
 
         let rules: Vec<Conflict> = vec![
-            Conflict {
-                comment: "some a".into(),
-                expression_a: Atomic { item: "a".into() }.into(),
-                expression_b: Atomic { item: "b".into() }.into(),
-            },
-            Conflict {
-                comment: "some b".into(),
-                expression_a: Atomic { item: "b".into() }.into(),
-                expression_b: Atomic { item: "x".into() }.into(),
-            },
+            Conflict::new(
+                "some a".into(),
+                Atomic::from("a").into(),
+                Atomic::from("b").into(),
+            ),
+            Conflict::new(
+                "some b".into(),
+                Atomic::from("a").into(),
+                Atomic::from("x").into(),
+            ),
         ];
 
         let mut warnings: Vec<String> = vec![];

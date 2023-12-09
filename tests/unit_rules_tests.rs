@@ -11,10 +11,7 @@ mod unit_rules_tests {
 
         let rules: Vec<_> = [("a", "some a"), ("c", "some b"), ("x", "some x!")]
             .iter()
-            .map(|e| Note {
-                comment: e.1.into(),
-                expression: Atomic { item: e.0.into() }.into(),
-            })
+            .map(|e| Note::new(e.1.into(), Atomic { item: e.0.into() }.into()))
             .collect();
 
         let mut warnings: Vec<String> = vec![];
@@ -34,19 +31,19 @@ mod unit_rules_tests {
             .map(|e| (*e).into())
             .collect();
 
-        let rule1 = Conflict {
-            comment: "a conflicts with b".into(),
-            expression_a: Atomic { item: "a".into() }.into(),
-            expression_b: Atomic { item: "b".into() }.into(),
-        };
-        let rule2 = Conflict {
-            comment: "b conflicts with x".into(),
-            expression_a: Atomic { item: "b".into() }.into(),
-            expression_b: Atomic { item: "x".into() }.into(),
-        };
+        let rule1 = Conflict::new(
+            "a conflicts with b".into(),
+            Atomic::from("a").into(),
+            Atomic::from("b").into(),
+        );
+        let rule2 = Conflict::new(
+            "b conflicts with x".into(),
+            Atomic::from("b").into(),
+            Atomic::from("x").into(),
+        );
         let rules: Vec<Conflict> = vec![
-            rule1, // a conflicts with a
-            rule2, // b conflicts with x
+            rule1.clone(), // a conflicts with a
+            rule2,         // b conflicts with x
         ];
 
         let mut warnings: Vec<String> = vec![];
@@ -55,7 +52,7 @@ mod unit_rules_tests {
                 warnings.push(rule.get_comment().into());
             }
         }
-        let expected: Vec<String> = vec!["a conflicts with b".into()];
+        let expected: Vec<String> = vec![rule1.comment];
         assert_eq!(warnings, expected);
     }
 
@@ -66,25 +63,25 @@ mod unit_rules_tests {
             .map(|e| (*e).into())
             .collect();
 
-        let rules: Vec<Require> = vec![
+        let rules: Vec<Requires> = vec![
             // a requires b
-            Require {
-                comment: "a requires b".into(),
-                expression_a: Atomic { item: "a".into() }.into(),
-                expression_b: Atomic { item: "b".into() }.into(),
-            },
+            Requires::new(
+                "a requires b".into(),
+                Atomic::from("a").into(),
+                Atomic::from("b").into(),
+            ),
             // b requires x
-            Require {
-                comment: "b requires x".into(),
-                expression_a: Atomic { item: "b".into() }.into(),
-                expression_b: Atomic { item: "x".into() }.into(),
-            },
+            Requires::new(
+                "b requires x".into(),
+                Atomic::from("b").into(),
+                Atomic::from("x").into(),
+            ),
             // x requires y
-            Require {
-                comment: "x requires y".into(),
-                expression_a: Atomic { item: "x".into() }.into(),
-                expression_b: Atomic { item: "y".into() }.into(),
-            },
+            Requires::new(
+                "x requires y".into(),
+                Atomic::from("x").into(),
+                Atomic::from("y").into(),
+            ),
         ];
 
         let mut warnings: Vec<String> = vec![];
