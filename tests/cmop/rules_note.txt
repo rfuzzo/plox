@@ -2,6 +2,14 @@
  message
 a
 
+[Note]
+ multi line 
+ message
+a
+b
+
+[Note My message with some [brakets?] is a stupid idea!] a.archive
+
 [Note message]
 a
 mod with spaces.archive

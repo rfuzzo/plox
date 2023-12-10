@@ -3,19 +3,49 @@
 ////////////////////////////////////////////////////////////////////////
 use crate::expressions::*;
 
-pub enum RuleKind {
+/// A rule as specified in the rules document
+pub trait TRule {
+    // every rule may have a comment describing why it failed
+    fn get_comment(&self) -> &str;
+    fn set_comment(&mut self, comment: String);
+    // every rule may be evaluated
+    fn eval(&self, items: &[String]) -> bool;
+}
+
+pub enum Rule {
     Order(Order), // TODO refactor this into a rule?
     Note(Note),
     Conflict(Conflict),
     Requires(Requires),
 }
 
-/// A rule as specified in the rules document
-pub trait Rule {
-    // every rule may have a comment describing why it failed
-    fn get_comment(&self) -> &str;
-    // every rule may be evaluated
-    fn eval(&self, items: &[String]) -> bool;
+impl TRule for Rule {
+    fn get_comment(&self) -> &str {
+        match self {
+            Rule::Order(o) => o.get_comment(),
+            Rule::Note(o) => o.get_comment(),
+            Rule::Conflict(o) => o.get_comment(),
+            Rule::Requires(o) => o.get_comment(),
+        }
+    }
+
+    fn set_comment(&mut self, comment: String) {
+        match self {
+            Rule::Order(_) => {}
+            Rule::Note(n) => n.set_comment(comment),
+            Rule::Conflict(c) => c.set_comment(comment),
+            Rule::Requires(r) => r.set_comment(comment),
+        }
+    }
+
+    fn eval(&self, items: &[String]) -> bool {
+        match self {
+            Rule::Order(o) => o.eval(items),
+            Rule::Note(o) => o.eval(items),
+            Rule::Conflict(o) => o.eval(items),
+            Rule::Requires(o) => o.eval(items),
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -35,10 +65,12 @@ impl Order {
         Self { name_a, name_b }
     }
 }
-impl Rule for Order {
+impl TRule for Order {
     fn get_comment(&self) -> &str {
         ""
     }
+    fn set_comment(&mut self, _comment: String) {}
+
     /// Notes evaluate as true if the expression evaluates as true
     fn eval(&self, _items: &[String]) -> bool {
         false
@@ -50,20 +82,23 @@ impl Rule for Order {
 #[derive(Default, Clone)]
 pub struct Note {
     pub comment: String,
-    pub expressions: Vec<EExpression>,
+    pub expressions: Vec<Expression>,
 }
 
 impl Note {
-    pub fn new(comment: String, expressions: &[EExpression]) -> Self {
+    pub fn new(comment: String, expressions: &[Expression]) -> Self {
         Self {
             comment,
             expressions: expressions.to_vec(),
         }
     }
 }
-impl Rule for Note {
+impl TRule for Note {
     fn get_comment(&self) -> &str {
-        &self.comment
+        self.comment.as_str()
+    }
+    fn set_comment(&mut self, comment: String) {
+        self.comment = comment;
     }
     /// Notes evaluate as true if any of the containing expressions evaluates as true
     fn eval(&self, items: &[String]) -> bool {
@@ -82,11 +117,11 @@ impl Rule for Note {
 pub struct Conflict {
     pub comment: String,
     // todo: make first atomic?
-    pub expression_a: Option<EExpression>,
-    pub expression_b: Option<EExpression>,
+    pub expression_a: Option<Expression>,
+    pub expression_b: Option<Expression>,
 }
 impl Conflict {
-    pub fn new(comment: String, expression_a: EExpression, expression_b: EExpression) -> Self {
+    pub fn new(comment: String, expression_a: Expression, expression_b: Expression) -> Self {
         Self {
             comment,
             expression_a: Some(expression_a),
@@ -94,9 +129,12 @@ impl Conflict {
         }
     }
 }
-impl Rule for Conflict {
+impl TRule for Conflict {
     fn get_comment(&self) -> &str {
-        &self.comment
+        self.comment.as_str()
+    }
+    fn set_comment(&mut self, comment: String) {
+        self.comment = comment;
     }
     /// Conflicts evaluate as true if both expressions evaluate as true
     fn eval(&self, items: &[String]) -> bool {
@@ -115,11 +153,11 @@ impl Rule for Conflict {
 pub struct Requires {
     pub comment: String,
     // todo: make first atomic?
-    pub expression_a: Option<EExpression>,
-    pub expression_b: Option<EExpression>,
+    pub expression_a: Option<Expression>,
+    pub expression_b: Option<Expression>,
 }
 impl Requires {
-    pub fn new(comment: String, expression_a: EExpression, expression_b: EExpression) -> Self {
+    pub fn new(comment: String, expression_a: Expression, expression_b: Expression) -> Self {
         Self {
             comment,
             expression_a: Some(expression_a),
@@ -127,9 +165,12 @@ impl Requires {
         }
     }
 }
-impl Rule for Requires {
+impl TRule for Requires {
     fn get_comment(&self) -> &str {
-        &self.comment
+        self.comment.as_str()
+    }
+    fn set_comment(&mut self, comment: String) {
+        self.comment = comment;
     }
     /// Requires evaluates as true if A is true and B is not true
     fn eval(&self, items: &[String]) -> bool {

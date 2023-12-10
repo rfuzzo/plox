@@ -1,4 +1,5 @@
 use clap::{Parser, Subcommand};
+use cmop::parser::parse_rules_from_path;
 use std::path::PathBuf;
 use std::process::ExitCode;
 
@@ -31,7 +32,7 @@ enum Commands {
 
         /// Folder to read sorting rules from. Default is ./cmop
         #[arg(short, long, default_value_t = String::from("./cmop"))]
-        rules: String,
+        rules_dir: String,
 
         /// Just print the suggested load order without sorting
         #[arg(short, long)]
@@ -45,7 +46,7 @@ enum Commands {
     Verify {
         /// Folder to read sorting rules from. Default is ./cmop
         #[arg(short, long, default_value_t = String::from("./cmop"))]
-        rules: String,
+        rules_dir: String,
     },
 }
 
@@ -54,13 +55,17 @@ fn main() -> ExitCode {
 
     match &cli.command {
         Some(Commands::List { root }) => list_mods(&root.into()),
-        Some(Commands::Verify { rules }) => verify(&rules.into()),
+        Some(Commands::Verify { rules_dir }) => {
+            //
+            let rules_path = PathBuf::from(rules_dir).join("cmop_rules_base.txt");
+            verify(&rules_path)
+        }
         Some(Commands::Sort {
             root,
-            rules,
+            rules_dir,
             mod_list,
             dry_run,
-        }) => sort(&root.into(), &rules.into(), mod_list, *dry_run),
+        }) => sort(&root.into(), &rules_dir.into(), mod_list, *dry_run),
         None => ExitCode::FAILURE,
     }
 }
@@ -86,7 +91,7 @@ fn sort(
         }
     }
 
-    match parse_rules(rules_path) {
+    match parse_rules_from_path(rules_path) {
         Ok(rules) => match topo_sort(&mods, &get_order_from_rules(&rules)) {
             Ok(result) => {
                 if dry_run {
@@ -119,7 +124,7 @@ fn sort(
 fn verify(rules_path: &PathBuf) -> ExitCode {
     //println!("Verifying rules from {} ...", rules_path.display());
 
-    match parse_rules(rules_path) {
+    match parse_rules_from_path(rules_path) {
         Ok(rules) => {
             let order = get_order_from_rules(&rules);
             let mods = get_mods_from_rules(&order);

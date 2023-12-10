@@ -3,12 +3,12 @@
 ////////////////////////////////////////////////////////////////////////
 
 // An expression may be evaluated against a load order
-pub trait Expression {
+pub trait TExpression {
     fn eval(&self, items: &[String]) -> bool;
 }
 
 #[derive(Clone)]
-pub enum EExpression {
+pub enum Expression {
     Atomic(Atomic),
     ALL(ALL),
     ANY(ANY),
@@ -16,35 +16,35 @@ pub enum EExpression {
 }
 
 // pass-through
-impl EExpression {
-    pub fn eval(&self, items: &[String]) -> bool {
+impl TExpression for Expression {
+    fn eval(&self, items: &[String]) -> bool {
         match self {
-            EExpression::Atomic(atomic) => atomic.eval(items),
-            EExpression::ALL(all) => all.eval(items),
-            EExpression::ANY(any) => any.eval(items),
-            EExpression::NOT(not) => not.eval(items),
+            Expression::Atomic(atomic) => atomic.eval(items),
+            Expression::ALL(all) => all.eval(items),
+            Expression::ANY(any) => any.eval(items),
+            Expression::NOT(not) => not.eval(items),
         }
     }
 }
 // conversions
-impl From<Atomic> for EExpression {
+impl From<Atomic> for Expression {
     fn from(val: Atomic) -> Self {
-        EExpression::Atomic(val)
+        Expression::Atomic(val)
     }
 }
-impl From<ALL> for EExpression {
+impl From<ALL> for Expression {
     fn from(val: ALL) -> Self {
-        EExpression::ALL(val)
+        Expression::ALL(val)
     }
 }
-impl From<ANY> for EExpression {
+impl From<ANY> for Expression {
     fn from(val: ANY) -> Self {
-        EExpression::ANY(val)
+        Expression::ANY(val)
     }
 }
-impl From<NOT> for EExpression {
+impl From<NOT> for Expression {
     fn from(val: NOT) -> Self {
-        EExpression::NOT(val)
+        Expression::NOT(val)
     }
 }
 
@@ -58,7 +58,7 @@ impl From<NOT> for EExpression {
 pub struct Atomic {
     pub item: String,
 }
-impl Expression for Atomic {
+impl TExpression for Atomic {
     /// atomics evaluate as true if the input list contains the item
     fn eval(&self, items: &[String]) -> bool {
         // TODO wildcards
@@ -80,14 +80,14 @@ impl From<String> for Atomic {
 /// ALL evaluates as true if all expressions evaluate as true
 #[derive(Clone)]
 pub struct ALL {
-    pub expressions: Vec<EExpression>,
+    pub expressions: Vec<Expression>,
 }
 impl ALL {
-    pub fn new(expressions: Vec<EExpression>) -> Self {
+    pub fn new(expressions: Vec<Expression>) -> Self {
         Self { expressions }
     }
 }
-impl Expression for ALL {
+impl TExpression for ALL {
     /// ALL evaluates as true if all expressions evaluate as true
     fn eval(&self, items: &[String]) -> bool {
         let mut r = true;
@@ -105,14 +105,14 @@ impl Expression for ALL {
 /// ANY evaluates as true if any expressions evaluates as true
 #[derive(Clone)]
 pub struct ANY {
-    pub expressions: Vec<EExpression>,
+    pub expressions: Vec<Expression>,
 }
 impl ANY {
-    pub fn new(expressions: Vec<EExpression>) -> Self {
+    pub fn new(expressions: Vec<Expression>) -> Self {
         Self { expressions }
     }
 }
-impl Expression for ANY {
+impl TExpression for ANY {
     // ANY evaluate as true if any expressions evaluates as true
     fn eval(&self, items: &[String]) -> bool {
         let mut r = false;
@@ -129,7 +129,7 @@ impl Expression for ANY {
 /// The NOT expression
 /// NOT evaluates as true if the wrapped expression evaluates as true
 pub struct NOT {
-    pub expression: Box<EExpression>,
+    pub expression: Box<Expression>,
 }
 
 impl Clone for NOT {
@@ -140,13 +140,13 @@ impl Clone for NOT {
     }
 }
 impl NOT {
-    pub fn new(expression: EExpression) -> Self {
+    pub fn new(expression: Expression) -> Self {
         Self {
             expression: Box::new(expression),
         }
     }
 }
-impl Expression for NOT {
+impl TExpression for NOT {
     // NOT evaluates as true if the wrapped expression evaluates as true
     fn eval(&self, items: &[String]) -> bool {
         !self.expression.eval(items)
