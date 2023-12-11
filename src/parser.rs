@@ -29,7 +29,7 @@ where
 ///
 /// # Panics
 ///
-/// Panics if .
+/// Panics if TODO
 ///
 /// # Errors
 ///
@@ -41,19 +41,24 @@ where
     let mut rules: Vec<Rule> = vec![];
 
     // pre-parse into rule blocks
-    let mut chunk: Option<&[u8]> = None;
-
+    // TODO parallelize
+    let mut chunk: Option<Vec<u8>> = None;
     for line in reader.lines().flatten() {
-        // end chunk
         if chunk.is_some() && line.is_empty() {
+            // end chunk
             if let Some(chunk) = chunk.take() {
-                let chunk_reader = BufReader::new(chunk);
-                for rule in parse_chunk(chunk_reader) {
-                    rules.push(rule);
+                let chunk_reader = BufReader::new(chunk.as_slice());
+                if let Some(r) = parse_chunk(chunk_reader) {
+                    rules.extend(r);
                 }
             }
         } else {
-            // read
+            // read to chunk
+            if let Some(chunk) = &mut chunk {
+                chunk.extend(line.as_bytes());
+            } else {
+                chunk = Some(line.as_bytes().to_vec());
+            }
         }
     }
 
@@ -64,136 +69,131 @@ where
 ///
 /// # Panics
 ///
-/// Panics if TODO
-fn parse_chunk<R>(reader: R) -> Vec<Rule>
+/// Panics if .
+fn parse_chunk<R>(reader: R) -> Option<Vec<Rule>>
 where
     R: BufRead,
 {
-    let mut rules: Vec<Rule> = vec![];
-
-    // helpers for order rule
-    let mut orders: Vec<Vec<String>> = vec![];
-    let mut current_order: Vec<String> = vec![];
-
-    // todo scan directory for user files
-
-    let mut parsing = false;
     let mut current_rule: Option<Rule> = None;
-    // parse each line
+
+    // pre-parse rule name
+    // read the rest into a buffer
+    let mut buffer: Vec<String> = vec![];
+    let mut read_buffer = false;
     for line in reader.lines().flatten() {
-        // comments
+        let mut line = line.trim().to_owned();
+
+        // if the rule type has already been parsed we just copy the rest into a buffer for further parsing
+        if read_buffer {
+            buffer.push(line);
+            continue;
+        }
+
+        // ignore comments
         if line.starts_with(';') {
             continue;
         }
 
-        // HANDLE RULE END
-        // new empty lines end a rule block
-        if parsing && line.is_empty() {
-            //parsing = false;
-            if let Some(rule) = current_rule.take() {
-                // Order rule is handled separately
-                if let Rule::Order(_o) = rule {
-                    orders.push(current_order.to_owned());
-                    current_order.clear();
-                } else {
-                    rules.push(rule);
-                }
-            } else {
-                // error and abort
-                panic!("Parsing error: unknown empty new line");
-            }
-            // TODO check end of chunk and warn if not reached
-            break;
+        // Read the first non-comment line and expect a rule type
+
+        if line.starts_with("[Order]") {
+            // Order lines don't have in-line options
+            current_rule = Some(Rule::Order(Order::default()));
+            continue;
+        } else if line.starts_with("[Note") {
+            current_rule = Some(Rule::Note(Note::default()));
+            line = line["[Note".len()..].to_owned();
+        } else if line.starts_with("[Conflict") {
+            current_rule = Some(Rule::Conflict(Conflict::default()));
+            line = line["[Conflict".len()..].to_owned();
+        } else if line.starts_with("[Requires") {
+            current_rule = Some(Rule::Requires(Requires::default()));
+            line = line["[Requires".len()..].to_owned();
+        } else {
+            // TODO unknown rule
+            panic!("Parsing error: unknown rule");
         }
 
-        // HANDLE RULE START
-        // start order parsing
-        let mut r_line = line.trim().to_owned();
-        if !parsing {
-            // Order lines don't have in-line options
-            if r_line.starts_with("[Order]") {
-                current_rule = Some(Rule::Order(Order::default()));
-                //r_line = r_line["[Order]".len()..].to_owned();
-                continue;
-            } else if r_line.starts_with("[Note") {
-                current_rule = Some(Rule::Note(Note::default()));
-                r_line = r_line["[Note".len()..].to_owned();
-            } else if r_line.starts_with("[Conflict") {
-                current_rule = Some(Rule::Conflict(Conflict::default()));
-                r_line = r_line["[Conflict".len()..].to_owned();
-            } else if r_line.starts_with("[Requires") {
-                current_rule = Some(Rule::Requires(Requires::default()));
-                r_line = r_line["[Requires".len()..].to_owned();
-            } else {
-                // unknown rule
-                panic!("Parsing error: unknown rule");
+        // optional comment parser for rules of type [Note message] <body>
+        line = line.trim().to_owned();
+        let mut braket_cnt = 1;
+        let mut comment = "".to_owned();
+        for c in line.chars() {
+            if c == '[' {
+                braket_cnt += 1;
+            } else if c == ']' {
+                braket_cnt -= 1;
             }
-
-            // comment parser
-
-            r_line = r_line.trim().to_owned();
-            let mut braket_cnt = 1;
-            let mut comment = "".to_owned();
-            for c in r_line.chars() {
-                if c == '[' {
-                    braket_cnt += 1;
-                } else if c == ']' {
-                    braket_cnt -= 1;
-                }
-                if braket_cnt == 0 {
-                    // we reached the end
-                    break;
-                }
-                comment += c.to_string().as_str();
+            if braket_cnt == 0 {
+                // we reached the end
+                break;
             }
+            comment += c.to_string().as_str();
+        }
 
-            // rest of the line
-            r_line = r_line[&comment.len() + 1..].to_owned();
-            r_line = r_line.trim().to_owned();
-            if let Some(rule) = current_rule.as_mut() {
-                rule.set_comment(comment);
-            }
+        // rest of the line if anything
+        line = line[&comment.len() + 1..].to_owned();
+        line = line.trim().to_owned();
+        if let Some(rule) = current_rule.as_mut() {
+            rule.set_comment(comment);
+        }
+        if !line.is_empty() {
+            buffer.push(line);
+        }
+        read_buffer = true;
+    }
 
-            parsing = true;
+    // now parse rule body
+    // TODO make these methods of the rules
+    if let Some(rule) = current_rule {
+        return match rule {
+            Rule::Order(o) => parse_order_rule_body(o, buffer),
+            Rule::Note(n) => parse_note_rule_body(n, buffer),
+            Rule::Conflict(c) => parse_conflict_rule_body(c, buffer),
+            Rule::Requires(r) => parse_requires_rule_body(r, buffer),
+        };
+    }
+
+    None
+}
+
+fn parse_requires_rule_body(r: Requires, buffer: Vec<String>) -> Option<Vec<Rule>> {
+    todo!()
+}
+
+fn parse_conflict_rule_body(c: Conflict, buffer: Vec<String>) -> Option<Vec<Rule>> {
+    todo!()
+}
+
+fn parse_note_rule_body(n: Note, buffer: Vec<String>) -> Option<Vec<Rule>> {
+    todo!()
+}
+
+/// Parse an order rule, it can have up to N items
+fn parse_order_rule_body(current_rule: Order, buffer: Vec<String>) -> Option<Vec<Rule>> {
+    let mut orders: Vec<Vec<String>> = vec![];
+    let mut current_order: Vec<String> = vec![];
+
+    // a b c d
+    // parse each line
+    for line in buffer {
+        let r_line = line.trim().to_owned();
+
+        // ignore comments
+        if r_line.starts_with(';') {
+            continue;
         }
 
         // HANDLE RULE PARSE
-        // parse current rule
-        if parsing {
-            if let Some(current_rule) = &current_rule {
-                match current_rule {
-                    Rule::Order(_o) => {
-                        // tokenize
-                        for token in tokenize(r_line) {
-                            current_order.push(token);
-                        }
-                    }
-                    Rule::Note(_n) => {
-                        // parse rule
-                        // Syntax: [Note optional-message] expr-1 expr-2 ... expr-N
-                        // TODO alternative:
-                        // [Note]
-                        //  message
-                        // A.esp
-
-                        // subsequent lines are archive names
-
-                        // parse expressions
-                        todo!()
-                    }
-                    Rule::Conflict(_c) => {
-                        todo!()
-                    }
-                    Rule::Requires(_r) => {
-                        todo!()
-                    }
-                }
-            }
+        // each line gets tokenized
+        for token in tokenize(r_line) {
+            current_order.push(token);
         }
     }
     orders.push(current_order.to_owned());
 
     // process order rules
+    let mut rules: Vec<Rule> = vec![];
     for o in orders {
         match o.len().cmp(&2) {
             Ordering::Less => continue,
@@ -212,7 +212,7 @@ where
         }
     }
 
-    rules
+    Some(rules)
 }
 
 /// Splits a String into string tokens (either separated but whitespace or wrapped in quotation marks)
