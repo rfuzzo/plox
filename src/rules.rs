@@ -5,20 +5,22 @@ use crate::expressions::*;
 
 /// A rule as specified in the rules document
 pub trait TRule {
-    // every rule may have a comment describing why it failed
+    /// every rule may have a comment describing why it failed
     fn get_comment(&self) -> &str;
     fn set_comment(&mut self, comment: String);
-    // every rule may be evaluated
+    /// every rule may be evaluated
     fn eval(&self, items: &[String]) -> bool;
+    /// parse a rule from a string blob
+    fn parse(&mut self, buffer: Vec<u8>);
 }
 
+#[derive(Debug)]
 pub enum Rule {
     Order(Order), // TODO refactor this into a rule?
     Note(Note),
     Conflict(Conflict),
     Requires(Requires),
 }
-
 impl TRule for Rule {
     fn get_comment(&self) -> &str {
         match self {
@@ -46,6 +48,15 @@ impl TRule for Rule {
             Rule::Requires(o) => o.eval(items),
         }
     }
+
+    fn parse(&mut self, buffer: Vec<u8>) {
+        match self {
+            Rule::Order(o) => o.parse(buffer),
+            Rule::Note(o) => o.parse(buffer),
+            Rule::Conflict(o) => o.parse(buffer),
+            Rule::Requires(o) => o.parse(buffer),
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -54,7 +65,7 @@ impl TRule for Rule {
 
 /// The Note Rule <Note for A>
 /// Notes simply check the expression and notify the user if eval is true
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Debug)]
 pub struct Order {
     pub name_a: String,
     pub name_b: String,
@@ -75,11 +86,13 @@ impl TRule for Order {
     fn eval(&self, _items: &[String]) -> bool {
         false
     }
+
+    fn parse(&mut self, _buffer: Vec<u8>) {}
 }
 
 /// The Note Rule <Note for A>
 /// The [Note] rule prints the given message when any of the following expressions is true.
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Debug)]
 pub struct Note {
     pub comment: String,
     pub expressions: Vec<Expression>,
@@ -109,11 +122,101 @@ impl TRule for Note {
         }
         false
     }
+
+    fn parse(&mut self, buffer: Vec<u8>) {
+        // e.g. [ALL A.esp [NOT X.esp]]
+        let mut expressions: Vec<Expression> = vec![];
+
+        // chunk into expressions
+        let mut expression_buffer: Vec<u8> = vec![];
+        let mut expr: Option<Expression> = None;
+        let mut cnt = 0;
+        let mut parsing_expression_name = false;
+        let mut expression_name = "".to_owned();
+
+        for b in buffer {
+            // only focus on the expression name
+            if parsing_expression_name {
+                // parse name
+                if !expression_name.is_empty() && (b as char) == ' ' {
+                    // end
+                    parsing_expression_name = false;
+                    match expression_name.as_str() {
+                        "ANY" => expr = Some(ANY::default().into()),
+                        "ALL" => expr = Some(ALL::default().into()),
+                        "NOT" => expr = Some(NOT::default().into()),
+                        _ => {}
+                    }
+                    expression_name.clear();
+                } else {
+                    expression_name += (b as char).to_string().as_str();
+                }
+                continue;
+            }
+
+            // match generic
+            match b as char {
+                '[' => {
+                    // start an expression
+                    cnt += 1;
+                    // checks if we're parsing an expression currently
+                    if expr.is_none() {
+                        parsing_expression_name = true;
+                        continue;
+                    }
+                }
+                ']' => {
+                    // decrease expression layer counter
+                    cnt -= 1;
+                    if cnt == 0 {
+                        // reached end of an expression, now parse it)
+                        let mut expr = expr.take().expect("Parser error");
+                        expr.parse(expression_buffer.clone());
+                        expressions.push(expr);
+                        expression_buffer.clear();
+                        continue;
+                    }
+
+                    expression_buffer.push(b);
+                }
+                _ => {
+                    // just a token
+                    if let Some(e) = &expr {
+                        // for atomic we check if a whitespace occurs
+                        if let Expression::Atomic(_) = e {
+                            // end atomic token
+                            // TODO tokenize
+                            if (b as char) == ' ' || (b as char) == '\n' {
+                                let mut aa = expr.take().unwrap();
+                                aa.parse(expression_buffer.clone());
+                                expressions.push(aa);
+                                expression_buffer.clear();
+                                continue;
+                            }
+                        }
+                    } else {
+                        expr = Some(Atomic::default().into());
+                    }
+
+                    expression_buffer.push(b);
+                }
+            }
+        }
+        // last expression, can only happen for atomics
+        if let Some(mut e) = expr.take() {
+            e.parse(expression_buffer.clone());
+            expressions.push(e);
+            expression_buffer.clear();
+        }
+
+        // add all parsed expressions
+        self.expressions = expressions;
+    }
 }
 
 /// The Conflict Rule <A conflicts with B>
 /// Conflicts evaluate as true if both expressions evaluate as true
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Debug)]
 pub struct Conflict {
     pub comment: String,
     // todo: make first atomic?
@@ -145,11 +248,14 @@ impl TRule for Conflict {
         }
         false
     }
+    fn parse(&mut self, _buffer: Vec<u8>) {
+        todo!()
+    }
 }
 
 /// The Require Rule <A requires B>
 /// Requires evaluates as true if A is true and B is not true
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Debug)]
 pub struct Requires {
     pub comment: String,
     // todo: make first atomic?
@@ -180,5 +286,8 @@ impl TRule for Requires {
             }
         }
         false
+    }
+    fn parse(&mut self, _buffer: Vec<u8>) {
+        todo!()
     }
 }

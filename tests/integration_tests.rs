@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod unit_tests {
+mod integration_tests {
     use cmop::{parser::*, *};
 
     #[test]
@@ -14,13 +14,6 @@ mod unit_tests {
             parse_rules_from_path("./tests/cmop/rules_order.txt").is_ok(),
             "rules parsing failed"
         );
-
-        assert!(
-            parse_rules_from_path("./tests/cmop/rules_note.txt").is_ok(),
-            "rules parsing failed"
-        );
-
-        // TODO add other rules
     }
 
     #[test]

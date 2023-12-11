@@ -29,3 +29,29 @@ c
 [ALL A.archive [NOT X.archive]]
 [ANY B.archive 7.archive]
 [ALL C.archive elephant.archive potato.archive]
+
+[Note message]
+Assassins Armory - Arrows.esp
+[ANY AreaEffectArrows XB Edition.esp
+  AreaEffectArrows.esp]
+
+[Note message]
+[ALL A.esp [NOT X.esp]]
+
+[Note message]
+[ALL A.esp [NOT X.esp]]
+[ANY B.esp 7.esp]
+[ALL C.esp elephant.esp potato.esp]
+
+[Note message]
+[ALL A.esp
+  [NOT X.esp]]
+
+[Note]
+ message
+ more message
+[ALL [ANY A.esp]
+  [NOT X.esp]]
+
+[Note]
+[ALL [ANY A.esp] [NOT X.esp]]

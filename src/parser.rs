@@ -56,9 +56,18 @@ where
             // read to chunk
             if let Some(chunk) = &mut chunk {
                 chunk.extend(line.as_bytes());
+                chunk.push(b'\n');
             } else {
-                chunk = Some(line.as_bytes().to_vec());
+                let delimited_line = line + "\n";
+                chunk = Some(delimited_line.as_bytes().to_vec());
             }
+        }
+    }
+    // parse last chunk
+    if let Some(chunk) = chunk.take() {
+        let chunk_reader = BufReader::new(chunk.as_slice());
+        if let Some(r) = parse_chunk(chunk_reader) {
+            rules.extend(r);
         }
     }
 
@@ -78,14 +87,13 @@ where
 
     // pre-parse rule name
     // read the rest into a buffer
-    let mut buffer: Vec<String> = vec![];
+    let mut lines: Vec<String> = vec![];
     let mut read_buffer = false;
     for line in reader.lines().flatten() {
-        let mut line = line.trim().to_owned();
-
+        let mut line = line.to_owned();
         // if the rule type has already been parsed we just copy the rest into a buffer for further parsing
         if read_buffer {
-            buffer.push(line);
+            lines.push(line);
             continue;
         }
 
@@ -99,6 +107,7 @@ where
         if line.starts_with("[Order]") {
             // Order lines don't have in-line options
             current_rule = Some(Rule::Order(Order::default()));
+            read_buffer = true;
             continue;
         } else if line.starts_with("[Note") {
             current_rule = Some(Rule::Note(Note::default()));
@@ -138,7 +147,7 @@ where
             rule.set_comment(comment);
         }
         if !line.is_empty() {
-            buffer.push(line);
+            lines.push(line);
         }
         read_buffer = true;
     }
@@ -146,35 +155,73 @@ where
     // now parse rule body
     // TODO make these methods of the rules
     if let Some(rule) = current_rule {
-        return match rule {
-            Rule::Order(o) => parse_order_rule_body(o, buffer),
-            Rule::Note(n) => parse_note_rule_body(n, buffer),
-            Rule::Conflict(c) => parse_conflict_rule_body(c, buffer),
-            Rule::Requires(r) => parse_requires_rule_body(r, buffer),
+        match rule {
+            // Order rules don't have comments and no expressions so we can just parse them individually
+            Rule::Order(o) => return parse_order_rule(o, lines),
+            mut x => {
+                // pre-parse comments
+                let buffer = pre_parse_comment(&mut x, lines);
+                x.parse(buffer);
+                return Some(vec![x]);
+            }
         };
     }
 
     None
 }
 
-fn parse_requires_rule_body(r: Requires, buffer: Vec<String>) -> Option<Vec<Rule>> {
-    todo!()
-}
+/// Reads the first comment lines of a rule chunk and returns the rest as byte buffer
+fn pre_parse_comment(rule: &mut Rule, body: Vec<String>) -> Vec<u8> {
+    // the first lines starting with a whitespace may be comments
+    let mut read_comment = false;
+    let mut comment = "".to_owned();
+    let mut is_first_line = true;
+    let mut buffer: Vec<u8> = vec![];
+    for line in body {
+        // ignore comments
+        if line.starts_with(';') {
+            continue;
+        }
 
-fn parse_conflict_rule_body(c: Conflict, buffer: Vec<String>) -> Option<Vec<Rule>> {
-    todo!()
-}
+        // handle rule comments
+        if is_first_line && line.starts_with(' ') {
+            read_comment = true;
+            comment += line.trim_start();
+            is_first_line = false;
+            continue;
+        }
+        is_first_line = false;
+        if read_comment {
+            match line.starts_with(' ') {
+                true => {
+                    comment += line.trim_start();
+                    continue;
+                }
+                false => {
+                    read_comment = false;
+                    buffer.extend(line.as_bytes());
+                    buffer.push(b'\n');
+                    continue; // pre-parsing finished, read the rest into a binary buffer
+                }
+            }
+        } else {
+            buffer.extend(line.as_bytes());
+            buffer.push(b'\n');
+        }
+    }
 
-fn parse_note_rule_body(n: Note, buffer: Vec<String>) -> Option<Vec<Rule>> {
-    todo!()
+    // TODO override inline comment with multi-line comment
+    if !comment.is_empty() {
+        rule.set_comment(comment);
+    }
+
+    buffer
 }
 
 /// Parse an order rule, it can have up to N items
-fn parse_order_rule_body(current_rule: Order, buffer: Vec<String>) -> Option<Vec<Rule>> {
-    let mut orders: Vec<Vec<String>> = vec![];
-    let mut current_order: Vec<String> = vec![];
+fn parse_order_rule(_rule: Order, buffer: Vec<String>) -> Option<Vec<Rule>> {
+    let mut order: Vec<String> = vec![];
 
-    // a b c d
     // parse each line
     for line in buffer {
         let r_line = line.trim().to_owned();
@@ -187,27 +234,25 @@ fn parse_order_rule_body(current_rule: Order, buffer: Vec<String>) -> Option<Vec
         // HANDLE RULE PARSE
         // each line gets tokenized
         for token in tokenize(r_line) {
-            current_order.push(token);
+            order.push(token);
         }
     }
-    orders.push(current_order.to_owned());
 
     // process order rules
     let mut rules: Vec<Rule> = vec![];
-    for o in orders {
-        match o.len().cmp(&2) {
-            Ordering::Less => continue,
-            Ordering::Equal => {
-                rules.push(Rule::Order(Order::new(o[0].to_owned(), o[1].to_owned())))
-            }
-            Ordering::Greater => {
-                // add all pairs
-                for i in 0..o.len() - 1 {
-                    rules.push(Rule::Order(Order::new(
-                        o[i].to_owned(),
-                        o[i + 1].to_owned(),
-                    )));
-                }
+    match order.len().cmp(&2) {
+        Ordering::Less => {}
+        Ordering::Equal => rules.push(Rule::Order(Order::new(
+            order[0].to_owned(),
+            order[1].to_owned(),
+        ))),
+        Ordering::Greater => {
+            // add all pairs
+            for i in 0..order.len() - 1 {
+                rules.push(Rule::Order(Order::new(
+                    order[i].to_owned(),
+                    order[i + 1].to_owned(),
+                )));
             }
         }
     }
@@ -233,9 +278,16 @@ pub fn tokenize(line: String) -> Vec<String> {
                 is_quoted = true;
             }
         } else if c == ' ' {
-            // end token
-            tokens.push(current_token.to_owned());
-            current_token.clear();
+            // ignore whitespace in quoted segments
+            if !is_quoted {
+                // end token
+                if !current_token.is_empty() {
+                    tokens.push(current_token.to_owned());
+                    current_token.clear();
+                }
+            } else {
+                current_token += c.to_string().as_str();
+            }
         } else {
             // read into token
             current_token += c.to_string().as_str();

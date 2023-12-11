@@ -5,14 +5,21 @@
 // An expression may be evaluated against a load order
 pub trait TExpression {
     fn eval(&self, items: &[String]) -> bool;
+    fn parse(&mut self, buffer: Vec<u8>);
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum Expression {
     Atomic(Atomic),
     ALL(ALL),
     ANY(ANY),
     NOT(NOT),
+}
+impl Expression {
+    fn default() -> Expression {
+        // TODO that's kinda dumb
+        Atomic::default().into()
+    }
 }
 
 // pass-through
@@ -23,6 +30,14 @@ impl TExpression for Expression {
             Expression::ALL(all) => all.eval(items),
             Expression::ANY(any) => any.eval(items),
             Expression::NOT(not) => not.eval(items),
+        }
+    }
+    fn parse(&mut self, buffer: Vec<u8>) {
+        match self {
+            Expression::Atomic(x) => x.parse(buffer),
+            Expression::ALL(x) => x.parse(buffer),
+            Expression::ANY(x) => x.parse(buffer),
+            Expression::NOT(x) => x.parse(buffer),
         }
     }
 }
@@ -54,15 +69,30 @@ impl From<NOT> for Expression {
 
 /// The atomic expression (EXISTS)
 /// atomics evaluate as true if the input list contains the item
-#[derive(Clone)]
+#[derive(Default, Clone, Debug)]
 pub struct Atomic {
     pub item: String,
+}
+
+impl Atomic {
+    pub fn get_item(&self) -> String {
+        self.item.to_owned()
+    }
 }
 impl TExpression for Atomic {
     /// atomics evaluate as true if the input list contains the item
     fn eval(&self, items: &[String]) -> bool {
         // TODO wildcards
         items.contains(&self.item)
+    }
+
+    fn parse(&mut self, buffer: Vec<u8>) {
+        // just read the buffer as string
+        if let Ok(string) = String::from_utf8(buffer) {
+            self.item = string;
+        } else {
+            // TODO panic
+        }
     }
 }
 impl From<&str> for Atomic {
@@ -78,7 +108,7 @@ impl From<String> for Atomic {
 
 /// The ALL expression
 /// ALL evaluates as true if all expressions evaluate as true
-#[derive(Clone)]
+#[derive(Default, Clone, Debug)]
 pub struct ALL {
     pub expressions: Vec<Expression>,
 }
@@ -99,11 +129,14 @@ impl TExpression for ALL {
             });
         r
     }
+    fn parse(&mut self, _buffer: Vec<u8>) {
+        todo!()
+    }
 }
 
 /// The ANY expression
 /// ANY evaluates as true if any expressions evaluates as true
-#[derive(Clone)]
+#[derive(Default, Clone, Debug)]
 pub struct ANY {
     pub expressions: Vec<Expression>,
 }
@@ -124,12 +157,24 @@ impl TExpression for ANY {
             });
         r
     }
+    fn parse(&mut self, _buffer: Vec<u8>) {
+        todo!()
+    }
 }
 
 /// The NOT expression
 /// NOT evaluates as true if the wrapped expression evaluates as true
+#[derive(Debug)]
 pub struct NOT {
     pub expression: Box<Expression>,
+}
+
+impl Default for NOT {
+    fn default() -> Self {
+        Self {
+            expression: Box::new(Expression::default()),
+        }
+    }
 }
 
 impl Clone for NOT {
@@ -150,5 +195,8 @@ impl TExpression for NOT {
     // NOT evaluates as true if the wrapped expression evaluates as true
     fn eval(&self, items: &[String]) -> bool {
         !self.expression.eval(items)
+    }
+    fn parse(&mut self, _buffer: Vec<u8>) {
+        todo!()
     }
 }

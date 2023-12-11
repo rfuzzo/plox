@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod unit_rules_tests {
+mod unit_tests {
     use cmop::{expressions::*, rules::*};
 
     #[test]
