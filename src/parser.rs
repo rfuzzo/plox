@@ -48,7 +48,7 @@ where
             // end chunk
             if let Some(chunk) = chunk.take() {
                 let chunk_reader = BufReader::new(chunk.as_slice());
-                if let Some(r) = parse_chunk(chunk_reader) {
+                if let Some(r) = pre_parse_chunk(chunk_reader) {
                     rules.extend(r);
                 }
             }
@@ -66,7 +66,7 @@ where
     // parse last chunk
     if let Some(chunk) = chunk.take() {
         let chunk_reader = BufReader::new(chunk.as_slice());
-        if let Some(r) = parse_chunk(chunk_reader) {
+        if let Some(r) = pre_parse_chunk(chunk_reader) {
             rules.extend(r);
         }
     }
@@ -79,7 +79,7 @@ where
 /// # Panics
 ///
 /// Panics if .
-fn parse_chunk<R>(reader: R) -> Option<Vec<Rule>>
+fn pre_parse_chunk<R>(reader: R) -> Option<Vec<Rule>>
 where
     R: BufRead,
 {
@@ -292,6 +292,10 @@ pub fn tokenize(line: String) -> Vec<String> {
             // read into token
             current_token += c.to_string().as_str();
         }
+    }
+
+    if !current_token.is_empty() {
+        tokens.push(current_token.to_owned());
     }
 
     tokens

@@ -5,6 +5,25 @@ mod unit_tests {
     use cmop::{expressions::*, parser::*, rules::*};
 
     #[test]
+    fn test_tokenize() {
+        {
+            let input = " a \"mod with spaces.archive\" \"c\"";
+            let expected = ["a", "mod with spaces.archive", "c"];
+            assert_eq!(expected, tokenize(input.to_owned()).as_slice());
+        }
+
+        {
+            let input = "a";
+            let expected = ["a"];
+            assert_eq!(expected, tokenize(input.to_owned()).as_slice());
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////
+    /// NOTE
+    ////////////////////////////////////////////////////////////////////////
+
+    #[test]
     fn test_inline_note() {
         let input = "[Note message] a b c".to_owned();
         let reader = BufReader::new(input.as_bytes());
@@ -101,12 +120,28 @@ mod unit_tests {
     }
      */
 
+    ////////////////////////////////////////////////////////////////////////
+    /// ORDER
+    ////////////////////////////////////////////////////////////////////////
+
     #[test]
-    fn test_tokenize() {
-        {
-            let input = " a \"mod with spaces.archive\" \"c\"";
-            let expected = ["a", "mod with spaces.archive", "c"];
-            assert_eq!(expected, tokenize(input.to_owned()).as_slice());
+    fn test_multiline_order() {
+        let input = "[Order]\na\nb\nc".to_owned();
+        let reader = BufReader::new(input.as_bytes());
+
+        let rules = parse_rules_from_reader(reader).expect("Failed to parse rule");
+        assert_eq!(2, rules.len());
+
+        let mut rule = rules.first().expect("No rules found");
+        if let Rule::Order(n) = rule {
+            assert_eq!("a", n.name_a.as_str());
+            assert_eq!("b", n.name_b.as_str());
+        }
+
+        rule = rules.get(1).expect("No rules found");
+        if let Rule::Order(n) = rule {
+            assert_eq!("b", n.name_a.as_str());
+            assert_eq!("c", n.name_b.as_str());
         }
     }
 }

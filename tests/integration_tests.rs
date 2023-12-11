@@ -9,14 +9,6 @@ mod integration_tests {
     }
 
     #[test]
-    fn test_parse_rules() {
-        assert!(
-            parse_rules_from_path("./tests/cmop/rules_order.txt").is_ok(),
-            "rules parsing failed"
-        );
-    }
-
-    #[test]
     fn test_verify_rules() {
         let rules =
             parse_rules_from_path("./tests/cmop/rules_order.txt").expect("rule parse failed");
