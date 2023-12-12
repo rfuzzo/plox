@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod unit_tests {
-    use std::io::BufReader;
+    use std::io::Cursor;
 
     use cmop::{expressions::*, parser::*, rules::*};
 
@@ -26,7 +26,7 @@ mod unit_tests {
     #[test]
     fn test_inline_note() {
         let input = "[Note message] a b c".to_owned();
-        let reader = BufReader::new(input.as_bytes());
+        let reader = Cursor::new(input.as_bytes());
 
         let rules = parse_rules_from_reader(reader).expect("Failed to parse rule");
         assert_eq!(1, rules.len());
@@ -47,7 +47,7 @@ mod unit_tests {
     #[test]
     fn test_multiline_note() {
         let input = "[Note message]\na\nb\nc".to_owned();
-        let reader = BufReader::new(input.as_bytes());
+        let reader = Cursor::new(input.as_bytes());
 
         let rules = parse_rules_from_reader(reader).expect("Failed to parse rule");
         assert_eq!(1, rules.len());
@@ -68,7 +68,7 @@ mod unit_tests {
     #[test]
     fn test_multiline_note_with_comment() {
         let input = "[Note]\n message\na\nb\nc";
-        let reader = BufReader::new(input.as_bytes());
+        let reader = Cursor::new(input.as_bytes());
 
         let rules = parse_rules_from_reader(reader).expect("Failed to parse rule");
         assert_eq!(1, rules.len());
@@ -90,7 +90,7 @@ mod unit_tests {
     #[test]
     fn test_split_note() {
         let input = "[Note]\na b c.archive\nb";
-        let reader = BufReader::new(input.as_bytes());
+        let reader = Cursor::new(input.as_bytes());
 
         let rules = parse_rules_from_reader(reader).expect("Failed to parse rule");
         assert_eq!(1, rules.len());
@@ -127,7 +127,7 @@ mod unit_tests {
     #[test]
     fn test_multiline_order() {
         let input = "[Order]\na\nb\nc".to_owned();
-        let reader = BufReader::new(input.as_bytes());
+        let reader = Cursor::new(input.as_bytes());
 
         let rules = parse_rules_from_reader(reader).expect("Failed to parse rule");
         assert_eq!(2, rules.len());

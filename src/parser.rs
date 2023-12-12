@@ -2,11 +2,11 @@
 /// PARSER
 ////////////////////////////////////////////////////////////////////////
 use std::cmp::Ordering;
-
 use std::fs::File;
-use std::io::{self, Read};
-use std::io::{BufRead, BufReader};
+use std::io::{self, BufRead, BufReader, Cursor, Error, ErrorKind, Read, Seek};
 use std::path::Path;
+
+use byteorder::ReadBytesExt;
 
 use crate::rules::*;
 
@@ -36,39 +36,44 @@ where
 /// This function will return an error if .
 pub fn parse_rules_from_reader<R>(reader: R) -> io::Result<Vec<Rule>>
 where
-    R: Read + BufRead,
+    R: Read + BufRead + Seek,
 {
-    let mut rules: Vec<Rule> = vec![];
-
     // pre-parse into rule blocks
-    // TODO parallelize
+    let mut chunks: Vec<Vec<u8>> = vec![];
     let mut chunk: Option<Vec<u8>> = None;
     for line in reader.lines().flatten() {
-        if chunk.is_some() && line.is_empty() {
+        // ignore comments
+        if line.trim_start().starts_with(';') {
+            continue;
+        }
+
+        if chunk.is_some() && line.trim().is_empty() {
             // end chunk
             if let Some(chunk) = chunk.take() {
-                let chunk_reader = BufReader::new(chunk.as_slice());
-                if let Some(r) = pre_parse_chunk(chunk_reader) {
-                    rules.extend(r);
-                }
+                chunks.push(chunk);
             }
         } else {
-            // read to chunk
+            // read to chunk, preserving newline delimeters
+            let delimited_line = line + "\n";
             if let Some(chunk) = &mut chunk {
-                chunk.extend(line.as_bytes());
-                chunk.push(b'\n');
+                chunk.extend(delimited_line.as_bytes());
             } else {
-                let delimited_line = line + "\n";
                 chunk = Some(delimited_line.as_bytes().to_vec());
             }
         }
     }
     // parse last chunk
     if let Some(chunk) = chunk.take() {
-        let chunk_reader = BufReader::new(chunk.as_slice());
-        if let Some(r) = pre_parse_chunk(chunk_reader) {
-            rules.extend(r);
-        }
+        chunks.push(chunk);
+    }
+
+    // process chunks
+    // TODO parallelize
+    let mut rules: Vec<Rule> = vec![];
+    for chunk in chunks {
+        let cursor = Cursor::new(chunk);
+        let parsed = parse_chunk(cursor)?;
+        rules.extend(parsed);
     }
 
     Ok(rules)
@@ -79,161 +84,111 @@ where
 /// # Panics
 ///
 /// Panics if .
-fn pre_parse_chunk<R>(reader: R) -> Option<Vec<Rule>>
+fn parse_chunk<R>(mut reader: R) -> io::Result<Vec<Rule>>
 where
-    R: BufRead,
+    R: Read + BufRead + Seek,
 {
-    let mut current_rule: Option<Rule> = None;
+    // read first char
+    let start = reader.read_u8()? as char;
+    match start {
+        '[' => {
+            // start parsing
+            let mut buf = vec![];
+            let _ = reader.read_until(b']', &mut buf)?;
+            if let Ok(line) = String::from_utf8(buf[..buf.len() - 1].to_vec()) {
+                // parse rule name
+                let rule: Rule;
+                if line.strip_prefix("Order").is_some() {
+                    // Order lines don't have in-line options
+                    rule = Order::default().into();
+                } else if let Some(rest) = line.strip_prefix("Note") {
+                    let mut x = Note::default();
+                    x.set_comment(rest.trim().to_owned());
+                    rule = x.into();
+                } else if let Some(rest) = line.strip_prefix("Conflict") {
+                    let mut x = Conflict::default();
+                    x.set_comment(rest.trim().to_owned());
+                    rule = x.into();
+                } else if let Some(rest) = line.strip_prefix("Requires") {
+                    let mut x = Requires::default();
+                    x.set_comment(rest.trim().to_owned());
+                    rule = x.into();
+                } else {
+                    // TODO unknown rule
+                    return Err(Error::new(ErrorKind::Other, "Parsing error: unknown rule"));
+                }
 
-    // pre-parse rule name
-    // read the rest into a buffer
-    let mut lines: Vec<String> = vec![];
-    let mut read_buffer = false;
-    for line in reader.lines().flatten() {
-        let mut line = line.to_owned();
-        // if the rule type has already been parsed we just copy the rest into a buffer for further parsing
-        if read_buffer {
-            lines.push(line);
-            continue;
-        }
+                // parse buffer
+                // some ad-hoc fixes because we have inline-rules
+                let mut lin = String::new();
+                reader.read_line(&mut lin)?;
+                lin = lin.trim_start().to_owned();
 
-        // ignore comments
-        if line.starts_with(';') {
-            continue;
-        }
+                if !lin.is_empty() {
+                    // if the line is not empty we have an inline expression and we need to trim and read back to buffer
+                    reader.seek(io::SeekFrom::Current(-(lin.len() as i64)))?;
+                }
 
-        // Read the first non-comment line and expect a rule type
+                let mut body = vec![];
+                reader.read_to_end(&mut body)?;
+                let body_cursor = Cursor::new(body);
 
-        if line.starts_with("[Order]") {
-            // Order lines don't have in-line options
-            current_rule = Some(Rule::Order(Order::default()));
-            read_buffer = true;
-            continue;
-        } else if line.starts_with("[Note") {
-            current_rule = Some(Rule::Note(Note::default()));
-            line = line["[Note".len()..].to_owned();
-        } else if line.starts_with("[Conflict") {
-            current_rule = Some(Rule::Conflict(Conflict::default()));
-            line = line["[Conflict".len()..].to_owned();
-        } else if line.starts_with("[Requires") {
-            current_rule = Some(Rule::Requires(Requires::default()));
-            line = line["[Requires".len()..].to_owned();
-        } else {
-            // TODO unknown rule
-            panic!("Parsing error: unknown rule");
-        }
-
-        // optional comment parser for rules of type [Note message] <body>
-        line = line.trim().to_owned();
-        let mut braket_cnt = 1;
-        let mut comment = "".to_owned();
-        for c in line.chars() {
-            if c == '[' {
-                braket_cnt += 1;
-            } else if c == ']' {
-                braket_cnt -= 1;
+                // now parse rule body
+                match rule {
+                    // Order rules don't have comments and no expressions so we can just parse them individually
+                    Rule::Order(_) => parse_order_rule(body_cursor),
+                    mut x => {
+                        let r = x.parse(body_cursor)?;
+                        Ok(vec![r])
+                    }
+                }
+            } else {
+                // TODO return
+                Err(Error::new(ErrorKind::Other, "Parsing error: unknown rule"))
             }
-            if braket_cnt == 0 {
-                // we reached the end
-                break;
-            }
-            comment += c.to_string().as_str();
         }
-
-        // rest of the line if anything
-        line = line[&comment.len() + 1..].to_owned();
-        line = line.trim().to_owned();
-        if let Some(rule) = current_rule.as_mut() {
-            rule.set_comment(comment);
+        _ => {
+            // error
+            Err(Error::new(
+                ErrorKind::Other,
+                "Parsing error: Not a rule start",
+            ))
         }
-        if !line.is_empty() {
-            lines.push(line);
-        }
-        read_buffer = true;
     }
-
-    // now parse rule body
-    // TODO make these methods of the rules
-    if let Some(rule) = current_rule {
-        match rule {
-            // Order rules don't have comments and no expressions so we can just parse them individually
-            Rule::Order(o) => return parse_order_rule(o, lines),
-            mut x => {
-                // pre-parse comments
-                let buffer = pre_parse_comment(&mut x, lines);
-                x.parse(buffer);
-                return Some(vec![x]);
-            }
-        };
-    }
-
-    None
 }
 
 /// Reads the first comment lines of a rule chunk and returns the rest as byte buffer
-fn pre_parse_comment(rule: &mut Rule, body: Vec<String>) -> Vec<u8> {
-    // the first lines starting with a whitespace may be comments
-    let mut read_comment = false;
-    let mut comment = "".to_owned();
-    let mut is_first_line = true;
-    let mut buffer: Vec<u8> = vec![];
-    for line in body {
-        // ignore comments
-        if line.starts_with(';') {
-            continue;
-        }
-
-        // handle rule comments
-        if is_first_line && line.starts_with(' ') {
-            read_comment = true;
-            comment += line.trim_start();
-            is_first_line = false;
-            continue;
-        }
-        is_first_line = false;
-        if read_comment {
-            match line.starts_with(' ') {
-                true => {
-                    comment += line.trim_start();
-                    continue;
-                }
-                false => {
-                    read_comment = false;
-                    buffer.extend(line.as_bytes());
-                    buffer.push(b'\n');
-                    continue; // pre-parsing finished, read the rest into a binary buffer
-                }
-            }
-        } else {
-            buffer.extend(line.as_bytes());
-            buffer.push(b'\n');
-        }
+pub fn read_comment<R: Read + BufRead + Seek>(reader: &mut R) -> io::Result<Option<String>> {
+    // a line starting with a whitespace may be a comment
+    if reader.read_u8()? as char != ' ' {
+        reader.seek(io::SeekFrom::Current(-1))?;
+        return Ok(None);
     }
 
-    // TODO override inline comment with multi-line comment
-    if !comment.is_empty() {
-        rule.set_comment(comment);
+    // this is a comment
+    let mut line = String::new();
+    reader.read_line(&mut line)?;
+    let mut comment = line.trim().to_owned();
+
+    if let Ok(Some(c)) = read_comment(reader) {
+        comment += c.as_str();
     }
 
-    buffer
+    Ok(Some(comment))
 }
 
 /// Parse an order rule, it can have up to N items
-fn parse_order_rule(_rule: Order, buffer: Vec<String>) -> Option<Vec<Rule>> {
+fn parse_order_rule<R>(reader: R) -> io::Result<Vec<Rule>>
+where
+    R: Read + BufRead,
+{
     let mut order: Vec<String> = vec![];
 
     // parse each line
-    for line in buffer {
-        let r_line = line.trim().to_owned();
-
-        // ignore comments
-        if r_line.starts_with(';') {
-            continue;
-        }
-
+    for line in reader.lines().flatten().map(|l| l.trim().to_owned()) {
         // HANDLE RULE PARSE
         // each line gets tokenized
-        for token in tokenize(r_line) {
+        for token in tokenize(line) {
             order.push(token);
         }
     }
@@ -257,7 +212,7 @@ fn parse_order_rule(_rule: Order, buffer: Vec<String>) -> Option<Vec<Rule>> {
         }
     }
 
-    Some(rules)
+    Ok(rules)
 }
 
 /// Splits a String into string tokens (either separated but whitespace or wrapped in quotation marks)

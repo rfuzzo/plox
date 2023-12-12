@@ -1,7 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
 /// RULES
 ////////////////////////////////////////////////////////////////////////
-use crate::expressions::*;
+use std::io::{BufRead, Error, ErrorKind, Read, Result, Seek};
+
+use crate::{expressions::*, parser::*};
 
 /// A rule as specified in the rules document
 pub trait TRule {
@@ -11,10 +13,10 @@ pub trait TRule {
     /// every rule may be evaluated
     fn eval(&self, items: &[String]) -> bool;
     /// parse a rule from a string blob
-    fn parse(&mut self, buffer: Vec<u8>);
+    fn parse<R: Read + BufRead + Seek>(&mut self, reader: R) -> Result<Rule>;
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Rule {
     Order(Order), // TODO refactor this into a rule?
     Note(Note),
@@ -49,13 +51,35 @@ impl TRule for Rule {
         }
     }
 
-    fn parse(&mut self, buffer: Vec<u8>) {
+    fn parse<R: Read + BufRead + Seek>(&mut self, reader: R) -> Result<Rule> {
         match self {
-            Rule::Order(o) => o.parse(buffer),
-            Rule::Note(o) => o.parse(buffer),
-            Rule::Conflict(o) => o.parse(buffer),
-            Rule::Requires(o) => o.parse(buffer),
+            Rule::Order(o) => o.parse(reader),
+            Rule::Note(o) => o.parse(reader),
+            Rule::Conflict(o) => o.parse(reader),
+            Rule::Requires(o) => o.parse(reader),
         }
+    }
+}
+
+// conversions
+impl From<Order> for Rule {
+    fn from(val: Order) -> Self {
+        Rule::Order(val)
+    }
+}
+impl From<Note> for Rule {
+    fn from(val: Note) -> Self {
+        Rule::Note(val)
+    }
+}
+impl From<Conflict> for Rule {
+    fn from(val: Conflict) -> Self {
+        Rule::Conflict(val)
+    }
+}
+impl From<Requires> for Rule {
+    fn from(val: Requires) -> Self {
+        Rule::Requires(val)
     }
 }
 
@@ -87,7 +111,9 @@ impl TRule for Order {
         false
     }
 
-    fn parse(&mut self, _buffer: Vec<u8>) {}
+    fn parse<R: Read + BufRead>(&mut self, _reader: R) -> Result<Rule> {
+        Err(Error::new(ErrorKind::Other, "Parsing error: unknown rule"))
+    }
 }
 
 /// The Note Rule <Note for A>
@@ -123,7 +149,7 @@ impl TRule for Note {
         false
     }
 
-    fn parse(&mut self, buffer: Vec<u8>) {
+    fn parse<R: Read + BufRead + Seek>(&mut self, mut reader: R) -> Result<Rule> {
         // e.g. [ALL A.esp [NOT X.esp]]
         let mut expressions: Vec<Expression> = vec![];
 
@@ -134,6 +160,12 @@ impl TRule for Note {
         let mut parsing_expression_name = false;
         let mut expression_name = "".to_owned();
 
+        if let Ok(Some(comment)) = read_comment(&mut reader) {
+            self.set_comment(comment);
+        }
+
+        let mut buffer = vec![];
+        reader.read_to_end(&mut buffer)?;
         for b in buffer {
             // only focus on the expression name
             if parsing_expression_name {
@@ -211,6 +243,9 @@ impl TRule for Note {
 
         // add all parsed expressions
         self.expressions = expressions;
+
+        // TODO fix this
+        Ok(Rule::Note(self.clone()))
     }
 }
 
@@ -248,7 +283,7 @@ impl TRule for Conflict {
         }
         false
     }
-    fn parse(&mut self, _buffer: Vec<u8>) {
+    fn parse<R: Read + BufRead>(&mut self, _reader: R) -> Result<Rule> {
         todo!()
     }
 }
@@ -287,7 +322,7 @@ impl TRule for Requires {
         }
         false
     }
-    fn parse(&mut self, _buffer: Vec<u8>) {
+    fn parse<R: Read + BufRead>(&mut self, _reader: R) -> Result<Rule> {
         todo!()
     }
 }
