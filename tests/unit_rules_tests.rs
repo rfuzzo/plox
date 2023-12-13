@@ -93,4 +93,50 @@ mod unit_tests {
         let expected: Vec<String> = vec!["b requires x".to_owned()];
         assert_eq!(warnings, expected);
     }
+
+    // Nested tests
+
+    // ANY
+    #[test]
+    fn test_any() {
+        let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
+            .iter()
+            .map(|e| (*e).into())
+            .collect();
+        {
+            let rule = Note::new(
+                "comment".into(),
+                &[ALL::new(vec![Atomic::from("a").into(), Atomic::from("b").into()]).into()],
+            );
+            assert!(rule.eval(&mods));
+        }
+
+        {
+            let rule = Note::new(
+                "comment".into(),
+                &[ALL::new(vec![Atomic::from("a").into(), Atomic::from("x").into()]).into()],
+            );
+            assert!(!rule.eval(&mods));
+        }
+
+        {
+            let rule = Note::new(
+                "comment".into(),
+                &[ANY::new(vec![Atomic::from("a").into(), Atomic::from("x").into()]).into()],
+            );
+            assert!(rule.eval(&mods));
+        }
+
+        {
+            let rule = Note::new(
+                "comment".into(),
+                &[ANY::new(vec![Atomic::from("y").into(), Atomic::from("x").into()]).into()],
+            );
+            assert!(!rule.eval(&mods));
+        }
+    }
+
+    // ALL
+
+    // NOT
 }

@@ -229,6 +229,7 @@ where
 pub fn tokenize(line: String) -> Vec<String> {
     let mut tokens: Vec<String> = vec![];
 
+    // TODO do we want .archive matching?
     let mut is_quoted = false;
     let mut current_token: String = "".to_owned();
     for c in line.chars() {

@@ -19,6 +19,13 @@ mod integration_tests {
     }
 
     #[test]
+    fn test_parse_rules() {
+        let rules =
+            parse_rules_from_path("./tests/cmop/rules_note.txt").expect("rule parse failed");
+        assert_eq!(14, rules.len());
+    }
+
+    #[test]
     fn test_gather_mods() {
         let root_path = "./tests";
 
