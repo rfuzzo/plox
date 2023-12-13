@@ -12,8 +12,10 @@ pub trait TRule {
     fn set_comment(&mut self, comment: String);
     /// every rule may be evaluated
     fn eval(&self, items: &[String]) -> bool;
-    /// parse a rule from a string blob
-    fn parse<R: Read + BufRead + Seek>(&mut self, reader: R) -> Result<Rule>;
+}
+
+pub trait Parser<T: TRule> {
+    fn parse<R: Read + BufRead + Seek>(rule: &mut T, reader: R) -> Result<()>;
 }
 
 #[derive(Debug, Clone)]
@@ -23,22 +25,23 @@ pub enum Rule {
     Conflict(Conflict),
     Requires(Requires),
 }
+
 impl TRule for Rule {
     fn get_comment(&self) -> &str {
         match self {
-            Rule::Order(o) => o.get_comment(),
-            Rule::Note(o) => o.get_comment(),
-            Rule::Conflict(o) => o.get_comment(),
-            Rule::Requires(o) => o.get_comment(),
+            Rule::Order(x) => x.get_comment(),
+            Rule::Note(x) => x.get_comment(),
+            Rule::Conflict(x) => x.get_comment(),
+            Rule::Requires(x) => x.get_comment(),
         }
     }
 
     fn set_comment(&mut self, comment: String) {
         match self {
-            Rule::Order(_) => {}
-            Rule::Note(n) => n.set_comment(comment),
-            Rule::Conflict(c) => c.set_comment(comment),
-            Rule::Requires(r) => r.set_comment(comment),
+            Rule::Order(x) => x.set_comment(comment),
+            Rule::Note(x) => x.set_comment(comment),
+            Rule::Conflict(x) => x.set_comment(comment),
+            Rule::Requires(x) => x.set_comment(comment),
         }
     }
 
@@ -50,13 +53,21 @@ impl TRule for Rule {
             Rule::Requires(o) => o.eval(items),
         }
     }
+}
 
-    fn parse<R: Read + BufRead + Seek>(&mut self, reader: R) -> Result<Rule> {
-        match self {
-            Rule::Order(o) => o.parse(reader),
-            Rule::Note(o) => o.parse(reader),
-            Rule::Conflict(o) => o.parse(reader),
-            Rule::Requires(o) => o.parse(reader),
+impl Parser<Rule> for Rule {
+    fn parse<R: Read + BufRead + Seek>(rule: &mut Rule, reader: R) -> Result<()> {
+        match rule {
+            Rule::Order(_) => {
+                // order rules are not parsed like this
+                Err(Error::new(
+                    ErrorKind::Other,
+                    "Parsing error: Trying to Parse Order rule",
+                ))
+            }
+            Rule::Note(x) => Note::parse(x, reader),
+            Rule::Conflict(x) => Conflict::parse(x, reader),
+            Rule::Requires(x) => Requires::parse(x, reader),
         }
     }
 }
@@ -113,10 +124,6 @@ impl TRule for Order {
     fn eval(&self, _items: &[String]) -> bool {
         false
     }
-
-    fn parse<R: Read + BufRead + Seek>(&mut self, _reader: R) -> Result<Rule> {
-        Err(Error::new(ErrorKind::Other, "Parsing error: unknown rule"))
-    }
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -154,17 +161,17 @@ impl TRule for Note {
         }
         false
     }
-
-    fn parse<R: Read + BufRead + Seek>(&mut self, mut reader: R) -> Result<Rule> {
+}
+impl Parser<Note> for Note {
+    fn parse<R: Read + BufRead + Seek>(this: &mut Note, mut reader: R) -> Result<()> {
         if let Ok(Some(comment)) = read_comment(&mut reader) {
-            self.set_comment(comment);
+            this.set_comment(comment);
         }
 
         // add all parsed expressions
-        self.expressions = parse_expressions(reader)?;
+        this.expressions = parse_expressions(reader)?;
 
-        // TODO fix this
-        Ok(self.clone().into())
+        Ok(())
     }
 }
 
@@ -205,9 +212,11 @@ impl TRule for Conflict {
         }
         false
     }
-    fn parse<R: Read + BufRead + Seek>(&mut self, mut reader: R) -> Result<Rule> {
+}
+impl Parser<Conflict> for Conflict {
+    fn parse<R: Read + BufRead + Seek>(this: &mut Conflict, mut reader: R) -> Result<()> {
         if let Ok(Some(comment)) = read_comment(&mut reader) {
-            self.set_comment(comment);
+            this.set_comment(comment);
         }
 
         // add all parsed expressions
@@ -215,17 +224,16 @@ impl TRule for Conflict {
         for (i, e) in expressions.into_iter().enumerate() {
             match i {
                 0 => {
-                    self.expression_a = Some(e);
+                    this.expression_a = Some(e);
                 }
                 1 => {
-                    self.expression_b = Some(e);
+                    this.expression_b = Some(e);
                 }
                 _ => {}
             }
         }
 
-        // TODO fix this
-        Ok(self.clone().into())
+        Ok(())
     }
 }
 
@@ -266,9 +274,12 @@ impl TRule for Requires {
         }
         false
     }
-    fn parse<R: Read + BufRead + Seek>(&mut self, mut reader: R) -> Result<Rule> {
+}
+
+impl Parser<Requires> for Requires {
+    fn parse<R: Read + BufRead + Seek>(this: &mut Requires, mut reader: R) -> Result<()> {
         if let Ok(Some(comment)) = read_comment(&mut reader) {
-            self.set_comment(comment);
+            this.set_comment(comment);
         }
 
         // add all parsed expressions
@@ -276,16 +287,15 @@ impl TRule for Requires {
         for (i, e) in expressions.into_iter().enumerate() {
             match i {
                 0 => {
-                    self.expression_a = Some(e);
+                    this.expression_a = Some(e);
                 }
                 1 => {
-                    self.expression_b = Some(e);
+                    this.expression_b = Some(e);
                 }
                 _ => {}
             }
         }
 
-        // TODO fix this
-        Ok(self.clone().into())
+        Ok(())
     }
 }

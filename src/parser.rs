@@ -135,8 +135,8 @@ where
                     // Order rules don't have comments and no expressions so we can just parse them individually
                     Rule::Order(_) => parse_order_rule(body_cursor),
                     mut x => {
-                        let r = x.parse(body_cursor)?;
-                        Ok(vec![r])
+                        Rule::parse(&mut x, body_cursor)?;
+                        Ok(vec![x])
                     }
                 }
             } else {
@@ -346,18 +346,15 @@ pub fn parse_expression(reader: &str) -> Result<Expression> {
         if let Some(rest) = reader.strip_prefix("[ANY ") {
             let expressions = parse_expressions(rest[..rest.len() - 1].as_bytes())?;
             let expr = ANY::new(expressions);
-
             Ok(expr.into())
         } else if let Some(rest) = reader.strip_prefix("[ALL") {
             let expressions = parse_expressions(rest[..rest.len() - 1].as_bytes())?;
             let expr = ALL::new(expressions);
-
             Ok(expr.into())
         } else if let Some(rest) = reader.strip_prefix("[NOT") {
             let expressions = parse_expressions(rest[..rest.len() - 1].as_bytes())?;
             if let Some(first) = expressions.into_iter().last() {
                 let expr = NOT::new(first);
-
                 Ok(expr.into())
             } else {
                 return Err(Error::new(

@@ -1,12 +1,10 @@
 ////////////////////////////////////////////////////////////////////////
 // EXPRESSIONS
 ////////////////////////////////////////////////////////////////////////
-use std::io::{Error, ErrorKind, Result};
 
 // An expression may be evaluated against a load order
 pub trait TExpression {
     fn eval(&self, items: &[String]) -> bool;
-    fn parse(&mut self, buffer: Vec<u8>) -> Result<()>;
 }
 
 #[derive(Clone, Debug)]
@@ -25,14 +23,6 @@ impl TExpression for Expression {
             Expression::ALL(x) => x.eval(items),
             Expression::ANY(x) => x.eval(items),
             Expression::NOT(x) => x.eval(items),
-        }
-    }
-    fn parse(&mut self, buffer: Vec<u8>) -> Result<()> {
-        match self {
-            Expression::Atomic(x) => x.parse(buffer),
-            Expression::ALL(x) => x.parse(buffer),
-            Expression::ANY(x) => x.parse(buffer),
-            Expression::NOT(x) => x.parse(buffer),
         }
     }
 }
@@ -83,17 +73,8 @@ impl TExpression for Atomic {
         // TODO wildcards
         items.contains(&self.item)
     }
-
-    fn parse(&mut self, buffer: Vec<u8>) -> Result<()> {
-        // just read the buffer as string
-        if let Ok(string) = String::from_utf8(buffer) {
-            self.item = string;
-            return Ok(());
-        }
-
-        Err(Error::new(ErrorKind::Other, "Parsing error: unknown rule"))
-    }
 }
+
 impl From<&str> for Atomic {
     fn from(value: &str) -> Self {
         Atomic { item: value.into() }
@@ -131,9 +112,6 @@ impl TExpression for ALL {
             });
         r
     }
-    fn parse(&mut self, _buffer: Vec<u8>) -> Result<()> {
-        todo!()
-    }
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -161,9 +139,6 @@ impl TExpression for ANY {
                 r = r || e;
             });
         r
-    }
-    fn parse(&mut self, _buffer: Vec<u8>) -> Result<()> {
-        todo!()
     }
 }
 
@@ -195,8 +170,5 @@ impl TExpression for NOT {
     // NOT evaluates as true if the wrapped expression evaluates as true
     fn eval(&self, items: &[String]) -> bool {
         !self.expression.eval(items)
-    }
-    fn parse(&mut self, _buffer: Vec<u8>) -> Result<()> {
-        todo!()
     }
 }
