@@ -303,7 +303,7 @@ pub fn parse_expressions<R: Read + BufRead>(mut reader: R) -> Result<Vec<Express
             current_buffer += &(b as char).to_string();
             if current_buffer.ends_with(".archive ") || current_buffer.ends_with(".archive\n") {
                 is_token = false;
-                buffers.push(current_buffer.to_owned());
+                buffers.push(current_buffer[..current_buffer.len() - 1].to_owned());
                 current_buffer.clear();
             }
         } else {
@@ -326,7 +326,11 @@ pub fn parse_expressions<R: Read + BufRead>(mut reader: R) -> Result<Vec<Express
 
     let mut expressions: Vec<Expression> = vec![];
     for str in buffers {
-        let expr = parse_expression(str.trim())?;
+        let trimmed = str.trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+        let expr = parse_expression(trimmed)?;
         expressions.push(expr);
     }
 

@@ -85,7 +85,6 @@ mod unit_tests {
         }
     }
 
-    /*
     #[test]
     fn test_split_note() {
         let input = "[Note]\na b c.archive\nb.archive";
@@ -98,7 +97,7 @@ mod unit_tests {
 
         let names = ["a b c.archive", "b.archive"];
         if let Rule::Note(n) = rule {
-            assert_eq!(3, n.expressions.len());
+            assert_eq!(2, n.expressions.len());
             for (i, e) in n.expressions.iter().enumerate() {
                 if let Expression::Atomic(a) = e {
                     assert_eq!(names[i], a.get_item().as_str());
@@ -110,14 +109,16 @@ mod unit_tests {
     #[test]
     fn test_nested_note() {
         let input = "[Note]\n[ALL a.archive [NOT b.archive]]";
-        let reader = BufReader::new(input.as_bytes());
+        let reader = Cursor::new(input.as_bytes());
 
         let rules = parse_rules_from_reader(reader).expect("Failed to parse rule");
         assert_eq!(1, rules.len());
         let rule = rules.first().expect("No rules found");
         assert_eq!("", rule.get_comment());
+        if let Rule::Note(n) = rule {
+            assert_eq!(1, n.expressions.len());
+        }
     }
-     */
 
     ////////////////////////////////////////////////////////////////////////
     // ORDER
