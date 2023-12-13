@@ -3,11 +3,12 @@
 ////////////////////////////////////////////////////////////////////////
 use std::cmp::Ordering;
 use std::fs::File;
-use std::io::{self, BufRead, BufReader, Cursor, Error, ErrorKind, Read, Seek};
+use std::io::{BufRead, BufReader, Cursor, Error, ErrorKind, Read, Result, Seek, SeekFrom};
 use std::path::Path;
 
 use byteorder::ReadBytesExt;
 
+use crate::expressions::*;
 use crate::rules::*;
 
 /// Parse rules from a rules file
@@ -15,7 +16,7 @@ use crate::rules::*;
 /// # Errors
 ///
 /// This function will return an error if file io or parsing fails
-pub fn parse_rules_from_path<P>(path: P) -> io::Result<Vec<Rule>>
+pub fn parse_rules_from_path<P>(path: P) -> Result<Vec<Rule>>
 where
     P: AsRef<Path>,
 {
@@ -27,14 +28,10 @@ where
 
 /// Parse rules from a reader
 ///
-/// # Panics
-///
-/// Panics if TODO
-///
 /// # Errors
 ///
-/// This function will return an error if .
-pub fn parse_rules_from_reader<R>(reader: R) -> io::Result<Vec<Rule>>
+/// This function will return an error if parsing fails
+pub fn parse_rules_from_reader<R>(reader: R) -> Result<Vec<Rule>>
 where
     R: Read + BufRead + Seek,
 {
@@ -81,10 +78,10 @@ where
 
 /// Parses on rule section. Note: Order rules are returned as vec
 ///
-/// # Panics
+/// # Errors
 ///
-/// Panics if .
-fn parse_chunk<R>(mut reader: R) -> io::Result<Vec<Rule>>
+/// This function will return an error if parsing fails
+fn parse_chunk<R>(mut reader: R) -> Result<Vec<Rule>>
 where
     R: Read + BufRead + Seek,
 {
@@ -114,7 +111,7 @@ where
                     x.set_comment(rest.trim().to_owned());
                     rule = x.into();
                 } else {
-                    // TODO unknown rule
+                    // unknown rule, abort
                     return Err(Error::new(ErrorKind::Other, "Parsing error: unknown rule"));
                 }
 
@@ -126,7 +123,7 @@ where
 
                 if !lin.is_empty() {
                     // if the line is not empty we have an inline expression and we need to trim and read back to buffer
-                    reader.seek(io::SeekFrom::Current(-(lin.len() as i64)))?;
+                    reader.seek(SeekFrom::Current(-(lin.len() as i64)))?;
                 }
 
                 let mut body = vec![];
@@ -143,7 +140,6 @@ where
                     }
                 }
             } else {
-                // TODO return
                 Err(Error::new(ErrorKind::Other, "Parsing error: unknown rule"))
             }
         }
@@ -157,11 +153,15 @@ where
     }
 }
 
-/// Reads the first comment lines of a rule chunk and returns the rest as byte buffer
-pub fn read_comment<R: Read + BufRead + Seek>(reader: &mut R) -> io::Result<Option<String>> {
+/// .Reads the first comment lines of a rule chunk and returns the rest as byte buffer
+///
+/// # Errors
+///
+/// This function will return an error if stream reading or seeking fails
+pub fn read_comment<R: Read + BufRead + Seek>(reader: &mut R) -> Result<Option<String>> {
     // a line starting with a whitespace may be a comment
     if reader.read_u8()? as char != ' ' {
-        reader.seek(io::SeekFrom::Current(-1))?;
+        reader.seek(SeekFrom::Current(-1))?;
         return Ok(None);
     }
 
@@ -177,8 +177,12 @@ pub fn read_comment<R: Read + BufRead + Seek>(reader: &mut R) -> io::Result<Opti
     Ok(Some(comment))
 }
 
-/// Parse an order rule, it can have up to N items
-fn parse_order_rule<R>(reader: R) -> io::Result<Vec<Rule>>
+/// .Parse an order rule, it can have up to N items
+///
+/// # Errors
+///
+/// This function will return an error if Order rule is missformed
+fn parse_order_rule<R>(reader: R) -> Result<Vec<Rule>>
 where
     R: Read + BufRead,
 {
@@ -196,7 +200,13 @@ where
     // process order rules
     let mut rules: Vec<Rule> = vec![];
     match order.len().cmp(&2) {
-        Ordering::Less => {}
+        Ordering::Less => {
+            // Rule with only one element is an error
+            return Err(Error::new(
+                ErrorKind::Other,
+                "Logic error: order rule with less than two elements",
+            ));
+        }
         Ordering::Equal => rules.push(Rule::Order(Order::new(
             order[0].to_owned(),
             order[1].to_owned(),
@@ -254,4 +264,117 @@ pub fn tokenize(line: String) -> Vec<String> {
     }
 
     tokens
+}
+
+/// Parses all expressions from a buffer until EOF is reached
+///
+/// # Errors
+///
+/// This function will return an error if parsing fails anywhere
+pub fn parse_expressions<R: Read + BufRead>(mut reader: R) -> Result<Vec<Expression>> {
+    let mut buffer = vec![];
+    reader.read_to_end(&mut buffer)?;
+
+    // pre-parse expressions into chunks
+    let mut buffers: Vec<String> = vec![];
+    let mut current_buffer: String = String::new();
+    let mut is_expr = false;
+    let mut is_token = false;
+    let mut cnt = 0;
+
+    for b in buffer {
+        if is_expr {
+            // if parsing an expression, just count brackets and read the rest into the buffer
+            if b == b'[' {
+                cnt += 1;
+            } else if b == b']' {
+                cnt -= 1;
+            }
+            current_buffer += &(b as char).to_string();
+
+            if cnt == 0 {
+                // we reached the end of the current expression
+                is_expr = false;
+                buffers.push(current_buffer.to_owned());
+                current_buffer.clear();
+            }
+        } else if is_token {
+            // if parsing tokens, check when ".archive" was parsed into the buffer and end
+            current_buffer += &(b as char).to_string();
+            if current_buffer.ends_with(".archive ") || current_buffer.ends_with(".archive\n") {
+                is_token = false;
+                buffers.push(current_buffer.to_owned());
+                current_buffer.clear();
+            }
+        } else {
+            // this marks the beginning
+            if b == b'[' {
+                // start an expression
+                is_expr = true;
+                cnt += 1;
+            } else {
+                is_token = true;
+            }
+            current_buffer += &(b as char).to_string();
+        }
+    }
+    // rest
+    if !current_buffer.is_empty() {
+        buffers.push(current_buffer.to_owned());
+        current_buffer.clear();
+    }
+
+    let mut expressions: Vec<Expression> = vec![];
+    for str in buffers {
+        let expr = parse_expression(str.trim())?;
+        expressions.push(expr);
+    }
+
+    Ok(expressions)
+}
+
+/// Parses a single expression from a buffer
+///
+/// # Errors
+///
+/// This function will return an error if parsing fails
+pub fn parse_expression(reader: &str) -> Result<Expression> {
+    // an expression may start with
+    if reader.starts_with('[') {
+        // is an expression
+        // parse the kind and reurse down
+        if let Some(rest) = reader.strip_prefix("[ANY ") {
+            let expressions = parse_expressions(rest[..rest.len() - 1].as_bytes())?;
+            let expr = ANY::new(expressions);
+
+            Ok(expr.into())
+        } else if let Some(rest) = reader.strip_prefix("[ALL") {
+            let expressions = parse_expressions(rest[..rest.len() - 1].as_bytes())?;
+            let expr = ALL::new(expressions);
+
+            Ok(expr.into())
+        } else if let Some(rest) = reader.strip_prefix("[NOT") {
+            let expressions = parse_expressions(rest[..rest.len() - 1].as_bytes())?;
+            if let Some(first) = expressions.into_iter().last() {
+                let expr = NOT::new(first);
+
+                Ok(expr.into())
+            } else {
+                return Err(Error::new(
+                    ErrorKind::Other,
+                    "Parsing error: unknown expression",
+                ));
+            }
+        } else {
+            // unknown expression
+            return Err(Error::new(
+                ErrorKind::Other,
+                "Parsing error: unknown expression",
+            ));
+        }
+    } else {
+        // is a token
+        // in this case just return an atomic
+        Ok(Atomic::from(reader).into())
+    }
 }

@@ -1,13 +1,13 @@
 [Order]
-a
-b
-c
+a.archive
+b.archive
+c.archive
 
 [Order]
-d
-e
+d.archive
+e.archive
 
 ; comment
 [Order]
-e
-c
+e.archive
+c.archive

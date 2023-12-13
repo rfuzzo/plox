@@ -1,11 +1,12 @@
 ////////////////////////////////////////////////////////////////////////
-/// EXPRESSIONS
+// EXPRESSIONS
 ////////////////////////////////////////////////////////////////////////
+use std::io::{Error, ErrorKind, Result};
 
 // An expression may be evaluated against a load order
 pub trait TExpression {
     fn eval(&self, items: &[String]) -> bool;
-    fn parse(&mut self, buffer: Vec<u8>);
+    fn parse(&mut self, buffer: Vec<u8>) -> Result<()>;
 }
 
 #[derive(Clone, Debug)]
@@ -15,24 +16,18 @@ pub enum Expression {
     ANY(ANY),
     NOT(NOT),
 }
-impl Expression {
-    fn default() -> Expression {
-        // TODO that's kinda dumb
-        Atomic::default().into()
-    }
-}
 
 // pass-through
 impl TExpression for Expression {
     fn eval(&self, items: &[String]) -> bool {
         match self {
-            Expression::Atomic(atomic) => atomic.eval(items),
-            Expression::ALL(all) => all.eval(items),
-            Expression::ANY(any) => any.eval(items),
-            Expression::NOT(not) => not.eval(items),
+            Expression::Atomic(x) => x.eval(items),
+            Expression::ALL(x) => x.eval(items),
+            Expression::ANY(x) => x.eval(items),
+            Expression::NOT(x) => x.eval(items),
         }
     }
-    fn parse(&mut self, buffer: Vec<u8>) {
+    fn parse(&mut self, buffer: Vec<u8>) -> Result<()> {
         match self {
             Expression::Atomic(x) => x.parse(buffer),
             Expression::ALL(x) => x.parse(buffer),
@@ -64,12 +59,15 @@ impl From<NOT> for Expression {
 }
 
 ////////////////////////////////////////////////////////////////////////
-/// IMPLEMENTATIONS
+// IMPLEMENTATIONS
 ////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////
+// ATOMIC
 
 /// The atomic expression (EXISTS)
 /// atomics evaluate as true if the input list contains the item
-#[derive(Default, Clone, Debug)]
+#[derive(Clone, Debug)]
 pub struct Atomic {
     pub item: String,
 }
@@ -86,13 +84,14 @@ impl TExpression for Atomic {
         items.contains(&self.item)
     }
 
-    fn parse(&mut self, buffer: Vec<u8>) {
+    fn parse(&mut self, buffer: Vec<u8>) -> Result<()> {
         // just read the buffer as string
         if let Ok(string) = String::from_utf8(buffer) {
             self.item = string;
-        } else {
-            // TODO panic
+            return Ok(());
         }
+
+        Err(Error::new(ErrorKind::Other, "Parsing error: unknown rule"))
     }
 }
 impl From<&str> for Atomic {
@@ -106,9 +105,12 @@ impl From<String> for Atomic {
     }
 }
 
+////////////////////////////////////////////////////////////////////////
+// ALL
+
 /// The ALL expression
 /// ALL evaluates as true if all expressions evaluate as true
-#[derive(Default, Clone, Debug)]
+#[derive(Clone, Debug)]
 pub struct ALL {
     pub expressions: Vec<Expression>,
 }
@@ -129,14 +131,17 @@ impl TExpression for ALL {
             });
         r
     }
-    fn parse(&mut self, _buffer: Vec<u8>) {
+    fn parse(&mut self, _buffer: Vec<u8>) -> Result<()> {
         todo!()
     }
 }
 
-/// The ANY expression
+////////////////////////////////////////////////////////////////////////
+// ANY
+
+/// The ANY expression (OR)
 /// ANY evaluates as true if any expressions evaluates as true
-#[derive(Default, Clone, Debug)]
+#[derive(Clone, Debug)]
 pub struct ANY {
     pub expressions: Vec<Expression>,
 }
@@ -157,24 +162,19 @@ impl TExpression for ANY {
             });
         r
     }
-    fn parse(&mut self, _buffer: Vec<u8>) {
+    fn parse(&mut self, _buffer: Vec<u8>) -> Result<()> {
         todo!()
     }
 }
+
+////////////////////////////////////////////////////////////////////////
+// NOT
 
 /// The NOT expression
 /// NOT evaluates as true if the wrapped expression evaluates as true
 #[derive(Debug)]
 pub struct NOT {
     pub expression: Box<Expression>,
-}
-
-impl Default for NOT {
-    fn default() -> Self {
-        Self {
-            expression: Box::new(Expression::default()),
-        }
-    }
 }
 
 impl Clone for NOT {
@@ -196,7 +196,7 @@ impl TExpression for NOT {
     fn eval(&self, items: &[String]) -> bool {
         !self.expression.eval(items)
     }
-    fn parse(&mut self, _buffer: Vec<u8>) {
+    fn parse(&mut self, _buffer: Vec<u8>) -> Result<()> {
         todo!()
     }
 }

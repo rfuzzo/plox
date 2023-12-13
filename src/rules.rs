@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////
-/// RULES
+// RULES
 ////////////////////////////////////////////////////////////////////////
 use std::io::{BufRead, Error, ErrorKind, Read, Result, Seek};
 
@@ -18,7 +18,7 @@ pub trait TRule {
 
 #[derive(Debug, Clone)]
 pub enum Rule {
-    Order(Order), // TODO refactor this into a rule?
+    Order(Order),
     Note(Note),
     Conflict(Conflict),
     Requires(Requires),
@@ -84,8 +84,11 @@ impl From<Requires> for Rule {
 }
 
 ////////////////////////////////////////////////////////////////////////
-/// IMPLEMENTATIONS
+// IMPLEMENTATIONS
 ////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////
+// ORDER
 
 /// The Note Rule <Note for A>
 /// Notes simply check the expression and notify the user if eval is true
@@ -111,10 +114,13 @@ impl TRule for Order {
         false
     }
 
-    fn parse<R: Read + BufRead>(&mut self, _reader: R) -> Result<Rule> {
+    fn parse<R: Read + BufRead + Seek>(&mut self, _reader: R) -> Result<Rule> {
         Err(Error::new(ErrorKind::Other, "Parsing error: unknown rule"))
     }
 }
+
+////////////////////////////////////////////////////////////////////////
+// NOTE
 
 /// The Note Rule <Note for A>
 /// The [Note] rule prints the given message when any of the following expressions is true.
@@ -150,104 +156,20 @@ impl TRule for Note {
     }
 
     fn parse<R: Read + BufRead + Seek>(&mut self, mut reader: R) -> Result<Rule> {
-        // e.g. [ALL A.esp [NOT X.esp]]
-        let mut expressions: Vec<Expression> = vec![];
-
-        // chunk into expressions
-        let mut expression_buffer: Vec<u8> = vec![];
-        let mut expr: Option<Expression> = None;
-        let mut cnt = 0;
-        let mut parsing_expression_name = false;
-        let mut expression_name = "".to_owned();
-
         if let Ok(Some(comment)) = read_comment(&mut reader) {
             self.set_comment(comment);
         }
 
-        let mut buffer = vec![];
-        reader.read_to_end(&mut buffer)?;
-        for b in buffer {
-            // only focus on the expression name
-            if parsing_expression_name {
-                // parse name
-                if !expression_name.is_empty() && (b as char) == ' ' {
-                    // end
-                    parsing_expression_name = false;
-                    match expression_name.as_str() {
-                        "ANY" => expr = Some(ANY::default().into()),
-                        "ALL" => expr = Some(ALL::default().into()),
-                        "NOT" => expr = Some(NOT::default().into()),
-                        _ => {}
-                    }
-                    expression_name.clear();
-                } else {
-                    expression_name += (b as char).to_string().as_str();
-                }
-                continue;
-            }
-
-            // match generic
-            match b as char {
-                '[' => {
-                    // start an expression
-                    cnt += 1;
-                    // checks if we're parsing an expression currently
-                    if expr.is_none() {
-                        parsing_expression_name = true;
-                        continue;
-                    }
-                }
-                ']' => {
-                    // decrease expression layer counter
-                    cnt -= 1;
-                    if cnt == 0 {
-                        // reached end of an expression, now parse it)
-                        let mut expr = expr.take().expect("Parser error");
-                        expr.parse(expression_buffer.clone());
-                        expressions.push(expr);
-                        expression_buffer.clear();
-                        continue;
-                    }
-
-                    expression_buffer.push(b);
-                }
-                _ => {
-                    // just a token
-                    if let Some(e) = &expr {
-                        // for atomic we check if a whitespace occurs
-                        if let Expression::Atomic(_) = e {
-                            // end atomic token
-                            // TODO tokenize
-                            if (b as char) == ' ' || (b as char) == '\n' {
-                                let mut aa = expr.take().unwrap();
-                                aa.parse(expression_buffer.clone());
-                                expressions.push(aa);
-                                expression_buffer.clear();
-                                continue;
-                            }
-                        }
-                    } else {
-                        expr = Some(Atomic::default().into());
-                    }
-
-                    expression_buffer.push(b);
-                }
-            }
-        }
-        // last expression, can only happen for atomics
-        if let Some(mut e) = expr.take() {
-            e.parse(expression_buffer.clone());
-            expressions.push(e);
-            expression_buffer.clear();
-        }
-
         // add all parsed expressions
-        self.expressions = expressions;
+        self.expressions = parse_expressions(reader)?;
 
         // TODO fix this
-        Ok(Rule::Note(self.clone()))
+        Ok(self.clone().into())
     }
 }
+
+////////////////////////////////////////////////////////////////////////
+// CONFLICT
 
 /// The Conflict Rule <A conflicts with B>
 /// Conflicts evaluate as true if both expressions evaluate as true
@@ -283,12 +205,34 @@ impl TRule for Conflict {
         }
         false
     }
-    fn parse<R: Read + BufRead>(&mut self, _reader: R) -> Result<Rule> {
-        todo!()
+    fn parse<R: Read + BufRead + Seek>(&mut self, mut reader: R) -> Result<Rule> {
+        if let Ok(Some(comment)) = read_comment(&mut reader) {
+            self.set_comment(comment);
+        }
+
+        // add all parsed expressions
+        let expressions = parse_expressions(reader)?;
+        for (i, e) in expressions.into_iter().enumerate() {
+            match i {
+                0 => {
+                    self.expression_a = Some(e);
+                }
+                1 => {
+                    self.expression_b = Some(e);
+                }
+                _ => {}
+            }
+        }
+
+        // TODO fix this
+        Ok(self.clone().into())
     }
 }
 
-/// The Require Rule <A requires B>
+////////////////////////////////////////////////////////////////////////
+// REQUIRES
+
+/// The Requires Rule <A requires B>
 /// Requires evaluates as true if A is true and B is not true
 #[derive(Default, Clone, Debug)]
 pub struct Requires {
@@ -322,7 +266,26 @@ impl TRule for Requires {
         }
         false
     }
-    fn parse<R: Read + BufRead>(&mut self, _reader: R) -> Result<Rule> {
-        todo!()
+    fn parse<R: Read + BufRead + Seek>(&mut self, mut reader: R) -> Result<Rule> {
+        if let Ok(Some(comment)) = read_comment(&mut reader) {
+            self.set_comment(comment);
+        }
+
+        // add all parsed expressions
+        let expressions = parse_expressions(reader)?;
+        for (i, e) in expressions.into_iter().enumerate() {
+            match i {
+                0 => {
+                    self.expression_a = Some(e);
+                }
+                1 => {
+                    self.expression_b = Some(e);
+                }
+                _ => {}
+            }
+        }
+
+        // TODO fix this
+        Ok(self.clone().into())
     }
 }
