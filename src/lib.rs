@@ -1,3 +1,4 @@
+use log::info;
 use std::collections::HashMap;
 use std::fs::{self, File};
 use std::io::BufRead;
@@ -63,7 +64,7 @@ pub fn topo_sort(
 
     // sort
     let mut result: Vec<String> = mods.iter().map(|e| (*e).to_owned()).collect();
-    println!("{result:?}");
+    info!("{result:?}");
     loop {
         if !stable_topo_sort_inner(mods.len(), &edges, &index_dict, &mut result) {
             break;
@@ -79,7 +80,7 @@ pub fn topo_sort(
 ////////////////////////////////////////////////////////////////////////
 
 /// flattens a list of ordered mod pairs into a list of mod names
-pub fn get_mods_from_rules(order: &[(String, String)]) -> Vec<String> {
+pub fn debug_get_mods_from_rules(order: &[(String, String)]) -> Vec<String> {
     let mut result: Vec<String> = vec![];
     for r in order.iter() {
         let mut a = r.0.to_owned();

@@ -7,6 +7,7 @@ use std::io::{BufRead, BufReader, Cursor, Error, ErrorKind, Read, Result, Seek, 
 use std::path::Path;
 
 use byteorder::ReadBytesExt;
+use log::{debug, error};
 
 use crate::expressions::*;
 use crate::rules::*;
@@ -26,6 +27,18 @@ where
     Ok(rules)
 }
 
+#[derive(Debug)]
+struct ChunkWrapper {
+    data: Vec<u8>,
+    info: String,
+}
+
+impl ChunkWrapper {
+    fn new(data: Vec<u8>, info: String) -> Self {
+        Self { data, info }
+    }
+}
+
 /// Parse rules from a reader
 ///
 /// # Errors
@@ -36,9 +49,9 @@ where
     R: Read + BufRead + Seek,
 {
     // pre-parse into rule blocks
-    let mut chunks: Vec<Vec<u8>> = vec![];
-    let mut chunk: Option<Vec<u8>> = None;
-    for line in reader.lines().flatten() {
+    let mut chunks: Vec<ChunkWrapper> = vec![];
+    let mut chunk: Option<ChunkWrapper> = None;
+    for (idx, line) in reader.lines().flatten().enumerate() {
         // ignore comments
         if line.trim_start().starts_with(';') {
             continue;
@@ -49,13 +62,16 @@ where
             if let Some(chunk) = chunk.take() {
                 chunks.push(chunk);
             }
-        } else {
+        } else if !line.trim().is_empty() {
             // read to chunk, preserving newline delimeters
             let delimited_line = line + "\n";
             if let Some(chunk) = &mut chunk {
-                chunk.extend(delimited_line.as_bytes());
+                chunk.data.extend(delimited_line.as_bytes());
             } else {
-                chunk = Some(delimited_line.as_bytes().to_vec());
+                chunk = Some(ChunkWrapper::new(
+                    delimited_line.as_bytes().to_vec(),
+                    (idx + 1).to_string(),
+                ));
             }
         }
     }
@@ -67,9 +83,24 @@ where
     // process chunks
     // TODO parallelize
     let mut rules: Vec<Rule> = vec![];
-    for chunk in chunks {
-        let cursor = Cursor::new(chunk);
-        let parsed = parse_chunk(cursor)?;
+    for (idx, chunk) in chunks.into_iter().enumerate() {
+        let info = &chunk.info;
+
+        let cursor = Cursor::new(&chunk.data);
+        let parsed = match parse_chunk(cursor) {
+            Ok(it) => it,
+            Err(err) => {
+                // log error and skip chunk
+                error!(
+                    "Error '{}' at chunk #{}, starting at line: {}",
+                    err, idx, info
+                );
+                let string = String::from_utf8(chunk.data).expect("not valid utf8");
+                debug!("{}", string);
+                continue;
+            }
+        };
+
         rules.extend(parsed);
     }
 
@@ -95,23 +126,24 @@ where
             if let Ok(line) = String::from_utf8(buf[..buf.len() - 1].to_vec()) {
                 // parse rule name
                 let rule: Rule;
-                if line.strip_prefix("Order").is_some() {
+                let lowercase_line = line.to_lowercase();
+                if lowercase_line.strip_prefix("order").is_some() {
                     // Order lines don't have in-line options
                     rule = Order::default().into();
-                } else if let Some(rest) = line.strip_prefix("Note") {
+                } else if let Some(rest) = lowercase_line.strip_prefix("note") {
                     let mut x = Note::default();
                     x.set_comment(rest.trim().to_owned());
                     rule = x.into();
-                } else if let Some(rest) = line.strip_prefix("Conflict") {
+                } else if let Some(rest) = lowercase_line.strip_prefix("conflict") {
                     let mut x = Conflict::default();
                     x.set_comment(rest.trim().to_owned());
                     rule = x.into();
-                } else if let Some(rest) = line.strip_prefix("Requires") {
+                } else if let Some(rest) = lowercase_line.strip_prefix("requires") {
                     let mut x = Requires::default();
                     x.set_comment(rest.trim().to_owned());
                     rule = x.into();
                 } else {
-                    // unknown rule, abort
+                    // unknown rule, skip
                     return Err(Error::new(ErrorKind::Other, "Parsing error: unknown rule"));
                 }
 
@@ -362,17 +394,17 @@ pub fn parse_expression(reader: &str) -> Result<Expression> {
                 let expr = NOT::new(first);
                 Ok(expr.into())
             } else {
-                return Err(Error::new(
+                Err(Error::new(
                     ErrorKind::Other,
                     "Parsing error: unknown expression",
-                ));
+                ))
             }
         } else {
             // unknown expression
-            return Err(Error::new(
+            Err(Error::new(
                 ErrorKind::Other,
                 "Parsing error: unknown expression",
-            ));
+            ))
         }
     } else {
         // is a token

@@ -2,10 +2,21 @@
 mod integration_tests {
     use plox::{parser::*, *};
 
+    use test_log::test;
+
     #[test]
     fn test_read_mods() {
         let mods_path = "./tests/modlist.txt";
-        assert_eq!(read_file_as_list(mods_path), vec!["a", "b", "c", "d", "e"])
+        assert_eq!(
+            read_file_as_list(mods_path),
+            vec![
+                "a.archive",
+                "b.archive",
+                "c.archive",
+                "d.archive",
+                "e.archive"
+            ]
+        )
     }
 
     #[test]
@@ -13,7 +24,29 @@ mod integration_tests {
         let rules =
             parse_rules_from_path("./tests/plox/rules_order.txt").expect("rule parse failed");
         let order = get_order_from_rules(&rules);
-        let mods = get_mods_from_rules(&order);
+        let mods = debug_get_mods_from_rules(&order);
+
+        assert!(topo_sort(&mods, &order).is_ok(), "rules contain a cycle")
+    }
+
+    #[test]
+    fn test_verify_mlox_base_rules() {
+        let rules = parse_rules_from_path("./tests/mlox/mlox_base.txt").expect("rule parse failed");
+        let order = get_order_from_rules(&rules);
+
+        // debug
+        let mods = debug_get_mods_from_rules(&order);
+
+        assert!(topo_sort(&mods, &order).is_ok(), "rules contain a cycle")
+    }
+
+    #[test]
+    fn test_verify_mlox_user_rules() {
+        let rules = parse_rules_from_path("./tests/mlox/mlox_user.txt").expect("rule parse failed");
+        let order = get_order_from_rules(&rules);
+
+        // debug
+        let mods = debug_get_mods_from_rules(&order);
 
         assert!(topo_sort(&mods, &order).is_ok(), "rules contain a cycle")
     }

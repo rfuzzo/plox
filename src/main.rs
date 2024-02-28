@@ -1,4 +1,5 @@
 use clap::{Parser, Subcommand};
+use log::{error, info};
 use plox::parser::parse_rules_from_path;
 use std::path::PathBuf;
 use std::process::ExitCode;
@@ -49,9 +50,11 @@ enum Commands {
         rules_dir: String,
     },
 }
+const CARGO_NAME: &str = env!("CARGO_PKG_NAME");
 
 fn main() -> ExitCode {
     let cli = Cli::parse();
+    let _ = simple_logging::log_to_file(format!("{}.log", CARGO_NAME), log::LevelFilter::Debug);
 
     match &cli.command {
         Some(Commands::List { root }) => list_mods(&root.into()),
@@ -85,7 +88,7 @@ fn sort(
         match gather_mods(root) {
             Ok(m) => mods = m,
             Err(e) => {
-                println!("No mods found: {e}");
+                info!("No mods found: {e}");
                 return ExitCode::FAILURE;
             }
         }
@@ -95,13 +98,13 @@ fn sort(
         Ok(rules) => match topo_sort(&mods, &get_order_from_rules(&rules)) {
             Ok(result) => {
                 if dry_run {
-                    println!("Dry run...");
-                    println!("{result:?}");
+                    info!("Dry run...");
+                    info!("{result:?}");
                 } else {
-                    println!("Sorting mods...");
-                    println!("{:?}", &mods);
-                    println!("New:");
-                    println!("{result:?}");
+                    info!("Sorting mods...");
+                    info!("{:?}", &mods);
+                    info!("New:");
+                    info!("{result:?}");
 
                     //todo!()
                 }
@@ -109,12 +112,12 @@ fn sort(
                 ExitCode::SUCCESS
             }
             Err(e) => {
-                println!("error sorting: {e:?}");
+                error!("error sorting: {e:?}");
                 ExitCode::FAILURE
             }
         },
         Err(e) => {
-            println!("error parsing file: {e:?}");
+            error!("error parsing file: {e:?}");
             ExitCode::FAILURE
         }
     }
@@ -122,25 +125,25 @@ fn sort(
 
 /// Verifies integrity of the specified rules
 fn verify(rules_path: &PathBuf) -> ExitCode {
-    //println!("Verifying rules from {} ...", rules_path.display());
+    //info!("Verifying rules from {} ...", rules_path.display());
 
     match parse_rules_from_path(rules_path) {
         Ok(rules) => {
             let order = get_order_from_rules(&rules);
-            let mods = get_mods_from_rules(&order);
+            let mods = debug_get_mods_from_rules(&order);
             match topo_sort(&mods, &order) {
                 Ok(_) => {
-                    println!("true");
+                    info!("true");
                     ExitCode::SUCCESS
                 }
                 Err(_) => {
-                    println!("false");
+                    error!("false");
                     ExitCode::FAILURE
                 }
             }
         }
         Err(e) => {
-            println!("error parsing file: {e:?}");
+            error!("error parsing file: {e:?}");
             ExitCode::FAILURE
         }
     }
@@ -148,12 +151,12 @@ fn verify(rules_path: &PathBuf) -> ExitCode {
 
 /// Lists the current mod load order
 fn list_mods(root: &PathBuf) -> ExitCode {
-    //println!("Printing active mods...");
+    //info!("Printing active mods...");
 
     match gather_mods(root) {
         Ok(mods) => {
             for m in mods {
-                println!("{}", m);
+                info!("{}", m);
             }
 
             ExitCode::SUCCESS
