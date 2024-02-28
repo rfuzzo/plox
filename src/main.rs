@@ -1,9 +1,9 @@
 use clap::{Parser, Subcommand};
-use cmop::parser::parse_rules_from_path;
+use plox::parser::parse_rules_from_path;
 use std::path::PathBuf;
 use std::process::ExitCode;
 
-use cmop::*;
+use plox::*;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -30,8 +30,8 @@ enum Commands {
         #[arg(default_value_t = String::from("./"))]
         root: String,
 
-        /// Folder to read sorting rules from. Default is ./cmop
-        #[arg(short, long, default_value_t = String::from("./cmop"))]
+        /// Folder to read sorting rules from. Default is ./plox
+        #[arg(short, long, default_value_t = String::from("./plox"))]
         rules_dir: String,
 
         /// Just print the suggested load order without sorting
@@ -44,8 +44,8 @@ enum Commands {
     },
     /// Verifies integrity of the specified rules
     Verify {
-        /// Folder to read sorting rules from. Default is ./cmop
-        #[arg(short, long, default_value_t = String::from("./cmop"))]
+        /// Folder to read sorting rules from. Default is ./plox
+        #[arg(short, long, default_value_t = String::from("./plox"))]
         rules_dir: String,
     },
 }
@@ -57,7 +57,7 @@ fn main() -> ExitCode {
         Some(Commands::List { root }) => list_mods(&root.into()),
         Some(Commands::Verify { rules_dir }) => {
             //
-            let rules_path = PathBuf::from(rules_dir).join("cmop_rules_base.txt");
+            let rules_path = PathBuf::from(rules_dir).join("plox_rules_base.txt");
             verify(&rules_path)
         }
         Some(Commands::Sort {

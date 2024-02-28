@@ -1,5 +1,6 @@
 [package]
-name = "cmop"
+name = "plox"
+description = "PLOX - ??? Load Order eXpert. PLOX is a tool for analyzing and sorting your plugin load order. Supports Morrowind and Cyberpunk"
 version = "0.1.0"
 edition = "2021"
 

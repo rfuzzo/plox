@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod unit_tests {
-    use cmop::expressions::*;
+    use plox::expressions::*;
 
     #[test]
     fn evaluate_all() {

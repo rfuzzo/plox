@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod integration_tests {
-    use cmop::{parser::*, *};
+    use plox::{parser::*, *};
 
     #[test]
     fn test_read_mods() {
@@ -11,7 +11,7 @@ mod integration_tests {
     #[test]
     fn test_verify_rules() {
         let rules =
-            parse_rules_from_path("./tests/cmop/rules_order.txt").expect("rule parse failed");
+            parse_rules_from_path("./tests/plox/rules_order.txt").expect("rule parse failed");
         let order = get_order_from_rules(&rules);
         let mods = get_mods_from_rules(&order);
 
@@ -21,7 +21,7 @@ mod integration_tests {
     #[test]
     fn test_parse_rules() {
         let rules =
-            parse_rules_from_path("./tests/cmop/rules_note.txt").expect("rule parse failed");
+            parse_rules_from_path("./tests/plox/rules_note.txt").expect("rule parse failed");
         assert_eq!(14, rules.len());
     }
 

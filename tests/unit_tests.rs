@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod unit_tests {
-    use cmop::topo_sort;
-    use cmop::{expressions::*, rules::*};
+    use plox::topo_sort;
+    use plox::{expressions::*, rules::*};
 
     #[test]
     fn test_cycle() {

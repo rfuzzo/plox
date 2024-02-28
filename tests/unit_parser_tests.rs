@@ -3,7 +3,7 @@ mod unit_tests {
     use core::panic;
     use std::io::Cursor;
 
-    use cmop::{expressions::*, parser::*, rules::*};
+    use plox::{expressions::*, parser::*, rules::*};
 
     #[test]
     fn test_tokenize() {

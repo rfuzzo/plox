@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod unit_tests {
-    use cmop::{expressions::*, rules::*};
+    use plox::{expressions::*, rules::*};
 
     #[test]
     fn test_notes() {
