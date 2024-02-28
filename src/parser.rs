@@ -17,13 +17,13 @@ use crate::rules::*;
 /// # Errors
 ///
 /// This function will return an error if file io or parsing fails
-pub fn parse_rules_from_path<P>(path: P) -> Result<Vec<Rule>>
+pub fn parse_rules_from_path<P>(path: P, ext: &str) -> Result<Vec<Rule>>
 where
     P: AsRef<Path>,
 {
     let file = File::open(path)?;
     let reader = BufReader::new(file);
-    let rules = parse_rules_from_reader(reader)?;
+    let rules = parse_rules_from_reader(reader, ext)?;
     Ok(rules)
 }
 
@@ -44,7 +44,7 @@ impl ChunkWrapper {
 /// # Errors
 ///
 /// This function will return an error if parsing fails
-pub fn parse_rules_from_reader<R>(reader: R) -> Result<Vec<Rule>>
+pub fn parse_rules_from_reader<R>(reader: R, ext: &str) -> Result<Vec<Rule>>
 where
     R: Read + BufRead + Seek,
 {
@@ -87,7 +87,7 @@ where
         let info = &chunk.info;
 
         let cursor = Cursor::new(&chunk.data);
-        let parsed = match parse_chunk(cursor) {
+        let parsed = match parse_chunk(cursor, ext) {
             Ok(it) => it,
             Err(err) => {
                 // log error and skip chunk
@@ -112,7 +112,7 @@ where
 /// # Errors
 ///
 /// This function will return an error if parsing fails
-fn parse_chunk<R>(mut reader: R) -> Result<Vec<Rule>>
+fn parse_chunk<R>(mut reader: R, ext: &str) -> Result<Vec<Rule>>
 where
     R: Read + BufRead + Seek,
 {
@@ -127,9 +127,11 @@ where
                 // parse rule name
                 let rule: Rule;
                 let lowercase_line = line.to_lowercase();
+                let mut is_order = false;
                 if lowercase_line.strip_prefix("order").is_some() {
                     // Order lines don't have in-line options
                     rule = Order::default().into();
+                    is_order = true;
                 } else if let Some(rest) = lowercase_line.strip_prefix("note") {
                     let mut x = Note::default();
                     x.set_comment(rest.trim().to_owned());
@@ -153,7 +155,8 @@ where
                 reader.read_line(&mut lin)?;
                 lin = lin.trim_start().to_owned();
 
-                if !lin.is_empty() {
+                // ignore for order rules
+                if !lin.is_empty() && !is_order {
                     // if the line is not empty we have an inline expression and we need to trim and read back to buffer
                     reader.seek(SeekFrom::Current(-(lin.len() as i64)))?;
                 }
@@ -167,7 +170,7 @@ where
                     // Order rules don't have comments and no expressions so we can just parse them individually
                     Rule::Order(_) => parse_order_rule(body_cursor),
                     mut x => {
-                        Rule::parse(&mut x, body_cursor)?;
+                        Rule::parse(&mut x, body_cursor, ext)?;
                         Ok(vec![x])
                     }
                 }
@@ -304,7 +307,7 @@ pub fn tokenize(line: String) -> Vec<String> {
 /// # Errors
 ///
 /// This function will return an error if parsing fails anywhere
-pub fn parse_expressions<R: Read + BufRead>(mut reader: R) -> Result<Vec<Expression>> {
+pub fn parse_expressions<R: Read + BufRead>(mut reader: R, ext: &str) -> Result<Vec<Expression>> {
     let mut buffer = vec![];
     reader.read_to_end(&mut buffer)?;
 
@@ -334,7 +337,9 @@ pub fn parse_expressions<R: Read + BufRead>(mut reader: R) -> Result<Vec<Express
         } else if is_token {
             // if parsing tokens, check when ".archive" was parsed into the buffer and end
             current_buffer += &(b as char).to_string();
-            if current_buffer.ends_with(".archive ") || current_buffer.ends_with(".archive\n") {
+            if current_buffer.ends_with(format!("{} ", ext).as_str())
+                || current_buffer.ends_with(format!("{}\n", ext).as_str())
+            {
                 is_token = false;
                 buffers.push(current_buffer[..current_buffer.len() - 1].to_owned());
                 current_buffer.clear();
@@ -363,7 +368,7 @@ pub fn parse_expressions<R: Read + BufRead>(mut reader: R) -> Result<Vec<Express
         if trimmed.is_empty() {
             continue;
         }
-        let expr = parse_expression(trimmed)?;
+        let expr = parse_expression(trimmed, ext)?;
         expressions.push(expr);
     }
 
@@ -375,21 +380,21 @@ pub fn parse_expressions<R: Read + BufRead>(mut reader: R) -> Result<Vec<Express
 /// # Errors
 ///
 /// This function will return an error if parsing fails
-pub fn parse_expression(reader: &str) -> Result<Expression> {
+pub fn parse_expression(reader: &str, ext: &str) -> Result<Expression> {
     // an expression may start with
     if reader.starts_with('[') {
         // is an expression
         // parse the kind and reurse down
         if let Some(rest) = reader.strip_prefix("[ANY ") {
-            let expressions = parse_expressions(rest[..rest.len() - 1].as_bytes())?;
+            let expressions = parse_expressions(rest[..rest.len() - 1].as_bytes(), ext)?;
             let expr = ANY::new(expressions);
             Ok(expr.into())
         } else if let Some(rest) = reader.strip_prefix("[ALL") {
-            let expressions = parse_expressions(rest[..rest.len() - 1].as_bytes())?;
+            let expressions = parse_expressions(rest[..rest.len() - 1].as_bytes(), ext)?;
             let expr = ALL::new(expressions);
             Ok(expr.into())
         } else if let Some(rest) = reader.strip_prefix("[NOT") {
-            let expressions = parse_expressions(rest[..rest.len() - 1].as_bytes())?;
+            let expressions = parse_expressions(rest[..rest.len() - 1].as_bytes(), ext)?;
             if let Some(first) = expressions.into_iter().last() {
                 let expr = NOT::new(first);
                 Ok(expr.into())
