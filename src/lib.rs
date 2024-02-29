@@ -1,4 +1,4 @@
-use log::info;
+use log::{error, info};
 use std::collections::HashMap;
 use std::fs::{self, File};
 use std::io::BufRead;
@@ -30,6 +30,9 @@ pub fn stable_topo_sort_inner(
                 let t = result[i].to_owned();
                 result.remove(i);
                 result.insert(j, t);
+
+                error!("{},{}", x, y);
+
                 return true;
             }
         }

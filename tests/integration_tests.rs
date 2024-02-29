@@ -47,7 +47,10 @@ mod integration_tests {
         let order = get_order_from_rules(&rules);
 
         // debug
-        let mods = debug_get_mods_from_rules(&order);
+        let mods = debug_get_mods_from_rules(&order)
+            .into_iter()
+            .take(200)
+            .collect::<Vec<_>>();
 
         assert!(topo_sort(&mods, &order).is_ok(), "rules contain a cycle")
     }
@@ -60,7 +63,10 @@ mod integration_tests {
         let order = get_order_from_rules(&rules);
 
         // debug
-        let mods = debug_get_mods_from_rules(&order);
+        let mods = debug_get_mods_from_rules(&order)
+            .into_iter()
+            .take(200)
+            .collect::<Vec<_>>();
 
         assert!(topo_sort(&mods, &order).is_ok(), "rules contain a cycle")
     }

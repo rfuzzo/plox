@@ -3,21 +3,39 @@ mod unit_tests {
     use core::panic;
     use std::io::Cursor;
 
-    use plox::{expressions::*, parser::*, rules::*};
+    use plox::{expressions::*, get_order_from_rules, parser::*, rules::*};
 
     #[test]
     fn test_tokenize() {
+        let parser = Parser::new_cyberpunk_parser();
+
+        {
+            let input = "a.archive my e3.archive.archive";
+            let expected = ["a.archive", "my e3.archive.archive"];
+            assert_eq!(expected, parser.tokenize(input.to_owned()).as_slice());
+        }
+
+        {
+            let input = " a.archive \"mod with spaces.archive\" b.archive";
+            let expected = ["a.archive", "mod with spaces.archive", "b.archive"];
+            assert_eq!(expected, parser.tokenize(input.to_owned()).as_slice());
+        }
+
         {
             let input = " a.archive \"mod with spaces.archive\" \"c.archive\"";
             let expected = ["a.archive", "mod with spaces.archive", "c.archive"];
-            let parser = Parser::new_cyberpunk_parser();
+            assert_eq!(expected, parser.tokenize(input.to_owned()).as_slice());
+        }
+
+        {
+            let input = "a mod with spaces.archive";
+            let expected = ["a mod with spaces.archive"];
             assert_eq!(expected, parser.tokenize(input.to_owned()).as_slice());
         }
 
         {
             let input = "a.archive";
             let expected = ["a.archive"];
-            let parser = Parser::new_cyberpunk_parser();
             assert_eq!(expected, parser.tokenize(input.to_owned()).as_slice());
         }
     }
@@ -30,8 +48,7 @@ mod unit_tests {
         let input = "[Order]\na.archive\nb.archive\nc.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let parser = Parser::new_cyberpunk_parser();
-        let rules = parser
+        let rules = Parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
             .expect("Failed to parse rule");
         assert_eq!(2, rules.len());
@@ -50,25 +67,67 @@ mod unit_tests {
     }
 
     #[test]
-    fn test_inline_order() {
-        let input = "[Order]a.archive \"b name.archive\" c.archive".to_owned();
+    fn test_multiline_order_with_whitespace() {
+        let input = "[Order]\na.archive\narchive with spaces.archive\nc.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
         let rules = Parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
             .expect("Failed to parse rule");
-        assert_eq!(2, rules.len());
+        let order = get_order_from_rules(&rules);
+        assert_eq!(2, order.len());
 
         let mut rule = rules.first().expect("No rules found");
         if let Rule::Order(n) = rule {
             assert_eq!("a.archive", n.name_a.as_str());
-            assert_eq!("b name.archive", n.name_b.as_str());
+            assert_eq!("archive with spaces.archive", n.name_b.as_str());
         }
 
         rule = rules.get(1).expect("No rules found");
         if let Rule::Order(n) = rule {
-            assert_eq!("b name.archive", n.name_a.as_str());
+            assert_eq!("archive with spaces.archive", n.name_a.as_str());
             assert_eq!("c.archive", n.name_b.as_str());
+        }
+    }
+
+    #[test]
+    fn test_inline_order() {
+        {
+            let input = "[Order]a.archive \"b name.archive\" c.archive".to_owned();
+            let reader = Cursor::new(input.as_bytes());
+
+            let rules = Parser::new_cyberpunk_parser()
+                .parse_rules_from_reader(reader)
+                .expect("Failed to parse rule");
+            assert_eq!(2, rules.len());
+
+            let mut rule = rules.first().expect("No rules found");
+            if let Rule::Order(n) = rule {
+                assert_eq!("a.archive", n.name_a.as_str());
+                assert_eq!("b name.archive", n.name_b.as_str());
+            }
+
+            rule = rules.get(1).expect("No rules found");
+            if let Rule::Order(n) = rule {
+                assert_eq!("b name.archive", n.name_a.as_str());
+                assert_eq!("c.archive", n.name_b.as_str());
+            }
+        }
+
+        {
+            let input = "[Order]a.archive c.archive ; with a comment".to_owned();
+            let reader = Cursor::new(input.as_bytes());
+
+            let rules = Parser::new_cyberpunk_parser()
+                .parse_rules_from_reader(reader)
+                .expect("Failed to parse rule");
+            assert_eq!(1, rules.len());
+
+            let rule = rules.first().expect("No rules found");
+            if let Rule::Order(n) = rule {
+                assert_eq!("a.archive", n.name_a.as_str());
+                assert_eq!("c.archive", n.name_b.as_str());
+            }
         }
     }
 

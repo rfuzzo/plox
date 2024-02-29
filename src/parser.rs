@@ -148,11 +148,9 @@ impl Parser {
                     // parse rule name
                     let rule: Rule;
                     let lowercase_line = line.to_lowercase();
-                    let mut is_order = false;
                     if lowercase_line.strip_prefix("order").is_some() {
                         // Order lines don't have in-line options
                         rule = Order::default().into();
-                        is_order = true;
                     } else if let Some(rest) = lowercase_line.strip_prefix("note") {
                         let mut x = Note::default();
                         x.set_comment(rest.trim().to_owned());
@@ -177,13 +175,21 @@ impl Parser {
                     lin = lin.trim_start().to_owned();
 
                     // ignore for order rules
-                    if !lin.is_empty() && !is_order {
+                    if !lin.is_empty() {
                         // if the line is not empty we have an inline expression and we need to trim and read back to buffer
                         reader.seek(SeekFrom::Current(-(lin.len() as i64)))?;
                     }
 
+                    // but we ignore comments
                     let mut body = vec![];
-                    reader.read_to_end(&mut body)?;
+                    if let Some(_idx) = lin.find(';') {
+                        // find idx
+                        reader.read_until(b';', &mut body)?;
+                        body.remove(body.len() - 1);
+                    } else {
+                        reader.read_to_end(&mut body)?;
+                    }
+
                     let body_cursor = Cursor::new(body);
 
                     // now parse rule body
@@ -257,7 +263,40 @@ impl Parser {
         Ok(rules)
     }
 
-    /// Splits a String into string tokens (either separated but whitespace or wrapped in quotation marks)
+    fn ends_with_vec(&self, current_buffer: &str) -> bool {
+        let mut b = false;
+        for ext in &self.ext {
+            if current_buffer
+                .to_lowercase()
+                .ends_with(format!("{} ", ext).as_str())
+            {
+                b = true;
+                break;
+            }
+        }
+
+        b
+    }
+
+    fn ends_with_vec2(&self, current_buffer: &str) -> bool {
+        let mut b = false;
+        for ext in &self.ext {
+            if current_buffer
+                .to_lowercase()
+                .ends_with(format!("{} ", ext).as_str())
+                || current_buffer
+                    .to_lowercase()
+                    .ends_with(format!("{}\n", ext).as_str())
+            {
+                b = true;
+                break;
+            }
+        }
+
+        b
+    }
+
+    /// Splits a String into string tokens (either separated by extension or wrapped in quotation marks)
     pub fn tokenize(&self, line: String) -> Vec<String> {
         let mut tokens: Vec<String> = vec![];
 
@@ -265,35 +304,40 @@ impl Parser {
         let mut is_quoted = false;
         let mut current_token: String = "".to_owned();
         for c in line.chars() {
+            // check quoted and read in chars
             if c == '"' {
                 // started a quoted segment
                 if is_quoted {
                     is_quoted = false;
                     // end token
-                    tokens.push(current_token.to_owned());
+                    tokens.push(current_token.trim().to_owned());
                     current_token.clear();
                 } else {
                     is_quoted = true;
                 }
-            } else if c == ' ' {
+                continue;
+            } else {
+                // read into token
+                current_token += c.to_string().as_str();
+            }
+
+            // check if we found an end
+            if self.ends_with_vec(&current_token) {
                 // ignore whitespace in quoted segments
                 if !is_quoted {
                     // end token
                     if !current_token.is_empty() {
-                        tokens.push(current_token.to_owned());
+                        tokens.push(current_token.trim().to_owned());
                         current_token.clear();
                     }
                 } else {
                     current_token += c.to_string().as_str();
                 }
-            } else {
-                // read into token
-                current_token += c.to_string().as_str();
             }
         }
 
         if !current_token.is_empty() {
-            tokens.push(current_token.to_owned());
+            tokens.push(current_token.trim().to_owned());
         }
 
         tokens
@@ -335,17 +379,7 @@ impl Parser {
                 // if parsing tokens, check when ".archive" was parsed into the buffer and end
                 current_buffer += &(b as char).to_string();
 
-                let mut b = false;
-                for ext in &self.ext {
-                    if current_buffer.ends_with(format!("{} ", ext).as_str())
-                        || current_buffer.ends_with(format!("{}\n", ext).as_str())
-                    {
-                        b = true;
-                        break;
-                    }
-                }
-
-                if b {
+                if self.ends_with_vec2(&current_buffer) {
                     is_token = false;
                     buffers.push(current_buffer[..current_buffer.len() - 1].to_owned());
                     current_buffer.clear();
