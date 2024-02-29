@@ -1,4 +1,6 @@
+use clap::ValueEnum;
 use log::info;
+use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::fs::{self, File};
 use std::io::BufRead;
@@ -16,7 +18,9 @@ use rules::*;
 /// LOGIC
 ////////////////////////////////////////////////////////////////////////
 
-#[derive(Debug, Clone, Copy)]
+pub const PLOX_RULES_BASE: &str = "plox_rules_base.txt";
+
+#[derive(Debug, Clone, Copy, ValueEnum)]
 pub enum ESupportedGame {
     Morrowind,
     OpenMorrowind,
@@ -120,23 +124,43 @@ pub fn topo_sort(
     let mut result: Vec<String> = mods.iter().map(|e| (*e).to_owned()).collect();
     info!("{result:?}");
 
-    let mut index = (0, 0);
-    loop {
-        if !stable_topo_sort_inner(
-            mods.len(),
-            &edges,
-            &index_dict,
-            &mut result,
-            &mut index,
-            optimize,
-        ) {
-            break;
+    if optimize {
+        result.sort_by(|a, b| edge_cmp(a, b, &edges, &index_dict));
+    } else {
+        let mut index = (0, 0);
+        loop {
+            if !stable_topo_sort_inner(
+                mods.len(),
+                &edges,
+                &index_dict,
+                &mut result,
+                &mut index,
+                optimize,
+            ) {
+                break;
+            }
         }
-        //error!("{},{}", index.0, index.1);
     }
 
     // Return the sorted vector
     Ok(result)
+}
+
+fn edge_cmp(
+    a: &str,
+    b: &str,
+    edges: &[(usize, usize)],
+    index_dict: &HashMap<&str, usize>,
+) -> Ordering {
+    let x = index_dict[a];
+    let y = index_dict[b];
+    if edges.contains(&(x, y)) {
+        Ordering::Less
+    } else if edges.contains(&(y, x)) {
+        Ordering::Greater
+    } else {
+        Ordering::Equal
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////

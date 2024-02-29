@@ -29,6 +29,14 @@ pub struct Parser {
     pub ext: Vec<String>,
 }
 
+pub fn get_parser(game: ESupportedGame) -> Parser {
+    match game {
+        ESupportedGame::Morrowind => Parser::new_tes3_parser(),
+        ESupportedGame::OpenMorrowind => Parser::new_openmw_parser(),
+        ESupportedGame::Cyberpunk => Parser::new_cyberpunk_parser(),
+    }
+}
+
 impl Parser {
     pub fn new(ext: Vec<String>, game: ESupportedGame) -> Self {
         Self { ext, game }

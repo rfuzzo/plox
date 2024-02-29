@@ -1,5 +1,6 @@
 use clap::{Parser, Subcommand};
-use log::{error, info};
+use log::{error, info, warn};
+use plox::rules::TRule;
 use std::path::PathBuf;
 use std::process::ExitCode;
 
@@ -11,6 +12,10 @@ struct Cli {
     /// Verbose output
     #[arg(short, long)]
     verbose: bool,
+
+    /// Set game
+    #[arg(short, long)]
+    game: ESupportedGame,
 
     #[command(subcommand)]
     command: Option<Commands>,
@@ -53,15 +58,17 @@ const CARGO_NAME: &str = env!("CARGO_PKG_NAME");
 
 fn main() -> ExitCode {
     let cli = Cli::parse();
+
+    // TODO logging
     let _ = simple_logging::log_to_file(format!("{}.log", CARGO_NAME), log::LevelFilter::Debug);
 
-    // TODO fix from cli
-    let parser = plox::parser::Parser::new_cyberpunk_parser();
+    // TODO auto detect
+    let parser = parser::get_parser(cli.game);
 
     match &cli.command {
         Some(Commands::List { root }) => list_mods(&root.into(), parser.game),
         Some(Commands::Verify { rules_dir }) => {
-            let rules_path = PathBuf::from(rules_dir).join("plox_rules_base.txt");
+            let rules_path = PathBuf::from(rules_dir).join(PLOX_RULES_BASE);
             verify(&rules_path, &parser)
         }
         Some(Commands::Sort {
@@ -97,30 +104,58 @@ fn sort(
     }
 
     //TODO CLI
-    let optimize = false;
+    let optimize = true;
 
     match parser.parse_rules_from_path(rules_path) {
-        Ok(rules) => match topo_sort(&mods, &get_order_rules(&rules), optimize) {
-            Ok(result) => {
-                if dry_run {
-                    info!("Dry run...");
-                    info!("{result:?}");
-                } else {
-                    info!("Sorting mods...");
-                    info!("{:?}", &mods);
-                    info!("New:");
-                    info!("{result:?}");
-
-                    //todo!()
+        Ok(rules) => {
+            // Print Warnings
+            for rule in &rules {
+                if rule.eval(&mods) {
+                    match rule {
+                        // TODO not logging
+                        rules::Rule::Order(_) => {}
+                        rules::Rule::Note(_) => {
+                            info!("[NOTE]\n{}", rule.get_comment());
+                        }
+                        rules::Rule::Conflict(_) => {
+                            warn!("[CONFLICT]\n{}", rule.get_comment());
+                        }
+                        rules::Rule::Requires(_) => {
+                            warn!("[REQUIRES]\n{}", rule.get_comment());
+                        }
+                    }
                 }
+            }
 
-                ExitCode::SUCCESS
+            // Sort
+            let order_rules = get_order_rules(&rules);
+            if !order_rules.is_empty() {
+                match topo_sort(&mods, &order_rules, optimize) {
+                    Ok(result) => {
+                        if dry_run {
+                            info!("Dry run...");
+                            info!("{result:?}");
+                        } else {
+                            info!("Sorting mods...");
+                            info!("{:?}", &mods);
+                            info!("New:");
+                            info!("{result:?}");
+
+                            //todo!()
+                            // TODO update on disk
+                        }
+
+                        return ExitCode::SUCCESS;
+                    }
+                    Err(e) => {
+                        error!("error sorting: {e:?}");
+                        return ExitCode::FAILURE;
+                    }
+                }
             }
-            Err(e) => {
-                error!("error sorting: {e:?}");
-                ExitCode::FAILURE
-            }
-        },
+
+            ExitCode::SUCCESS
+        }
         Err(e) => {
             error!("error parsing file: {e:?}");
             ExitCode::FAILURE
@@ -130,9 +165,9 @@ fn sort(
 
 /// Verifies integrity of the specified rules
 fn verify(rules_path: &PathBuf, parser: &parser::Parser) -> ExitCode {
-    //info!("Verifying rules from {} ...", rules_path.display());
+    info!("Verifying rules from {} ...", rules_path.display());
     // TODO CLI
-    let optimize = false;
+    let optimize = true;
 
     match parser.parse_rules_from_path(rules_path) {
         Ok(rules) => {
@@ -158,7 +193,7 @@ fn verify(rules_path: &PathBuf, parser: &parser::Parser) -> ExitCode {
 
 /// Lists the current mod load order
 fn list_mods(root: &PathBuf, game: ESupportedGame) -> ExitCode {
-    //info!("Printing active mods...");
+    info!("Printing active mods...");
 
     match gather_mods(root, game) {
         Ok(mods) => {

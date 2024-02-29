@@ -1,5 +1,6 @@
 #[cfg(test)]
 mod unit_tests {
+    use log::error;
     use plox::parser::Parser;
     use plox::{debug_get_mods_from_rules, get_order_rules, topo_sort};
     use plox::{expressions::*, rules::*};
@@ -40,8 +41,12 @@ mod unit_tests {
             .map(|e| (*e).into())
             .collect();
 
-        match topo_sort(&mods, &order, false) {
-            Ok(result) => assert!(checkresult(&result, &order), "order is wrong"),
+        match topo_sort(&mods, &order, true) {
+            Ok(result) => {
+                error!("{}", &result.join(","));
+
+                assert!(checkresult(&result, &order), "order is wrong")
+            }
             Err(_) => panic!("rules contain a cycle"),
         }
     }

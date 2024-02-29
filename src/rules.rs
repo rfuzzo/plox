@@ -131,7 +131,6 @@ impl TRule for Order {
     }
     fn set_comment(&mut self, _comment: String) {}
 
-    /// Notes evaluate as true if the expression evaluates as true
     fn eval(&self, _items: &[String]) -> bool {
         false
     }
