@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod unit_tests {
-    use plox::topo_sort;
+    use plox::parser::Parser;
+    use plox::{debug_get_mods_from_rules, get_order_rules, topo_sort};
     use plox::{expressions::*, rules::*};
 
     #[test]
@@ -16,7 +17,7 @@ mod unit_tests {
             .collect();
 
         assert!(
-            topo_sort(&mods, &order).is_err(),
+            topo_sort(&mods, &order, false).is_err(),
             "rules do not contain a cycle"
         )
     }
@@ -39,10 +40,29 @@ mod unit_tests {
             .map(|e| (*e).into())
             .collect();
 
-        match topo_sort(&mods, &order) {
+        match topo_sort(&mods, &order, false) {
             Ok(result) => assert!(checkresult(&result, &order), "order is wrong"),
             Err(_) => panic!("rules contain a cycle"),
         }
+    }
+
+    #[test]
+    fn test_optimized_sort() {
+        let rules = Parser::new_tes3_parser()
+            .parse_rules_from_path("./tests/mlox/mlox_user.txt")
+            .expect("rule parse failed");
+        let order = get_order_rules(&rules);
+
+        // debug
+        let mods = debug_get_mods_from_rules(&order)
+            .into_iter()
+            .take(100)
+            .collect::<Vec<_>>();
+
+        let full_result = topo_sort(&mods, &order, false).expect("rules contain a cycle");
+        let opt_result = topo_sort(&mods, &order, true).expect("opt rules contain a cycle");
+
+        assert_eq!(full_result, opt_result);
     }
 
     fn checkresult(result: &[String], order: &Vec<(String, String)>) -> bool {

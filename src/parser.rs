@@ -9,8 +9,8 @@ use std::path::Path;
 use byteorder::ReadBytesExt;
 use log::{debug, error};
 
-use crate::rules::*;
 use crate::{expressions::*, TParser};
+use crate::{rules::*, ESupportedGame};
 
 #[derive(Debug)]
 struct ChunkWrapper {
@@ -25,24 +25,31 @@ impl ChunkWrapper {
 }
 
 pub struct Parser {
+    pub game: ESupportedGame,
     pub ext: Vec<String>,
 }
 
 impl Parser {
-    pub fn new(ext: Vec<String>) -> Self {
-        Self { ext }
+    pub fn new(ext: Vec<String>, game: ESupportedGame) -> Self {
+        Self { ext, game }
     }
 
     pub fn new_cyberpunk_parser() -> Self {
-        Parser::new(vec![".archive".into()])
+        Parser::new(vec![".archive".into()], ESupportedGame::Cyberpunk)
     }
 
     pub fn new_tes3_parser() -> Self {
-        Parser::new(vec![".esp".into(), ".esm".into()])
+        Parser::new(
+            vec![".esp".into(), ".esm".into()],
+            ESupportedGame::Morrowind,
+        )
     }
 
     pub fn new_openmw_parser() -> Self {
-        Parser::new(vec![".esp".into(), ".esm".into(), ".omwaddon".into()])
+        Parser::new(
+            vec![".esp".into(), ".esm".into(), ".omwaddon".into()],
+            ESupportedGame::OpenMorrowind,
+        )
     }
 
     /// Parse rules from a rules file
@@ -300,7 +307,6 @@ impl Parser {
     pub fn tokenize(&self, line: String) -> Vec<String> {
         let mut tokens: Vec<String> = vec![];
 
-        // TODO do we want .archive matching?
         let mut is_quoted = false;
         let mut current_token: String = "".to_owned();
         for c in line.chars() {

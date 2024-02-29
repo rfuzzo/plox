@@ -1,4 +1,4 @@
-use log::{error, info};
+use log::info;
 use std::collections::HashMap;
 use std::fs::{self, File};
 use std::io::BufRead;
@@ -16,11 +16,33 @@ use rules::*;
 /// LOGIC
 ////////////////////////////////////////////////////////////////////////
 
+#[derive(Debug, Clone, Copy)]
+pub enum ESupportedGame {
+    Morrowind,
+    OpenMorrowind,
+    Cyberpunk,
+}
+
 pub fn stable_topo_sort_inner(
     n: usize,
     edges: &[(usize, usize)],
     index_dict: &HashMap<&str, usize>,
     result: &mut Vec<String>,
+    last_index: &mut (usize, usize),
+    optimize: bool,
+) -> bool {
+    match optimize {
+        true => stable_topo_sort_opt(n, edges, index_dict, result, last_index),
+        false => stable_topo_sort_full(n, edges, index_dict, result, last_index),
+    }
+}
+
+pub fn stable_topo_sort_full(
+    n: usize,
+    edges: &[(usize, usize)],
+    index_dict: &HashMap<&str, usize>,
+    result: &mut Vec<String>,
+    last_index: &mut (usize, usize),
 ) -> bool {
     for i in 0..n {
         for j in 0..i {
@@ -31,7 +53,35 @@ pub fn stable_topo_sort_inner(
                 result.remove(i);
                 result.insert(j, t);
 
-                error!("{},{}", x, y);
+                *last_index = (i, j);
+
+                return true;
+            }
+        }
+    }
+    false
+}
+
+pub fn stable_topo_sort_opt(
+    n: usize,
+    edges: &[(usize, usize)],
+    index_dict: &HashMap<&str, usize>,
+    result: &mut Vec<String>,
+    last_index: &mut (usize, usize),
+) -> bool {
+    // optimize: skip checking already sorted items
+    let start = last_index.1;
+
+    for i in start..n {
+        for j in 0..i {
+            let x = index_dict[result[i].as_str()];
+            let y = index_dict[result[j].as_str()];
+            if edges.contains(&(x, y)) {
+                let t = result[i].to_owned();
+                result.remove(i);
+                result.insert(j, t);
+
+                *last_index = (i, j);
 
                 return true;
             }
@@ -43,6 +93,7 @@ pub fn stable_topo_sort_inner(
 pub fn topo_sort(
     mods: &Vec<String>,
     order: &Vec<(String, String)>,
+    optimize: bool,
 ) -> Result<Vec<String>, &'static str> {
     let mut g = IndexGraph::with_vertices(mods.len());
     let mut index_dict: HashMap<&str, usize> = HashMap::new();
@@ -68,10 +119,20 @@ pub fn topo_sort(
     // sort
     let mut result: Vec<String> = mods.iter().map(|e| (*e).to_owned()).collect();
     info!("{result:?}");
+
+    let mut index = (0, 0);
     loop {
-        if !stable_topo_sort_inner(mods.len(), &edges, &index_dict, &mut result) {
+        if !stable_topo_sort_inner(
+            mods.len(),
+            &edges,
+            &index_dict,
+            &mut result,
+            &mut index,
+            optimize,
+        ) {
             break;
         }
+        //error!("{},{}", index.0, index.1);
     }
 
     // Return the sorted vector
@@ -103,7 +164,32 @@ pub fn debug_get_mods_from_rules(order: &[(String, String)]) -> Vec<String> {
 /// # Errors
 ///
 /// This function will return an error if IO operations fail
-pub fn gather_mods<P>(root: &P) -> io::Result<Vec<String>>
+pub fn gather_mods<P>(root: &P, game: ESupportedGame) -> io::Result<Vec<String>>
+where
+    P: AsRef<Path>,
+{
+    match game {
+        ESupportedGame::Morrowind => gather_tes3_mods(root),
+        ESupportedGame::Cyberpunk => gather_cp77_mods(root),
+        ESupportedGame::OpenMorrowind => gather_openmw_mods(root),
+    }
+}
+
+pub fn gather_tes3_mods<P>(_root: &P) -> io::Result<Vec<String>>
+where
+    P: AsRef<Path>,
+{
+    todo!();
+}
+
+pub fn gather_openmw_mods<P>(_root: &P) -> io::Result<Vec<String>>
+where
+    P: AsRef<Path>,
+{
+    todo!();
+}
+
+pub fn gather_cp77_mods<P>(root: &P) -> io::Result<Vec<String>>
 where
     P: AsRef<Path>,
 {
@@ -136,7 +222,7 @@ where
 }
 
 /// Extracts a list of ordering-pairs from the order rules
-pub fn get_order_from_rules(rules: &Vec<Rule>) -> Vec<(String, String)> {
+pub fn get_order_rules(rules: &Vec<Rule>) -> Vec<(String, String)> {
     let mut order: Vec<(String, String)> = vec![];
     for r in rules {
         if let Rule::Order(o) = r {

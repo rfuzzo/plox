@@ -3,7 +3,7 @@ mod unit_tests {
     use core::panic;
     use std::io::Cursor;
 
-    use plox::{expressions::*, get_order_from_rules, parser::*, rules::*};
+    use plox::{expressions::*, get_order_rules, parser::*, rules::*};
 
     #[test]
     fn test_tokenize() {
@@ -74,7 +74,7 @@ mod unit_tests {
         let rules = Parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
             .expect("Failed to parse rule");
-        let order = get_order_from_rules(&rules);
+        let order = get_order_rules(&rules);
         assert_eq!(2, order.len());
 
         let mut rule = rules.first().expect("No rules found");

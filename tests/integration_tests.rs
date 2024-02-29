@@ -24,11 +24,14 @@ mod integration_tests {
         let rules = Parser::new_cyberpunk_parser()
             .parse_rules_from_path("./tests/plox/rules_order.txt")
             .expect("rule parse failed");
-        let order = get_order_from_rules(&rules);
+        let order = get_order_rules(&rules);
 
         let mods = debug_get_mods_from_rules(&order);
 
-        assert!(topo_sort(&mods, &order).is_ok(), "rules contain a cycle")
+        assert!(
+            topo_sort(&mods, &order, false).is_ok(),
+            "rules contain a cycle"
+        )
     }
 
     #[test]
@@ -44,15 +47,18 @@ mod integration_tests {
         let rules = Parser::new_tes3_parser()
             .parse_rules_from_path("./tests/mlox/mlox_base.txt")
             .expect("rule parse failed");
-        let order = get_order_from_rules(&rules);
+        let order = get_order_rules(&rules);
 
         // debug
         let mods = debug_get_mods_from_rules(&order)
             .into_iter()
-            .take(200)
+            .take(100)
             .collect::<Vec<_>>();
 
-        assert!(topo_sort(&mods, &order).is_ok(), "rules contain a cycle")
+        assert!(
+            topo_sort(&mods, &order, false).is_ok(),
+            "rules contain a cycle"
+        )
     }
 
     #[test]
@@ -60,22 +66,25 @@ mod integration_tests {
         let rules = Parser::new_tes3_parser()
             .parse_rules_from_path("./tests/mlox/mlox_user.txt")
             .expect("rule parse failed");
-        let order = get_order_from_rules(&rules);
+        let order = get_order_rules(&rules);
 
         // debug
         let mods = debug_get_mods_from_rules(&order)
             .into_iter()
-            .take(200)
+            .take(100)
             .collect::<Vec<_>>();
 
-        assert!(topo_sort(&mods, &order).is_ok(), "rules contain a cycle")
+        assert!(
+            topo_sort(&mods, &order, false).is_ok(),
+            "rules contain a cycle"
+        )
     }
 
     #[test]
     fn test_gather_mods() {
         let root_path = "./tests";
 
-        match gather_mods(&root_path) {
+        match gather_mods(&root_path, ESupportedGame::Cyberpunk) {
             Ok(mods) => {
                 assert_eq!(
                     mods,

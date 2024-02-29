@@ -59,7 +59,7 @@ fn main() -> ExitCode {
     let parser = plox::parser::Parser::new_cyberpunk_parser();
 
     match &cli.command {
-        Some(Commands::List { root }) => list_mods(&root.into()),
+        Some(Commands::List { root }) => list_mods(&root.into(), parser.game),
         Some(Commands::Verify { rules_dir }) => {
             let rules_path = PathBuf::from(rules_dir).join("plox_rules_base.txt");
             verify(&rules_path, &parser)
@@ -87,7 +87,7 @@ fn sort(
     if let Some(modlist_path) = mod_list {
         mods = read_file_as_list(modlist_path);
     } else {
-        match gather_mods(root) {
+        match gather_mods(root, parser.game) {
             Ok(m) => mods = m,
             Err(e) => {
                 info!("No mods found: {e}");
@@ -96,8 +96,11 @@ fn sort(
         }
     }
 
+    //TODO CLI
+    let optimize = false;
+
     match parser.parse_rules_from_path(rules_path) {
-        Ok(rules) => match topo_sort(&mods, &get_order_from_rules(&rules)) {
+        Ok(rules) => match topo_sort(&mods, &get_order_rules(&rules), optimize) {
             Ok(result) => {
                 if dry_run {
                     info!("Dry run...");
@@ -128,12 +131,14 @@ fn sort(
 /// Verifies integrity of the specified rules
 fn verify(rules_path: &PathBuf, parser: &parser::Parser) -> ExitCode {
     //info!("Verifying rules from {} ...", rules_path.display());
+    // TODO CLI
+    let optimize = false;
 
     match parser.parse_rules_from_path(rules_path) {
         Ok(rules) => {
-            let order = get_order_from_rules(&rules);
+            let order = get_order_rules(&rules);
             let mods = debug_get_mods_from_rules(&order);
-            match topo_sort(&mods, &order) {
+            match topo_sort(&mods, &order, optimize) {
                 Ok(_) => {
                     info!("true");
                     ExitCode::SUCCESS
@@ -152,10 +157,10 @@ fn verify(rules_path: &PathBuf, parser: &parser::Parser) -> ExitCode {
 }
 
 /// Lists the current mod load order
-fn list_mods(root: &PathBuf) -> ExitCode {
+fn list_mods(root: &PathBuf, game: ESupportedGame) -> ExitCode {
     //info!("Printing active mods...");
 
-    match gather_mods(root) {
+    match gather_mods(root, game) {
         Ok(mods) => {
             for m in mods {
                 info!("{}", m);
