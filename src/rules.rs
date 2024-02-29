@@ -3,7 +3,10 @@
 ////////////////////////////////////////////////////////////////////////
 use std::io::{BufRead, Error, ErrorKind, Read, Result, Seek};
 
-use crate::{expressions::*, parser::*};
+use crate::{
+    expressions::*,
+    parser::{self, read_comment},
+};
 
 /// A rule as specified in the rules document
 pub trait TRule {
@@ -14,8 +17,12 @@ pub trait TRule {
     fn eval(&self, items: &[String]) -> bool;
 }
 
-pub trait Parser<T: TRule> {
-    fn parse<R: Read + BufRead + Seek>(rule: &mut T, reader: R, ext: &str) -> Result<()>;
+pub trait TParser<T: TRule> {
+    fn parse<R: Read + BufRead + Seek>(
+        rule: &mut T,
+        reader: R,
+        parser: &parser::Parser,
+    ) -> Result<()>;
 }
 
 #[derive(Debug, Clone)]
@@ -55,8 +62,12 @@ impl TRule for Rule {
     }
 }
 
-impl Parser<Rule> for Rule {
-    fn parse<R: Read + BufRead + Seek>(rule: &mut Rule, reader: R, ext: &str) -> Result<()> {
+impl TParser<Rule> for Rule {
+    fn parse<R: Read + BufRead + Seek>(
+        rule: &mut Rule,
+        reader: R,
+        parser: &parser::Parser,
+    ) -> Result<()> {
         match rule {
             Rule::Order(_) => {
                 // order rules are not parsed like this
@@ -65,9 +76,9 @@ impl Parser<Rule> for Rule {
                     "Parsing error: Trying to Parse Order rule",
                 ))
             }
-            Rule::Note(x) => Note::parse(x, reader, ext),
-            Rule::Conflict(x) => Conflict::parse(x, reader, ext),
-            Rule::Requires(x) => Requires::parse(x, reader, ext),
+            Rule::Note(x) => Note::parse(x, reader, parser),
+            Rule::Conflict(x) => Conflict::parse(x, reader, parser),
+            Rule::Requires(x) => Requires::parse(x, reader, parser),
         }
     }
 }
@@ -162,14 +173,18 @@ impl TRule for Note {
         false
     }
 }
-impl Parser<Note> for Note {
-    fn parse<R: Read + BufRead + Seek>(this: &mut Note, mut reader: R, ext: &str) -> Result<()> {
+impl TParser<Note> for Note {
+    fn parse<R: Read + BufRead + Seek>(
+        this: &mut Note,
+        mut reader: R,
+        parser: &parser::Parser,
+    ) -> Result<()> {
         if let Ok(Some(comment)) = read_comment(&mut reader) {
             this.set_comment(comment);
         }
 
         // add all parsed expressions
-        this.expressions = parse_expressions(reader, ext)?;
+        this.expressions = parser.parse_expressions(reader)?;
 
         Ok(())
     }
@@ -213,18 +228,18 @@ impl TRule for Conflict {
         false
     }
 }
-impl Parser<Conflict> for Conflict {
+impl TParser<Conflict> for Conflict {
     fn parse<R: Read + BufRead + Seek>(
         this: &mut Conflict,
         mut reader: R,
-        ext: &str,
+        parser: &parser::Parser,
     ) -> Result<()> {
         if let Ok(Some(comment)) = read_comment(&mut reader) {
             this.set_comment(comment);
         }
 
         // add all parsed expressions
-        let expressions = parse_expressions(reader, ext)?;
+        let expressions = parser.parse_expressions(reader)?;
         for (i, e) in expressions.into_iter().enumerate() {
             match i {
                 0 => {
@@ -280,18 +295,18 @@ impl TRule for Requires {
     }
 }
 
-impl Parser<Requires> for Requires {
+impl TParser<Requires> for Requires {
     fn parse<R: Read + BufRead + Seek>(
         this: &mut Requires,
         mut reader: R,
-        ext: &str,
+        parser: &parser::Parser,
     ) -> Result<()> {
         if let Ok(Some(comment)) = read_comment(&mut reader) {
             this.set_comment(comment);
         }
 
         // add all parsed expressions
-        let expressions = parse_expressions(reader, ext)?;
+        let expressions = parser.parse_expressions(reader)?;
         for (i, e) in expressions.into_iter().enumerate() {
             match i {
                 0 => {

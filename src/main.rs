@@ -1,6 +1,5 @@
 use clap::{Parser, Subcommand};
 use log::{error, info};
-use plox::parser::parse_rules_from_path;
 use std::path::PathBuf;
 use std::process::ExitCode;
 
@@ -56,25 +55,28 @@ fn main() -> ExitCode {
     let cli = Cli::parse();
     let _ = simple_logging::log_to_file(format!("{}.log", CARGO_NAME), log::LevelFilter::Debug);
 
+    // TODO fix from cli
+    let parser = plox::parser::Parser::new_cyberpunk_parser();
+
     match &cli.command {
         Some(Commands::List { root }) => list_mods(&root.into()),
         Some(Commands::Verify { rules_dir }) => {
-            //
             let rules_path = PathBuf::from(rules_dir).join("plox_rules_base.txt");
-            verify(&rules_path)
+            verify(&rules_path, &parser)
         }
         Some(Commands::Sort {
             root,
             rules_dir,
             mod_list,
             dry_run,
-        }) => sort(&root.into(), &rules_dir.into(), mod_list, *dry_run),
+        }) => sort(&parser, &root.into(), &rules_dir.into(), mod_list, *dry_run),
         None => ExitCode::FAILURE,
     }
 }
 
 /// Sorts the current mod load order according to specified rules
 fn sort(
+    parser: &parser::Parser,
     root: &PathBuf,
     rules_path: &PathBuf,
     mod_list: &Option<PathBuf>,
@@ -94,7 +96,7 @@ fn sort(
         }
     }
 
-    match parse_rules_from_path(rules_path) {
+    match parser.parse_rules_from_path(rules_path) {
         Ok(rules) => match topo_sort(&mods, &get_order_from_rules(&rules)) {
             Ok(result) => {
                 if dry_run {
@@ -124,10 +126,10 @@ fn sort(
 }
 
 /// Verifies integrity of the specified rules
-fn verify(rules_path: &PathBuf) -> ExitCode {
+fn verify(rules_path: &PathBuf, parser: &parser::Parser) -> ExitCode {
     //info!("Verifying rules from {} ...", rules_path.display());
 
-    match parse_rules_from_path(rules_path) {
+    match parser.parse_rules_from_path(rules_path) {
         Ok(rules) => {
             let order = get_order_from_rules(&rules);
             let mods = debug_get_mods_from_rules(&order);

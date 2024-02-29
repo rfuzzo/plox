@@ -10,13 +10,15 @@ mod unit_tests {
         {
             let input = " a.archive \"mod with spaces.archive\" \"c.archive\"";
             let expected = ["a.archive", "mod with spaces.archive", "c.archive"];
-            assert_eq!(expected, tokenize(input.to_owned()).as_slice());
+            let parser = Parser::new_cyberpunk_parser();
+            assert_eq!(expected, parser.tokenize(input.to_owned()).as_slice());
         }
 
         {
             let input = "a.archive";
             let expected = ["a.archive"];
-            assert_eq!(expected, tokenize(input.to_owned()).as_slice());
+            let parser = Parser::new_cyberpunk_parser();
+            assert_eq!(expected, parser.tokenize(input.to_owned()).as_slice());
         }
     }
 
@@ -28,7 +30,10 @@ mod unit_tests {
         let input = "[Order]\na.archive\nb.archive\nc.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = parse_rules_from_reader(reader).expect("Failed to parse rule");
+        let parser = Parser::new_cyberpunk_parser();
+        let rules = parser
+            .parse_rules_from_reader(reader)
+            .expect("Failed to parse rule");
         assert_eq!(2, rules.len());
 
         let mut rule = rules.first().expect("No rules found");
@@ -49,7 +54,9 @@ mod unit_tests {
         let input = "[Order]a.archive \"b name.archive\" c.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = parse_rules_from_reader(reader).expect("Failed to parse rule");
+        let rules = Parser::new_cyberpunk_parser()
+            .parse_rules_from_reader(reader)
+            .expect("Failed to parse rule");
         assert_eq!(2, rules.len());
 
         let mut rule = rules.first().expect("No rules found");
@@ -73,7 +80,10 @@ mod unit_tests {
         let input = "[Note message] a.archive b.archive c.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = parse_rules_from_reader(reader).expect("Failed to parse rule");
+        let parser = Parser::new_cyberpunk_parser();
+        let rules = parser
+            .parse_rules_from_reader(reader)
+            .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
         let rule = rules.first().expect("No rules found");
         assert_eq!("message", rule.get_comment());
@@ -94,7 +104,10 @@ mod unit_tests {
         let input = "[Note message] a.archive b name.archive c.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = parse_rules_from_reader(reader).expect("Failed to parse rule");
+        let parser = Parser::new_cyberpunk_parser();
+        let rules = parser
+            .parse_rules_from_reader(reader)
+            .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
         let rule = rules.first().expect("No rules found");
         assert_eq!("message", rule.get_comment());
@@ -115,7 +128,9 @@ mod unit_tests {
         let input = "[Note message]\na.archive\nb.archive\nc.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = parse_rules_from_reader(reader).expect("Failed to parse rule");
+        let rules = Parser::new_cyberpunk_parser()
+            .parse_rules_from_reader(reader)
+            .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
         let rule = rules.first().expect("No rules found");
         assert_eq!("message", rule.get_comment());
@@ -136,7 +151,9 @@ mod unit_tests {
         let input = "[Note]\n message\na.archive\nb.archive\nc.archive";
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = parse_rules_from_reader(reader).expect("Failed to parse rule");
+        let rules = Parser::new_cyberpunk_parser()
+            .parse_rules_from_reader(reader)
+            .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
         let rule = rules.first().expect("No rules found");
         assert_eq!("message", rule.get_comment());
@@ -157,7 +174,9 @@ mod unit_tests {
         let input = "[Note]\na b c.archive\nb.archive";
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = parse_rules_from_reader(reader).expect("Failed to parse rule");
+        let rules = Parser::new_cyberpunk_parser()
+            .parse_rules_from_reader(reader)
+            .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
         let rule = rules.first().expect("No rules found");
         assert_eq!("", rule.get_comment());
@@ -178,7 +197,9 @@ mod unit_tests {
         let input = "[Note]\n[ALL a.archive [NOT b.archive]]";
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = parse_rules_from_reader(reader).expect("Failed to parse rule");
+        let rules = Parser::new_cyberpunk_parser()
+            .parse_rules_from_reader(reader)
+            .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
         let rule = rules.first().expect("No rules found");
         assert_eq!("", rule.get_comment());
@@ -195,7 +216,9 @@ mod unit_tests {
         let input = "[Conflict message] a.archive b.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = parse_rules_from_reader(reader).expect("Failed to parse rule");
+        let rules = Parser::new_cyberpunk_parser()
+            .parse_rules_from_reader(reader)
+            .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
         let rule = rules.first().expect("No rules found");
         assert_eq!("message", rule.get_comment());
@@ -215,7 +238,9 @@ mod unit_tests {
         let input = "[Conflict message] a.archive b name.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = parse_rules_from_reader(reader).expect("Failed to parse rule");
+        let rules = Parser::new_cyberpunk_parser()
+            .parse_rules_from_reader(reader)
+            .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
         let rule = rules.first().expect("No rules found");
         assert_eq!("message", rule.get_comment());
@@ -235,7 +260,9 @@ mod unit_tests {
         let input = "[Conflict message]\na.archive\nb.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = parse_rules_from_reader(reader).expect("Failed to parse rule");
+        let rules = Parser::new_cyberpunk_parser()
+            .parse_rules_from_reader(reader)
+            .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
         let rule = rules.first().expect("No rules found");
         assert_eq!("message", rule.get_comment());
@@ -255,7 +282,9 @@ mod unit_tests {
         let input = "[Conflict message]\na.archive\nb.archive\nc.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = parse_rules_from_reader(reader).expect("Failed to parse rule");
+        let rules = Parser::new_cyberpunk_parser()
+            .parse_rules_from_reader(reader)
+            .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
         let rule = rules.first().expect("No rules found");
         assert_eq!("message", rule.get_comment());
@@ -275,7 +304,9 @@ mod unit_tests {
         let input = "[Conflict]\nname a.archive\nb.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = parse_rules_from_reader(reader).expect("Failed to parse rule");
+        let rules = Parser::new_cyberpunk_parser()
+            .parse_rules_from_reader(reader)
+            .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
         let rule = rules.first().expect("No rules found");
         assert_eq!("", rule.get_comment());
@@ -295,7 +326,9 @@ mod unit_tests {
         let input = "[Conflict]\nname a.archive\n[ALL b.archive c name.archive]".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = parse_rules_from_reader(reader).expect("Failed to parse rule");
+        let rules = Parser::new_cyberpunk_parser()
+            .parse_rules_from_reader(reader)
+            .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
         let rule = rules.first().expect("No rules found");
         assert_eq!("", rule.get_comment());
@@ -318,7 +351,9 @@ mod unit_tests {
         let input: String = "[Requires message] a.archive b.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = parse_rules_from_reader(reader).expect("Failed to parse rule");
+        let rules = Parser::new_cyberpunk_parser()
+            .parse_rules_from_reader(reader)
+            .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
         let rule = rules.first().expect("No rules found");
         assert_eq!("message", rule.get_comment());
@@ -338,7 +373,9 @@ mod unit_tests {
         let input = "[Requires message] a.archive b name.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = parse_rules_from_reader(reader).expect("Failed to parse rule");
+        let rules = Parser::new_cyberpunk_parser()
+            .parse_rules_from_reader(reader)
+            .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
         let rule = rules.first().expect("No rules found");
         assert_eq!("message", rule.get_comment());
@@ -358,7 +395,9 @@ mod unit_tests {
         let input = "[Requires message]\na.archive\nb.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = parse_rules_from_reader(reader).expect("Failed to parse rule");
+        let rules = Parser::new_cyberpunk_parser()
+            .parse_rules_from_reader(reader)
+            .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
         let rule = rules.first().expect("No rules found");
         assert_eq!("message", rule.get_comment());
@@ -384,13 +423,17 @@ mod unit_tests {
     }
 
     fn test_atomic(input: &str, expected: &str) {
+        let parser = Parser::new_cyberpunk_parser();
         assert_eq!(
             1,
-            parse_expressions(Cursor::new(input.as_bytes()))
+            parser
+                .parse_expressions(Cursor::new(input.as_bytes()))
                 .expect("No expressions parsed")
                 .len()
         );
-        let e = parse_expression(input).expect("No expressions parsed");
+        let e = parser
+            .parse_expression(input)
+            .expect("No expressions parsed");
         assert!(is_atomic(&e, expected));
     }
 
@@ -411,13 +454,17 @@ mod unit_tests {
     }
 
     fn test_all(input: &str, expected: Vec<&str>) {
+        let parser = Parser::new_cyberpunk_parser();
         assert_eq!(
             1,
-            parse_expressions(Cursor::new(input.as_bytes()))
+            parser
+                .parse_expressions(Cursor::new(input.as_bytes()))
                 .expect("No expressions parsed")
                 .len()
         );
-        let expr = parse_expression(input).expect("No expressions parsed");
+        let expr = parser
+            .parse_expression(input)
+            .expect("No expressions parsed");
         if let Expression::ALL(b) = expr {
             assert_eq!(expected.len(), b.expressions.len());
             for (i, e) in b.expressions.iter().enumerate() {
@@ -447,16 +494,22 @@ mod unit_tests {
 
     #[test]
     fn test_multiline_expr() {
+        let parser = Parser::new_cyberpunk_parser();
+
         {
             let input = "[ANY [NOT x.archive] archive name.archive\na.archive]".to_owned();
             let reader = Cursor::new(input.as_bytes());
-            let expr = parse_expressions(reader).expect("No expressions parsed");
+            let expr = parser
+                .parse_expressions(reader)
+                .expect("No expressions parsed");
             assert_eq!(1, expr.len());
         }
         {
             let input = "a.archive Assassins Armory - Arrows.archive a.archive c.archive\n[ANY AreaEffectArrows XB Edition.archive\nAreaEffectArrows.archive b.archive\n[NOT x.archive]]".to_owned();
             let reader = Cursor::new(input.as_bytes());
-            let expr = parse_expressions(reader).expect("No expressions parsed");
+            let expr = parser
+                .parse_expressions(reader)
+                .expect("No expressions parsed");
             assert_eq!(5, expr.len());
         }
     }
