@@ -2,6 +2,8 @@
 // EXPRESSIONS
 ////////////////////////////////////////////////////////////////////////
 
+use crate::wild_contains;
+
 // An expression may be evaluated against a load order
 pub trait TExpression {
     fn eval(&self, items: &[String]) -> bool;
@@ -70,8 +72,7 @@ impl Atomic {
 impl TExpression for Atomic {
     /// atomics evaluate as true if the input list contains the item
     fn eval(&self, items: &[String]) -> bool {
-        // TODO wildcards
-        items.contains(&self.item)
+        wild_contains(items, &self.item)
     }
 }
 

@@ -3,6 +3,8 @@ use std::collections::HashMap;
 use log::info;
 use toposort_scc::IndexGraph;
 
+use crate::wild_contains;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ESortType {
     Unstable,
@@ -116,14 +118,16 @@ impl Sorter {
         order: &Vec<(String, String)>,
     ) -> Result<Vec<String>, &'static str> {
         let mut g = IndexGraph::with_vertices(mods.len());
+
         let mut index_dict: HashMap<&str, usize> = HashMap::new();
         for (i, m) in mods.iter().enumerate() {
             index_dict.insert(m, i);
         }
+
         // add edges
         let mut edges: Vec<(usize, usize)> = vec![];
         for (a, b) in order {
-            if mods.contains(a) && mods.contains(b) {
+            if wild_contains(mods, a) && wild_contains(mods, b) {
                 let idx_a = index_dict[a.as_str()];
                 let idx_b = index_dict[b.as_str()];
                 g.add_edge(idx_a, idx_b);

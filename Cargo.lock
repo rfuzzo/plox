@@ -213,6 +213,7 @@ dependencies = [
  "log",
  "pretty_assertions",
  "rand",
+ "regex",
  "toposort-scc",
 ]
 

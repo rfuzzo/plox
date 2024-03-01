@@ -241,15 +241,15 @@ pub fn update_new_load_order(game: ESupportedGame, result: Vec<String>) {
     }
 }
 
-fn update_cp77(result: Vec<String>) {
+fn update_cp77(_result: Vec<String>) {
     todo!()
 }
 
-fn update_openmw(result: Vec<String>) {
+fn update_openmw(_result: Vec<String>) {
     todo!()
 }
 
-fn update_tes3(result: Vec<String>) {
+fn update_tes3(_result: Vec<String>) {
     todo!()
 }
 
@@ -309,4 +309,26 @@ where
         }
     }
     result
+}
+
+pub fn wild_contains(list: &[String], str: &String) -> bool {
+    if str.contains('*') {
+        // Replace * with .* to match any sequence of characters
+        let regex_pattern = str.replace("*", ".*");
+        if let Ok(regex) = regex::Regex::new(&regex_pattern) {
+            for item in list {
+                // Check if the item matches the pattern
+                if regex.is_match(item) {
+                    return true;
+                }
+            }
+        } else {
+            log::error!("Could not construct wildcard pattern for {}", str);
+        }
+
+        false
+    } else {
+        // normal contains
+        list.contains(str)
+    }
 }
