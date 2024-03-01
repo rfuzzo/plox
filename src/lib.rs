@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::fs::{self, File};
 use std::io::BufRead;
 use std::io::{self};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use toposort_scc::IndexGraph;
 
 pub mod expressions;
@@ -69,7 +69,7 @@ impl Sorter {
         last_index: &mut usize,
     ) -> bool {
         match self.sort_type {
-            ESortType::Unstable => todo!(),
+            ESortType::Unstable => panic!("not supported"),
             ESortType::StableOpt => {
                 Self::stable_topo_sort_opt(n, edges, index_dict, index_dict_rev, result, last_index)
             }
@@ -261,18 +261,125 @@ where
     }
 }
 
-pub fn gather_tes3_mods<P>(_root: &P) -> io::Result<Vec<String>>
+/// Get all plugins (esp, omwaddon, omwscripts) in a folder
+fn get_plugins_in_folder<P>(path: &P, use_omw_plugins: bool) -> Vec<PathBuf>
 where
     P: AsRef<Path>,
 {
-    todo!();
+    // get all plugins
+    let mut results: Vec<PathBuf> = vec![];
+    if let Ok(plugins) = std::fs::read_dir(path) {
+        plugins.for_each(|p| {
+            if let Ok(file) = p {
+                let file_path = file.path();
+                if file_path.is_file() {
+                    if let Some(ext_os) = file_path.extension() {
+                        let ext = ext_os.to_ascii_lowercase();
+                        if ext == "esm"
+                            || ext == "esp"
+                            || (use_omw_plugins && ext == "omwaddon")
+                            || (use_omw_plugins && ext == "omwscripts")
+                        {
+                            results.push(file_path);
+                        }
+                    }
+                }
+            }
+        });
+    }
+    results
 }
 
-pub fn gather_openmw_mods<P>(_root: &P) -> io::Result<Vec<String>>
+pub fn get_plugins_sorted<P>(path: &P, use_omw_plugins: bool) -> Vec<PathBuf>
 where
     P: AsRef<Path>,
 {
-    todo!();
+    // get plugins
+    let mut plugins = get_plugins_in_folder(path, use_omw_plugins);
+
+    // sort
+    plugins.sort_by(|a, b| {
+        fs::metadata(a.clone())
+            .expect("filetime")
+            .modified()
+            .unwrap()
+            .cmp(
+                &fs::metadata(b.clone())
+                    .expect("filetime")
+                    .modified()
+                    .unwrap(),
+            )
+    });
+    plugins
+}
+
+#[macro_use]
+extern crate ini;
+
+pub fn gather_tes3_mods<P>(path: &P) -> io::Result<Vec<String>>
+where
+    P: AsRef<Path>,
+{
+    let files = get_plugins_sorted(&path, false);
+
+    let names = files
+        .iter()
+        .filter_map(|f| {
+            if let Some(file_name) = f.file_name().and_then(|n| n.to_str()) {
+                return Some(file_name.to_owned());
+            }
+            None
+        })
+        .collect::<Vec<_>>();
+
+    // check against mw ini
+    // Move one directory up
+    if let Some(parent_dir) = PathBuf::from(path.as_ref()).parent() {
+        // Construct the path to "morrowind.ini"
+        let morrowind_ini_path = parent_dir.join("Morrowind.ini");
+
+        // Check if the file exists
+        if morrowind_ini_path.exists() {
+            // parse ini
+            if let Some(path) = morrowind_ini_path.to_str() {
+                let map = ini!(path);
+
+                let mut final_files: Vec<String> = vec![];
+                if let Some(section) = map.get("Game Files".to_lowercase().as_str()) {
+                    for plugin_name in section.values().flatten() {
+                        if names.contains(plugin_name) {
+                            final_files.push(plugin_name.to_owned());
+                        }
+                    }
+
+                    return Ok(final_files);
+                }
+            }
+        }
+    }
+
+    Ok(names)
+}
+
+pub fn gather_openmw_mods<P>(path: &P) -> io::Result<Vec<String>>
+where
+    P: AsRef<Path>,
+{
+    let files = get_plugins_sorted(&path, true);
+
+    let names = files
+        .iter()
+        .filter_map(|f| {
+            if let Some(file_name) = f.file_name().and_then(|n| n.to_str()) {
+                return Some(file_name.to_owned());
+            }
+            None
+        })
+        .collect::<Vec<_>>();
+
+    // TODO parse omw cfg
+
+    Ok(names)
 }
 
 pub fn gather_cp77_mods<P>(root: &P) -> io::Result<Vec<String>>
@@ -293,6 +400,7 @@ where
                             if let Some(file_name) = e.file_name().and_then(|n| n.to_str()) {
                                 return Some(file_name.to_owned());
                             }
+                            //return Some(e);
                         }
                     }
                 }
