@@ -1,25 +1,38 @@
 use clap::ValueEnum;
-use log::{error, info};
-use std::collections::HashMap;
+use log::error;
 use std::env;
 use std::fs::{self, File};
 use std::io::BufRead;
 use std::io::{self};
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
-use toposort_scc::IndexGraph;
 
 pub mod expressions;
 pub mod parser;
 pub mod rules;
+pub mod sorter;
 
 use rules::*;
 
-////////////////////////////////////////////////////////////////////////
-/// LOGIC
-////////////////////////////////////////////////////////////////////////
+#[derive(Debug, Clone, Copy, ValueEnum, Default)]
+pub enum ELogLevel {
+    Trace,
+    Debug,
+    #[default]
+    Info,
+    Warn,
+    Error,
+}
 
-pub const PLOX_RULES_BASE: &str = "plox_base.txt";
+pub fn log_level_to_str(level: ELogLevel) -> String {
+    match level {
+        ELogLevel::Trace => "trace".into(),
+        ELogLevel::Debug => "debug".into(),
+        ELogLevel::Info => "info".into(),
+        ELogLevel::Warn => "warn".into(),
+        ELogLevel::Error => "error".into(),
+    }
+}
 
 #[derive(Debug, Clone, Copy, ValueEnum)]
 pub enum ESupportedGame {
@@ -27,208 +40,10 @@ pub enum ESupportedGame {
     OpenMorrowind,
     Cyberpunk,
 }
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ESortType {
-    Unstable,
-    StableOpt,
-    StableFull,
-}
-
-pub struct Sorter {
-    pub sort_type: ESortType,
-
-    pub comment: String,
-}
-
-impl Sorter {
-    pub fn new_unstable() -> Self {
-        Sorter::new(ESortType::Unstable)
-    }
-
-    pub fn new_stable() -> Self {
-        Sorter::new(ESortType::StableOpt)
-    }
-
-    pub fn new_stable_full() -> Self {
-        Sorter::new(ESortType::StableFull)
-    }
-
-    pub fn new(sort_type: ESortType) -> Self {
-        Self {
-            sort_type,
-            comment: "".to_owned(),
-        }
-    }
-
-    pub fn stable_topo_sort_inner(
-        &self,
-        n: usize,
-        edges: &[(usize, usize)],
-        index_dict: &HashMap<&str, usize>,
-        index_dict_rev: &HashMap<usize, &str>,
-        result: &mut Vec<String>,
-        last_index: &mut usize,
-    ) -> bool {
-        match self.sort_type {
-            ESortType::Unstable => panic!("not supported"),
-            ESortType::StableOpt => {
-                Self::stable_topo_sort_opt(n, edges, index_dict, index_dict_rev, result, last_index)
-            }
-            ESortType::StableFull => {
-                Self::stable_topo_sort_full(n, edges, index_dict, result, last_index)
-            }
-        }
-    }
-
-    pub fn stable_topo_sort_full(
-        n: usize,
-        edges: &[(usize, usize)],
-        index_dict: &HashMap<&str, usize>,
-        result: &mut Vec<String>,
-        last_index: &mut usize,
-    ) -> bool {
-        for i in 0..n {
-            for j in 0..i {
-                let x = index_dict[result[i].as_str()];
-                let y = index_dict[result[j].as_str()];
-                if edges.contains(&(x, y)) {
-                    let t = result[i].to_owned();
-                    result.remove(i);
-                    result.insert(j, t);
-
-                    *last_index = j;
-
-                    return true;
-                }
-            }
-        }
-        false
-    }
-
-    pub fn stable_topo_sort_opt(
-        _n: usize,
-        edges: &[(usize, usize)],
-        _index_dict: &HashMap<&str, usize>,
-        index_dict_rev: &HashMap<usize, &str>,
-        result: &mut Vec<String>,
-        last_index: &mut usize,
-    ) -> bool {
-        // optimize A: skip checking already sorted items
-        // let start = *last_index;
-        // for i in start..n {
-        //     for j in 0..i {
-        //         let x = index_dict[result[i].as_str()];
-        //         let y = index_dict[result[j].as_str()];
-        //         if edges.contains(&(x, y)) {
-        //             let t = result[i].to_owned();
-        //             result.remove(i);
-        //             result.insert(j, t);
-
-        //             *last_index = j;
-
-        //             return true;
-        //         }
-        //     }
-        // }
-
-        // optimize B: only check edges
-        for (idx, edge) in edges.iter().enumerate() {
-            let i = edge.0;
-            let j = edge.1;
-
-            let x = index_dict_rev[&i];
-            let y = index_dict_rev[&j];
-
-            let idx_of_x = result.iter().position(|f| f == x).unwrap();
-            let idx_of_y = result.iter().position(|f| f == y).unwrap();
-
-            // if i not before j x should be before y
-            if idx_of_x > idx_of_y {
-                let t = result[idx_of_x].to_owned();
-                result.remove(idx_of_x);
-                result.insert(idx_of_y, t);
-
-                *last_index = idx;
-
-                return true;
-            }
-        }
-
-        false
-    }
-
-    pub fn topo_sort(
-        &mut self,
-        mods: &Vec<String>,
-        order: &Vec<(String, String)>,
-    ) -> Result<Vec<String>, &'static str> {
-        let mut g = IndexGraph::with_vertices(mods.len());
-        let mut index_dict: HashMap<&str, usize> = HashMap::new();
-        for (i, m) in mods.iter().enumerate() {
-            index_dict.insert(m, i);
-        }
-        // add edges
-        let mut edges: Vec<(usize, usize)> = vec![];
-        for (a, b) in order {
-            if mods.contains(a) && mods.contains(b) {
-                let idx_a = index_dict[a.as_str()];
-                let idx_b = index_dict[b.as_str()];
-                g.add_edge(idx_a, idx_b);
-                edges.push((idx_a, idx_b));
-            }
-        }
-
-        edges.dedup();
-
-        // cycle check
-        let sort = g.toposort();
-        if sort.is_none() {
-            return Err("Graph contains a cycle");
-        }
-
-        if self.sort_type == ESortType::Unstable {
-            let r = sort
-                .unwrap()
-                .iter()
-                .map(|f| mods[*f].to_owned())
-                .collect::<Vec<_>>();
-            return Ok(r);
-        }
-
-        // sort
-        let mut result: Vec<String> = mods.iter().map(|e| (*e).to_owned()).collect();
-        info!("{result:?}");
-
-        // reverse
-        let mut index_dict_rev: HashMap<usize, &str> = HashMap::default();
-        for (k, v) in &index_dict {
-            index_dict_rev.insert(*v, k);
-        }
-
-        let mut index = 0;
-        let max_loop = 10000;
-
-        for _n in 1..max_loop {
-            if !self.stable_topo_sort_inner(
-                mods.len(),
-                &edges,
-                &index_dict,
-                &index_dict_rev,
-                &mut result,
-                &mut index,
-            ) {
-                break;
-            }
-        }
-
-        // Return the sorted vector
-        Ok(result)
-    }
-}
+pub const PLOX_RULES_BASE: &str = "plox_base.txt";
 
 ////////////////////////////////////////////////////////////////////////
-/// HELPERS
+/// GAMES
 ////////////////////////////////////////////////////////////////////////
 
 /// flattens a list of ordered mod pairs into a list of mod names
@@ -467,8 +282,23 @@ pub fn get_order_rules(rules: &Vec<Rule>) -> Vec<(String, String)> {
 }
 
 ////////////////////////////////////////////////////////////////////////
-/// MISC HELPERS
+/// HELPERS
 ////////////////////////////////////////////////////////////////////////
+
+pub fn is_current_directory_name(name_to_check: &str) -> bool {
+    // Get the current directory
+    if let Ok(current_dir) = env::current_dir() {
+        // Extract the directory name
+        if let Some(dir_name) = current_dir.file_name() {
+            // Convert the directory name to a string
+            if let Some(name) = dir_name.to_str() {
+                return name == name_to_check;
+            }
+        }
+    }
+
+    false
+}
 
 /// Returns an Iterator to the Reader of the lines of the file.
 ///

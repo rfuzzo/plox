@@ -2,8 +2,14 @@
 mod unit_tests {
     use plox::{expressions::*, rules::*};
 
+    fn init() {
+        let _ = env_logger::builder().is_test(true).try_init();
+    }
+
     #[test]
     fn test_notes() {
+        init();
+
         let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
             .iter()
             .map(|e| (*e).into())
@@ -26,6 +32,8 @@ mod unit_tests {
 
     #[test]
     fn test_conflicts() {
+        init();
+
         let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
             .iter()
             .map(|e| (*e).into())
@@ -58,6 +66,8 @@ mod unit_tests {
 
     #[test]
     fn test_requires() {
+        init();
+
         let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
             .iter()
             .map(|e| (*e).into())
@@ -99,6 +109,8 @@ mod unit_tests {
     // ANY
     #[test]
     fn test_any() {
+        init();
+
         let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
             .iter()
             .map(|e| (*e).into())
@@ -136,7 +148,7 @@ mod unit_tests {
         }
     }
 
-    // ALL
+    // TODO ALL
 
-    // NOT
+    // TODO NOT
 }

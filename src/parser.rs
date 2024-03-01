@@ -193,7 +193,7 @@ impl Parser {
                 }
                 Err(err) => {
                     // log error and skip chunk
-                    warn!(
+                    debug!(
                         "Error '{}' at chunk #{}, starting at line: {}",
                         err, idx, info
                     );

@@ -2,8 +2,14 @@
 mod unit_tests {
     use plox::expressions::*;
 
+    fn init() {
+        let _ = env_logger::builder().is_test(true).try_init();
+    }
+
     #[test]
     fn evaluate_all() {
+        init();
+
         let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
             .iter()
             .map(|e| (*e).into())
@@ -20,6 +26,8 @@ mod unit_tests {
 
     #[test]
     fn evaluate_any() {
+        init();
+
         let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
             .iter()
             .map(|e| (*e).into())
@@ -36,6 +44,8 @@ mod unit_tests {
 
     #[test]
     fn evaluate_not() {
+        init();
+
         let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
             .iter()
             .map(|e| (*e).into())
@@ -52,6 +62,8 @@ mod unit_tests {
 
     #[test]
     fn evaluate_nested() {
+        init();
+
         let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
             .iter()
             .map(|e| (*e).into())

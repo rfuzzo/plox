@@ -5,8 +5,14 @@ mod unit_tests {
 
     use plox::{expressions::*, get_order_rules, parser::*, rules::*};
 
+    fn init() {
+        let _ = env_logger::builder().is_test(true).try_init();
+    }
+
     #[test]
     fn test_tokenize() {
+        init();
+
         let parser = Parser::new_cyberpunk_parser();
 
         {
@@ -45,6 +51,8 @@ mod unit_tests {
 
     #[test]
     fn test_multiline_order() {
+        init();
+
         let input = "[Order]\na.archive\nb.archive\nc.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
@@ -68,6 +76,8 @@ mod unit_tests {
 
     #[test]
     fn test_multiline_order_with_whitespace() {
+        init();
+
         let input = "[Order]\na.archive\narchive with spaces.archive\nc.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
@@ -92,6 +102,8 @@ mod unit_tests {
 
     #[test]
     fn test_inline_order() {
+        init();
+
         {
             let input = "[Order]a.archive \"b name.archive\" c.archive".to_owned();
             let reader = Cursor::new(input.as_bytes());
@@ -136,6 +148,8 @@ mod unit_tests {
 
     #[test]
     fn test_inline_note() {
+        init();
+
         let input = "[Note message] a.archive b.archive c.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
@@ -160,6 +174,8 @@ mod unit_tests {
 
     #[test]
     fn test_inline_note2() {
+        init();
+
         let input = "[Note message] a.archive b name.archive c.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
@@ -184,6 +200,8 @@ mod unit_tests {
 
     #[test]
     fn test_multiline_note() {
+        init();
+
         let input = "[Note message]\na.archive\nb.archive\nc.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
@@ -207,6 +225,8 @@ mod unit_tests {
 
     #[test]
     fn test_multiline_note_with_comment() {
+        init();
+
         let input = "[Note]\n message\na.archive\nb.archive\nc.archive";
         let reader = Cursor::new(input.as_bytes());
 
@@ -230,6 +250,8 @@ mod unit_tests {
 
     #[test]
     fn test_split_note() {
+        init();
+
         let input = "[Note]\na b c.archive\nb.archive";
         let reader = Cursor::new(input.as_bytes());
 
@@ -253,6 +275,8 @@ mod unit_tests {
 
     #[test]
     fn test_nested_note() {
+        init();
+
         let input = "[Note]\n[ALL a.archive [NOT b.archive]]";
         let reader = Cursor::new(input.as_bytes());
 
@@ -272,6 +296,8 @@ mod unit_tests {
 
     #[test]
     fn test_inline_conflict() {
+        init();
+
         let input = "[Conflict message] a.archive b.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
@@ -294,6 +320,8 @@ mod unit_tests {
 
     #[test]
     fn test_inline_conflict_whitespace() {
+        init();
+
         let input = "[Conflict message] a.archive b name.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
@@ -316,6 +344,8 @@ mod unit_tests {
 
     #[test]
     fn test_multiline_conflict() {
+        init();
+
         let input = "[Conflict message]\na.archive\nb.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
@@ -338,6 +368,8 @@ mod unit_tests {
 
     #[test]
     fn test_multiline_conflict_overflow() {
+        init();
+
         let input = "[Conflict message]\na.archive\nb.archive\nc.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
@@ -360,6 +392,8 @@ mod unit_tests {
 
     #[test]
     fn test_multiline_conflict_whitespace() {
+        init();
+
         let input = "[Conflict]\nname a.archive\nb.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
@@ -382,6 +416,8 @@ mod unit_tests {
 
     #[test]
     fn test_multiline_conflict_expression() {
+        init();
+
         let input = "[Conflict]\nname a.archive\n[ALL b.archive c name.archive]".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
@@ -407,6 +443,8 @@ mod unit_tests {
 
     #[test]
     fn test_inline_requires() {
+        init();
+
         let input: String = "[Requires message] a.archive b.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
@@ -429,6 +467,8 @@ mod unit_tests {
 
     #[test]
     fn test_inline_requires_whitespace() {
+        init();
+
         let input = "[Requires message] a.archive b name.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
@@ -451,6 +491,8 @@ mod unit_tests {
 
     #[test]
     fn test_multiline_requires() {
+        init();
+
         let input = "[Requires message]\na.archive\nb.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
@@ -477,6 +519,8 @@ mod unit_tests {
 
     #[test]
     fn test_atomic_expr() {
+        init();
+
         test_atomic("a.archive", "a.archive");
         test_atomic("a name.archive", "a name.archive");
     }
@@ -498,6 +542,8 @@ mod unit_tests {
 
     #[test]
     fn test_all_expr() {
+        init();
+
         test_all(
             "[ALL a.archive     b.archive]",
             ["a.archive", "b.archive"].to_vec(),
@@ -553,6 +599,8 @@ mod unit_tests {
 
     #[test]
     fn test_multiline_expr() {
+        init();
+
         let parser = Parser::new_cyberpunk_parser();
 
         {

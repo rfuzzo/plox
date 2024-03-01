@@ -3,14 +3,22 @@ mod unit_tests {
     use std::fs::File;
     use std::io::Write;
 
-    use plox::parser::Parser;
-    use plox::{debug_get_mods_from_rules, get_order_rules, Sorter};
-    use plox::{expressions::*, rules::*};
     use rand::seq::SliceRandom;
     use rand::thread_rng;
 
+    use plox::parser::Parser;
+    use plox::sorter::Sorter;
+    use plox::{debug_get_mods_from_rules, get_order_rules};
+    use plox::{expressions::*, rules::*};
+
+    fn init() {
+        let _ = env_logger::builder().is_test(true).try_init();
+    }
+
     #[test]
     fn test_cycle() {
+        init();
+
         let order = [("a", "b"), ("b", "c"), ("d", "e"), ("b", "a")]
             .iter()
             .map(|e| (e.0.to_owned(), e.1.to_owned()))
@@ -39,6 +47,8 @@ mod unit_tests {
 
     #[test]
     fn test_ordering() {
+        init();
+
         let order = [
             ("b", "a"),
             ("b", "c"),
@@ -73,6 +83,8 @@ mod unit_tests {
 
     #[test]
     fn test_optimized_sort_only() {
+        init();
+
         let rules = Parser::new_tes3_parser()
             .parse_rules_from_path("./tests/mlox/mlox_base.txt")
             .expect("rule parse failed");
@@ -94,6 +106,8 @@ mod unit_tests {
 
     #[test]
     fn test_optimized_sort() {
+        init();
+
         let rules = Parser::new_tes3_parser()
             .parse_rules_from_path("./tests/mlox/mlox_base.txt")
             .expect("rule parse failed");
@@ -116,6 +130,8 @@ mod unit_tests {
 
     #[test]
     fn test_optimized_sort_time() {
+        init();
+
         let rules = Parser::new_tes3_parser()
             .parse_rules_from_path("./tests/mlox/mlox_base.txt")
             .expect("rule parse failed");
@@ -175,6 +191,8 @@ mod unit_tests {
 
     #[test]
     fn test_notes() {
+        init();
+
         let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
             .iter()
             .map(|e| (*e).into())
@@ -197,6 +215,8 @@ mod unit_tests {
 
     #[test]
     fn test_conflicts() {
+        init();
+
         let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
             .iter()
             .map(|e| (*e).into())

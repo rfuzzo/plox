@@ -1,10 +1,13 @@
-use clap::{Parser, Subcommand};
-use log::{error, info, warn};
-use plox::rules::TRule;
 use std::env;
 use std::path::PathBuf;
 use std::process::ExitCode;
 
+use clap::{Parser, Subcommand};
+use env_logger::Env;
+use log::{error, info, warn};
+
+use plox::rules::TRule;
+use plox::sorter::Sorter;
 use plox::*;
 
 #[derive(Parser)]
@@ -12,14 +15,14 @@ use plox::*;
 struct Cli {
     /// Verbose output
     #[arg(short, long)]
-    verbose: bool,
+    log_level: Option<ELogLevel>,
 
     /// Set game
     #[arg(short, long)]
     game: Option<ESupportedGame>,
 
     #[command(subcommand)]
-    command: Option<Command>,
+    command: Command,
 }
 
 #[derive(Subcommand, Clone, Debug)]
@@ -60,29 +63,18 @@ enum Command {
     },
 }
 
-fn is_current_directory_name(name_to_check: &str) -> bool {
-    // Get the current directory
-    if let Ok(current_dir) = env::current_dir() {
-        // Extract the directory name
-        if let Some(dir_name) = current_dir.file_name() {
-            // Convert the directory name to a string
-            if let Some(name) = dir_name.to_str() {
-                // Check if the directory name is "Cyberpunk"
-                return name == name_to_check;
-            }
-        }
-    }
-
-    false
-}
-
 fn main() -> ExitCode {
     let cli = Cli::parse();
 
-    // TODO logging
-    //const CARGO_NAME: &str = env!("CARGO_PKG_NAME");
-    //let _ = simple_logging::log_to_file(format!("{}.log", CARGO_NAME), log::LevelFilter::Info);
-    simple_logging::log_to_stderr(log::LevelFilter::Info);
+    // logger
+    let mut level = ELogLevel::Info;
+    if let Some(lvl) = cli.log_level {
+        level = lvl;
+    }
+    let env = Env::default()
+        .default_filter_or(log_level_to_str(level))
+        .default_write_style_or("always ");
+    env_logger::Builder::from_env(env).init();
 
     // detect game
     let game = if let Some(game) = cli.game {
@@ -98,18 +90,22 @@ fn main() -> ExitCode {
         return ExitCode::FAILURE;
     };
 
-    match &cli.command {
-        Some(Command::List { root }) => list_mods(root, game),
-        Some(Command::Verify { rules_dir }) => verify(game, rules_dir),
-        Some(Command::Sort {
+    let code = match &cli.command {
+        Command::List { root } => list_mods(root, game),
+        Command::Verify { rules_dir } => verify(game, rules_dir),
+        Command::Sort {
             game_folder: root,
             rules_dir,
             mod_list,
             dry_run,
             unstable,
-        }) => sort(game, root, rules_dir, mod_list, *dry_run, *unstable),
-        None => ExitCode::FAILURE,
-    }
+        } => sort(game, root, rules_dir, mod_list, *dry_run, *unstable),
+    };
+
+    let mut buffer = String::new();
+    let _ = std::io::stdin().read_line(&mut buffer);
+
+    code
 }
 
 /// Sorts the current mod load order according to specified rules
