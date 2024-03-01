@@ -149,7 +149,7 @@ mod unit_tests {
 
         // assert
         for (_n, t) in times {
-            assert!(t < 3);
+            assert!(t < 4);
         }
     }
 

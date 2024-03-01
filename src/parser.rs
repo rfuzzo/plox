@@ -491,7 +491,9 @@ impl Parser {
                     // start an expression
                     is_expr = true;
                     cnt += 1;
-                } else {
+                }
+                // ignore whitespace
+                else if !b.is_ascii_whitespace() {
                     is_token = true;
                 }
                 current_buffer += &(b as char).to_string();
@@ -503,13 +505,15 @@ impl Parser {
             current_buffer.clear();
         }
 
+        buffers = buffers
+            .iter()
+            .map(|f| f.trim().to_owned())
+            .filter(|p| !p.is_empty())
+            .collect();
+
         let mut expressions: Vec<Expression> = vec![];
-        for str in buffers {
-            let trimmed = str.trim();
-            if trimmed.is_empty() {
-                continue;
-            }
-            match self.parse_expression(trimmed) {
+        for buffer in buffers {
+            match self.parse_expression(buffer.as_str()) {
                 Ok(it) => {
                     expressions.push(it);
                 }
@@ -531,15 +535,18 @@ impl Parser {
             // is an expression
             // parse the kind and reurse down
             if let Some(rest) = reader.strip_prefix("[ANY ") {
-                let expressions = self.parse_expressions(rest[..rest.len() - 1].as_bytes())?;
+                let expressions =
+                    self.parse_expressions(rest[..rest.len() - 1].trim_start().as_bytes())?;
                 let expr = ANY::new(expressions);
                 Ok(expr.into())
             } else if let Some(rest) = reader.strip_prefix("[ALL") {
-                let expressions = self.parse_expressions(rest[..rest.len() - 1].as_bytes())?;
+                let expressions =
+                    self.parse_expressions(rest[..rest.len() - 1].trim_start().as_bytes())?;
                 let expr = ALL::new(expressions);
                 Ok(expr.into())
             } else if let Some(rest) = reader.strip_prefix("[NOT") {
-                let expressions = self.parse_expressions(rest[..rest.len() - 1].as_bytes())?;
+                let expressions =
+                    self.parse_expressions(rest[..rest.len() - 1].trim_start().as_bytes())?;
                 if let Some(first) = expressions.into_iter().last() {
                     let expr = NOT::new(first);
                     Ok(expr.into())

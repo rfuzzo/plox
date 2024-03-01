@@ -1,3 +1,10 @@
+[Note]
+ test
+[ALL [NOT Vampire Embrace MCA Patch.esp]
+	 [ANY [DESC /over 1000 friendly/ MCA.ESM]
+		  B.esp]
+	 Vampire_Embrace.esp]
+
 ;;show this message for MCA 5.1 and 5.2, but not the Undead 3.0 compatible version of MCA 5.2
 [Note]
  Under certain conditions, NPCs spawned by MCA will vanish. This is undesirable when you have used Vampire Embrace to turn them into your children or thrall. You might consider using the "Vampire Embrace MCA Patch" which keeps MCA-spawned NPCs in the game if they have been touched by "Vampire Embrace".
