@@ -30,9 +30,9 @@ enum Command {
         #[arg(short, long)]
         root: Option<PathBuf>,
 
-        /// Folder to read sorting rules from. Default is ./plox
-        #[arg(short, long, default_value_t = String::from("./plox"))]
-        rules_dir: String,
+        /// Folder to read sorting rules from. Default is ./plox or ./mlox for TES3
+        #[arg(short, long)]
+        rules_dir: Option<String>,
 
         /// Just print the suggested load order without sorting
         #[arg(short, long)]
@@ -54,12 +54,12 @@ enum Command {
     },
     /// Verifies integrity of the specified rules
     Verify {
-        /// Folder to read sorting rules from. Default is ./plox
-        #[arg(short, long, default_value_t = String::from("./plox"))]
-        rules_dir: String,
+        /// Folder to read sorting rules from. Default is ./plox or ./mlox for TES3
+        #[arg(short, long)]
+        rules_dir: Option<String>,
     },
 }
-const CARGO_NAME: &str = env!("CARGO_PKG_NAME");
+//const CARGO_NAME: &str = env!("CARGO_PKG_NAME");
 
 fn is_current_directory_name(name_to_check: &str) -> bool {
     // Get the current directory
@@ -81,62 +81,62 @@ fn main() -> ExitCode {
     let cli = Cli::parse();
 
     // TODO logging
-    let _ = simple_logging::log_to_file(format!("{}.log", CARGO_NAME), log::LevelFilter::Debug);
-    //simple_logging::log_to_stderr(log::LevelFilter::Info);
+    //let _ = simple_logging::log_to_file(format!("{}.log", CARGO_NAME), log::LevelFilter::Debug);
+    simple_logging::log_to_stderr(log::LevelFilter::Info);
 
-    // TODO auto detect
-    let mut final_game = None;
-    if let Some(game) = cli.game {
-        final_game = Some(game);
+    // detect game
+    let game = if let Some(game) = cli.game {
+        game
     } else if is_current_directory_name("Cyberpunk 2077") {
-        final_game = Some(ESupportedGame::Cyberpunk);
+        ESupportedGame::Cyberpunk
     } else if is_current_directory_name("Data Files") {
         // TODO support root tes3 dir
         // || is_current_directory_name("Morrowind")
-
-        final_game = Some(ESupportedGame::Morrowind);
-    }
-
-    let parser = parser::get_parser(final_game.expect("No supported game specified or detected."));
+        ESupportedGame::Morrowind
+    } else {
+        error!("No game specified to verify");
+        return ExitCode::FAILURE;
+    };
 
     match &cli.command {
-        Some(Command::List { root }) => list_mods(root, parser.game),
-        Some(Command::Verify { rules_dir }) => {
-            let rules_path = PathBuf::from(rules_dir).join(PLOX_RULES_BASE);
-            verify(&rules_path, &parser)
-        }
+        Some(Command::List { root }) => list_mods(root, game),
+        Some(Command::Verify { rules_dir }) => verify(game, rules_dir),
         Some(Command::Sort {
             root,
             rules_dir,
             mod_list,
             dry_run,
             unstable,
-        }) => sort(
-            &parser,
-            root,
-            &rules_dir.into(),
-            mod_list,
-            *dry_run,
-            *unstable,
-        ),
+        }) => sort(game, root, rules_dir, mod_list, *dry_run, *unstable),
         None => ExitCode::FAILURE,
     }
 }
 
 /// Sorts the current mod load order according to specified rules
 fn sort(
-    parser: &parser::Parser,
+    game: ESupportedGame,
     root: &Option<PathBuf>,
-    rules_path: &PathBuf,
+    rules_path: &Option<String>,
     mod_list: &Option<PathBuf>,
     dry_run: bool,
     unstable: bool,
 ) -> ExitCode {
     info!("Sorting mods...");
 
+    // get game root
     let root = match root {
         Some(path) => path.clone(),
         None => env::current_dir().expect("No current working dir"),
+    };
+
+    // get default rules dir
+    let rules_dir = if let Some(path) = rules_path {
+        PathBuf::from(path)
+    } else {
+        match get_default_rules_dir(game) {
+            Ok(value) => value,
+            Err(value) => return value,
+        }
     };
 
     // gather mods (optionally from a list)
@@ -144,7 +144,7 @@ fn sort(
     if let Some(modlist_path) = mod_list {
         mods = read_file_as_list(modlist_path);
     } else {
-        match gather_mods(&root, parser.game) {
+        match gather_mods(&root, game) {
             Ok(m) => mods = m,
             Err(e) => {
                 info!("No mods found: {e}");
@@ -153,7 +153,8 @@ fn sort(
         }
     }
 
-    match parser.parse_rules_from_path(rules_path) {
+    let mut parser = parser::get_parser(game);
+    match parser.parse(rules_dir) {
         Ok(rules) => {
             // Print Warnings
             for rule in &rules {
@@ -216,20 +217,30 @@ fn sort(
 }
 
 /// Verifies integrity of the specified rules
-fn verify(rules_path: &PathBuf, parser: &parser::Parser) -> ExitCode {
-    info!("Verifying rules from {} ...", rules_path.display());
+fn verify(game: ESupportedGame, rules_path: &Option<String>) -> ExitCode {
+    let rules_dir = if let Some(path) = rules_path {
+        PathBuf::from(path)
+    } else {
+        match get_default_rules_dir(game) {
+            Ok(value) => value,
+            Err(value) => return value,
+        }
+    };
 
-    match parser.parse_rules_from_path(rules_path) {
+    info!("Verifying rules from {} ...", rules_dir.display());
+
+    let mut parser = parser::get_parser(game);
+    match parser.parse(rules_dir) {
         Ok(rules) => {
             let order = get_order_rules(&rules);
             let mods = debug_get_mods_from_rules(&order);
             match Sorter::new_unstable().topo_sort(&mods, &order) {
                 Ok(_) => {
-                    info!("true");
+                    info!("Verify SUCCESS");
                     ExitCode::SUCCESS
                 }
                 Err(_) => {
-                    error!("false");
+                    error!("Verify FAILURE");
                     ExitCode::FAILURE
                 }
             }

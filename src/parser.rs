@@ -7,7 +7,7 @@ use std::io::{BufRead, BufReader, Cursor, Error, ErrorKind, Read, Result, Seek, 
 use std::path::Path;
 
 use byteorder::ReadBytesExt;
-use log::{debug, error};
+use log::{debug, error, info, warn};
 
 use crate::{expressions::*, TParser};
 use crate::{rules::*, ESupportedGame};
@@ -27,6 +27,8 @@ impl ChunkWrapper {
 pub struct Parser {
     pub game: ESupportedGame,
     pub ext: Vec<String>,
+
+    pub rules: Vec<Rule>,
 }
 
 pub fn get_parser(game: ESupportedGame) -> Parser {
@@ -39,7 +41,11 @@ pub fn get_parser(game: ESupportedGame) -> Parser {
 
 impl Parser {
     pub fn new(ext: Vec<String>, game: ESupportedGame) -> Self {
-        Self { ext, game }
+        Self {
+            ext,
+            game,
+            rules: vec![],
+        }
     }
 
     pub fn new_cyberpunk_parser() -> Self {
@@ -58,6 +64,64 @@ impl Parser {
             vec![".esp".into(), ".esm".into(), ".omwaddon".into()],
             ESupportedGame::OpenMorrowind,
         )
+    }
+
+    /// Parse rules for a specific game, expects the path to be the rules directory
+    ///
+    /// # Errors
+    ///
+    /// This function will return an error if file io or parsing fails
+    pub fn parse<P>(&mut self, path: P) -> Result<Vec<Rule>>
+    where
+        P: AsRef<Path>,
+    {
+        self.rules.clear();
+
+        match self.game {
+            ESupportedGame::Morrowind => {
+                {
+                    let path = path.as_ref().join("mlox_base.txt");
+                    if path.exists() {
+                        if let Ok(base) = self.parse_rules_from_path(&path) {
+                            info!("Parsed file {} with {} rules", path.display(), base.len());
+                            self.rules.extend(base);
+                        }
+                    } else {
+                        warn!("Could not find rules file {}", path.display());
+                    }
+                }
+
+                {
+                    let path = path.as_ref().join("mlox_user.txt");
+                    if path.exists() {
+                        if let Ok(base) = self.parse_rules_from_path(&path) {
+                            info!("Parsed file {} with {} rules", path.display(), base.len());
+                            self.rules.extend(base);
+                        }
+                    } else {
+                        warn!("Could not find rules file {}", path.display());
+                    }
+                }
+
+                {
+                    let path = path.as_ref().join("mlox_my_rules.txt");
+                    if path.exists() {
+                        if let Ok(base) = self.parse_rules_from_path(&path) {
+                            info!("Parsed file {} with {} rules", path.display(), base.len());
+                            self.rules.extend(base);
+                        }
+                    } else {
+                        warn!("Could not find rules file {}", path.display());
+                    }
+                }
+            }
+            ESupportedGame::OpenMorrowind => todo!(),
+            ESupportedGame::Cyberpunk => todo!(),
+        }
+
+        // TODO dedup?
+        info!("Parser initialized with {} rules", self.rules.len());
+        Ok(self.rules.clone()) // TODO we clone here?
     }
 
     /// Parse rules from a rules file

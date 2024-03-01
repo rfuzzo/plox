@@ -1,10 +1,12 @@
 use clap::ValueEnum;
-use log::info;
+use log::{error, info};
 use std::collections::HashMap;
+use std::env;
 use std::fs::{self, File};
 use std::io::BufRead;
 use std::io::{self};
 use std::path::{Path, PathBuf};
+use std::process::ExitCode;
 use toposort_scc::IndexGraph;
 
 pub mod expressions;
@@ -243,6 +245,37 @@ pub fn debug_get_mods_from_rules(order: &[(String, String)]) -> Vec<String> {
         }
     }
     result
+}
+
+/// Gets the default rules dir for a game
+///
+/// # Panics
+///
+/// Panics if .
+///
+/// # Errors
+///
+/// This function will return an error if .
+pub fn get_default_rules_dir(game: ESupportedGame) -> Result<PathBuf, ExitCode> {
+    Ok(match game {
+        ESupportedGame::Morrowind => {
+            if let Some(parent_dir) = env::current_dir().expect("No current working dir").parent() {
+                parent_dir.join("mlox")
+            } else {
+                error!("Could not find rules directory");
+                return Err(ExitCode::FAILURE);
+            }
+        }
+        ESupportedGame::OpenMorrowind => {
+            if let Some(parent_dir) = env::current_dir().expect("No current working dir").parent() {
+                parent_dir.join("mlox")
+            } else {
+                error!("Could not find rules directory");
+                return Err(ExitCode::FAILURE);
+            }
+        }
+        ESupportedGame::Cyberpunk => PathBuf::from("plox"),
+    })
 }
 
 /// Gets a list of mod names from the game root folder
