@@ -71,57 +71,32 @@ impl Parser {
     /// # Errors
     ///
     /// This function will return an error if file io or parsing fails
-    pub fn parse<P>(&mut self, path: P) -> Result<Vec<Rule>>
+    pub fn init<P>(&mut self, path: P)
     where
         P: AsRef<Path>,
     {
         self.rules.clear();
 
-        match self.game {
-            ESupportedGame::Morrowind => {
-                {
-                    let path = path.as_ref().join("mlox_base.txt");
-                    if path.exists() {
-                        if let Ok(base) = self.parse_rules_from_path(&path) {
-                            info!("Parsed file {} with {} rules", path.display(), base.len());
-                            self.rules.extend(base);
-                        }
-                    } else {
-                        warn!("Could not find rules file {}", path.display());
-                    }
-                }
-
-                {
-                    let path = path.as_ref().join("mlox_user.txt");
-                    if path.exists() {
-                        if let Ok(base) = self.parse_rules_from_path(&path) {
-                            info!("Parsed file {} with {} rules", path.display(), base.len());
-                            self.rules.extend(base);
-                        }
-                    } else {
-                        warn!("Could not find rules file {}", path.display());
-                    }
-                }
-
-                {
-                    let path = path.as_ref().join("mlox_my_rules.txt");
-                    if path.exists() {
-                        if let Ok(base) = self.parse_rules_from_path(&path) {
-                            info!("Parsed file {} with {} rules", path.display(), base.len());
-                            self.rules.extend(base);
-                        }
-                    } else {
-                        warn!("Could not find rules file {}", path.display());
-                    }
-                }
+        let rules_files = match self.game {
+            ESupportedGame::Morrowind | ESupportedGame::OpenMorrowind => {
+                ["mlox_base.txt", "mlox_user.txt", "mlox_my_rules.txt"].as_slice()
             }
-            ESupportedGame::OpenMorrowind => todo!(),
-            ESupportedGame::Cyberpunk => todo!(),
+            ESupportedGame::Cyberpunk => ["plox_base.txt", "plox_my_rules.txt"].as_slice(),
+        };
+
+        for file in rules_files {
+            let path = path.as_ref().join(file);
+            if path.exists() {
+                if let Ok(base) = self.parse_rules_from_path(&path) {
+                    info!("Parsed file {} with {} rules", path.display(), base.len());
+                    self.rules.extend(base);
+                }
+            } else {
+                warn!("Could not find rules file {}", path.display());
+            }
         }
 
-        // TODO dedup?
         info!("Parser initialized with {} rules", self.rules.len());
-        Ok(self.rules.clone()) // TODO we clone here?
     }
 
     /// Parse rules from a rules file
@@ -181,7 +156,6 @@ impl Parser {
         }
 
         // process chunks
-        // TODO parallelize
         let mut rules: Vec<Rule> = vec![];
         for (idx, chunk) in chunks.into_iter().enumerate() {
             let info = &chunk.info;

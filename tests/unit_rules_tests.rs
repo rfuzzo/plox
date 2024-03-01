@@ -147,8 +147,4 @@ mod unit_tests {
             assert!(!rule.eval(&mods));
         }
     }
-
-    // TODO ALL
-
-    // TODO NOT
 }

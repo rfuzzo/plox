@@ -1,16 +1,17 @@
-use clap::ValueEnum;
 use std::env;
 use std::fs::{self, File};
 use std::io::BufRead;
 use std::io::{self};
 use std::path::{Path, PathBuf};
-use std::process::ExitCode;
+
+use clap::ValueEnum;
 
 pub mod expressions;
 pub mod parser;
 pub mod rules;
 pub mod sorter;
 
+use log::{info, warn};
 use rules::*;
 
 #[derive(Debug, Clone, Copy, ValueEnum, Default)]
@@ -63,21 +64,14 @@ pub fn debug_get_mods_from_rules(order: &[(String, String)]) -> Vec<String> {
 
 /// Gets the default rules dir for a game
 ///
-/// # Panics
-///
-/// Panics if .
-///
 /// # Errors
 ///
 /// This function will return an error if .
-pub fn get_default_rules_dir(game: ESupportedGame) -> Result<PathBuf, ExitCode> {
-    Ok(match game {
-        ESupportedGame::Morrowind => PathBuf::from("mlox"),
-        ESupportedGame::OpenMorrowind => {
-            todo!()
-        }
+pub fn get_default_rules_dir(game: ESupportedGame) -> PathBuf {
+    match game {
+        ESupportedGame::Morrowind | ESupportedGame::OpenMorrowind => PathBuf::from("mlox"),
         ESupportedGame::Cyberpunk => PathBuf::from("plox"),
-    })
+    }
 }
 
 /// Gets a list of mod names from the game root folder
@@ -125,7 +119,7 @@ where
     results
 }
 
-pub fn get_plugins_sorted<P>(path: &P, use_omw_plugins: bool) -> Vec<PathBuf>
+fn get_plugins_sorted<P>(path: &P, use_omw_plugins: bool) -> Vec<PathBuf>
 where
     P: AsRef<Path>,
 {
@@ -156,7 +150,6 @@ where
     P: AsRef<Path>,
 {
     let files = get_plugins_sorted(&path.as_ref().join("Data Files"), false);
-
     let names = files
         .iter()
         .filter_map(|f| {
@@ -171,28 +164,30 @@ where
     let morrowind_ini_path = PathBuf::from("Morrowind.ini");
     if morrowind_ini_path.exists() {
         // parse ini
-        if let Some(path) = morrowind_ini_path.to_str() {
-            let map = ini!(path);
+        let path = morrowind_ini_path.to_str().expect("Invalid path string");
+        let map = ini!(path);
+        let mut final_files: Vec<String> = vec![];
+        if let Some(section) = map.get("game files") {
+            let mods_in_ini = section
+                .values()
+                .flatten()
+                .map(|f| f.to_owned())
+                .collect::<Vec<_>>();
 
-            let mut final_files: Vec<String> = vec![];
-            if let Some(section) = map.get("game files") {
-                let mods_in_ini = section
-                    .values()
-                    .flatten()
-                    .map(|f| f.to_owned())
-                    .collect::<Vec<_>>();
-
-                for plugin_name in names {
-                    if mods_in_ini.contains(&plugin_name) {
-                        final_files.push(plugin_name.to_owned());
-                    }
+            for plugin_name in names {
+                if mods_in_ini.contains(&plugin_name) {
+                    final_files.push(plugin_name.to_owned());
                 }
-
-                return Ok(final_files);
             }
+
+            return Ok(final_files);
         }
+        warn!("Morrowind.ini found but no [Game Files] section, using all plugins in Data Files");
+    } else {
+        warn!("No Morrowind.ini found, using all plugins in Data Files");
     }
 
+    info!("Found {} active plugins", names.len());
     Ok(names)
 }
 
@@ -200,8 +195,6 @@ pub fn gather_openmw_mods<P>(_path: &P) -> io::Result<Vec<String>>
 where
     P: AsRef<Path>,
 {
-    // TODO parse omw cfg
-
     todo!()
 }
 
@@ -231,11 +224,38 @@ where
         })
         .collect::<Vec<_>>();
 
+    // TODO support modlist
+
     // TODO gather REDmods from mods/<NAME>
     entries.sort();
 
     Ok(entries)
 }
+
+/// Update on disk
+pub fn update_new_load_order(game: ESupportedGame, result: Vec<String>) {
+    match game {
+        ESupportedGame::Morrowind => update_tes3(result),
+        ESupportedGame::OpenMorrowind => update_openmw(result),
+        ESupportedGame::Cyberpunk => update_cp77(result),
+    }
+}
+
+fn update_cp77(result: Vec<String>) {
+    todo!()
+}
+
+fn update_openmw(result: Vec<String>) {
+    todo!()
+}
+
+fn update_tes3(result: Vec<String>) {
+    todo!()
+}
+
+////////////////////////////////////////////////////////////////////////
+/// HELPERS
+////////////////////////////////////////////////////////////////////////
 
 /// Extracts a list of ordering-pairs from the order rules
 pub fn get_order_rules(rules: &Vec<Rule>) -> Vec<(String, String)> {
@@ -248,10 +268,6 @@ pub fn get_order_rules(rules: &Vec<Rule>) -> Vec<(String, String)> {
 
     order
 }
-
-////////////////////////////////////////////////////////////////////////
-/// HELPERS
-////////////////////////////////////////////////////////////////////////
 
 pub fn is_current_directory_name(name_to_check: &str) -> bool {
     // Get the current directory

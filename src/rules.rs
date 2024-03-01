@@ -197,7 +197,6 @@ impl TParser<Note> for Note {
 #[derive(Default, Clone, Debug)]
 pub struct Conflict {
     pub comment: String,
-    // todo: make first atomic?
     pub expression_a: Option<Expression>,
     pub expression_b: Option<Expression>,
 }
@@ -263,7 +262,6 @@ impl TParser<Conflict> for Conflict {
 #[derive(Default, Clone, Debug)]
 pub struct Requires {
     pub comment: String,
-    // todo: make first atomic?
     pub expression_a: Option<Expression>,
     pub expression_b: Option<Expression>,
 }

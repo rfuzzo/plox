@@ -126,10 +126,7 @@ fn sort(
     let rules_dir = if let Some(path) = rules_path {
         PathBuf::from(path)
     } else {
-        match get_default_rules_dir(game) {
-            Ok(value) => value,
-            Err(value) => return value,
-        }
+        get_default_rules_dir(game)
     };
 
     // gather mods (optionally from a list)
@@ -147,78 +144,66 @@ fn sort(
     }
 
     let mut parser = parser::get_parser(game);
-    match parser.parse(rules_dir) {
-        Ok(rules) => {
-            // Print Warnings
-            info!("Evaluating mod list...");
-            //println!("Evaluating mod list...");
-            for rule in &rules {
-                if rule.eval(&mods) {
-                    match rule {
-                        rules::Rule::Order(_) => {}
-                        rules::Rule::Note(n) => {
-                            //println!("[NOTE]\n{}\n", n.get_comment());
-                            info!("[NOTE]\n{}\n", n.get_comment());
-                        }
-                        rules::Rule::Conflict(c) => {
-                            //println!("[CONFLICT]\n{}\n", c.get_comment());
-                            warn!("[CONFLICT]\n{}\n", c.get_comment());
-                        }
-                        rules::Rule::Requires(r) => {
-                            //println!("[REQUIRES]\n{}\n", r.get_comment());
-                            warn!("[REQUIRES]\n{}\n", r.get_comment());
-                        }
-                    }
+    parser.init(rules_dir);
+
+    if parser.rules.is_empty() {
+        warn!("No rules found to evaluate");
+        return ExitCode::FAILURE;
+    }
+
+    // Print Warnings and Notes
+    info!("Evaluating mod list...");
+    for rule in &parser.rules {
+        if rule.eval(&mods) {
+            match rule {
+                rules::Rule::Order(_) => {}
+                rules::Rule::Note(n) => {
+                    info!("[NOTE]\n{}\n", n.get_comment());
+                }
+                rules::Rule::Conflict(c) => {
+                    warn!("[CONFLICT]\n{}\n", c.get_comment());
+                }
+                rules::Rule::Requires(r) => {
+                    warn!("[REQUIRES]\n{}\n", r.get_comment());
                 }
             }
+        }
+    }
 
-            // Sort
-            let mut sorter = if unstable {
-                sorter::new_unstable_sorter()
+    // Sort
+    let order_rules = get_order_rules(&parser.rules);
+    if order_rules.is_empty() {
+        info!("No order rules found, nothing to sort");
+        return ExitCode::SUCCESS;
+    }
+
+    info!("Sorting mods...");
+    let mut sorter = if unstable {
+        sorter::new_unstable_sorter()
+    } else {
+        sorter::new_stable_sorter()
+    };
+    match sorter.topo_sort(&mods, &order_rules) {
+        Ok(result) => {
+            if dry_run {
+                info!("Dry run...");
+                info!("New:\n{:?}", result);
             } else {
-                sorter::new_stable_sorter()
-            };
+                info!("Current:\n{:?}", &mods);
 
-            let order_rules = get_order_rules(&rules);
-            if !order_rules.is_empty() {
-                info!("Sorting mods...");
-                //println!("Sorting mods...");
-
-                match sorter.topo_sort(&mods, &order_rules) {
-                    Ok(result) => {
-                        if dry_run {
-                            info!("Dry run...");
-
-                            info!("New:\n{:?}", result);
-                            //println!("New:\n{:?}", result);
-                        } else {
-                            info!("Current:\n{:?}", &mods);
-                            //println!("Current:\n{:?}", &mods);
-
-                            if mods.eq(&result) {
-                                info!("Mods are in correct order, no sorting needed.");
-                                //println!("Mods are in correct order, no sorting needed.");
-                            } else {
-                                info!("New:\n{:?}", result);
-                                // println!("New:\n{:?}", result);
-                            }
-
-                            // TODO update on disk
-                        }
-
-                        return ExitCode::SUCCESS;
-                    }
-                    Err(e) => {
-                        error!("error sorting: {e:?}");
-                        return ExitCode::FAILURE;
-                    }
+                if mods.eq(&result) {
+                    info!("Mods are in correct order, no sorting needed.");
+                } else {
+                    info!("New:\n{:?}", result);
                 }
+
+                update_new_load_order(game, result);
             }
 
             ExitCode::SUCCESS
         }
         Err(e) => {
-            error!("error parsing file: {e:?}");
+            error!("error sorting: {e:?}");
             ExitCode::FAILURE
         }
     }
@@ -229,32 +214,28 @@ fn verify(game: ESupportedGame, rules_path: &Option<String>) -> ExitCode {
     let rules_dir = if let Some(path) = rules_path {
         PathBuf::from(path)
     } else {
-        match get_default_rules_dir(game) {
-            Ok(value) => value,
-            Err(value) => return value,
-        }
+        get_default_rules_dir(game)
     };
 
     info!("Verifying rules from {} ...", rules_dir.display());
 
     let mut parser = parser::get_parser(game);
-    match parser.parse(rules_dir) {
-        Ok(rules) => {
-            let order = get_order_rules(&rules);
-            let mods = debug_get_mods_from_rules(&order);
-            match sorter::new_unstable_sorter().topo_sort(&mods, &order) {
-                Ok(_) => {
-                    info!("Verify SUCCESS");
-                    ExitCode::SUCCESS
-                }
-                Err(_) => {
-                    error!("Verify FAILURE");
-                    ExitCode::FAILURE
-                }
-            }
+    parser.init(rules_dir);
+
+    if parser.rules.is_empty() {
+        warn!("No rules found to evaluate");
+        return ExitCode::FAILURE;
+    }
+
+    let order = get_order_rules(&parser.rules);
+    let mods = debug_get_mods_from_rules(&order);
+    match sorter::new_unstable_sorter().topo_sort(&mods, &order) {
+        Ok(_) => {
+            info!("Verify SUCCESS");
+            ExitCode::SUCCESS
         }
-        Err(e) => {
-            error!("error parsing file: {e:?}");
+        Err(_) => {
+            error!("Verify FAILURE");
             ExitCode::FAILURE
         }
     }
