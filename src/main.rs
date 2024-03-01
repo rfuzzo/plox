@@ -28,7 +28,7 @@ enum Command {
     Sort {
         /// Root game folder (e.g. "Cyberpunk 2077" or "Data Files"). Default is current working directory
         #[arg(short, long)]
-        root: Option<PathBuf>,
+        game_folder: Option<PathBuf>,
 
         /// Folder to read sorting rules from. Default is ./plox or ./mlox for TES3
         #[arg(short, long)]
@@ -59,7 +59,6 @@ enum Command {
         rules_dir: Option<String>,
     },
 }
-//const CARGO_NAME: &str = env!("CARGO_PKG_NAME");
 
 fn is_current_directory_name(name_to_check: &str) -> bool {
     // Get the current directory
@@ -81,8 +80,9 @@ fn main() -> ExitCode {
     let cli = Cli::parse();
 
     // TODO logging
-    //let _ = simple_logging::log_to_file(format!("{}.log", CARGO_NAME), log::LevelFilter::Debug);
-    simple_logging::log_to_stderr(log::LevelFilter::Info);
+    const CARGO_NAME: &str = env!("CARGO_PKG_NAME");
+    let _ = simple_logging::log_to_file(format!("{}.log", CARGO_NAME), log::LevelFilter::Debug);
+    //simple_logging::log_to_stderr(log::LevelFilter::Info);
 
     // detect game
     let game = if let Some(game) = cli.game {
@@ -102,7 +102,7 @@ fn main() -> ExitCode {
         Some(Command::List { root }) => list_mods(root, game),
         Some(Command::Verify { rules_dir }) => verify(game, rules_dir),
         Some(Command::Sort {
-            root,
+            game_folder: root,
             rules_dir,
             mod_list,
             dry_run,
@@ -160,16 +160,18 @@ fn sort(
             for rule in &rules {
                 if rule.eval(&mods) {
                     match rule {
-                        // TODO not logging
                         rules::Rule::Order(_) => {}
-                        rules::Rule::Note(_) => {
-                            info!("[NOTE]\n{}", rule.get_comment());
+                        rules::Rule::Note(n) => {
+                            println!("[NOTE]\n{}\n", n.get_comment());
+                            info!("[NOTE]\n{}\n", n.get_comment());
                         }
-                        rules::Rule::Conflict(_) => {
-                            warn!("[CONFLICT]\n{}", rule.get_comment());
+                        rules::Rule::Conflict(c) => {
+                            println!("[CONFLICT]\n{}\n", c.get_comment());
+                            warn!("[CONFLICT]\n{}\n", c.get_comment());
                         }
-                        rules::Rule::Requires(_) => {
-                            warn!("[REQUIRES]\n{}", rule.get_comment());
+                        rules::Rule::Requires(r) => {
+                            println!("[REQUIRES]\n{}\n", r.get_comment());
+                            warn!("[REQUIRES]\n{}\n", r.get_comment());
                         }
                     }
                 }
@@ -194,6 +196,8 @@ fn sort(
                             info!("{:?}", &mods);
                             info!("New:");
                             info!("{result:?}");
+
+                            // TODO check if nothing to sort
 
                             // TODO update on disk
                         }

@@ -37,11 +37,12 @@ mod integration_tests {
     }
 
     #[test]
-    fn test_parse_rules() {
+    fn test_parse_notes() {
         let rules = Parser::new_cyberpunk_parser()
             .parse_rules_from_path("./tests/plox/rules_note.txt")
             .expect("rule parse failed");
-        assert_eq!(14, rules.len());
+
+        assert_eq!(15, rules.len());
     }
 
     #[test]

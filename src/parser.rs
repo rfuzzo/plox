@@ -187,8 +187,10 @@ impl Parser {
             let info = &chunk.info;
 
             let cursor = Cursor::new(&chunk.data);
-            let parsed = match self.parse_chunk(cursor) {
-                Ok(it) => it,
+            match self.parse_chunk(cursor) {
+                Ok(it) => {
+                    rules.extend(it);
+                }
                 Err(err) => {
                     // log error and skip chunk
                     error!(
@@ -197,11 +199,8 @@ impl Parser {
                     );
                     let string = String::from_utf8(chunk.data).expect("not valid utf8");
                     debug!("{}", string);
-                    continue;
                 }
             };
-
-            rules.extend(parsed);
         }
 
         Ok(rules)
@@ -510,8 +509,12 @@ impl Parser {
             if trimmed.is_empty() {
                 continue;
             }
-            let expr = self.parse_expression(trimmed)?;
-            expressions.push(expr);
+            match self.parse_expression(trimmed) {
+                Ok(it) => {
+                    expressions.push(it);
+                }
+                Err(err) => return Err(err),
+            };
         }
 
         Ok(expressions)
@@ -568,19 +571,20 @@ impl Parser {
 /// This function will return an error if stream reading or seeking fails
 pub fn read_comment<R: Read + BufRead + Seek>(reader: &mut R) -> Result<Option<String>> {
     // a line starting with a whitespace may be a comment
-    if reader.read_u8()? as char != ' ' {
+    let first_char = reader.read_u8()? as char;
+    if first_char == ' ' || first_char == '\t' {
+        // this is a comment
+        let mut line = String::new();
+        reader.read_line(&mut line)?;
+        let mut comment = line.trim().to_owned();
+
+        if let Ok(Some(c)) = read_comment(reader) {
+            comment += c.as_str();
+        }
+
+        Ok(Some(comment))
+    } else {
         reader.seek(SeekFrom::Current(-1))?;
-        return Ok(None);
+        Ok(None)
     }
-
-    // this is a comment
-    let mut line = String::new();
-    reader.read_line(&mut line)?;
-    let mut comment = line.trim().to_owned();
-
-    if let Ok(Some(c)) = read_comment(reader) {
-        comment += c.as_str();
-    }
-
-    Ok(Some(comment))
 }
