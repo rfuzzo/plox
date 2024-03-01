@@ -1,6 +1,5 @@
 use clap::ValueEnum;
-use log::{error, info};
-//use std::cmp::Ordering;
+use log::info;
 use std::collections::HashMap;
 use std::fs::{self, File};
 use std::io::BufRead;
@@ -206,9 +205,9 @@ impl Sorter {
         }
 
         let mut index = 0;
-        let mut i = 0;
         let max_loop = 10000;
-        loop {
+
+        for _n in 1..max_loop {
             if !self.stable_topo_sort_inner(
                 mods.len(),
                 &edges,
@@ -219,35 +218,11 @@ impl Sorter {
             ) {
                 break;
             }
-
-            error!("{}", index);
-            i += 1;
-            if i > max_loop {
-                self.comment = format!("out of iterations: {}", index);
-                return Ok(result);
-            }
         }
 
         // Return the sorted vector
         Ok(result)
     }
-
-    // fn edge_cmp(
-    //     a: &str,
-    //     b: &str,
-    //     edges: &[(usize, usize)],
-    //     index_dict: &HashMap<&str, usize>,
-    // ) -> Ordering {
-    //     let x = index_dict[a];
-    //     let y = index_dict[b];
-    //     if edges.contains(&(x, y)) {
-    //         Ordering::Less
-    //     } else if edges.contains(&(y, x)) {
-    //         Ordering::Greater
-    //     } else {
-    //         Ordering::Equal
-    //     }
-    // }
 }
 
 ////////////////////////////////////////////////////////////////////////
