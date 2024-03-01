@@ -10,30 +10,25 @@ pub enum ESortType {
     StableFull,
 }
 
+pub fn new_unstable_sorter() -> Sorter {
+    Sorter::new(ESortType::Unstable)
+}
+
+pub fn new_stable_sorter() -> Sorter {
+    Sorter::new(ESortType::StableOpt)
+}
+
+pub fn new_stable_full_sorter() -> Sorter {
+    Sorter::new(ESortType::StableFull)
+}
+
 pub struct Sorter {
     pub sort_type: ESortType,
-
-    pub comment: String,
 }
 
 impl Sorter {
-    pub fn new_unstable() -> Self {
-        Sorter::new(ESortType::Unstable)
-    }
-
-    pub fn new_stable() -> Self {
-        Sorter::new(ESortType::StableOpt)
-    }
-
-    pub fn new_stable_full() -> Self {
-        Sorter::new(ESortType::StableFull)
-    }
-
     pub fn new(sort_type: ESortType) -> Self {
-        Self {
-            sort_type,
-            comment: "".to_owned(),
-        }
+        Self { sort_type }
     }
 
     pub fn stable_topo_sort_inner(
@@ -89,24 +84,6 @@ impl Sorter {
         result: &mut Vec<String>,
         last_index: &mut usize,
     ) -> bool {
-        // optimize A: skip checking already sorted items
-        // let start = *last_index;
-        // for i in start..n {
-        //     for j in 0..i {
-        //         let x = index_dict[result[i].as_str()];
-        //         let y = index_dict[result[j].as_str()];
-        //         if edges.contains(&(x, y)) {
-        //             let t = result[i].to_owned();
-        //             result.remove(i);
-        //             result.insert(j, t);
-
-        //             *last_index = j;
-
-        //             return true;
-        //         }
-        //     }
-        // }
-
         // optimize B: only check edges
         for (idx, edge) in edges.iter().enumerate() {
             let i = edge.0;

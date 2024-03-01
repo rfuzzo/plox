@@ -33,10 +33,28 @@ pub struct Parser {
 
 pub fn get_parser(game: ESupportedGame) -> Parser {
     match game {
-        ESupportedGame::Morrowind => Parser::new_tes3_parser(),
-        ESupportedGame::OpenMorrowind => Parser::new_openmw_parser(),
-        ESupportedGame::Cyberpunk => Parser::new_cyberpunk_parser(),
+        ESupportedGame::Morrowind => new_tes3_parser(),
+        ESupportedGame::OpenMorrowind => new_openmw_parser(),
+        ESupportedGame::Cyberpunk => new_cyberpunk_parser(),
     }
+}
+
+pub fn new_cyberpunk_parser() -> Parser {
+    Parser::new(vec![".archive".into()], ESupportedGame::Cyberpunk)
+}
+
+pub fn new_tes3_parser() -> Parser {
+    Parser::new(
+        vec![".esp".into(), ".esm".into()],
+        ESupportedGame::Morrowind,
+    )
+}
+
+pub fn new_openmw_parser() -> Parser {
+    Parser::new(
+        vec![".esp".into(), ".esm".into(), ".omwaddon".into()],
+        ESupportedGame::OpenMorrowind,
+    )
 }
 
 impl Parser {
@@ -46,24 +64,6 @@ impl Parser {
             game,
             rules: vec![],
         }
-    }
-
-    pub fn new_cyberpunk_parser() -> Self {
-        Parser::new(vec![".archive".into()], ESupportedGame::Cyberpunk)
-    }
-
-    pub fn new_tes3_parser() -> Self {
-        Parser::new(
-            vec![".esp".into(), ".esm".into()],
-            ESupportedGame::Morrowind,
-        )
-    }
-
-    pub fn new_openmw_parser() -> Self {
-        Parser::new(
-            vec![".esp".into(), ".esm".into(), ".omwaddon".into()],
-            ESupportedGame::OpenMorrowind,
-        )
     }
 
     /// Parse rules for a specific game, expects the path to be the rules directory

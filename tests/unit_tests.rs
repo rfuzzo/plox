@@ -1,15 +1,12 @@
 #[cfg(test)]
 mod unit_tests {
-    use std::fs::File;
-    use std::io::Write;
+    use std::{fs::File, io::Write};
 
-    use rand::seq::SliceRandom;
-    use rand::thread_rng;
+    use rand::{seq::SliceRandom, thread_rng};
 
-    use plox::parser::Parser;
-    use plox::sorter::Sorter;
-    use plox::{debug_get_mods_from_rules, get_order_rules};
-    use plox::{expressions::*, rules::*};
+    use plox::{
+        debug_get_mods_from_rules, expressions::*, get_order_rules, parser, rules::*, sorter,
+    };
 
     fn init() {
         let _ = env_logger::builder().is_test(true).try_init();
@@ -30,17 +27,23 @@ mod unit_tests {
             .collect();
 
         assert!(
-            Sorter::new_unstable().topo_sort(&mods, &order).is_err(),
+            sorter::new_unstable_sorter()
+                .topo_sort(&mods, &order)
+                .is_err(),
             "unstable rules do not contain a cycle"
         );
 
         assert!(
-            Sorter::new_stable_full().topo_sort(&mods, &order).is_err(),
+            sorter::new_stable_full_sorter()
+                .topo_sort(&mods, &order)
+                .is_err(),
             "stable(false) rules do not contain a cycle"
         );
 
         assert!(
-            Sorter::new_stable().topo_sort(&mods, &order).is_err(),
+            sorter::new_stable_sorter()
+                .topo_sort(&mods, &order)
+                .is_err(),
             "stable(true) rules do not contain a cycle"
         );
     }
@@ -65,17 +68,17 @@ mod unit_tests {
             .map(|e| (*e).into())
             .collect();
 
-        let result = Sorter::new_unstable()
+        let result = sorter::new_unstable_sorter()
             .topo_sort(&mods, &order)
             .expect("rules contain a cycle");
         assert!(checkresult(&result, &order), "unstable order is wrong");
 
-        let result = Sorter::new_stable_full()
+        let result = sorter::new_stable_full_sorter()
             .topo_sort(&mods, &order)
             .expect("rules contain a cycle");
         assert!(checkresult(&result, &order), "stable(false) order is wrong");
 
-        let result = Sorter::new_stable()
+        let result = sorter::new_stable_sorter()
             .topo_sort(&mods, &order)
             .expect("rules contain a cycle");
         assert!(checkresult(&result, &order), "stable(true) order is wrong");
@@ -85,7 +88,7 @@ mod unit_tests {
     fn test_optimized_sort_only() {
         init();
 
-        let rules = Parser::new_tes3_parser()
+        let rules = parser::new_tes3_parser()
             .parse_rules_from_path("./tests/mlox/mlox_base.txt")
             .expect("rule parse failed");
         let order = get_order_rules(&rules);
@@ -95,12 +98,12 @@ mod unit_tests {
         mods.shuffle(&mut rng);
         let mods = mods.into_iter().take(100).collect::<Vec<_>>();
 
-        let mut sorter = Sorter::new_stable();
+        let mut sorter = sorter::new_stable_sorter();
         let result = sorter
             .topo_sort(&mods, &order)
             .expect("opt rules contain a cycle");
 
-        let msg = format!("stable(true) order is wrong: {}", sorter.comment);
+        let msg = format!("stable(true) order is wrong");
         assert!(checkresult(&result, &order), "{}", msg);
     }
 
@@ -108,7 +111,7 @@ mod unit_tests {
     fn test_optimized_sort() {
         init();
 
-        let rules = Parser::new_tes3_parser()
+        let rules = parser::new_tes3_parser()
             .parse_rules_from_path("./tests/mlox/mlox_base.txt")
             .expect("rule parse failed");
         let order = get_order_rules(&rules);
@@ -118,10 +121,10 @@ mod unit_tests {
         mods.shuffle(&mut rng);
         let mods = mods.into_iter().take(100).collect::<Vec<_>>();
 
-        let full_result = Sorter::new_stable_full()
+        let full_result = sorter::new_stable_full_sorter()
             .topo_sort(&mods, &order)
             .expect("rules contain a cycle");
-        let opt_result = Sorter::new_stable()
+        let opt_result = sorter::new_stable_sorter()
             .topo_sort(&mods, &order)
             .expect("opt rules contain a cycle");
 
@@ -132,7 +135,7 @@ mod unit_tests {
     fn test_optimized_sort_time() {
         init();
 
-        let rules = Parser::new_tes3_parser()
+        let rules = parser::new_tes3_parser()
             .parse_rules_from_path("./tests/mlox/mlox_base.txt")
             .expect("rule parse failed");
         let order = get_order_rules(&rules);
@@ -146,7 +149,7 @@ mod unit_tests {
             let mods_rnd = mods.clone().into_iter().take(max).collect::<Vec<_>>();
 
             let now = std::time::Instant::now();
-            Sorter::new_stable()
+            sorter::new_stable_sorter()
                 .topo_sort(&mods_rnd, &order)
                 .expect("opt rules contain a cycle");
             let elapsed = now.elapsed().as_secs();

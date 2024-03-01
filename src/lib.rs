@@ -1,5 +1,4 @@
 use clap::ValueEnum;
-use log::error;
 use std::env;
 use std::fs::{self, File};
 use std::io::BufRead;
@@ -73,21 +72,9 @@ pub fn debug_get_mods_from_rules(order: &[(String, String)]) -> Vec<String> {
 /// This function will return an error if .
 pub fn get_default_rules_dir(game: ESupportedGame) -> Result<PathBuf, ExitCode> {
     Ok(match game {
-        ESupportedGame::Morrowind => {
-            if let Some(parent_dir) = env::current_dir().expect("No current working dir").parent() {
-                parent_dir.join("mlox")
-            } else {
-                error!("Could not find rules directory");
-                return Err(ExitCode::FAILURE);
-            }
-        }
+        ESupportedGame::Morrowind => PathBuf::from("mlox"),
         ESupportedGame::OpenMorrowind => {
-            if let Some(parent_dir) = env::current_dir().expect("No current working dir").parent() {
-                parent_dir.join("mlox")
-            } else {
-                error!("Could not find rules directory");
-                return Err(ExitCode::FAILURE);
-            }
+            todo!()
         }
         ESupportedGame::Cyberpunk => PathBuf::from("plox"),
     })
@@ -168,7 +155,7 @@ pub fn gather_tes3_mods<P>(path: &P) -> io::Result<Vec<String>>
 where
     P: AsRef<Path>,
 {
-    let files = get_plugins_sorted(&path, false);
+    let files = get_plugins_sorted(&path.as_ref().join("Data Files"), false);
 
     let names = files
         .iter()
@@ -181,33 +168,27 @@ where
         .collect::<Vec<_>>();
 
     // check against mw ini
-    // Move one directory up
-    if let Some(parent_dir) = PathBuf::from(path.as_ref()).parent() {
-        // Construct the path to "morrowind.ini"
-        let morrowind_ini_path = parent_dir.join("Morrowind.ini");
+    let morrowind_ini_path = PathBuf::from("Morrowind.ini");
+    if morrowind_ini_path.exists() {
+        // parse ini
+        if let Some(path) = morrowind_ini_path.to_str() {
+            let map = ini!(path);
 
-        // Check if the file exists
-        if morrowind_ini_path.exists() {
-            // parse ini
-            if let Some(path) = morrowind_ini_path.to_str() {
-                let map = ini!(path);
+            let mut final_files: Vec<String> = vec![];
+            if let Some(section) = map.get("game files") {
+                let mods_in_ini = section
+                    .values()
+                    .flatten()
+                    .map(|f| f.to_owned())
+                    .collect::<Vec<_>>();
 
-                let mut final_files: Vec<String> = vec![];
-                if let Some(section) = map.get("Game Files".to_lowercase().as_str()) {
-                    let mods_in_ini = section
-                        .values()
-                        .flatten()
-                        .map(|f| f.to_owned())
-                        .collect::<Vec<_>>();
-
-                    for plugin_name in names {
-                        if mods_in_ini.contains(&plugin_name) {
-                            final_files.push(plugin_name.to_owned());
-                        }
+                for plugin_name in names {
+                    if mods_in_ini.contains(&plugin_name) {
+                        final_files.push(plugin_name.to_owned());
                     }
-
-                    return Ok(final_files);
                 }
+
+                return Ok(final_files);
             }
         }
     }
@@ -215,25 +196,13 @@ where
     Ok(names)
 }
 
-pub fn gather_openmw_mods<P>(path: &P) -> io::Result<Vec<String>>
+pub fn gather_openmw_mods<P>(_path: &P) -> io::Result<Vec<String>>
 where
     P: AsRef<Path>,
 {
-    let files = get_plugins_sorted(&path, true);
-
-    let names = files
-        .iter()
-        .filter_map(|f| {
-            if let Some(file_name) = f.file_name().and_then(|n| n.to_str()) {
-                return Some(file_name.to_owned());
-            }
-            None
-        })
-        .collect::<Vec<_>>();
-
     // TODO parse omw cfg
 
-    Ok(names)
+    todo!()
 }
 
 pub fn gather_cp77_mods<P>(root: &P) -> io::Result<Vec<String>>
@@ -254,7 +223,6 @@ where
                             if let Some(file_name) = e.file_name().and_then(|n| n.to_str()) {
                                 return Some(file_name.to_owned());
                             }
-                            //return Some(e);
                         }
                     }
                 }

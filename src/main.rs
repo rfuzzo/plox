@@ -7,7 +7,6 @@ use env_logger::Env;
 use log::{error, info, warn};
 
 use plox::rules::TRule;
-use plox::sorter::Sorter;
 use plox::*;
 
 #[derive(Parser)]
@@ -73,7 +72,7 @@ fn main() -> ExitCode {
     }
     let env = Env::default()
         .default_filter_or(log_level_to_str(level))
-        .default_write_style_or("always ");
+        .default_write_style_or("always");
     env_logger::Builder::from_env(env).init();
 
     // detect game
@@ -81,12 +80,10 @@ fn main() -> ExitCode {
         game
     } else if is_current_directory_name("Cyberpunk 2077") {
         ESupportedGame::Cyberpunk
-    } else if is_current_directory_name("Data Files") {
-        // TODO support root tes3 dir
-        // || is_current_directory_name("Morrowind")
+    } else if is_current_directory_name("Morrowind") {
         ESupportedGame::Morrowind
     } else {
-        error!("No game specified to verify");
+        error!("No game specified or detected");
         return ExitCode::FAILURE;
     };
 
@@ -177,9 +174,9 @@ fn sort(
 
             // Sort
             let mut sorter = if unstable {
-                Sorter::new_unstable()
+                sorter::new_unstable_sorter()
             } else {
-                Sorter::new_stable()
+                sorter::new_stable_sorter()
             };
 
             let order_rules = get_order_rules(&rules);
@@ -245,7 +242,7 @@ fn verify(game: ESupportedGame, rules_path: &Option<String>) -> ExitCode {
         Ok(rules) => {
             let order = get_order_rules(&rules);
             let mods = debug_get_mods_from_rules(&order);
-            match Sorter::new_unstable().topo_sort(&mods, &order) {
+            match sorter::new_unstable_sorter().topo_sort(&mods, &order) {
                 Ok(_) => {
                     info!("Verify SUCCESS");
                     ExitCode::SUCCESS

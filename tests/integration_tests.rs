@@ -2,7 +2,7 @@
 mod integration_tests {
     use rand::{seq::SliceRandom, thread_rng};
 
-    use plox::{parser::*, sorter::Sorter, *};
+    use plox::{parser::*, sorter::*, *};
 
     fn init() {
         let _ = env_logger::builder().is_test(true).try_init();
@@ -29,7 +29,7 @@ mod integration_tests {
     fn test_verify_order_rules() {
         init();
 
-        let rules = Parser::new_cyberpunk_parser()
+        let rules = new_cyberpunk_parser()
             .parse_rules_from_path("./tests/plox/rules_order.txt")
             .expect("rule parse failed");
         let order = get_order_rules(&rules);
@@ -37,7 +37,7 @@ mod integration_tests {
         let mods = debug_get_mods_from_rules(&order);
 
         assert!(
-            Sorter::new_unstable().topo_sort(&mods, &order).is_ok(),
+            new_unstable_sorter().topo_sort(&mods, &order).is_ok(),
             "rules contain a cycle"
         )
     }
@@ -46,7 +46,7 @@ mod integration_tests {
     fn test_parse_notes() {
         init();
 
-        let rules = Parser::new_cyberpunk_parser()
+        let rules = new_cyberpunk_parser()
             .parse_rules_from_path("./tests/plox/rules_note.txt")
             .expect("rule parse failed");
 
@@ -57,7 +57,7 @@ mod integration_tests {
     fn test_verify_mlox_base_rules() {
         init();
 
-        let parser = Parser::new_tes3_parser();
+        let parser = new_tes3_parser();
         let rules = parser
             .parse_rules_from_path("./tests/mlox/mlox_base.txt")
             .expect("rule parse failed");
@@ -74,7 +74,7 @@ mod integration_tests {
         let mods = mods.into_iter().take(100).collect::<Vec<_>>();
 
         assert!(
-            Sorter::new_unstable().topo_sort(&mods, &order).is_ok(),
+            new_unstable_sorter().topo_sort(&mods, &order).is_ok(),
             "rules contain a cycle"
         )
     }
@@ -83,7 +83,7 @@ mod integration_tests {
     fn test_verify_mlox_user_rules() {
         init();
 
-        let parser = Parser::new_tes3_parser();
+        let parser = new_tes3_parser();
         let rules = parser
             .parse_rules_from_path("./tests/mlox/mlox_user.txt")
             .expect("rule parse failed");
@@ -100,7 +100,7 @@ mod integration_tests {
         let mods = mods.into_iter().take(100).collect::<Vec<_>>();
 
         assert!(
-            Sorter::new_unstable().topo_sort(&mods, &order).is_ok(),
+            new_unstable_sorter().topo_sort(&mods, &order).is_ok(),
             "rules contain a cycle"
         )
     }

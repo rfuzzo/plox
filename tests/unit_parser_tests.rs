@@ -3,7 +3,12 @@ mod unit_tests {
     use core::panic;
     use std::io::Cursor;
 
-    use plox::{expressions::*, get_order_rules, parser::*, rules::*};
+    use plox::{
+        expressions::*,
+        get_order_rules,
+        parser::{self},
+        rules::*,
+    };
 
     fn init() {
         let _ = env_logger::builder().is_test(true).try_init();
@@ -13,7 +18,7 @@ mod unit_tests {
     fn test_tokenize() {
         init();
 
-        let parser = Parser::new_cyberpunk_parser();
+        let parser = parser::new_cyberpunk_parser();
 
         {
             let input = "a.archive my e3.archive.archive";
@@ -56,7 +61,7 @@ mod unit_tests {
         let input = "[Order]\na.archive\nb.archive\nc.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = Parser::new_cyberpunk_parser()
+        let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
             .expect("Failed to parse rule");
         assert_eq!(2, rules.len());
@@ -81,7 +86,7 @@ mod unit_tests {
         let input = "[Order]\na.archive\narchive with spaces.archive\nc.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = Parser::new_cyberpunk_parser()
+        let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
             .expect("Failed to parse rule");
         let order = get_order_rules(&rules);
@@ -108,7 +113,7 @@ mod unit_tests {
             let input = "[Order]a.archive \"b name.archive\" c.archive".to_owned();
             let reader = Cursor::new(input.as_bytes());
 
-            let rules = Parser::new_cyberpunk_parser()
+            let rules = parser::new_cyberpunk_parser()
                 .parse_rules_from_reader(reader)
                 .expect("Failed to parse rule");
             assert_eq!(2, rules.len());
@@ -130,7 +135,7 @@ mod unit_tests {
             let input = "[Order]a.archive c.archive ; with a comment".to_owned();
             let reader = Cursor::new(input.as_bytes());
 
-            let rules = Parser::new_cyberpunk_parser()
+            let rules = parser::new_cyberpunk_parser()
                 .parse_rules_from_reader(reader)
                 .expect("Failed to parse rule");
             assert_eq!(1, rules.len());
@@ -153,7 +158,7 @@ mod unit_tests {
         let input = "[Note message] a.archive b.archive c.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let parser = Parser::new_cyberpunk_parser();
+        let parser = parser::new_cyberpunk_parser();
         let rules = parser
             .parse_rules_from_reader(reader)
             .expect("Failed to parse rule");
@@ -179,7 +184,7 @@ mod unit_tests {
         let input = "[Note message] a.archive b name.archive c.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let parser = Parser::new_cyberpunk_parser();
+        let parser = parser::new_cyberpunk_parser();
         let rules = parser
             .parse_rules_from_reader(reader)
             .expect("Failed to parse rule");
@@ -205,7 +210,7 @@ mod unit_tests {
         let input = "[Note message]\na.archive\nb.archive\nc.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = Parser::new_cyberpunk_parser()
+        let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
             .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
@@ -230,7 +235,7 @@ mod unit_tests {
         let input = "[Note]\n message\na.archive\nb.archive\nc.archive";
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = Parser::new_cyberpunk_parser()
+        let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
             .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
@@ -255,7 +260,7 @@ mod unit_tests {
         let input = "[Note]\na b c.archive\nb.archive";
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = Parser::new_cyberpunk_parser()
+        let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
             .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
@@ -280,7 +285,7 @@ mod unit_tests {
         let input = "[Note]\n[ALL a.archive [NOT b.archive]]";
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = Parser::new_cyberpunk_parser()
+        let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
             .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
@@ -301,7 +306,7 @@ mod unit_tests {
         let input = "[Conflict message] a.archive b.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = Parser::new_cyberpunk_parser()
+        let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
             .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
@@ -325,7 +330,7 @@ mod unit_tests {
         let input = "[Conflict message] a.archive b name.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = Parser::new_cyberpunk_parser()
+        let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
             .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
@@ -349,7 +354,7 @@ mod unit_tests {
         let input = "[Conflict message]\na.archive\nb.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = Parser::new_cyberpunk_parser()
+        let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
             .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
@@ -373,7 +378,7 @@ mod unit_tests {
         let input = "[Conflict message]\na.archive\nb.archive\nc.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = Parser::new_cyberpunk_parser()
+        let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
             .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
@@ -397,7 +402,7 @@ mod unit_tests {
         let input = "[Conflict]\nname a.archive\nb.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = Parser::new_cyberpunk_parser()
+        let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
             .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
@@ -421,7 +426,7 @@ mod unit_tests {
         let input = "[Conflict]\nname a.archive\n[ALL b.archive c name.archive]".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = Parser::new_cyberpunk_parser()
+        let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
             .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
@@ -448,7 +453,7 @@ mod unit_tests {
         let input: String = "[Requires message] a.archive b.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = Parser::new_cyberpunk_parser()
+        let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
             .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
@@ -472,7 +477,7 @@ mod unit_tests {
         let input = "[Requires message] a.archive b name.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = Parser::new_cyberpunk_parser()
+        let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
             .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
@@ -496,7 +501,7 @@ mod unit_tests {
         let input = "[Requires message]\na.archive\nb.archive".to_owned();
         let reader = Cursor::new(input.as_bytes());
 
-        let rules = Parser::new_cyberpunk_parser()
+        let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
             .expect("Failed to parse rule");
         assert_eq!(1, rules.len());
@@ -526,7 +531,7 @@ mod unit_tests {
     }
 
     fn test_atomic(input: &str, expected: &str) {
-        let parser = Parser::new_cyberpunk_parser();
+        let parser = parser::new_cyberpunk_parser();
         assert_eq!(
             1,
             parser
@@ -559,7 +564,7 @@ mod unit_tests {
     }
 
     fn test_all(input: &str, expected: Vec<&str>) {
-        let parser = Parser::new_cyberpunk_parser();
+        let parser = parser::new_cyberpunk_parser();
         assert_eq!(
             1,
             parser
@@ -601,7 +606,7 @@ mod unit_tests {
     fn test_multiline_expr() {
         init();
 
-        let parser = Parser::new_cyberpunk_parser();
+        let parser = parser::new_cyberpunk_parser();
 
         {
             let input = "[ANY [NOT x.archive] archive name.archive\na.archive]".to_owned();
