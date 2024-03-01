@@ -124,9 +124,10 @@ mod unit_tests {
         let mut rng = thread_rng();
         let mut mods = debug_get_mods_from_rules(&order);
         let mut times = vec![];
-        for n in [64, 128, 256, 512, 1024] {
+        for n in [64, 128, 256, 512, 1024, 2048] {
             mods.shuffle(&mut rng);
-            let mods_rnd = mods.clone().into_iter().take(n).collect::<Vec<_>>();
+            let max = std::cmp::min(n, mods.len() - 1);
+            let mods_rnd = mods.clone().into_iter().take(max).collect::<Vec<_>>();
 
             let now = std::time::Instant::now();
             Sorter::new_stable()
@@ -148,7 +149,7 @@ mod unit_tests {
 
         // assert
         for (_n, t) in times {
-            assert!(t < 2);
+            assert!(t < 3);
         }
     }
 

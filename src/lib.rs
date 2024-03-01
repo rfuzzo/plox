@@ -17,7 +17,7 @@ use rules::*;
 /// LOGIC
 ////////////////////////////////////////////////////////////////////////
 
-pub const PLOX_RULES_BASE: &str = "plox_rules_base.txt";
+pub const PLOX_RULES_BASE: &str = "plox_base.txt";
 
 #[derive(Debug, Clone, Copy, ValueEnum)]
 pub enum ESupportedGame {
