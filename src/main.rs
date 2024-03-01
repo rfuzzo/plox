@@ -80,9 +80,9 @@ fn main() -> ExitCode {
     let cli = Cli::parse();
 
     // TODO logging
-    const CARGO_NAME: &str = env!("CARGO_PKG_NAME");
-    let _ = simple_logging::log_to_file(format!("{}.log", CARGO_NAME), log::LevelFilter::Debug);
-    //simple_logging::log_to_stderr(log::LevelFilter::Info);
+    //const CARGO_NAME: &str = env!("CARGO_PKG_NAME");
+    //let _ = simple_logging::log_to_file(format!("{}.log", CARGO_NAME), log::LevelFilter::Info);
+    simple_logging::log_to_stderr(log::LevelFilter::Info);
 
     // detect game
     let game = if let Some(game) = cli.game {
@@ -157,20 +157,22 @@ fn sort(
     match parser.parse(rules_dir) {
         Ok(rules) => {
             // Print Warnings
+            info!("Evaluating mod list...");
+            //println!("Evaluating mod list...");
             for rule in &rules {
                 if rule.eval(&mods) {
                     match rule {
                         rules::Rule::Order(_) => {}
                         rules::Rule::Note(n) => {
-                            println!("[NOTE]\n{}\n", n.get_comment());
+                            //println!("[NOTE]\n{}\n", n.get_comment());
                             info!("[NOTE]\n{}\n", n.get_comment());
                         }
                         rules::Rule::Conflict(c) => {
-                            println!("[CONFLICT]\n{}\n", c.get_comment());
+                            //println!("[CONFLICT]\n{}\n", c.get_comment());
                             warn!("[CONFLICT]\n{}\n", c.get_comment());
                         }
                         rules::Rule::Requires(r) => {
-                            println!("[REQUIRES]\n{}\n", r.get_comment());
+                            //println!("[REQUIRES]\n{}\n", r.get_comment());
                             warn!("[REQUIRES]\n{}\n", r.get_comment());
                         }
                     }
@@ -186,18 +188,27 @@ fn sort(
 
             let order_rules = get_order_rules(&rules);
             if !order_rules.is_empty() {
+                info!("Sorting mods...");
+                //println!("Sorting mods...");
+
                 match sorter.topo_sort(&mods, &order_rules) {
                     Ok(result) => {
                         if dry_run {
                             info!("Dry run...");
-                            info!("{result:?}");
-                        } else {
-                            info!("Sorting mods...");
-                            info!("{:?}", &mods);
-                            info!("New:");
-                            info!("{result:?}");
 
-                            // TODO check if nothing to sort
+                            info!("New:\n{:?}", result);
+                            //println!("New:\n{:?}", result);
+                        } else {
+                            info!("Current:\n{:?}", &mods);
+                            //println!("Current:\n{:?}", &mods);
+
+                            if mods.eq(&result) {
+                                info!("Mods are in correct order, no sorting needed.");
+                                //println!("Mods are in correct order, no sorting needed.");
+                            } else {
+                                info!("New:\n{:?}", result);
+                                // println!("New:\n{:?}", result);
+                            }
 
                             // TODO update on disk
                         }

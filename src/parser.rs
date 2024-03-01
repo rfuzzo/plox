@@ -7,7 +7,7 @@ use std::io::{BufRead, BufReader, Cursor, Error, ErrorKind, Read, Result, Seek, 
 use std::path::Path;
 
 use byteorder::ReadBytesExt;
-use log::{debug, error, info, warn};
+use log::*;
 
 use crate::{expressions::*, TParser};
 use crate::{rules::*, ESupportedGame};
@@ -193,7 +193,7 @@ impl Parser {
                 }
                 Err(err) => {
                     // log error and skip chunk
-                    error!(
+                    warn!(
                         "Error '{}' at chunk #{}, starting at line: {}",
                         err, idx, info
                     );

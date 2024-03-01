@@ -379,8 +379,14 @@ where
 
                 let mut final_files: Vec<String> = vec![];
                 if let Some(section) = map.get("Game Files".to_lowercase().as_str()) {
-                    for plugin_name in section.values().flatten() {
-                        if names.contains(plugin_name) {
+                    let mods_in_ini = section
+                        .values()
+                        .flatten()
+                        .map(|f| f.to_owned())
+                        .collect::<Vec<_>>();
+
+                    for plugin_name in names {
+                        if mods_in_ini.contains(&plugin_name) {
                             final_files.push(plugin_name.to_owned());
                         }
                     }
