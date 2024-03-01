@@ -27,25 +27,32 @@ pub enum ESupportedGame {
     Cyberpunk,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ESortType {
+    Unstable,
+    StableOpt,
+    StableFull,
+}
+
 pub struct Sorter {
-    pub stable_sort: bool,
-    pub optimize: bool,
+    pub sort_type: ESortType,
 }
 
 impl Sorter {
     pub fn new_unstable() -> Self {
-        Sorter::new(false, false)
+        Sorter::new(ESortType::Unstable)
     }
 
-    pub fn new_stable(optimize: bool) -> Self {
-        Sorter::new(true, optimize)
+    pub fn new_stable() -> Self {
+        Sorter::new(ESortType::StableOpt)
     }
 
-    fn new(stable_sort: bool, optimize: bool) -> Self {
-        Self {
-            optimize,
-            stable_sort,
-        }
+    pub fn new_stable_full() -> Self {
+        Sorter::new(ESortType::StableFull)
+    }
+
+    fn new(sort_type: ESortType) -> Self {
+        Self { sort_type }
     }
 
     pub fn stable_topo_sort_inner(
@@ -56,9 +63,14 @@ impl Sorter {
         result: &mut Vec<String>,
         last_index: &mut (usize, usize),
     ) -> bool {
-        match self.optimize {
-            true => Self::stable_topo_sort_opt(n, edges, index_dict, result, last_index),
-            false => Self::stable_topo_sort_full(n, edges, index_dict, result, last_index),
+        match self.sort_type {
+            ESortType::Unstable => todo!(),
+            ESortType::StableOpt => {
+                Self::stable_topo_sort_opt(n, edges, index_dict, result, last_index)
+            }
+            ESortType::StableFull => {
+                Self::stable_topo_sort_full(n, edges, index_dict, result, last_index)
+            }
         }
     }
 
@@ -141,7 +153,7 @@ impl Sorter {
             return Err("Graph contains a cycle");
         }
 
-        if !self.stable_sort {
+        if self.sort_type == ESortType::Unstable {
             let r = sort
                 .unwrap()
                 .iter()

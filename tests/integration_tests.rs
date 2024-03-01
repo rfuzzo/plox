@@ -1,5 +1,7 @@
 #[cfg(test)]
 mod integration_tests {
+    use rand::{seq::SliceRandom, thread_rng};
+
     use plox::{parser::*, *};
 
     use test_log::test;
@@ -49,11 +51,10 @@ mod integration_tests {
             .expect("rule parse failed");
         let order = get_order_rules(&rules);
 
-        // debug
-        let mods = debug_get_mods_from_rules(&order)
-            .into_iter()
-            .take(100)
-            .collect::<Vec<_>>();
+        let mut rng = thread_rng();
+        let mut mods = debug_get_mods_from_rules(&order);
+        mods.shuffle(&mut rng);
+        let mods = mods.into_iter().take(100).collect::<Vec<_>>();
 
         assert!(
             Sorter::new_unstable().topo_sort(&mods, &order).is_ok(),
@@ -68,11 +69,10 @@ mod integration_tests {
             .expect("rule parse failed");
         let order = get_order_rules(&rules);
 
-        // debug
-        let mods = debug_get_mods_from_rules(&order)
-            .into_iter()
-            .take(100)
-            .collect::<Vec<_>>();
+        let mut rng = thread_rng();
+        let mut mods = debug_get_mods_from_rules(&order);
+        mods.shuffle(&mut rng);
+        let mods = mods.into_iter().take(100).collect::<Vec<_>>();
 
         assert!(
             Sorter::new_unstable().topo_sort(&mods, &order).is_ok(),

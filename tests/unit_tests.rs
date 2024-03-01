@@ -1,8 +1,13 @@
 #[cfg(test)]
 mod unit_tests {
+    use std::fs::File;
+    use std::io::Write;
+
     use plox::parser::Parser;
     use plox::{debug_get_mods_from_rules, get_order_rules, Sorter};
     use plox::{expressions::*, rules::*};
+    use rand::seq::SliceRandom;
+    use rand::thread_rng;
 
     #[test]
     fn test_cycle() {
@@ -22,12 +27,12 @@ mod unit_tests {
         );
 
         assert!(
-            Sorter::new_stable(false).topo_sort(&mods, &order).is_err(),
+            Sorter::new_stable_full().topo_sort(&mods, &order).is_err(),
             "stable(false) rules do not contain a cycle"
         );
 
         assert!(
-            Sorter::new_stable(true).topo_sort(&mods, &order).is_err(),
+            Sorter::new_stable().topo_sort(&mods, &order).is_err(),
             "stable(true) rules do not contain a cycle"
         );
     }
@@ -55,12 +60,12 @@ mod unit_tests {
             .expect("rules contain a cycle");
         assert!(checkresult(&result, &order), "unstable order is wrong");
 
-        let result = Sorter::new_stable(false)
+        let result = Sorter::new_stable_full()
             .topo_sort(&mods, &order)
             .expect("rules contain a cycle");
         assert!(checkresult(&result, &order), "stable(false) order is wrong");
 
-        let result = Sorter::new_stable(true)
+        let result = Sorter::new_stable()
             .topo_sort(&mods, &order)
             .expect("rules contain a cycle");
         assert!(checkresult(&result, &order), "stable(true) order is wrong");
@@ -69,24 +74,61 @@ mod unit_tests {
     #[test]
     fn test_optimized_sort() {
         let rules = Parser::new_tes3_parser()
-            .parse_rules_from_path("./tests/mlox/mlox_user.txt")
+            .parse_rules_from_path("./tests/mlox/mlox_base.txt")
             .expect("rule parse failed");
         let order = get_order_rules(&rules);
 
-        // debug
-        let mods = debug_get_mods_from_rules(&order)
-            .into_iter()
-            .take(100)
-            .collect::<Vec<_>>();
+        let mut rng = thread_rng();
+        let mut mods = debug_get_mods_from_rules(&order);
+        mods.shuffle(&mut rng);
+        let mods = mods.into_iter().take(100).collect::<Vec<_>>();
 
-        let full_result = Sorter::new_stable(false)
+        let full_result = Sorter::new_stable_full()
             .topo_sort(&mods, &order)
             .expect("rules contain a cycle");
-        let opt_result = Sorter::new_stable(true)
+        let opt_result = Sorter::new_stable()
             .topo_sort(&mods, &order)
             .expect("opt rules contain a cycle");
 
         assert_eq!(full_result, opt_result);
+    }
+
+    #[test]
+    fn test_optimized_sort_time() {
+        let rules = Parser::new_tes3_parser()
+            .parse_rules_from_path("./tests/mlox/mlox_base.txt")
+            .expect("rule parse failed");
+        let order = get_order_rules(&rules);
+
+        let mut rng = thread_rng();
+        let mut mods = debug_get_mods_from_rules(&order);
+        let mut times = vec![];
+        for n in [100, 200, 300, 400, 500] {
+            mods.shuffle(&mut rng);
+            let mods_rnd = mods.clone().into_iter().take(n).collect::<Vec<_>>();
+
+            let now = std::time::Instant::now();
+            Sorter::new_stable()
+                .topo_sort(&mods_rnd, &order)
+                .expect("opt rules contain a cycle");
+            let elapsed = now.elapsed().as_secs();
+
+            times.push((n, elapsed));
+        }
+
+        let mut msg = String::new();
+        for (n, t) in &times {
+            msg += format!("{},{}\n", n, t).as_str();
+        }
+
+        // log to file
+        let mut file = File::create("unit_log.txt").expect("could not create log file");
+        file.write_all(msg.as_bytes()).expect("write error");
+
+        // assert
+        for (_n, t) in times {
+            assert!(t < 2);
+        }
     }
 
     fn checkresult(result: &[String], order: &Vec<(String, String)>) -> bool {
