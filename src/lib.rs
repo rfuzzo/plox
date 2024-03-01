@@ -1,5 +1,5 @@
 use clap::ValueEnum;
-use log::info;
+use log::{error, info};
 //use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::fs::{self, File};
@@ -36,6 +36,8 @@ pub enum ESortType {
 
 pub struct Sorter {
     pub sort_type: ESortType,
+
+    pub comment: String,
 }
 
 impl Sorter {
@@ -51,8 +53,11 @@ impl Sorter {
         Sorter::new(ESortType::StableFull)
     }
 
-    fn new(sort_type: ESortType) -> Self {
-        Self { sort_type }
+    pub fn new(sort_type: ESortType) -> Self {
+        Self {
+            sort_type,
+            comment: "".to_owned(),
+        }
     }
 
     pub fn stable_topo_sort_inner(
@@ -60,13 +65,14 @@ impl Sorter {
         n: usize,
         edges: &[(usize, usize)],
         index_dict: &HashMap<&str, usize>,
+        index_dict_rev: &HashMap<usize, &str>,
         result: &mut Vec<String>,
-        last_index: &mut (usize, usize),
+        last_index: &mut usize,
     ) -> bool {
         match self.sort_type {
             ESortType::Unstable => todo!(),
             ESortType::StableOpt => {
-                Self::stable_topo_sort_opt(n, edges, index_dict, result, last_index)
+                Self::stable_topo_sort_opt(n, edges, index_dict, index_dict_rev, result, last_index)
             }
             ESortType::StableFull => {
                 Self::stable_topo_sort_full(n, edges, index_dict, result, last_index)
@@ -79,7 +85,7 @@ impl Sorter {
         edges: &[(usize, usize)],
         index_dict: &HashMap<&str, usize>,
         result: &mut Vec<String>,
-        last_index: &mut (usize, usize),
+        last_index: &mut usize,
     ) -> bool {
         for i in 0..n {
             for j in 0..i {
@@ -90,7 +96,7 @@ impl Sorter {
                     result.remove(i);
                     result.insert(j, t);
 
-                    *last_index = (i, j);
+                    *last_index = j;
 
                     return true;
                 }
@@ -100,35 +106,59 @@ impl Sorter {
     }
 
     pub fn stable_topo_sort_opt(
-        n: usize,
+        _n: usize,
         edges: &[(usize, usize)],
-        index_dict: &HashMap<&str, usize>,
+        _index_dict: &HashMap<&str, usize>,
+        index_dict_rev: &HashMap<usize, &str>,
         result: &mut Vec<String>,
-        last_index: &mut (usize, usize),
+        last_index: &mut usize,
     ) -> bool {
-        // optimize: skip checking already sorted items
-        let start = last_index.1;
+        // optimize A: skip checking already sorted items
+        // let start = *last_index;
+        // for i in start..n {
+        //     for j in 0..i {
+        //         let x = index_dict[result[i].as_str()];
+        //         let y = index_dict[result[j].as_str()];
+        //         if edges.contains(&(x, y)) {
+        //             let t = result[i].to_owned();
+        //             result.remove(i);
+        //             result.insert(j, t);
 
-        for i in start..n {
-            for j in 0..i {
-                let x = index_dict[result[i].as_str()];
-                let y = index_dict[result[j].as_str()];
-                if edges.contains(&(x, y)) {
-                    let t = result[i].to_owned();
-                    result.remove(i);
-                    result.insert(j, t);
+        //             *last_index = j;
 
-                    *last_index = (i, j);
+        //             return true;
+        //         }
+        //     }
+        // }
 
-                    return true;
-                }
+        // optimize B: only check edges
+        for (idx, edge) in edges.iter().enumerate() {
+            let i = edge.0;
+            let j = edge.1;
+
+            let x = index_dict_rev[&i];
+            let y = index_dict_rev[&j];
+
+            let idx_of_x = result.iter().position(|f| f == x).unwrap();
+            let idx_of_y = result.iter().position(|f| f == y).unwrap();
+
+            // if i not before j x should be before y
+            if idx_of_x > idx_of_y {
+                let t = result[idx_of_x].to_owned();
+                result.remove(idx_of_x);
+                result.insert(idx_of_y, t);
+
+                *last_index = idx;
+
+                return true;
             }
         }
+
         false
     }
 
     pub fn topo_sort(
-        &self,
+        &mut self,
         mods: &Vec<String>,
         order: &Vec<(String, String)>,
     ) -> Result<Vec<String>, &'static str> {
@@ -147,6 +177,9 @@ impl Sorter {
                 edges.push((idx_a, idx_b));
             }
         }
+
+        edges.dedup();
+
         // cycle check
         let sort = g.toposort();
         if sort.is_none() {
@@ -166,21 +199,32 @@ impl Sorter {
         let mut result: Vec<String> = mods.iter().map(|e| (*e).to_owned()).collect();
         info!("{result:?}");
 
-        // if self.optimize {
-        //     result.sort_by(|a, b| Self::edge_cmp(a, b, &edges, &index_dict));
-        // } else
-        {
-            let mut index = (0, 0);
-            loop {
-                if !self.stable_topo_sort_inner(
-                    mods.len(),
-                    &edges,
-                    &index_dict,
-                    &mut result,
-                    &mut index,
-                ) {
-                    break;
-                }
+        // reverse
+        let mut index_dict_rev: HashMap<usize, &str> = HashMap::default();
+        for (k, v) in &index_dict {
+            index_dict_rev.insert(*v, k);
+        }
+
+        let mut index = 0;
+        let mut i = 0;
+        let max_loop = 10000;
+        loop {
+            if !self.stable_topo_sort_inner(
+                mods.len(),
+                &edges,
+                &index_dict,
+                &index_dict_rev,
+                &mut result,
+                &mut index,
+            ) {
+                break;
+            }
+
+            error!("{}", index);
+            i += 1;
+            if i > max_loop {
+                self.comment = format!("out of iterations: {}", index);
+                return Ok(result);
             }
         }
 

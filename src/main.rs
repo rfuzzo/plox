@@ -127,7 +127,7 @@ fn sort(
             // Sort
 
             // TODO sorter
-            let sorter = Sorter::new_unstable();
+            let mut sorter = Sorter::new_unstable();
 
             let order_rules = get_order_rules(&rules);
             if !order_rules.is_empty() {

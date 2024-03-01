@@ -46,13 +46,19 @@ mod integration_tests {
 
     #[test]
     fn test_verify_mlox_base_rules() {
-        let rules = Parser::new_tes3_parser()
+        let parser = Parser::new_tes3_parser();
+        let rules = parser
             .parse_rules_from_path("./tests/mlox/mlox_base.txt")
             .expect("rule parse failed");
         let order = get_order_rules(&rules);
 
         let mut rng = thread_rng();
         let mut mods = debug_get_mods_from_rules(&order);
+
+        for m in &mods {
+            assert!(parser.ends_with_vec3(m));
+        }
+
         mods.shuffle(&mut rng);
         let mods = mods.into_iter().take(100).collect::<Vec<_>>();
 
@@ -64,13 +70,19 @@ mod integration_tests {
 
     #[test]
     fn test_verify_mlox_user_rules() {
-        let rules = Parser::new_tes3_parser()
+        let parser = Parser::new_tes3_parser();
+        let rules = parser
             .parse_rules_from_path("./tests/mlox/mlox_user.txt")
             .expect("rule parse failed");
         let order = get_order_rules(&rules);
 
         let mut rng = thread_rng();
         let mut mods = debug_get_mods_from_rules(&order);
+
+        for m in &mods {
+            assert!(parser.ends_with_vec3(m));
+        }
+
         mods.shuffle(&mut rng);
         let mods = mods.into_iter().take(100).collect::<Vec<_>>();
 

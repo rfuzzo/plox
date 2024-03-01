@@ -246,6 +246,12 @@ impl Parser {
             // HANDLE RULE PARSE
             // each line gets tokenized
             for token in self.tokenize(line) {
+                if !self.ends_with_vec3(&token) {
+                    return Err(Error::new(
+                        ErrorKind::Other,
+                        "Parsing error: tokenize failed",
+                    ));
+                }
                 order.push(token);
             }
         }
@@ -276,6 +282,18 @@ impl Parser {
         }
 
         Ok(rules)
+    }
+
+    pub fn ends_with_vec3(&self, current_buffer: &str) -> bool {
+        let mut b = false;
+        for ext in &self.ext {
+            if current_buffer.to_lowercase().ends_with(ext) {
+                b = true;
+                break;
+            }
+        }
+
+        b
     }
 
     fn ends_with_vec(&self, current_buffer: &str) -> bool {
@@ -314,6 +332,12 @@ impl Parser {
     /// Splits a String into string tokens (either separated by extension or wrapped in quotation marks)
     pub fn tokenize(&self, line: String) -> Vec<String> {
         let mut tokens: Vec<String> = vec![];
+
+        // ignore everything after ;
+        let mut line = line.clone();
+        if line.contains(';') {
+            line = line.split(';').next().unwrap_or("").trim().to_owned();
+        }
 
         let mut is_quoted = false;
         let mut current_token: String = "".to_owned();

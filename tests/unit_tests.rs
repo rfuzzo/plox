@@ -72,6 +72,27 @@ mod unit_tests {
     }
 
     #[test]
+    fn test_optimized_sort_only() {
+        let rules = Parser::new_tes3_parser()
+            .parse_rules_from_path("./tests/mlox/mlox_base.txt")
+            .expect("rule parse failed");
+        let order = get_order_rules(&rules);
+
+        let mut rng = thread_rng();
+        let mut mods = debug_get_mods_from_rules(&order);
+        mods.shuffle(&mut rng);
+        let mods = mods.into_iter().take(100).collect::<Vec<_>>();
+
+        let mut sorter = Sorter::new_stable();
+        let result = sorter
+            .topo_sort(&mods, &order)
+            .expect("opt rules contain a cycle");
+
+        let msg = format!("stable(true) order is wrong: {}", sorter.comment);
+        assert!(checkresult(&result, &order), "{}", msg);
+    }
+
+    #[test]
     fn test_optimized_sort() {
         let rules = Parser::new_tes3_parser()
             .parse_rules_from_path("./tests/mlox/mlox_base.txt")
@@ -103,7 +124,7 @@ mod unit_tests {
         let mut rng = thread_rng();
         let mut mods = debug_get_mods_from_rules(&order);
         let mut times = vec![];
-        for n in [100, 200, 300, 400, 500] {
+        for n in [64, 128, 256, 512, 1024] {
             mods.shuffle(&mut rng);
             let mods_rnd = mods.clone().into_iter().take(n).collect::<Vec<_>>();
 
