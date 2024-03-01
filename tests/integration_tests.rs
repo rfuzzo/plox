@@ -29,7 +29,7 @@ mod integration_tests {
         let mods = debug_get_mods_from_rules(&order);
 
         assert!(
-            topo_sort(&mods, &order, false).is_ok(),
+            Sorter::new_unstable().topo_sort(&mods, &order).is_ok(),
             "rules contain a cycle"
         )
     }
@@ -56,7 +56,7 @@ mod integration_tests {
             .collect::<Vec<_>>();
 
         assert!(
-            topo_sort(&mods, &order, false).is_ok(),
+            Sorter::new_unstable().topo_sort(&mods, &order).is_ok(),
             "rules contain a cycle"
         )
     }
@@ -75,7 +75,7 @@ mod integration_tests {
             .collect::<Vec<_>>();
 
         assert!(
-            topo_sort(&mods, &order, false).is_ok(),
+            Sorter::new_unstable().topo_sort(&mods, &order).is_ok(),
             "rules contain a cycle"
         )
     }

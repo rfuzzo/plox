@@ -1,6 +1,6 @@
 use clap::ValueEnum;
 use log::info;
-use std::cmp::Ordering;
+//use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::fs::{self, File};
 use std::io::BufRead;
@@ -27,140 +27,171 @@ pub enum ESupportedGame {
     Cyberpunk,
 }
 
-pub fn stable_topo_sort_inner(
-    n: usize,
-    edges: &[(usize, usize)],
-    index_dict: &HashMap<&str, usize>,
-    result: &mut Vec<String>,
-    last_index: &mut (usize, usize),
-    optimize: bool,
-) -> bool {
-    match optimize {
-        true => stable_topo_sort_opt(n, edges, index_dict, result, last_index),
-        false => stable_topo_sort_full(n, edges, index_dict, result, last_index),
-    }
+pub struct Sorter {
+    pub stable_sort: bool,
+    pub optimize: bool,
 }
 
-pub fn stable_topo_sort_full(
-    n: usize,
-    edges: &[(usize, usize)],
-    index_dict: &HashMap<&str, usize>,
-    result: &mut Vec<String>,
-    last_index: &mut (usize, usize),
-) -> bool {
-    for i in 0..n {
-        for j in 0..i {
-            let x = index_dict[result[i].as_str()];
-            let y = index_dict[result[j].as_str()];
-            if edges.contains(&(x, y)) {
-                let t = result[i].to_owned();
-                result.remove(i);
-                result.insert(j, t);
+impl Sorter {
+    pub fn new_unstable() -> Self {
+        Sorter::new(false, false)
+    }
 
-                *last_index = (i, j);
+    pub fn new_stable(optimize: bool) -> Self {
+        Sorter::new(true, optimize)
+    }
 
-                return true;
+    fn new(stable_sort: bool, optimize: bool) -> Self {
+        Self {
+            optimize,
+            stable_sort,
+        }
+    }
+
+    pub fn stable_topo_sort_inner(
+        &self,
+        n: usize,
+        edges: &[(usize, usize)],
+        index_dict: &HashMap<&str, usize>,
+        result: &mut Vec<String>,
+        last_index: &mut (usize, usize),
+    ) -> bool {
+        match self.optimize {
+            true => Self::stable_topo_sort_opt(n, edges, index_dict, result, last_index),
+            false => Self::stable_topo_sort_full(n, edges, index_dict, result, last_index),
+        }
+    }
+
+    pub fn stable_topo_sort_full(
+        n: usize,
+        edges: &[(usize, usize)],
+        index_dict: &HashMap<&str, usize>,
+        result: &mut Vec<String>,
+        last_index: &mut (usize, usize),
+    ) -> bool {
+        for i in 0..n {
+            for j in 0..i {
+                let x = index_dict[result[i].as_str()];
+                let y = index_dict[result[j].as_str()];
+                if edges.contains(&(x, y)) {
+                    let t = result[i].to_owned();
+                    result.remove(i);
+                    result.insert(j, t);
+
+                    *last_index = (i, j);
+
+                    return true;
+                }
             }
         }
+        false
     }
-    false
-}
 
-pub fn stable_topo_sort_opt(
-    n: usize,
-    edges: &[(usize, usize)],
-    index_dict: &HashMap<&str, usize>,
-    result: &mut Vec<String>,
-    last_index: &mut (usize, usize),
-) -> bool {
-    // optimize: skip checking already sorted items
-    let start = last_index.1;
+    pub fn stable_topo_sort_opt(
+        n: usize,
+        edges: &[(usize, usize)],
+        index_dict: &HashMap<&str, usize>,
+        result: &mut Vec<String>,
+        last_index: &mut (usize, usize),
+    ) -> bool {
+        // optimize: skip checking already sorted items
+        let start = last_index.1;
 
-    for i in start..n {
-        for j in 0..i {
-            let x = index_dict[result[i].as_str()];
-            let y = index_dict[result[j].as_str()];
-            if edges.contains(&(x, y)) {
-                let t = result[i].to_owned();
-                result.remove(i);
-                result.insert(j, t);
+        for i in start..n {
+            for j in 0..i {
+                let x = index_dict[result[i].as_str()];
+                let y = index_dict[result[j].as_str()];
+                if edges.contains(&(x, y)) {
+                    let t = result[i].to_owned();
+                    result.remove(i);
+                    result.insert(j, t);
 
-                *last_index = (i, j);
+                    *last_index = (i, j);
 
-                return true;
+                    return true;
+                }
             }
         }
+        false
     }
-    false
-}
 
-pub fn topo_sort(
-    mods: &Vec<String>,
-    order: &Vec<(String, String)>,
-    optimize: bool,
-) -> Result<Vec<String>, &'static str> {
-    let mut g = IndexGraph::with_vertices(mods.len());
-    let mut index_dict: HashMap<&str, usize> = HashMap::new();
-    for (i, m) in mods.iter().enumerate() {
-        index_dict.insert(m, i);
-    }
-    // add edges
-    let mut edges: Vec<(usize, usize)> = vec![];
-    for (a, b) in order {
-        if mods.contains(a) && mods.contains(b) {
-            let idx_a = index_dict[a.as_str()];
-            let idx_b = index_dict[b.as_str()];
-            g.add_edge(idx_a, idx_b);
-            edges.push((idx_a, idx_b));
+    pub fn topo_sort(
+        &self,
+        mods: &Vec<String>,
+        order: &Vec<(String, String)>,
+    ) -> Result<Vec<String>, &'static str> {
+        let mut g = IndexGraph::with_vertices(mods.len());
+        let mut index_dict: HashMap<&str, usize> = HashMap::new();
+        for (i, m) in mods.iter().enumerate() {
+            index_dict.insert(m, i);
         }
-    }
-    // cycle check
-    let sort = g.toposort();
-    if sort.is_none() {
-        return Err("Graph contains a cycle");
-    }
-
-    // sort
-    let mut result: Vec<String> = mods.iter().map(|e| (*e).to_owned()).collect();
-    info!("{result:?}");
-
-    if optimize {
-        result.sort_by(|a, b| edge_cmp(a, b, &edges, &index_dict));
-    } else {
-        let mut index = (0, 0);
-        loop {
-            if !stable_topo_sort_inner(
-                mods.len(),
-                &edges,
-                &index_dict,
-                &mut result,
-                &mut index,
-                optimize,
-            ) {
-                break;
+        // add edges
+        let mut edges: Vec<(usize, usize)> = vec![];
+        for (a, b) in order {
+            if mods.contains(a) && mods.contains(b) {
+                let idx_a = index_dict[a.as_str()];
+                let idx_b = index_dict[b.as_str()];
+                g.add_edge(idx_a, idx_b);
+                edges.push((idx_a, idx_b));
             }
         }
+        // cycle check
+        let sort = g.toposort();
+        if sort.is_none() {
+            return Err("Graph contains a cycle");
+        }
+
+        if !self.stable_sort {
+            let r = sort
+                .unwrap()
+                .iter()
+                .map(|f| mods[*f].to_owned())
+                .collect::<Vec<_>>();
+            return Ok(r);
+        }
+
+        // sort
+        let mut result: Vec<String> = mods.iter().map(|e| (*e).to_owned()).collect();
+        info!("{result:?}");
+
+        // if self.optimize {
+        //     result.sort_by(|a, b| Self::edge_cmp(a, b, &edges, &index_dict));
+        // } else
+        {
+            let mut index = (0, 0);
+            loop {
+                if !self.stable_topo_sort_inner(
+                    mods.len(),
+                    &edges,
+                    &index_dict,
+                    &mut result,
+                    &mut index,
+                ) {
+                    break;
+                }
+            }
+        }
+
+        // Return the sorted vector
+        Ok(result)
     }
 
-    // Return the sorted vector
-    Ok(result)
-}
-
-fn edge_cmp(
-    a: &str,
-    b: &str,
-    edges: &[(usize, usize)],
-    index_dict: &HashMap<&str, usize>,
-) -> Ordering {
-    let x = index_dict[a];
-    let y = index_dict[b];
-    if edges.contains(&(x, y)) {
-        Ordering::Less
-    } else if edges.contains(&(y, x)) {
-        Ordering::Greater
-    } else {
-        Ordering::Equal
-    }
+    // fn edge_cmp(
+    //     a: &str,
+    //     b: &str,
+    //     edges: &[(usize, usize)],
+    //     index_dict: &HashMap<&str, usize>,
+    // ) -> Ordering {
+    //     let x = index_dict[a];
+    //     let y = index_dict[b];
+    //     if edges.contains(&(x, y)) {
+    //         Ordering::Less
+    //     } else if edges.contains(&(y, x)) {
+    //         Ordering::Greater
+    //     } else {
+    //         Ordering::Equal
+    //     }
+    // }
 }
 
 ////////////////////////////////////////////////////////////////////////

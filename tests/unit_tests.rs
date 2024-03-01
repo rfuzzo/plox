@@ -1,8 +1,7 @@
 #[cfg(test)]
 mod unit_tests {
-    use log::error;
     use plox::parser::Parser;
-    use plox::{debug_get_mods_from_rules, get_order_rules, topo_sort};
+    use plox::{debug_get_mods_from_rules, get_order_rules, Sorter};
     use plox::{expressions::*, rules::*};
 
     #[test]
@@ -18,15 +17,25 @@ mod unit_tests {
             .collect();
 
         assert!(
-            topo_sort(&mods, &order, false).is_err(),
-            "rules do not contain a cycle"
-        )
+            Sorter::new_unstable().topo_sort(&mods, &order).is_err(),
+            "unstable rules do not contain a cycle"
+        );
+
+        assert!(
+            Sorter::new_stable(false).topo_sort(&mods, &order).is_err(),
+            "stable(false) rules do not contain a cycle"
+        );
+
+        assert!(
+            Sorter::new_stable(true).topo_sort(&mods, &order).is_err(),
+            "stable(true) rules do not contain a cycle"
+        );
     }
 
     #[test]
     fn test_ordering() {
         let order = [
-            ("a", "b"),
+            ("b", "a"),
             ("b", "c"),
             ("d", "e"),
             ("e", "c"),
@@ -36,19 +45,25 @@ mod unit_tests {
         .map(|e| (e.0.to_owned(), e.1.to_owned()))
         .collect();
 
-        let mods = ["a", "b", "c", "d", "e", "f", "g"]
+        let mods = ["d", "e", "f", "g", "a", "b", "c"]
             .iter()
             .map(|e| (*e).into())
             .collect();
 
-        match topo_sort(&mods, &order, true) {
-            Ok(result) => {
-                error!("{}", &result.join(","));
+        let result = Sorter::new_unstable()
+            .topo_sort(&mods, &order)
+            .expect("rules contain a cycle");
+        assert!(checkresult(&result, &order), "unstable order is wrong");
 
-                assert!(checkresult(&result, &order), "order is wrong")
-            }
-            Err(_) => panic!("rules contain a cycle"),
-        }
+        let result = Sorter::new_stable(false)
+            .topo_sort(&mods, &order)
+            .expect("rules contain a cycle");
+        assert!(checkresult(&result, &order), "stable(false) order is wrong");
+
+        let result = Sorter::new_stable(true)
+            .topo_sort(&mods, &order)
+            .expect("rules contain a cycle");
+        assert!(checkresult(&result, &order), "stable(true) order is wrong");
     }
 
     #[test]
@@ -64,8 +79,12 @@ mod unit_tests {
             .take(100)
             .collect::<Vec<_>>();
 
-        let full_result = topo_sort(&mods, &order, false).expect("rules contain a cycle");
-        let opt_result = topo_sort(&mods, &order, true).expect("opt rules contain a cycle");
+        let full_result = Sorter::new_stable(false)
+            .topo_sort(&mods, &order)
+            .expect("rules contain a cycle");
+        let opt_result = Sorter::new_stable(true)
+            .topo_sort(&mods, &order)
+            .expect("opt rules contain a cycle");
 
         assert_eq!(full_result, opt_result);
     }

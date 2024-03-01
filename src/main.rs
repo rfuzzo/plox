@@ -103,9 +103,6 @@ fn sort(
         }
     }
 
-    //TODO CLI
-    let optimize = true;
-
     match parser.parse_rules_from_path(rules_path) {
         Ok(rules) => {
             // Print Warnings
@@ -128,9 +125,13 @@ fn sort(
             }
 
             // Sort
+
+            // TODO sorter
+            let sorter = Sorter::new_unstable();
+
             let order_rules = get_order_rules(&rules);
             if !order_rules.is_empty() {
-                match topo_sort(&mods, &order_rules, optimize) {
+                match sorter.topo_sort(&mods, &order_rules) {
                     Ok(result) => {
                         if dry_run {
                             info!("Dry run...");
@@ -166,14 +167,12 @@ fn sort(
 /// Verifies integrity of the specified rules
 fn verify(rules_path: &PathBuf, parser: &parser::Parser) -> ExitCode {
     info!("Verifying rules from {} ...", rules_path.display());
-    // TODO CLI
-    let optimize = true;
 
     match parser.parse_rules_from_path(rules_path) {
         Ok(rules) => {
             let order = get_order_rules(&rules);
             let mods = debug_get_mods_from_rules(&order);
-            match topo_sort(&mods, &order, optimize) {
+            match Sorter::new_unstable().topo_sort(&mods, &order) {
                 Ok(_) => {
                     info!("true");
                     ExitCode::SUCCESS
