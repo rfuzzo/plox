@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use log::info;
+use log::{error, info};
 use toposort_scc::IndexGraph;
 
 use crate::wild_contains;
@@ -127,28 +127,52 @@ impl Sorter {
         // add edges
         let mut edges: Vec<(usize, usize)> = vec![];
         for (a, b) in order {
-            if wild_contains(mods, a) && wild_contains(mods, b) {
-                let idx_a = index_dict[a.as_str()];
-                let idx_b = index_dict[b.as_str()];
-                g.add_edge(idx_a, idx_b);
-                edges.push((idx_a, idx_b));
+            if let Some(results_for_a) = wild_contains(mods, a) {
+                if let Some(results_for_b) = wild_contains(mods, b) {
+                    // e.g. all esms before all esps
+                    // [ORDER]
+                    // *.esm
+                    // *.esp
+                    // forach esm i, add an edge to all esps j
+                    for i in &results_for_a {
+                        for j in &results_for_b {
+                            let idx_a = index_dict[i.as_str()];
+                            let idx_b = index_dict[j.as_str()];
+
+                            if !edges.contains(&(idx_a, idx_b)) {
+                                edges.push((idx_a, idx_b));
+                                g.add_edge(idx_a, idx_b);
+                            }
+                        }
+                    }
+                }
             }
         }
 
-        edges.dedup();
-
         // cycle check
-        let sort = g.toposort();
-        if sort.is_none() {
+        let sort;
+        if let Some(result) = g.clone().toposort() {
+            sort = result;
+        } else {
+            error!("Graph contains a cycle");
+            let err = g.scc();
+            error!("SCC: {}", err.len());
+            for er in err {
+                error!("cycles:");
+                error!(
+                    "{}",
+                    er.iter()
+                        .map(|f| f.to_string())
+                        .collect::<Vec<_>>()
+                        .join(";")
+                );
+            }
+
             return Err("Graph contains a cycle");
         }
 
         if self.sort_type == ESortType::Unstable {
-            let r = sort
-                .unwrap()
-                .iter()
-                .map(|f| mods[*f].to_owned())
-                .collect::<Vec<_>>();
+            let r = sort.iter().map(|f| mods[*f].to_owned()).collect::<Vec<_>>();
             return Ok(r);
         }
 
@@ -174,11 +198,11 @@ impl Sorter {
                 &mut result,
                 &mut index,
             ) {
-                break;
+                // Return the sorted vector
+                return Ok(result);
             }
         }
 
-        // Return the sorted vector
-        Ok(result)
+        Err("Out of iterations")
     }
 }

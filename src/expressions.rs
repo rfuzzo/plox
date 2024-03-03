@@ -72,7 +72,7 @@ impl Atomic {
 impl TExpression for Atomic {
     /// atomics evaluate as true if the input list contains the item
     fn eval(&self, items: &[String]) -> bool {
-        wild_contains(items, &self.item)
+        wild_contains(items, &self.item).is_some()
     }
 }
 

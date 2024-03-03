@@ -11,7 +11,7 @@ pub mod parser;
 pub mod rules;
 pub mod sorter;
 
-use log::{info, warn};
+use log::{error, info, warn};
 use rules::*;
 
 #[derive(Debug, Clone, Copy, ValueEnum, Default)]
@@ -49,14 +49,21 @@ pub const PLOX_RULES_BASE: &str = "plox_base.txt";
 /// flattens a list of ordered mod pairs into a list of mod names
 pub fn debug_get_mods_from_rules(order: &[(String, String)]) -> Vec<String> {
     let mut result: Vec<String> = vec![];
-    for r in order.iter() {
-        let mut a = r.0.to_owned();
-        if !result.contains(&a) {
-            result.push(a);
-        }
-        a = r.1.to_owned();
-        if !result.contains(&a) {
-            result.push(a);
+    for (a, b) in order.iter() {
+        for a in vec![a, b] {
+            if a.contains('*') {
+                // add both itself and a wildcarded version
+                let name1 = a.replace("*", "");
+                //let name2 = a.replace("*", "x");
+                if !result.contains(&name1) {
+                    result.push(name1.to_owned());
+                }
+                // if !result.contains(&name2) {
+                //     result.push(name2.to_owned());
+                // }
+            } else if !result.contains(a) {
+                result.push(a.to_owned());
+            }
         }
     }
     result
@@ -74,12 +81,52 @@ pub fn get_default_rules_dir(game: ESupportedGame) -> PathBuf {
     }
 }
 
+/// Download latest rules from the internet
+pub fn download_latest_rules(game: ESupportedGame, rules_dir: &PathBuf) {
+    match game {
+        ESupportedGame::Morrowind | ESupportedGame::OpenMorrowind => download_mlox_rules(rules_dir),
+        ESupportedGame::Cyberpunk => download_plox_rules(rules_dir),
+    }
+}
+
+fn download_plox_rules(rules_dir: &PathBuf) {
+    match fs::create_dir_all(rules_dir) {
+        Ok(_) => {
+            // download
+            todo!()
+        }
+        Err(e) => {
+            error!(
+                "Could not create rules directory at {}: {}",
+                rules_dir.display(),
+                e
+            );
+        }
+    }
+}
+
+fn download_mlox_rules(rules_dir: &PathBuf) {
+    match fs::create_dir_all(rules_dir) {
+        Ok(_) => {
+            // download
+            todo!()
+        }
+        Err(e) => {
+            error!(
+                "Could not create rules directory at {}: {}",
+                rules_dir.display(),
+                e
+            );
+        }
+    }
+}
+
 /// Gets a list of mod names from the game root folder
 ///
 /// # Errors
 ///
 /// This function will return an error if IO operations fail
-pub fn gather_mods<P>(root: &P, game: ESupportedGame) -> io::Result<Vec<String>>
+pub fn gather_mods<P>(root: &P, game: ESupportedGame) -> Vec<String>
 where
     P: AsRef<Path>,
 {
@@ -145,7 +192,7 @@ where
 #[macro_use]
 extern crate ini;
 
-pub fn gather_tes3_mods<P>(path: &P) -> io::Result<Vec<String>>
+pub fn gather_tes3_mods<P>(path: &P) -> Vec<String>
 where
     P: AsRef<Path>,
 {
@@ -180,7 +227,7 @@ where
                 }
             }
 
-            return Ok(final_files);
+            return final_files;
         }
         warn!("Morrowind.ini found but no [Game Files] section, using all plugins in Data Files");
     } else {
@@ -188,48 +235,67 @@ where
     }
 
     info!("Found {} active plugins", names.len());
-    Ok(names)
+    names
 }
 
-pub fn gather_openmw_mods<P>(_path: &P) -> io::Result<Vec<String>>
+pub fn gather_openmw_mods<P>(_path: &P) -> Vec<String>
 where
     P: AsRef<Path>,
 {
-    todo!()
+    // parse cfg
+    if let Ok(cfg) = openmw_cfg::get_config() {
+        if let Ok(files) = openmw_cfg::get_plugins(&cfg) {
+            let names = files
+                .iter()
+                .filter_map(|f| {
+                    if let Some(file_name) = f.file_name().and_then(|n| n.to_str()) {
+                        return Some(file_name.to_owned());
+                    }
+                    None
+                })
+                .collect::<Vec<_>>();
+            return names;
+        }
+    }
+
+    vec![]
 }
 
-pub fn gather_cp77_mods<P>(root: &P) -> io::Result<Vec<String>>
+pub fn gather_cp77_mods<P>(root: &P) -> Vec<String>
 where
     P: AsRef<Path>,
 {
     // gather mods from archive/pc/mod
     let archive_path = root.as_ref().join("archive").join("pc").join("mod");
 
-    let mut entries = fs::read_dir(archive_path)?
-        .map(|res| res.map(|e| e.path()))
-        .filter_map(Result::ok)
-        .filter_map(|e| {
-            if !e.is_dir() {
-                if let Some(os_ext) = e.extension() {
-                    if let Some(ext) = os_ext.to_ascii_lowercase().to_str() {
-                        if ext.contains("archive") {
-                            if let Some(file_name) = e.file_name().and_then(|n| n.to_str()) {
-                                return Some(file_name.to_owned());
+    if let Ok(plugins) = fs::read_dir(archive_path) {
+        let mut entries = plugins
+            .map(|res| res.map(|e| e.path()))
+            .filter_map(Result::ok)
+            .filter_map(|e| {
+                if !e.is_dir() {
+                    if let Some(os_ext) = e.extension() {
+                        if let Some(ext) = os_ext.to_ascii_lowercase().to_str() {
+                            if ext.contains("archive") {
+                                if let Some(file_name) = e.file_name().and_then(|n| n.to_str()) {
+                                    return Some(file_name.to_owned());
+                                }
                             }
                         }
                     }
                 }
-            }
-            None
-        })
-        .collect::<Vec<_>>();
+                None
+            })
+            .collect::<Vec<_>>();
 
-    // TODO support modlist
+        // TODO support modlist
 
-    // TODO gather REDmods from mods/<NAME>
-    entries.sort();
+        // TODO gather REDmods from mods/<NAME>
+        entries.sort();
+        return entries;
+    }
 
-    Ok(entries)
+    vec![]
 }
 
 /// Update on disk
@@ -311,24 +377,31 @@ where
     result
 }
 
-pub fn wild_contains(list: &[String], str: &String) -> bool {
+pub fn wild_contains(list: &[String], str: &String) -> Option<Vec<String>> {
     if str.contains('*') {
+        let mut results = vec![];
         // Replace * with .* to match any sequence of characters
-        let regex_pattern = str.replace("*", ".*");
+        let mut regex_pattern = str.replace("*", ".*");
+        regex_pattern = format!("^{}$", regex_pattern);
         if let Ok(regex) = regex::Regex::new(&regex_pattern) {
             for item in list {
                 // Check if the item matches the pattern
                 if regex.is_match(item) {
-                    return true;
+                    //return true;
+                    results.push(item.to_owned());
                 }
             }
         } else {
             log::error!("Could not construct wildcard pattern for {}", str);
+            return None;
         }
 
-        false
-    } else {
-        // normal contains
-        list.contains(str)
+        return Some(results);
     }
+
+    if list.contains(str) {
+        return Some(vec![str.to_owned()]);
+    }
+
+    None
 }

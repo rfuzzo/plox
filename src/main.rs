@@ -12,13 +12,17 @@ use plox::*;
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 struct Cli {
-    /// Verbose output
+    /// Set the log level, default is "info"
     #[arg(short, long)]
     log_level: Option<ELogLevel>,
 
-    /// Set game
+    /// Set the game to evaluate, if no game is specified it will attempt to deduce the game from the current working directory
     #[arg(short, long)]
     game: Option<ESupportedGame>,
+
+    /// Disable user input
+    #[arg(short, long)]
+    non_interactive: bool,
 
     #[command(subcommand)]
     command: Command,
@@ -43,6 +47,10 @@ enum Command {
         /// Use the potentially faster unstable sorter
         #[arg(short, long)]
         unstable: bool,
+
+        /// Disable automatic downloading of latest ruleset
+        #[arg(short, long)]
+        no_download: bool,
 
         /// Read the input mods from a file instead of checking the root folder
         #[arg(short, long)]
@@ -96,11 +104,22 @@ fn main() -> ExitCode {
             mod_list,
             dry_run,
             unstable,
-        } => sort(game, root, rules_dir, mod_list, *dry_run, *unstable),
+            no_download,
+        } => sort(
+            game,
+            root,
+            rules_dir,
+            mod_list,
+            *dry_run,
+            *unstable,
+            *no_download,
+        ),
     };
 
-    let mut buffer = String::new();
-    let _ = std::io::stdin().read_line(&mut buffer);
+    if !cli.non_interactive {
+        let mut buffer = String::new();
+        let _ = std::io::stdin().read_line(&mut buffer);
+    }
 
     code
 }
@@ -113,6 +132,7 @@ fn sort(
     mod_list: &Option<PathBuf>,
     dry_run: bool,
     unstable: bool,
+    no_download: bool,
 ) -> ExitCode {
     info!("Sorting mods...");
 
@@ -134,13 +154,16 @@ fn sort(
     if let Some(modlist_path) = mod_list {
         mods = read_file_as_list(modlist_path);
     } else {
-        match gather_mods(&root, game) {
-            Ok(m) => mods = m,
-            Err(e) => {
-                info!("No mods found: {e}");
-                return ExitCode::FAILURE;
-            }
+        mods = gather_mods(&root, game);
+        if mods.is_empty() {
+            info!("No mods found");
+            return ExitCode::FAILURE;
         }
+    }
+
+    if !no_download {
+        // TODO download rules
+        download_latest_rules(game, &rules_dir);
     }
 
     let mut parser = parser::get_parser(game);
@@ -250,18 +273,10 @@ fn list_mods(root: &Option<PathBuf>, game: ESupportedGame) -> ExitCode {
         None => env::current_dir().expect("No current working dir"),
     };
 
-    match gather_mods(&root, game) {
-        Ok(mods) => {
-            for m in mods {
-                println!("{}", m);
-                info!("{}", m);
-            }
-
-            ExitCode::SUCCESS
-        }
-        Err(e) => {
-            error!("{}", e);
-            ExitCode::FAILURE
-        }
+    for m in gather_mods(&root, game) {
+        println!("{}", m);
+        //info!("{}", m);
     }
+
+    ExitCode::SUCCESS
 }

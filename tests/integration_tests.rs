@@ -5,7 +5,10 @@ mod integration_tests {
     use plox::{parser::*, sorter::*, *};
 
     fn init() {
-        let _ = env_logger::builder().is_test(true).try_init();
+        let env = env_logger::Env::default()
+            .default_filter_or(log_level_to_str(ELogLevel::Info))
+            .default_write_style_or("always");
+        let _ = env_logger::Builder::from_env(env).is_test(true).try_init();
     }
 
     #[test]
@@ -71,7 +74,6 @@ mod integration_tests {
         }
 
         mods.shuffle(&mut rng);
-        let mods = mods.into_iter().take(100).collect::<Vec<_>>();
 
         assert!(
             new_unstable_sorter().topo_sort(&mods, &order).is_ok(),
@@ -89,15 +91,14 @@ mod integration_tests {
             .expect("rule parse failed");
         let order = get_order_rules(&rules);
 
-        let mut rng = thread_rng();
-        let mut mods = debug_get_mods_from_rules(&order);
+        //let mut rng = thread_rng();
+        let mods = debug_get_mods_from_rules(&order);
 
         for m in &mods {
             assert!(parser.ends_with_vec3(m));
         }
 
-        mods.shuffle(&mut rng);
-        let mods = mods.into_iter().take(100).collect::<Vec<_>>();
+        //mods.shuffle(&mut rng);
 
         assert!(
             new_unstable_sorter().topo_sort(&mods, &order).is_ok(),
@@ -111,18 +112,14 @@ mod integration_tests {
 
         let root_path = "./tests";
 
-        match gather_mods(&root_path, ESupportedGame::Cyberpunk) {
-            Ok(mods) => {
-                assert_eq!(
-                    mods,
-                    vec![
-                        "a.archive".to_owned(),
-                        "b.archive".into(),
-                        "c.archive".into()
-                    ]
-                )
-            }
-            Err(_) => panic!("gethering mods failed"),
-        }
+        let mods = gather_mods(&root_path, ESupportedGame::Cyberpunk);
+        assert_eq!(
+            mods,
+            vec![
+                "a.archive".to_owned(),
+                "b.archive".into(),
+                "c.archive".into()
+            ]
+        )
     }
 }

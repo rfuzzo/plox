@@ -96,7 +96,6 @@ mod unit_tests {
         let mut rng = thread_rng();
         let mut mods = debug_get_mods_from_rules(&order);
         mods.shuffle(&mut rng);
-        let mods = mods.into_iter().take(100).collect::<Vec<_>>();
 
         let mut sorter = sorter::new_stable_sorter();
         let result = sorter
