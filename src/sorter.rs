@@ -13,24 +13,24 @@ pub enum ESortType {
 }
 
 pub fn new_unstable_sorter() -> Sorter {
-    Sorter::new(ESortType::Unstable)
+    Sorter::new(ESortType::Unstable, 0)
 }
 
 pub fn new_stable_sorter() -> Sorter {
-    Sorter::new(ESortType::StableOpt)
-}
-
-pub fn new_stable_full_sorter() -> Sorter {
-    Sorter::new(ESortType::StableFull)
+    Sorter::new(ESortType::StableOpt, 100)
 }
 
 pub struct Sorter {
     pub sort_type: ESortType,
+    pub max_iterations: usize,
 }
 
 impl Sorter {
-    pub fn new(sort_type: ESortType) -> Self {
-        Self { sort_type }
+    pub fn new(sort_type: ESortType, max_iterations: usize) -> Self {
+        Self {
+            sort_type,
+            max_iterations,
+        }
     }
 
     pub fn stable_topo_sort_inner(
@@ -44,9 +44,14 @@ impl Sorter {
     ) -> bool {
         match self.sort_type {
             ESortType::Unstable => panic!("not supported"),
-            ESortType::StableOpt => {
-                Self::stable_topo_sort_opt(n, edges, index_dict, index_dict_rev, result, last_index)
-            }
+            ESortType::StableOpt => Self::stable_topo_sort_opt2(
+                n,
+                edges,
+                index_dict,
+                index_dict_rev,
+                result,
+                last_index,
+            ),
             ESortType::StableFull => {
                 Self::stable_topo_sort_full(n, edges, index_dict, result, last_index)
             }
@@ -78,7 +83,7 @@ impl Sorter {
         false
     }
 
-    pub fn stable_topo_sort_opt(
+    pub fn stable_topo_sort_opt2(
         _n: usize,
         edges: &[(usize, usize)],
         _index_dict: &HashMap<&str, usize>,
@@ -107,12 +112,47 @@ impl Sorter {
                 *last_index = idx;
 
                 b = true;
-                //return true;
             }
         }
 
         b
-        //false
+    }
+
+    pub fn stable_topo_sort_opt(
+        _n: usize,
+        edges: &[(usize, usize)],
+        _index_dict: &HashMap<&str, usize>,
+        index_dict_rev: &HashMap<usize, &str>,
+        result: &mut Vec<String>,
+        last_index: &mut usize,
+    ) -> bool {
+        // optimize B: only check edges
+        //let mut b = false;
+        for (idx, edge) in edges.iter().enumerate() {
+            let i = edge.0;
+            let j = edge.1;
+
+            let x = index_dict_rev[&i];
+            let y = index_dict_rev[&j];
+
+            let idx_of_x = result.iter().position(|f| f == x).unwrap();
+            let idx_of_y = result.iter().position(|f| f == y).unwrap();
+
+            // if i not before j x should be before y
+            if idx_of_x > idx_of_y {
+                let t = result[idx_of_x].to_owned();
+                result.remove(idx_of_x);
+                result.insert(idx_of_y, t);
+
+                *last_index = idx;
+
+                //b = true;
+                return true;
+            }
+        }
+
+        //b
+        false
     }
 
     pub fn topo_sort(
@@ -207,11 +247,10 @@ impl Sorter {
         }
 
         let mut index = 0;
-        let max_loop = 200; //TODO check this
 
         edges.sort_by_key(|k| k.0);
 
-        for i in 1..max_loop {
+        for i in 1..self.max_iterations {
             if !self.stable_topo_sort_inner(
                 n,
                 &edges,
@@ -223,7 +262,7 @@ impl Sorter {
                 // Return the sorted vector
                 return Ok(result);
             }
-            log::info!("{}, index {}", i, index);
+            log::debug!("{}, index {}", i, index);
         }
 
         log::error!("Out of iterations");

@@ -5,12 +5,20 @@ mod unit_tests {
     use rand::{seq::SliceRandom, thread_rng};
 
     use plox::{
-        debug_get_mods_from_rules, expressions::*, get_order_rules, parser, rules::*, sorter,
+        debug_get_mods_from_rules,
+        expressions::*,
+        get_order_rules, parser,
+        rules::*,
+        sorter::{self, Sorter},
         wild_contains,
     };
 
     fn init() {
         let _ = env_logger::builder().is_test(true).try_init();
+    }
+
+    fn new_stable_full_sorter() -> Sorter {
+        Sorter::new(sorter::ESortType::StableFull, 1000)
     }
 
     #[test]
@@ -35,9 +43,7 @@ mod unit_tests {
         );
 
         assert!(
-            sorter::new_stable_full_sorter()
-                .topo_sort(&mods, &order)
-                .is_err(),
+            new_stable_full_sorter().topo_sort(&mods, &order).is_err(),
             "stable(false) rules do not contain a cycle"
         );
 
@@ -74,7 +80,7 @@ mod unit_tests {
             .expect("rules contain a cycle");
         assert!(checkresult(&result, &order), "unstable order is wrong");
 
-        let result = sorter::new_stable_full_sorter()
+        let result = new_stable_full_sorter()
             .topo_sort(&mods, &order)
             .expect("rules contain a cycle");
         assert!(checkresult(&result, &order), "stable(false) order is wrong");
@@ -99,7 +105,7 @@ mod unit_tests {
         mods.shuffle(&mut rng);
         let mods = mods.into_iter().take(100).collect::<Vec<_>>();
 
-        let full_result = sorter::new_stable_full_sorter()
+        let full_result = new_stable_full_sorter()
             .topo_sort(&mods, &order)
             .expect("rules contain a cycle");
         let opt_result = sorter::new_stable_sorter()
@@ -121,7 +127,7 @@ mod unit_tests {
         let mut rng = thread_rng();
         let mut mods = debug_get_mods_from_rules(&order);
         let mut times = vec![];
-        for n in [64, 128, 256, 512, 1024, 2048] {
+        for n in [64, 128, 256, 512, 1024, 2048, 4096] {
             mods.shuffle(&mut rng);
             let max = std::cmp::min(n, mods.len() - 1);
             let mods_rnd = mods.clone().into_iter().take(max).collect::<Vec<_>>();

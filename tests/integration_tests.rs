@@ -57,7 +57,7 @@ mod integration_tests {
     }
 
     #[test]
-    fn test_verify_mlox_base_rules_unstable() {
+    fn test_verify_mlox_base_rules() {
         init();
 
         let parser = new_tes3_parser();
@@ -75,47 +75,11 @@ mod integration_tests {
         } else {
             panic!("rules contain a cycle")
         }
-    }
-
-    #[test]
-    fn test_verify_mlox_base_rules_stable() {
-        init();
-
-        let parser = new_tes3_parser();
-        let rules = parser
-            .parse_rules_from_path("./tests/mlox/mlox_base.txt")
-            .expect("rule parse failed");
-        let order = get_order_rules(&rules);
-
-        let mut rng = thread_rng();
-        let mut mods = debug_get_mods_from_rules(&order);
-        mods.shuffle(&mut rng);
 
         if let Ok(result) = new_stable_sorter().topo_sort(&mods, &order) {
             assert!(checkresult(&result, &order), "stable(true) order is wrong");
         } else {
             panic!("rules contain a cycle")
-        }
-    }
-
-    #[test]
-    fn test_verify_mlox_user_rules_unstable() {
-        init();
-
-        let parser = new_tes3_parser();
-        let rules = parser
-            .parse_rules_from_path("./tests/mlox/mlox_user.txt")
-            .expect("rule parse failed");
-        let order = get_order_rules(&rules);
-
-        let mut rng = thread_rng();
-        let mut mods = debug_get_mods_from_rules(&order);
-        mods.shuffle(&mut rng);
-
-        if let Ok(result) = new_unstable_sorter().topo_sort(&mods, &order) {
-            assert!(checkresult(&result, &order), "stable(true) order is wrong");
-        } else {
-            panic!("cycle");
         }
     }
 
@@ -132,6 +96,12 @@ mod integration_tests {
         let mut rng = thread_rng();
         let mut mods = debug_get_mods_from_rules(&order);
         mods.shuffle(&mut rng);
+
+        if let Ok(result) = new_unstable_sorter().topo_sort(&mods, &order) {
+            assert!(checkresult(&result, &order), "stable(true) order is wrong");
+        } else {
+            panic!("rules contain a cycle");
+        }
 
         if let Ok(result) = new_stable_sorter().topo_sort(&mods, &order) {
             assert!(checkresult(&result, &order), "stable(true) order is wrong");

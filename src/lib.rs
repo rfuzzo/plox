@@ -57,7 +57,6 @@ pub fn debug_get_mods_from_rules(order: &[(String, String)]) -> Vec<String> {
         if b.contains('?') {
             continue;
         }
-
         if a.contains("<VER>") {
             continue;
         }
