@@ -6,6 +6,7 @@ mod unit_tests {
 
     use plox::{
         debug_get_mods_from_rules, expressions::*, get_order_rules, parser, rules::*, sorter,
+        wild_contains,
     };
 
     fn init() {
@@ -85,28 +86,6 @@ mod unit_tests {
     }
 
     #[test]
-    fn test_optimized_sort_only() {
-        init();
-
-        let rules = parser::new_tes3_parser()
-            .parse_rules_from_path("./tests/mlox/mlox_base.txt")
-            .expect("rule parse failed");
-        let order = get_order_rules(&rules);
-
-        let mut rng = thread_rng();
-        let mut mods = debug_get_mods_from_rules(&order);
-        mods.shuffle(&mut rng);
-
-        let mut sorter = sorter::new_stable_sorter();
-        let result = sorter
-            .topo_sort(&mods, &order)
-            .expect("opt rules contain a cycle");
-
-        let msg = format!("stable(true) order is wrong");
-        assert!(checkresult(&result, &order), "{}", msg);
-    }
-
-    #[test]
     fn test_optimized_sort() {
         init();
 
@@ -174,17 +153,18 @@ mod unit_tests {
     fn checkresult(result: &[String], order: &Vec<(String, String)>) -> bool {
         let pairs = order;
         for (a, b) in pairs {
-            let pos_a = result.iter().position(|x| x == a);
-            if pos_a.is_none() {
-                continue;
-            }
-            let pos_b = result.iter().position(|x| x == b);
-            if pos_b.is_none() {
-                continue;
-            }
-
-            if pos_a.unwrap() > pos_b.unwrap() {
-                return false;
+            if let Some(results_for_a) = wild_contains(result, a) {
+                if let Some(results_for_b) = wild_contains(result, b) {
+                    for i in &results_for_a {
+                        for j in &results_for_b {
+                            let pos_a = result.iter().position(|x| x == i).unwrap();
+                            let pos_b = result.iter().position(|x| x == j).unwrap();
+                            if pos_a > pos_b {
+                                return false;
+                            }
+                        }
+                    }
+                }
             }
         }
 

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use log::{error, info};
+use log::{error, warn};
 use toposort_scc::IndexGraph;
 
 use crate::wild_contains;
@@ -87,6 +87,7 @@ impl Sorter {
         last_index: &mut usize,
     ) -> bool {
         // optimize B: only check edges
+        let mut b = false;
         for (idx, edge) in edges.iter().enumerate() {
             let i = edge.0;
             let j = edge.1;
@@ -105,11 +106,13 @@ impl Sorter {
 
                 *last_index = idx;
 
-                return true;
+                b = true;
+                //return true;
             }
         }
 
-        false
+        b
+        //false
     }
 
     pub fn topo_sort(
@@ -127,6 +130,24 @@ impl Sorter {
         // add edges
         let mut edges: Vec<(usize, usize)> = vec![];
         for (a, b) in order {
+            //TODO wildcards
+            if a.contains('?') {
+                warn!("skipping {}", a);
+                continue;
+            }
+            if b.contains('?') {
+                warn!("skipping {}", b);
+                continue;
+            }
+            if a.contains("<VER>") {
+                warn!("skipping {}", a);
+                continue;
+            }
+            if b.contains("<VER>") {
+                warn!("skipping {}", b);
+                continue;
+            }
+
             if let Some(results_for_a) = wild_contains(mods, a) {
                 if let Some(results_for_b) = wild_contains(mods, b) {
                     // e.g. all esms before all esps
@@ -150,35 +171,34 @@ impl Sorter {
         }
 
         // cycle check
-        let sort;
-        if let Some(result) = g.clone().toposort() {
-            sort = result;
-        } else {
-            error!("Graph contains a cycle");
-            let err = g.scc();
-            error!("SCC: {}", err.len());
-            for er in err {
-                error!("cycles:");
-                error!(
-                    "{}",
-                    er.iter()
-                        .map(|f| f.to_string())
-                        .collect::<Vec<_>>()
-                        .join(";")
-                );
+        if self.sort_type == ESortType::Unstable {
+            let sort;
+            if let Some(result) = g.clone().toposort() {
+                sort = result;
+            } else {
+                error!("Graph contains a cycle");
+                let err = g.scc();
+                error!("SCC: {}", err.len());
+                for er in err {
+                    error!("cycles:");
+                    error!(
+                        "{}",
+                        er.iter()
+                            .map(|f| f.to_string())
+                            .collect::<Vec<_>>()
+                            .join(";")
+                    );
+                }
+
+                return Err("Graph contains a cycle");
             }
 
-            return Err("Graph contains a cycle");
-        }
-
-        if self.sort_type == ESortType::Unstable {
-            let r = sort.iter().map(|f| mods[*f].to_owned()).collect::<Vec<_>>();
-            return Ok(r);
+            return Ok(sort.iter().map(|f| mods[*f].to_owned()).collect::<Vec<_>>());
         }
 
         // sort
-        let mut result: Vec<String> = mods.iter().map(|e| (*e).to_owned()).collect();
-        info!("{result:?}");
+        let n = mods.len();
+        let mut result: Vec<String> = mods.clone();
 
         // reverse
         let mut index_dict_rev: HashMap<usize, &str> = HashMap::default();
@@ -187,11 +207,13 @@ impl Sorter {
         }
 
         let mut index = 0;
-        let max_loop = 10000;
+        let max_loop = 200; //TODO check this
 
-        for _n in 1..max_loop {
+        edges.sort_by_key(|k| k.0);
+
+        for i in 1..max_loop {
             if !self.stable_topo_sort_inner(
-                mods.len(),
+                n,
                 &edges,
                 &index_dict,
                 &index_dict_rev,
@@ -201,8 +223,10 @@ impl Sorter {
                 // Return the sorted vector
                 return Ok(result);
             }
+            log::info!("{}, index {}", i, index);
         }
 
+        log::error!("Out of iterations");
         Err("Out of iterations")
     }
 }

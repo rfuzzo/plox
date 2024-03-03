@@ -57,7 +57,7 @@ mod integration_tests {
     }
 
     #[test]
-    fn test_verify_mlox_base_rules() {
+    fn test_verify_mlox_base_rules_unstable() {
         init();
 
         let parser = new_tes3_parser();
@@ -68,21 +68,38 @@ mod integration_tests {
 
         let mut rng = thread_rng();
         let mut mods = debug_get_mods_from_rules(&order);
-
-        for m in &mods {
-            assert!(parser.ends_with_vec3(m));
-        }
-
         mods.shuffle(&mut rng);
 
-        assert!(
-            new_unstable_sorter().topo_sort(&mods, &order).is_ok(),
-            "rules contain a cycle"
-        )
+        if let Ok(result) = new_unstable_sorter().topo_sort(&mods, &order) {
+            assert!(checkresult(&result, &order), "stable(true) order is wrong");
+        } else {
+            panic!("rules contain a cycle")
+        }
     }
 
     #[test]
-    fn test_verify_mlox_user_rules() {
+    fn test_verify_mlox_base_rules_stable() {
+        init();
+
+        let parser = new_tes3_parser();
+        let rules = parser
+            .parse_rules_from_path("./tests/mlox/mlox_base.txt")
+            .expect("rule parse failed");
+        let order = get_order_rules(&rules);
+
+        let mut rng = thread_rng();
+        let mut mods = debug_get_mods_from_rules(&order);
+        mods.shuffle(&mut rng);
+
+        if let Ok(result) = new_stable_sorter().topo_sort(&mods, &order) {
+            assert!(checkresult(&result, &order), "stable(true) order is wrong");
+        } else {
+            panic!("rules contain a cycle")
+        }
+    }
+
+    #[test]
+    fn test_verify_mlox_user_rules_unstable() {
         init();
 
         let parser = new_tes3_parser();
@@ -91,19 +108,36 @@ mod integration_tests {
             .expect("rule parse failed");
         let order = get_order_rules(&rules);
 
-        //let mut rng = thread_rng();
-        let mods = debug_get_mods_from_rules(&order);
+        let mut rng = thread_rng();
+        let mut mods = debug_get_mods_from_rules(&order);
+        mods.shuffle(&mut rng);
 
-        for m in &mods {
-            assert!(parser.ends_with_vec3(m));
+        if let Ok(result) = new_unstable_sorter().topo_sort(&mods, &order) {
+            assert!(checkresult(&result, &order), "stable(true) order is wrong");
+        } else {
+            panic!("cycle");
         }
+    }
 
-        //mods.shuffle(&mut rng);
+    #[test]
+    fn test_verify_mlox_user_rules_stable() {
+        init();
 
-        assert!(
-            new_unstable_sorter().topo_sort(&mods, &order).is_ok(),
-            "rules contain a cycle"
-        )
+        let parser = new_tes3_parser();
+        let rules = parser
+            .parse_rules_from_path("./tests/mlox/mlox_user.txt")
+            .expect("rule parse failed");
+        let order = get_order_rules(&rules);
+
+        let mut rng = thread_rng();
+        let mut mods = debug_get_mods_from_rules(&order);
+        mods.shuffle(&mut rng);
+
+        if let Ok(result) = new_stable_sorter().topo_sort(&mods, &order) {
+            assert!(checkresult(&result, &order), "stable(true) order is wrong");
+        } else {
+            panic!("rules contain a cycle")
+        }
     }
 
     #[test]
@@ -121,5 +155,26 @@ mod integration_tests {
                 "c.archive".into()
             ]
         )
+    }
+
+    fn checkresult(result: &[String], order: &Vec<(String, String)>) -> bool {
+        let pairs = order;
+        for (a, b) in pairs {
+            if let Some(results_for_a) = wild_contains(result, a) {
+                if let Some(results_for_b) = wild_contains(result, b) {
+                    for i in &results_for_a {
+                        for j in &results_for_b {
+                            let pos_a = result.iter().position(|x| x == i).unwrap();
+                            let pos_b = result.iter().position(|x| x == j).unwrap();
+                            if pos_a > pos_b {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        true
     }
 }

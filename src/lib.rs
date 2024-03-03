@@ -50,17 +50,27 @@ pub const PLOX_RULES_BASE: &str = "plox_base.txt";
 pub fn debug_get_mods_from_rules(order: &[(String, String)]) -> Vec<String> {
     let mut result: Vec<String> = vec![];
     for (a, b) in order.iter() {
+        //TODO wildcards
+        if a.contains('?') {
+            continue;
+        }
+        if b.contains('?') {
+            continue;
+        }
+
+        if a.contains("<VER>") {
+            continue;
+        }
+        if b.contains("<VER>") {
+            continue;
+        }
+
         for a in vec![a, b] {
             if a.contains('*') {
-                // add both itself and a wildcarded version
                 let name1 = a.replace("*", "");
-                //let name2 = a.replace("*", "x");
                 if !result.contains(&name1) {
                     result.push(name1.to_owned());
                 }
-                // if !result.contains(&name2) {
-                //     result.push(name2.to_owned());
-                // }
             } else if !result.contains(a) {
                 result.push(a.to_owned());
             }
