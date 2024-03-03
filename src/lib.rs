@@ -12,6 +12,7 @@ pub mod rules;
 pub mod sorter;
 
 use log::{error, info, warn};
+use reqwest::header::LAST_MODIFIED;
 use rules::*;
 
 #[derive(Debug, Clone, Copy, ValueEnum, Default)]
@@ -98,11 +99,74 @@ pub fn download_latest_rules(game: ESupportedGame, rules_dir: &PathBuf) {
     }
 }
 
-fn download_plox_rules(rules_dir: &PathBuf) {
+fn download_file<P>(url: &str, output_path: &P) -> Result<(), Box<dyn std::error::Error>>
+where
+    P: AsRef<Path>,
+{
+    // Send an HTTP GET request to the URL
+    let response = reqwest::blocking::get(url)?;
+
+    // Create a file at the specified output path
+    let mut file = File::create(output_path)?;
+
+    // Write the response body to the file
+    io::copy(&mut response.bytes().unwrap().as_ref(), &mut file)?;
+
+    Ok(())
+}
+
+fn download_file_if_different_version(
+    url: &str,
+    output_path: &str,
+    local_version: Option<&str>,
+) -> Result<(), Box<dyn std::error::Error>> {
+    // Create the output directory if it doesn't exist
+    if let Some(parent_dir) = Path::new(output_path).parent() {
+        std::fs::create_dir_all(parent_dir)?;
+    }
+
+    // Send a HEAD request to check if the file has been modified
+    let client = reqwest::blocking::Client::new();
+    let response = client.head(url).send()?;
+
+    // Get the Last-Modified header from the response
+    if let Some(last_modified) = response.headers().get(LAST_MODIFIED) {
+        if let Ok(last_modified_str) = last_modified.to_str() {
+            // If the local version is different from the remote version, download the file
+            if local_version != Some(last_modified_str) {
+                // Send a GET request to download the file
+                let response = reqwest::blocking::get(url)?;
+
+                // Create a file at the specified output path
+                let mut file = File::create(output_path)?;
+
+                // Write the response body to the file
+                io::copy(&mut response.bytes().unwrap().as_ref(), &mut file)?;
+
+                println!("File downloaded successfully.");
+                return Ok(());
+            }
+        }
+    }
+
+    println!("Local file is up to date.");
+    Ok(())
+}
+
+fn download_mlox_rules(rules_dir: &PathBuf) {
     match fs::create_dir_all(rules_dir) {
         Ok(_) => {
             // download
-            todo!()
+            let repo = "https://github.com/DanaePlays/mlox-rules/raw/main/";
+            let files = ["mlox_base.txt", "mlox_user.txt"];
+            for file in files {
+                let output_path = rules_dir.join(file); // Specify the output path here
+                let url = repo.to_owned() + file;
+                match download_file(&url, &output_path) {
+                    Ok(()) => info!("File downloaded successfully: {}", file),
+                    Err(err) => error!("Error downloading file: {}", err),
+                }
+            }
         }
         Err(e) => {
             error!(
@@ -114,7 +178,7 @@ fn download_plox_rules(rules_dir: &PathBuf) {
     }
 }
 
-fn download_mlox_rules(rules_dir: &PathBuf) {
+fn download_plox_rules(rules_dir: &PathBuf) {
     match fs::create_dir_all(rules_dir) {
         Ok(_) => {
             // download
@@ -297,9 +361,9 @@ where
             })
             .collect::<Vec<_>>();
 
-        // TODO support modlist
+        // TODO CP77 support modlist
 
-        // TODO gather REDmods from mods/<NAME>
+        // TODO CP77 gather REDmods from mods/<NAME>
         entries.sort();
         return entries;
     }

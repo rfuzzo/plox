@@ -39,10 +39,17 @@ mod integration_tests {
 
         let mods = debug_get_mods_from_rules(&order);
 
-        assert!(
-            new_unstable_sorter().topo_sort(&mods, &order).is_ok(),
-            "rules contain a cycle"
-        )
+        if let Ok(result) = new_unstable_sorter().topo_sort(&mods, &order) {
+            assert!(checkresult(&result, &order), "stable(true) order is wrong");
+        } else {
+            panic!("rules contain a cycle")
+        }
+
+        if let Ok(result) = new_stable_sorter().topo_sort(&mods, &order) {
+            assert!(checkresult(&result, &order), "stable(true) order is wrong");
+        } else {
+            panic!("rules contain a cycle")
+        }
     }
 
     #[test]

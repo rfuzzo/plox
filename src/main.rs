@@ -95,6 +95,8 @@ fn main() -> ExitCode {
         return ExitCode::FAILURE;
     };
 
+    info!("Detected game: {:?}", game);
+
     let code = match &cli.command {
         Command::List { root } => list_mods(root, game),
         Command::Verify { rules_dir } => verify(game, rules_dir),
@@ -117,6 +119,7 @@ fn main() -> ExitCode {
     };
 
     if !cli.non_interactive {
+        println!("Press any button to continue");
         let mut buffer = String::new();
         let _ = std::io::stdin().read_line(&mut buffer);
     }
@@ -162,7 +165,6 @@ fn sort(
     }
 
     if !no_download {
-        // TODO download rules
         download_latest_rules(game, &rules_dir);
     }
 
@@ -218,9 +220,9 @@ fn sort(
                     info!("Mods are in correct order, no sorting needed.");
                 } else {
                     info!("New:\n{:?}", result);
-                }
 
-                update_new_load_order(game, result);
+                    update_new_load_order(game, result);
+                }
             }
 
             ExitCode::SUCCESS
