@@ -157,7 +157,7 @@ impl Sorter {
 
     pub fn topo_sort(
         &mut self,
-        mods: &Vec<String>,
+        mods: &[String],
         order: &Vec<(String, String)>,
     ) -> Result<Vec<String>, &'static str> {
         let mut g = IndexGraph::with_vertices(mods.len());
@@ -238,7 +238,7 @@ impl Sorter {
 
         // sort
         let n = mods.len();
-        let mut result: Vec<String> = mods.clone();
+        let mut result: Vec<String> = mods.to_vec();
 
         // reverse
         let mut index_dict_rev: HashMap<usize, &str> = HashMap::default();

@@ -73,7 +73,7 @@ mod unit_tests {
         let mods = ["d", "e", "f", "g", "a", "b", "c"]
             .iter()
             .map(|e| (*e).into())
-            .collect();
+            .collect::<Vec<_>>();
 
         let result = sorter::new_unstable_sorter()
             .topo_sort(&mods, &order)

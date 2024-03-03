@@ -65,9 +65,9 @@ pub fn debug_get_mods_from_rules(order: &[(String, String)]) -> Vec<String> {
             continue;
         }
 
-        for a in vec![a, b] {
+        for a in [a, b] {
             if a.contains('*') {
-                let name1 = a.replace("*", "");
+                let name1 = a.replace('*', "");
                 if !result.contains(&name1) {
                     result.push(name1.to_owned());
                 }
@@ -115,7 +115,7 @@ where
     Ok(())
 }
 
-fn download_file_if_different_version(
+pub fn download_file_if_different_version(
     url: &str,
     output_path: &str,
     local_version: Option<&str>,
@@ -443,7 +443,7 @@ where
 {
     let mut result: Vec<String> = vec![];
     if let Ok(lines) = read_lines(modlist_path) {
-        for line in lines.flatten() {
+        for line in lines.map_while(Result::ok) {
             result.push(line);
         }
     }
@@ -454,7 +454,7 @@ pub fn wild_contains(list: &[String], str: &String) -> Option<Vec<String>> {
     if str.contains('*') {
         let mut results = vec![];
         // Replace * with .* to match any sequence of characters
-        let mut regex_pattern = str.replace("*", ".*");
+        let mut regex_pattern = str.replace('*', ".*");
         regex_pattern = format!("^{}$", regex_pattern);
         if let Ok(regex) = regex::Regex::new(&regex_pattern) {
             for item in list {

@@ -126,7 +126,7 @@ impl Parser {
         // pre-parse into rule blocks
         let mut chunks: Vec<ChunkWrapper> = vec![];
         let mut chunk: Option<ChunkWrapper> = None;
-        for (idx, line) in reader.lines().flatten().enumerate() {
+        for (idx, line) in reader.lines().map_while(Result::ok).enumerate() {
             // ignore comments
             if line.trim_start().starts_with(';') {
                 continue;
@@ -279,7 +279,11 @@ impl Parser {
         let mut order: Vec<String> = vec![];
 
         // parse each line
-        for line in reader.lines().flatten().map(|l| l.trim().to_owned()) {
+        for line in reader
+            .lines()
+            .map_while(Result::ok)
+            .map(|l| l.trim().to_owned())
+        {
             // HANDLE RULE PARSE
             // each line gets tokenized
             for token in self.tokenize(line) {
