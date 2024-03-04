@@ -44,15 +44,17 @@ mod unit_tests {
             },
         }
     }
-    // fn patch(f: ERule) -> Option<Patch> {
-    //     match f {
-    //         ERule::EOrderRule(_) => None,
-    //         ERule::Rule(r) => match r {
-    //             Rule::Patch(n) => Some(n),
-    //             Rule::Note(_) | Rule::Conflict(_) | Rule::Requires(_) => None,
-    //         },
-    //     }
-    // }
+    fn patch(f: ERule) -> Option<Patch> {
+        match f {
+            ERule::EOrderRule(_) => None,
+            ERule::Rule(r) => match r {
+                EWarningRule::Patch(n) => Some(n),
+                EWarningRule::Note(_) | EWarningRule::Conflict(_) | EWarningRule::Requires(_) => {
+                    None
+                }
+            },
+        }
+    }
 
     #[test]
     fn test_tokenize() {
@@ -576,6 +578,81 @@ mod unit_tests {
 
     ////////////////////////////////////////////////////////////////////////
     // PATCH
+
+    #[test]
+    fn test_inline_patch() {
+        init();
+
+        let input: String = "[Patch message] patch.esp original.esp".to_owned();
+        let reader = Cursor::new(input.as_bytes());
+
+        let rules = parser::new_tes3_parser()
+            .parse_rules_from_reader(reader)
+            .expect("Failed to parse rule")
+            .into_iter()
+            .filter_map(patch)
+            .collect::<Vec<_>>();
+        assert_eq!(1, rules.len());
+        let n = rules.first().expect("No rules found");
+        assert_eq!("message", n.get_comment());
+
+        let names = ["patch.esp", "original.esp"];
+        assert!(n.expression_a.is_some());
+        assert!(n.expression_b.is_some());
+
+        assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
+        assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
+    }
+
+    #[test]
+    fn test_inline_patch_whitespace() {
+        init();
+
+        let input = "[Patch message] patch.esp original with spaces.esp".to_owned();
+        let reader = Cursor::new(input.as_bytes());
+
+        let rules = parser::new_tes3_parser()
+            .parse_rules_from_reader(reader)
+            .expect("Failed to parse rule")
+            .into_iter()
+            .filter_map(patch)
+            .collect::<Vec<_>>();
+        assert_eq!(1, rules.len());
+        let n = rules.first().expect("No rules found");
+        assert_eq!("message", n.get_comment());
+
+        let names = ["patch.esp", "original with spaces.esp"];
+        assert!(n.expression_a.is_some());
+        assert!(n.expression_b.is_some());
+
+        assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
+        assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
+    }
+
+    #[test]
+    fn test_multiline_patch() {
+        init();
+
+        let input = "[Patch message]\npatch.esp\noriginal.esp".to_owned();
+        let reader = Cursor::new(input.as_bytes());
+
+        let rules = parser::new_tes3_parser()
+            .parse_rules_from_reader(reader)
+            .expect("Failed to parse rule")
+            .into_iter()
+            .filter_map(patch)
+            .collect::<Vec<_>>();
+        assert_eq!(1, rules.len());
+        let n = rules.first().expect("No rules found");
+        assert_eq!("message", n.get_comment());
+
+        let names = ["patch.esp", "original.esp"];
+        assert!(n.expression_a.is_some());
+        assert!(n.expression_b.is_some());
+
+        assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
+        assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
+    }
 
     ////////////////////////////////////////////////////////////////////////
     // EXPRESSIONS

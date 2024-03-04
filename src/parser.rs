@@ -213,6 +213,7 @@ impl Parser {
                     // parse rule name
                     let rule: ERule;
                     let lowercase_line = line.to_lowercase();
+
                     if lowercase_line.strip_prefix("order").is_some() {
                         // Order lines don't have in-line options
                         rule = Order::default().into();
@@ -226,6 +227,10 @@ impl Parser {
                         rule = x.into();
                     } else if let Some(rest) = lowercase_line.strip_prefix("requires") {
                         let mut x = Requires::default();
+                        x.set_comment(rest.trim().to_owned());
+                        rule = x.into();
+                    } else if let Some(rest) = lowercase_line.strip_prefix("patch") {
+                        let mut x = Patch::default();
                         x.set_comment(rest.trim().to_owned());
                         rule = x.into();
                     } else {
