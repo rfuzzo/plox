@@ -1,0 +1,12 @@
+[Conflict]
+	"Yet Another Guard Diversity" is already merged into and expanded upon in "Interesting Outfits - Kinsmer".
+IO - Kinsmer.esp
+[ANY	Yet Another Guard Diversity - Regular.ESP
+		Yet Another Guard Diversity - Full Cephalopod.ESP
+		Yet Another Guard Diversity - Hlaalu.ESP
+		Yet Another Guard Diversity - Imperial.ESP
+		Yet Another Guard Diversity - Ordinator.ESP
+		Yet Another Guard Diversity - Redoran.ESP
+		Yet Another Guard Diversity - Telvanni (Full Cephalopod).ESP
+		Yet Another Guard Diversity - Telvanni (Purist).ESP
+		Yet Another Guard Diversity - Telvanni (Regular).ESP]

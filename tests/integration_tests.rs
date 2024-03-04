@@ -6,7 +6,7 @@ mod integration_tests {
 
     fn init() {
         let env = env_logger::Env::default()
-            .default_filter_or(log_level_to_str(ELogLevel::Info))
+            .default_filter_or(log_level_to_str(ELogLevel::Debug))
             .default_write_style_or("always");
         let _ = env_logger::Builder::from_env(env).is_test(true).try_init();
     }
@@ -64,6 +64,17 @@ mod integration_tests {
     }
 
     #[test]
+    fn test_parse_conflicts() {
+        init();
+
+        let rules = new_tes3_parser()
+            .parse_rules_from_path("./tests/plox/rules_conflict.txt")
+            .expect("rule parse failed");
+
+        assert_eq!(1, rules.len());
+    }
+
+    #[test]
     fn test_verify_mlox_base_rules() {
         init();
 
@@ -91,7 +102,7 @@ mod integration_tests {
     }
 
     #[test]
-    fn test_verify_mlox_user_rules_stable() {
+    fn test_verify_mlox_user_rules() {
         init();
 
         let parser = new_tes3_parser();

@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////
 // RULES
 ////////////////////////////////////////////////////////////////////////
-use std::io::{BufRead, Read, Result, Seek};
+use std::io::{BufRead, Error, ErrorKind, Read, Result, Seek};
 
 use log::warn;
 
@@ -302,15 +302,13 @@ impl TParser<Note> for Note {
 #[derive(Default, Clone, Debug)]
 pub struct Conflict {
     pub comment: String,
-    pub expression_a: Option<Expression>,
-    pub expression_b: Option<Expression>,
+    pub expressions: Vec<Expression>,
 }
 impl Conflict {
-    pub fn new(comment: String, expression_a: Expression, expression_b: Expression) -> Self {
+    pub fn new(comment: String, expressions: &[Expression]) -> Self {
         Self {
             comment,
-            expression_a: Some(expression_a),
-            expression_b: Some(expression_b),
+            expressions: expressions.to_vec(),
         }
     }
 }
@@ -323,12 +321,14 @@ impl TWarningRule for Conflict {
     }
     /// Conflicts evaluate as true if both expressions evaluate as true
     fn eval(&self, items: &[String]) -> bool {
-        if let Some(expr_a) = &self.expression_a {
-            if let Some(expr_b) = &self.expression_b {
-                return expr_a.eval(items) && expr_b.eval(items);
+        let mut i = 0;
+        for e in &self.expressions {
+            if e.eval(items) {
+                i += 1;
             }
         }
-        false
+
+        i > 1
     }
 }
 impl TParser<Conflict> for Conflict {
@@ -342,20 +342,13 @@ impl TParser<Conflict> for Conflict {
         }
 
         // add all parsed expressions
-        let expressions = parser.parse_expressions(reader)?;
-        for (i, e) in expressions.into_iter().enumerate() {
-            match i {
-                0 => {
-                    this.expression_a = Some(e);
-                }
-                1 => {
-                    this.expression_b = Some(e);
-                }
-                _ => {
-                    // Ignore all other expressions
-                    warn!("Malformed Conflict rule: more than 2 expressions");
-                }
-            }
+        this.expressions = parser.parse_expressions(reader)?;
+        if this.expressions.is_empty() {
+            warn!("Malformed Conflict rule: less than 2 expressions");
+            return Err(Error::new(
+                ErrorKind::Other,
+                "Malformed Conflict rule: less than 2 expressions",
+            ));
         }
 
         Ok(())
@@ -412,19 +405,12 @@ impl TParser<Requires> for Requires {
 
         // add all parsed expressions
         let expressions = parser.parse_expressions(reader)?;
-        for (i, e) in expressions.into_iter().enumerate() {
-            match i {
-                0 => {
-                    this.expression_a = Some(e);
-                }
-                1 => {
-                    this.expression_b = Some(e);
-                }
-                _ => {
-                    // Ignore all other expressions
-                    warn!("Malformed Requires rule: more than 2 expressions");
-                }
-            }
+        if expressions.len() != 2 {
+            warn!("Malformed Requires rule: more than 2 expressions");
+            return Err(Error::new(
+                ErrorKind::Other,
+                "Malformed Requires rule: more than 2 expressions",
+            ));
         }
 
         Ok(())
@@ -483,19 +469,12 @@ impl TParser<Patch> for Patch {
 
         // add all parsed expressions
         let expressions = parser.parse_expressions(reader)?;
-        for (i, e) in expressions.into_iter().enumerate() {
-            match i {
-                0 => {
-                    this.expression_a = Some(e);
-                }
-                1 => {
-                    this.expression_b = Some(e);
-                }
-                _ => {
-                    // Ignore all other expressions
-                    warn!("Malformed Patch rule: more than 2 expressions");
-                }
-            }
+        if expressions.len() != 2 {
+            warn!("Malformed Patch rule: more than 2 expressions");
+            return Err(Error::new(
+                ErrorKind::Other,
+                "Malformed Patch rule: more than 2 expressions",
+            ));
         }
 
         Ok(())

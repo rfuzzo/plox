@@ -64,31 +64,31 @@ mod unit_tests {
 
         // test that [Conflict] evaluates as true when both mods are present
         {
-            let rule = Conflict::new("".into(), e(A), e(B));
+            let rule = Conflict::new("".into(), &[e(A), e(B)]);
             assert!(rule.eval(&get_mods()));
         }
 
         // test that the order doesn't matter
         {
-            let rule = Conflict::new("".into(), e(B), e(A));
+            let rule = Conflict::new("".into(), &[e(B), e(A)]);
             assert!(rule.eval(&get_mods()));
         }
 
         // test that [Conflict] doesn't evaluate as true when one is missing
         {
-            let rule = Conflict::new("".into(), e(B), e(X));
+            let rule = Conflict::new("".into(), &[e(B), e(X)]);
             assert!(!rule.eval(&get_mods()));
         }
 
         // test that the order doesn't matter
         {
-            let rule = Conflict::new("".into(), e(X), e(B));
+            let rule = Conflict::new("".into(), &[e(X), e(B)]);
             assert!(!rule.eval(&get_mods()));
         }
 
         // test that [Conflict] doesn't evaluate as true when both are missing
         {
-            let rule = Conflict::new("".into(), e(X), e(Y));
+            let rule = Conflict::new("".into(), &[e(X), e(Y)]);
             assert!(!rule.eval(&get_mods()));
         }
     }

@@ -5,7 +5,6 @@ mod unit_tests {
 
     use plox::{
         expressions::*,
-        get_order_rules,
         parser::{self},
         rules::*,
     };
@@ -16,43 +15,47 @@ mod unit_tests {
 
     fn note(f: ERule) -> Option<Note> {
         match f {
-            ERule::EOrderRule(_) => None,
-            ERule::Rule(r) => match r {
-                EWarningRule::Note(n) => Some(n),
-                EWarningRule::Conflict(_) | EWarningRule::Requires(_) | EWarningRule::Patch(_) => {
-                    None
-                }
-            },
+            ERule::Rule(EWarningRule::Note(n)) => Some(n),
+            _ => None,
         }
     }
 
     fn conflict(f: ERule) -> Option<Conflict> {
         match f {
-            ERule::EOrderRule(_) => None,
-            ERule::Rule(r) => match r {
-                EWarningRule::Conflict(n) => Some(n),
-                EWarningRule::Note(_) | EWarningRule::Requires(_) | EWarningRule::Patch(_) => None,
-            },
+            ERule::Rule(EWarningRule::Conflict(n)) => Some(n),
+            _ => None,
         }
     }
     fn requires(f: ERule) -> Option<Requires> {
         match f {
-            ERule::EOrderRule(_) => None,
-            ERule::Rule(r) => match r {
-                EWarningRule::Requires(n) => Some(n),
-                EWarningRule::Note(_) | EWarningRule::Conflict(_) | EWarningRule::Patch(_) => None,
-            },
+            ERule::Rule(EWarningRule::Requires(n)) => Some(n),
+            _ => None,
         }
     }
     fn patch(f: ERule) -> Option<Patch> {
         match f {
-            ERule::EOrderRule(_) => None,
-            ERule::Rule(r) => match r {
-                EWarningRule::Patch(n) => Some(n),
-                EWarningRule::Note(_) | EWarningRule::Conflict(_) | EWarningRule::Requires(_) => {
-                    None
-                }
-            },
+            ERule::Rule(EWarningRule::Patch(n)) => Some(n),
+            _ => None,
+        }
+    }
+
+    // order
+    fn order(f: ERule) -> Option<Order> {
+        match f {
+            ERule::EOrderRule(EOrderRule::Order(o)) => Some(o),
+            _ => None,
+        }
+    }
+    fn nearstart(f: ERule) -> Option<NearStart> {
+        match f {
+            ERule::EOrderRule(EOrderRule::NearStart(o)) => Some(o),
+            _ => None,
+        }
+    }
+    fn nearend(f: ERule) -> Option<NearEnd> {
+        match f {
+            ERule::EOrderRule(EOrderRule::NearEnd(o)) => Some(o),
+            _ => None,
         }
     }
 
@@ -97,97 +100,109 @@ mod unit_tests {
     // ORDER
 
     #[test]
-    fn test_multiline_order() {
+    fn test_order() {
         init();
 
-        let input = "[Order]\na.archive\nb.archive\nc.archive".to_owned();
-        let reader = Cursor::new(input.as_bytes());
+        let tokens = [
+            ("a.archive", "b.archive", "c.archive"),
+            ("a with a whitespace.archive", "b.archive", "c.archive"),
+        ];
 
-        let rules = parser::new_cyberpunk_parser()
-            .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule");
-        assert_eq!(2, rules.len());
+        for token in tokens {
+            let a = token.0;
+            let b = token.1;
+            let c = token.2;
 
-        let mut rule = rules.first().expect("No rules found");
-        if let ERule::EOrderRule(EOrderRule::Order(n)) = rule {
-            assert_eq!("a.archive", n.name_a.as_str());
-            assert_eq!("b.archive", n.name_b.as_str());
-        }
+            let inputs = [
+                format!("[Order]{a} {b} {c}"),
+                format!("[Order]{a}; with a comment\n{b} {c}"),
+                format!("[Order]{a} {b} {c} ; with a comment"),
+                format!("[Order]{a} \"{b}\" {c}"),
+                format!("[Order]{a}\n{b}\n{c}"),
+                //format!("[Order]{a}; with a comment\n{b}\n{c}"),
+                format!("[Order]{a}\n\"{b}\"\n{c}"),
+                format!("[Order]\n{a}\n{b}\n{c}"),
+                //format!("[Order]; with a comment\n{a}\n{b}\n{c}"),
+                format!("[Order]\n\"{a}\"\n{b}\n\"{c}\""),
+            ];
 
-        rule = rules.get(1).expect("No rules found");
-        if let ERule::EOrderRule(EOrderRule::Order(n)) = rule {
-            assert_eq!("b.archive", n.name_a.as_str());
-            assert_eq!("c.archive", n.name_b.as_str());
+            for input in inputs {
+                let reader = Cursor::new(input.as_bytes());
+
+                let rules = parser::new_cyberpunk_parser()
+                    .parse_rules_from_reader(reader)
+                    .expect("Failed to parse rule")
+                    .into_iter()
+                    .filter_map(order)
+                    .collect::<Vec<_>>();
+                assert_eq!(2, rules.len());
+
+                let mut n = rules.first().expect("No rules found");
+                assert_eq!(a, n.name_a.as_str());
+                assert_eq!(b, n.name_b.as_str());
+
+                n = rules.get(1).expect("No rules found");
+                assert_eq!(b, n.name_a.as_str());
+                assert_eq!(c, n.name_b.as_str());
+            }
         }
     }
 
-    #[test]
-    fn test_multiline_order_with_whitespace() {
-        init();
-
-        let input = "[Order]\na.archive\narchive with spaces.archive\nc.archive".to_owned();
-        let reader = Cursor::new(input.as_bytes());
-
-        let rules = parser::new_cyberpunk_parser()
-            .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule");
-        let order = get_order_rules(&rules);
-        assert_eq!(2, order.len());
-
-        let mut rule = rules.first().expect("No rules found");
-        if let ERule::EOrderRule(EOrderRule::Order(n)) = rule {
-            assert_eq!("a.archive", n.name_a.as_str());
-            assert_eq!("archive with spaces.archive", n.name_b.as_str());
-        }
-
-        rule = rules.get(1).expect("No rules found");
-        if let ERule::EOrderRule(EOrderRule::Order(n)) = rule {
-            assert_eq!("archive with spaces.archive", n.name_a.as_str());
-            assert_eq!("c.archive", n.name_b.as_str());
-        }
-    }
+    ////////////////////////////////////////////////////////////////////////
+    // NEARSTART
 
     #[test]
-    fn test_inline_order() {
+    fn test_nearstart() {
         init();
 
-        {
-            let input = "[Order]a.archive \"b name.archive\" c.archive".to_owned();
+        let inputs = [
+            "[Nearstart message] a.esp b.esp".to_owned(),
+            "[Nearstart message] a.esp\nb.esp".to_owned(),
+            "[Nearstart]; with a comment\na.esp\nb.esp".to_owned(),
+        ];
+
+        for input in inputs {
             let reader = Cursor::new(input.as_bytes());
 
-            let rules = parser::new_cyberpunk_parser()
+            let rules = parser::new_tes3_parser()
                 .parse_rules_from_reader(reader)
-                .expect("Failed to parse rule");
-            assert_eq!(2, rules.len());
-
-            let mut rule = rules.first().expect("No rules found");
-            if let ERule::EOrderRule(EOrderRule::Order(n)) = rule {
-                assert_eq!("a.archive", n.name_a.as_str());
-                assert_eq!("b name.archive", n.name_b.as_str());
-            }
-
-            rule = rules.get(1).expect("No rules found");
-            if let ERule::EOrderRule(EOrderRule::Order(n)) = rule {
-                assert_eq!("b name.archive", n.name_a.as_str());
-                assert_eq!("c.archive", n.name_b.as_str());
-            }
-        }
-
-        {
-            let input = "[Order]a.archive c.archive ; with a comment".to_owned();
-            let reader = Cursor::new(input.as_bytes());
-
-            let rules = parser::new_cyberpunk_parser()
-                .parse_rules_from_reader(reader)
-                .expect("Failed to parse rule");
+                .expect("Failed to parse rule")
+                .into_iter()
+                .filter_map(nearstart)
+                .collect::<Vec<_>>();
             assert_eq!(1, rules.len());
+            let n = rules.first().expect("No rules found");
 
-            let rule = rules.first().expect("No rules found");
-            if let ERule::EOrderRule(EOrderRule::Order(n)) = rule {
-                assert_eq!("a.archive", n.name_a.as_str());
-                assert_eq!("c.archive", n.name_b.as_str());
-            }
+            assert_eq!(2, n.names.len());
+
+            assert_eq!("a.esp", n.names[0]);
+            assert_eq!("b.esp", n.names[1]);
         }
+    }
+
+    ////////////////////////////////////////////////////////////////////////
+    // NEAREND
+
+    #[test]
+    fn test_nearend() {
+        init();
+
+        let input: String = "[Nearend message] a.esp b.esp".to_owned();
+        let reader = Cursor::new(input.as_bytes());
+
+        let rules = parser::new_tes3_parser()
+            .parse_rules_from_reader(reader)
+            .expect("Failed to parse rule")
+            .into_iter()
+            .filter_map(nearend)
+            .collect::<Vec<_>>();
+        assert_eq!(1, rules.len());
+        let n = rules.first().expect("No rules found");
+
+        assert_eq!(2, n.names.len());
+
+        assert_eq!("a.esp", n.names[0]);
+        assert_eq!("b.esp", n.names[1]);
     }
 
     ////////////////////////////////////////////////////////////////////////
@@ -350,127 +365,39 @@ mod unit_tests {
 
     #[test]
     fn test_inline_conflict() {
-        init();
+        let tokens = [
+            ("a.archive", "b.archive", "c.archive"),
+            ("a with a whitespace.archive", "b.archive", "c.archive"),
+        ];
 
-        let input = "[Conflict message] a.archive b.archive".to_owned();
-        let reader = Cursor::new(input.as_bytes());
+        for token in tokens {
+            let a = token.0;
+            let b = token.1;
+            //let c = token.2;
 
-        let rules = parser::new_cyberpunk_parser()
-            .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule")
-            .into_iter()
-            .filter_map(conflict)
-            .collect::<Vec<_>>();
-        assert_eq!(1, rules.len());
-        let n = rules.first().expect("No rules found");
-        assert_eq!("message", n.get_comment());
+            let inputs = [
+                format!("[Conflict message] {a} {b}"),
+                format!("[Conflict message]\n{a}\n{b}"),
+                format!("[Conflict message] {a}\n{b}"),
+            ];
 
-        let names = ["a.archive", "b.archive"];
-        assert!(n.expression_a.is_some());
-        assert!(n.expression_b.is_some());
+            for input in inputs {
+                let reader = Cursor::new(input.as_bytes());
 
-        assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
-        assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
-    }
+                let rules = parser::new_cyberpunk_parser()
+                    .parse_rules_from_reader(reader)
+                    .expect("Failed to parse rule")
+                    .into_iter()
+                    .filter_map(conflict)
+                    .collect::<Vec<_>>();
+                assert_eq!(1, rules.len());
+                let n = rules.first().expect("No rules found");
+                assert_eq!("message", n.get_comment());
 
-    #[test]
-    fn test_inline_conflict_whitespace() {
-        init();
-
-        let input = "[Conflict message] a.archive b name.archive".to_owned();
-        let reader = Cursor::new(input.as_bytes());
-
-        let rules = parser::new_cyberpunk_parser()
-            .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule")
-            .into_iter()
-            .filter_map(conflict)
-            .collect::<Vec<_>>();
-        assert_eq!(1, rules.len());
-        let n = rules.first().expect("No rules found");
-        assert_eq!("message", n.get_comment());
-
-        let names = ["a.archive", "b name.archive"];
-        assert!(n.expression_a.is_some());
-        assert!(n.expression_b.is_some());
-
-        assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
-        assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
-    }
-
-    #[test]
-    fn test_multiline_conflict() {
-        init();
-
-        let input = "[Conflict message]\na.archive\nb.archive".to_owned();
-        let reader = Cursor::new(input.as_bytes());
-
-        let rules = parser::new_cyberpunk_parser()
-            .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule")
-            .into_iter()
-            .filter_map(conflict)
-            .collect::<Vec<_>>();
-        assert_eq!(1, rules.len());
-        let n = rules.first().expect("No rules found");
-        assert_eq!("message", n.get_comment());
-
-        let names = ["a.archive", "b.archive"];
-        assert!(n.expression_a.is_some());
-        assert!(n.expression_b.is_some());
-
-        assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
-        assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
-    }
-
-    #[test]
-    fn test_multiline_conflict_overflow() {
-        init();
-
-        let input = "[Conflict message]\na.archive\nb.archive\nc.archive".to_owned();
-        let reader = Cursor::new(input.as_bytes());
-
-        let rules = parser::new_cyberpunk_parser()
-            .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule")
-            .into_iter()
-            .filter_map(conflict)
-            .collect::<Vec<_>>();
-        assert_eq!(1, rules.len());
-        let n = rules.first().expect("No rules found");
-        assert_eq!("message", n.get_comment());
-
-        let names = ["a.archive", "b.archive"];
-        assert!(n.expression_a.is_some());
-        assert!(n.expression_b.is_some());
-
-        assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
-        assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
-    }
-
-    #[test]
-    fn test_multiline_conflict_whitespace() {
-        init();
-
-        let input = "[Conflict]\nname a.archive\nb.archive".to_owned();
-        let reader = Cursor::new(input.as_bytes());
-
-        let rules = parser::new_cyberpunk_parser()
-            .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule")
-            .into_iter()
-            .filter_map(conflict)
-            .collect::<Vec<_>>();
-        assert_eq!(1, rules.len());
-        let n = rules.first().expect("No rules found");
-        assert_eq!("", n.get_comment());
-
-        let names = ["name a.archive", "b.archive"];
-        assert!(n.expression_a.is_some());
-        assert!(n.expression_b.is_some());
-
-        assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
-        assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
+                assert!(is_atomic(&n.expressions[0], a));
+                assert!(is_atomic(&n.expressions[1], b));
+            }
+        }
     }
 
     #[test]
@@ -490,12 +417,8 @@ mod unit_tests {
         let n = rules.first().expect("No rules found");
         assert_eq!("", n.get_comment());
 
-        let names = ["name a.archive"];
-        assert!(n.expression_a.is_some());
-        assert!(n.expression_b.is_some());
-
-        assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
-        assert!(is_all(&n.expression_b.clone().unwrap()));
+        assert!(is_atomic(&n.expressions[0], "name a.archive"));
+        assert!(is_all(&n.expressions[1]));
     }
 
     ////////////////////////////////////////////////////////////////////////

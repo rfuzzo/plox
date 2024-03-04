@@ -4,10 +4,7 @@ mod unit_tests {
     use rand::{seq::SliceRandom, thread_rng};
 
     use plox::{
-        debug_get_mods_from_rules,
-        expressions::*,
-        get_order_rules, parser,
-        rules::*,
+        debug_get_mods_from_rules, get_order_rules, parser,
         sorter::{self, Sorter},
         wild_contains,
     };
@@ -174,61 +171,5 @@ mod unit_tests {
         }
 
         true
-    }
-
-    #[test]
-    fn test_notes() {
-        init();
-
-        let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
-            .iter()
-            .map(|e| (*e).into())
-            .collect();
-
-        let rules: Vec<_> = [("a", "some a"), ("c", "some b"), ("x", "some x!")]
-            .iter()
-            .map(|e| Note::new(e.1.into(), &[Atomic::from(e.0).into()]))
-            .collect();
-
-        let mut warnings: Vec<String> = vec![];
-        for rule in rules {
-            if rule.eval(&mods) {
-                warnings.push(rule.get_comment().into());
-            }
-        }
-        let expected: Vec<String> = vec!["some a".to_owned(), "some b".into()];
-        assert_eq!(warnings, expected);
-    }
-
-    #[test]
-    fn test_conflicts() {
-        init();
-
-        let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
-            .iter()
-            .map(|e| (*e).into())
-            .collect();
-
-        let rules: Vec<Conflict> = vec![
-            Conflict::new(
-                "some a".into(),
-                Atomic::from("a").into(),
-                Atomic::from("b").into(),
-            ),
-            Conflict::new(
-                "some b".into(),
-                Atomic::from("a").into(),
-                Atomic::from("x").into(),
-            ),
-        ];
-
-        let mut warnings: Vec<String> = vec![];
-        for rule in rules {
-            if rule.eval(&mods) {
-                warnings.push(rule.get_comment().into());
-            }
-        }
-        let expected: Vec<String> = vec!["some a".to_owned()];
-        assert_eq!(warnings, expected);
     }
 }

@@ -208,79 +208,66 @@ impl Parser {
             '[' => {
                 // start parsing
                 let mut buf = vec![];
+                // read until the end of the rule expression: e.g. [NOTE comment] body
                 let _ = reader.read_until(b']', &mut buf)?;
-                if let Ok(line) = String::from_utf8(buf[..buf.len() - 1].to_vec()) {
-                    // parse rule name
+                if let Ok(rule_expression) = String::from_utf8(buf[..buf.len() - 1].to_vec()) {
                     let rule: ERule;
-                    let lowercase_line = line.to_lowercase();
-
-                    if lowercase_line.strip_prefix("order").is_some() {
-                        // Order lines don't have in-line options
-                        rule = Order::default().into();
-                    } else if let Some(rest) = lowercase_line.strip_prefix("note") {
-                        let mut x = Note::default();
-                        x.set_comment(rest.trim().to_owned());
-                        rule = x.into();
-                    } else if let Some(rest) = lowercase_line.strip_prefix("conflict") {
-                        let mut x = Conflict::default();
-                        x.set_comment(rest.trim().to_owned());
-                        rule = x.into();
-                    } else if let Some(rest) = lowercase_line.strip_prefix("requires") {
-                        let mut x = Requires::default();
-                        x.set_comment(rest.trim().to_owned());
-                        rule = x.into();
-                    } else if let Some(rest) = lowercase_line.strip_prefix("patch") {
-                        let mut x = Patch::default();
-                        x.set_comment(rest.trim().to_owned());
-                        rule = x.into();
-                    } else {
-                        // unknown rule, skip
-                        return Err(Error::new(ErrorKind::Other, "Parsing error: unknown rule"));
+                    // parse rule name
+                    {
+                        let lowercase_line = rule_expression.to_lowercase();
+                        if lowercase_line.strip_prefix("order").is_some() {
+                            rule = Order::default().into();
+                        } else if lowercase_line.strip_prefix("nearstart").is_some() {
+                            rule = NearStart::default().into();
+                        } else if lowercase_line.strip_prefix("nearend").is_some() {
+                            rule = NearEnd::default().into();
+                        } else if let Some(rest) = lowercase_line.strip_prefix("note") {
+                            let mut x = Note::default();
+                            x.set_comment(rest.trim().to_owned());
+                            rule = x.into();
+                        } else if let Some(rest) = lowercase_line.strip_prefix("conflict") {
+                            let mut x = Conflict::default();
+                            x.set_comment(rest.trim().to_owned());
+                            rule = x.into();
+                        } else if let Some(rest) = lowercase_line.strip_prefix("requires") {
+                            let mut x = Requires::default();
+                            x.set_comment(rest.trim().to_owned());
+                            rule = x.into();
+                        } else if let Some(rest) = lowercase_line.strip_prefix("patch") {
+                            let mut x = Patch::default();
+                            x.set_comment(rest.trim().to_owned());
+                            rule = x.into();
+                        } else {
+                            // unknown rule, skip
+                            return Err(Error::new(
+                                ErrorKind::Other,
+                                "Parsing error: unknown rule",
+                            ));
+                        }
                     }
 
-                    // parse buffer
-                    // some ad-hoc fixes because we have inline-rules
-                    let mut lin = String::new();
-                    reader.read_line(&mut lin)?;
-                    lin = lin.trim_start().to_owned();
+                    // parse body
 
-                    // ignore for order rules
-                    if !lin.is_empty() {
-                        // if the line is not empty we have an inline expression and we need to trim and read back to buffer
-                        reader.seek(SeekFrom::Current(-(lin.len() as i64)))?;
+                    // construct the body out of each line with comments trimmed
+                    let mut body = String::new();
+                    for line in reader.lines().map_while(Result::ok).map(|f| {
+                        if let Some(index) = f.find(';') {
+                            f[..index].to_owned()
+                        } else {
+                            f.to_owned() // Return the entire string if ';' is not found
+                        }
+                    }) {
+                        body += format!("{}\n", line).as_str();
                     }
 
-                    // but we ignore comments
-                    let mut body = vec![];
-                    if let Some(_idx) = lin.find(';') {
-                        // find idx
-                        reader.read_until(b';', &mut body)?;
-                        body.remove(body.len() - 1);
-                    } else {
-                        reader.read_to_end(&mut body)?;
-                    }
-
-                    let body_cursor = Cursor::new(body);
+                    let body_cursor = Cursor::new(body.trim_start_matches('\n'));
 
                     // now parse rule body
                     match rule {
                         ERule::EOrderRule(o) => match o {
-                            EOrderRule::Order(_) => {
-                                if let Ok(orders) = self.parse_order_rule(body_cursor) {
-                                    let mut result: Vec<ERule> = vec![];
-                                    for o in orders {
-                                        result.push(o.into());
-                                    }
-                                    Ok(result)
-                                } else {
-                                    Err(Error::new(
-                                        ErrorKind::Other,
-                                        "Parsing error: malformed Order rule",
-                                    ))
-                                }
-                            }
-                            EOrderRule::NearStart(_) => todo!(),
-                            EOrderRule::NearEnd(_) => todo!(),
+                            EOrderRule::Order(_) => self.parse_order_rule(body_cursor),
+                            EOrderRule::NearStart(_) => self.parse_near_rule(body_cursor),
+                            EOrderRule::NearEnd(_) => self.parse_near_rule(body_cursor),
                         },
                         ERule::Rule(mut x) => {
                             EWarningRule::parse(&mut x, body_cursor, self)?;
@@ -301,18 +288,44 @@ impl Parser {
         }
     }
 
+    fn parse_near_rule<R>(&self, reader: R) -> Result<Vec<ERule>>
+    where
+        R: Read + BufRead,
+    {
+        // parse each line
+        let mut names: Vec<String> = vec![];
+        for line in reader
+            .lines()
+            .map_while(Result::ok)
+            .map(|l| l.trim().to_owned())
+        {
+            // HANDLE RULE PARSE
+            // each line gets tokenized
+            for token in self.tokenize(line) {
+                if !self.ends_with_vec3(&token) {
+                    return Err(Error::new(
+                        ErrorKind::Other,
+                        "Parsing error: tokenize failed",
+                    ));
+                }
+                names.push(token);
+            }
+        }
+
+        Ok(vec![NearStart::new(names).into()])
+    }
+
     /// .Parse an order rule, it can have up to N items
     ///
     /// # Errors
     ///
     /// This function will return an error if Order rule is missformed
-    fn parse_order_rule<R>(&self, reader: R) -> Result<Vec<EOrderRule>>
+    fn parse_order_rule<R>(&self, reader: R) -> Result<Vec<ERule>>
     where
         R: Read + BufRead,
     {
-        let mut order: Vec<String> = vec![];
-
         // parse each line
+        let mut order: Vec<String> = vec![];
         for line in reader
             .lines()
             .map_while(Result::ok)
@@ -332,7 +345,7 @@ impl Parser {
         }
 
         // process order rules
-        let mut rules: Vec<EOrderRule> = vec![];
+        let mut rules: Vec<ERule> = vec![];
         match order.len().cmp(&2) {
             Ordering::Less => {
                 // Rule with only one element is an error
@@ -341,17 +354,16 @@ impl Parser {
                     "Logic error: order rule with less than two elements",
                 ));
             }
-            Ordering::Equal => rules.push(EOrderRule::Order(Order::new(
-                order[0].to_owned(),
-                order[1].to_owned(),
-            ))),
+            Ordering::Equal => rules.push(
+                EOrderRule::Order(Order::new(order[0].to_owned(), order[1].to_owned())).into(),
+            ),
             Ordering::Greater => {
                 // add all pairs
                 for i in 0..order.len() - 1 {
-                    rules.push(EOrderRule::Order(Order::new(
-                        order[i].to_owned(),
-                        order[i + 1].to_owned(),
-                    )));
+                    rules.push(
+                        EOrderRule::Order(Order::new(order[i].to_owned(), order[i + 1].to_owned()))
+                            .into(),
+                    );
                 }
             }
         }
@@ -547,7 +559,7 @@ impl Parser {
         if reader.starts_with('[') {
             // is an expression
             // parse the kind and reurse down
-            if let Some(rest) = reader.strip_prefix("[ANY ") {
+            if let Some(rest) = reader.strip_prefix("[ANY") {
                 let expressions =
                     self.parse_expressions(rest[..rest.len() - 1].trim_start().as_bytes())?;
                 let expr = ANY::new(expressions);
