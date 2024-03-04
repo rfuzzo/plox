@@ -12,22 +12,11 @@ use log::*;
 use crate::{expressions::*, TParser};
 use crate::{rules::*, ESupportedGame};
 
-#[derive(Debug)]
-struct ChunkWrapper {
-    data: Vec<u8>,
-    info: String,
-}
-
-impl ChunkWrapper {
-    fn new(data: Vec<u8>, info: String) -> Self {
-        Self { data, info }
-    }
-}
-
 pub struct Parser {
     pub game: ESupportedGame,
     pub ext: Vec<String>,
 
+    pub order_rules: Vec<EOrderRule>,
     pub rules: Vec<Rule>,
 }
 
@@ -57,12 +46,25 @@ pub fn new_openmw_parser() -> Parser {
     )
 }
 
+#[derive(Debug)]
+struct ChunkWrapper {
+    data: Vec<u8>,
+    info: String,
+}
+
+impl ChunkWrapper {
+    fn new(data: Vec<u8>, info: String) -> Self {
+        Self { data, info }
+    }
+}
+
 impl Parser {
     pub fn new(ext: Vec<String>, game: ESupportedGame) -> Self {
         Self {
             ext,
             game,
             rules: vec![],
+            order_rules: vec![],
         }
     }
 
@@ -76,6 +78,7 @@ impl Parser {
         P: AsRef<Path>,
     {
         self.rules.clear();
+        self.order_rules.clear();
 
         let rules_files = match self.game {
             ESupportedGame::Morrowind | ESupportedGame::OpenMorrowind => {
@@ -87,9 +90,19 @@ impl Parser {
         for file in rules_files {
             let path = path.as_ref().join(file);
             if path.exists() {
-                if let Ok(base) = self.parse_rules_from_path(&path) {
-                    info!("Parsed file {} with {} rules", path.display(), base.len());
-                    self.rules.extend(base);
+                if let Ok(rules) = self.parse_rules_from_path(&path) {
+                    info!("Parsed file {} with {} rules", path.display(), rules.len());
+
+                    for r in rules {
+                        match r {
+                            ERule::EOrderRule(o) => {
+                                self.order_rules.push(o);
+                            }
+                            ERule::Rule(w) => {
+                                self.rules.push(w);
+                            }
+                        }
+                    }
                 }
             } else {
                 warn!("Could not find rules file {}", path.display());
@@ -104,7 +117,7 @@ impl Parser {
     /// # Errors
     ///
     /// This function will return an error if file io or parsing fails
-    pub fn parse_rules_from_path<P>(&self, path: P) -> Result<Vec<Rule>>
+    pub fn parse_rules_from_path<P>(&self, path: P) -> Result<Vec<ERule>>
     where
         P: AsRef<Path>,
     {
@@ -119,7 +132,7 @@ impl Parser {
     /// # Errors
     ///
     /// This function will return an error if parsing fails
-    pub fn parse_rules_from_reader<R>(&self, reader: R) -> Result<Vec<Rule>>
+    pub fn parse_rules_from_reader<R>(&self, reader: R) -> Result<Vec<ERule>>
     where
         R: Read + BufRead + Seek,
     {
@@ -156,7 +169,7 @@ impl Parser {
         }
 
         // process chunks
-        let mut rules: Vec<Rule> = vec![];
+        let mut rules: Vec<ERule> = vec![];
         for (idx, chunk) in chunks.into_iter().enumerate() {
             let info = &chunk.info;
 
@@ -185,7 +198,7 @@ impl Parser {
     /// # Errors
     ///
     /// This function will return an error if parsing fails
-    fn parse_chunk<R>(&self, mut reader: R) -> Result<Vec<Rule>>
+    fn parse_chunk<R>(&self, mut reader: R) -> Result<Vec<ERule>>
     where
         R: Read + BufRead + Seek,
     {
@@ -198,7 +211,7 @@ impl Parser {
                 let _ = reader.read_until(b']', &mut buf)?;
                 if let Ok(line) = String::from_utf8(buf[..buf.len() - 1].to_vec()) {
                     // parse rule name
-                    let rule: Rule;
+                    let rule: ERule;
                     let lowercase_line = line.to_lowercase();
                     if lowercase_line.strip_prefix("order").is_some() {
                         // Order lines don't have in-line options
@@ -246,11 +259,27 @@ impl Parser {
 
                     // now parse rule body
                     match rule {
-                        // Order rules don't have comments and no expressions so we can just parse them individually
-                        Rule::Order(_) => self.parse_order_rule(body_cursor),
-                        mut x => {
+                        ERule::EOrderRule(o) => match o {
+                            EOrderRule::Order(_) => {
+                                if let Ok(orders) = self.parse_order_rule(body_cursor) {
+                                    let mut result: Vec<ERule> = vec![];
+                                    for o in orders {
+                                        result.push(o.into());
+                                    }
+                                    Ok(result)
+                                } else {
+                                    Err(Error::new(
+                                        ErrorKind::Other,
+                                        "Parsing error: malformed Order rule",
+                                    ))
+                                }
+                            }
+                            EOrderRule::NearStart(_) => todo!(),
+                            EOrderRule::NearEnd(_) => todo!(),
+                        },
+                        ERule::Rule(mut x) => {
                             Rule::parse(&mut x, body_cursor, self)?;
-                            Ok(vec![x])
+                            Ok(vec![x.into()])
                         }
                     }
                 } else {
@@ -272,7 +301,7 @@ impl Parser {
     /// # Errors
     ///
     /// This function will return an error if Order rule is missformed
-    fn parse_order_rule<R>(&self, reader: R) -> Result<Vec<Rule>>
+    fn parse_order_rule<R>(&self, reader: R) -> Result<Vec<EOrderRule>>
     where
         R: Read + BufRead,
     {
@@ -298,7 +327,7 @@ impl Parser {
         }
 
         // process order rules
-        let mut rules: Vec<Rule> = vec![];
+        let mut rules: Vec<EOrderRule> = vec![];
         match order.len().cmp(&2) {
             Ordering::Less => {
                 // Rule with only one element is an error
@@ -307,14 +336,14 @@ impl Parser {
                     "Logic error: order rule with less than two elements",
                 ));
             }
-            Ordering::Equal => rules.push(Rule::Order(Order::new(
+            Ordering::Equal => rules.push(EOrderRule::Order(Order::new(
                 order[0].to_owned(),
                 order[1].to_owned(),
             ))),
             Ordering::Greater => {
                 // add all pairs
                 for i in 0..order.len() - 1 {
-                    rules.push(Rule::Order(Order::new(
+                    rules.push(EOrderRule::Order(Order::new(
                         order[i].to_owned(),
                         order[i + 1].to_owned(),
                     )));
@@ -325,6 +354,7 @@ impl Parser {
         Ok(rules)
     }
 
+    // TODO Clean up this shit :D
     pub fn ends_with_vec3(&self, current_buffer: &str) -> bool {
         let mut b = false;
         for ext in &self.ext {

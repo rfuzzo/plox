@@ -397,10 +397,22 @@ fn update_tes3(_result: Vec<String>) {
 ////////////////////////////////////////////////////////////////////////
 
 /// Extracts a list of ordering-pairs from the order rules
-pub fn get_order_rules(rules: &Vec<Rule>) -> Vec<(String, String)> {
+pub fn get_order_rules(rules: &Vec<ERule>) -> Vec<(String, String)> {
     let mut order: Vec<(String, String)> = vec![];
     for r in rules {
-        if let Rule::Order(o) = r {
+        if let ERule::EOrderRule(EOrderRule::Order(o)) = r {
+            order.push((o.name_a.to_owned(), o.name_b.to_owned()));
+        }
+    }
+
+    order
+}
+
+/// Extracts a list of ordering-pairs from the order rules
+pub fn resolve_order_rules(rules: &Vec<EOrderRule>) -> Vec<(String, String)> {
+    let mut order: Vec<(String, String)> = vec![];
+    for r in rules {
+        if let EOrderRule::Order(o) = r {
             order.push((o.name_a.to_owned(), o.name_b.to_owned()));
         }
     }

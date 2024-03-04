@@ -14,6 +14,44 @@ mod unit_tests {
         let _ = env_logger::builder().is_test(true).try_init();
     }
 
+    fn note(f: ERule) -> Option<Note> {
+        match f {
+            ERule::EOrderRule(_) => None,
+            ERule::Rule(r) => match r {
+                Rule::Note(n) => Some(n),
+                Rule::Conflict(_) | Rule::Requires(_) | Rule::Patch(_) => None,
+            },
+        }
+    }
+
+    fn conflict(f: ERule) -> Option<Conflict> {
+        match f {
+            ERule::EOrderRule(_) => None,
+            ERule::Rule(r) => match r {
+                Rule::Conflict(n) => Some(n),
+                Rule::Note(_) | Rule::Requires(_) | Rule::Patch(_) => None,
+            },
+        }
+    }
+    fn requires(f: ERule) -> Option<Requires> {
+        match f {
+            ERule::EOrderRule(_) => None,
+            ERule::Rule(r) => match r {
+                Rule::Requires(n) => Some(n),
+                Rule::Note(_) | Rule::Conflict(_) | Rule::Patch(_) => None,
+            },
+        }
+    }
+    // fn patch(f: ERule) -> Option<Patch> {
+    //     match f {
+    //         ERule::EOrderRule(_) => None,
+    //         ERule::Rule(r) => match r {
+    //             Rule::Patch(n) => Some(n),
+    //             Rule::Note(_) | Rule::Conflict(_) | Rule::Requires(_) => None,
+    //         },
+    //     }
+    // }
+
     #[test]
     fn test_tokenize() {
         init();
@@ -67,13 +105,13 @@ mod unit_tests {
         assert_eq!(2, rules.len());
 
         let mut rule = rules.first().expect("No rules found");
-        if let Rule::Order(n) = rule {
+        if let ERule::EOrderRule(EOrderRule::Order(n)) = rule {
             assert_eq!("a.archive", n.name_a.as_str());
             assert_eq!("b.archive", n.name_b.as_str());
         }
 
         rule = rules.get(1).expect("No rules found");
-        if let Rule::Order(n) = rule {
+        if let ERule::EOrderRule(EOrderRule::Order(n)) = rule {
             assert_eq!("b.archive", n.name_a.as_str());
             assert_eq!("c.archive", n.name_b.as_str());
         }
@@ -93,13 +131,13 @@ mod unit_tests {
         assert_eq!(2, order.len());
 
         let mut rule = rules.first().expect("No rules found");
-        if let Rule::Order(n) = rule {
+        if let ERule::EOrderRule(EOrderRule::Order(n)) = rule {
             assert_eq!("a.archive", n.name_a.as_str());
             assert_eq!("archive with spaces.archive", n.name_b.as_str());
         }
 
         rule = rules.get(1).expect("No rules found");
-        if let Rule::Order(n) = rule {
+        if let ERule::EOrderRule(EOrderRule::Order(n)) = rule {
             assert_eq!("archive with spaces.archive", n.name_a.as_str());
             assert_eq!("c.archive", n.name_b.as_str());
         }
@@ -119,13 +157,13 @@ mod unit_tests {
             assert_eq!(2, rules.len());
 
             let mut rule = rules.first().expect("No rules found");
-            if let Rule::Order(n) = rule {
+            if let ERule::EOrderRule(EOrderRule::Order(n)) = rule {
                 assert_eq!("a.archive", n.name_a.as_str());
                 assert_eq!("b name.archive", n.name_b.as_str());
             }
 
             rule = rules.get(1).expect("No rules found");
-            if let Rule::Order(n) = rule {
+            if let ERule::EOrderRule(EOrderRule::Order(n)) = rule {
                 assert_eq!("b name.archive", n.name_a.as_str());
                 assert_eq!("c.archive", n.name_b.as_str());
             }
@@ -141,7 +179,7 @@ mod unit_tests {
             assert_eq!(1, rules.len());
 
             let rule = rules.first().expect("No rules found");
-            if let Rule::Order(n) = rule {
+            if let ERule::EOrderRule(EOrderRule::Order(n)) = rule {
                 assert_eq!("a.archive", n.name_a.as_str());
                 assert_eq!("c.archive", n.name_b.as_str());
             }
@@ -161,18 +199,20 @@ mod unit_tests {
         let parser = parser::new_cyberpunk_parser();
         let rules = parser
             .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule");
+            .expect("Failed to parse rule")
+            .into_iter()
+            .filter_map(note)
+            .collect::<Vec<_>>();
+
         assert_eq!(1, rules.len());
-        let rule = rules.first().expect("No rules found");
-        assert_eq!("message", rule.get_comment());
+        let n = rules.first().expect("No rules found");
+        assert_eq!("message", n.get_comment());
 
         let names = ["a.archive", "b.archive", "c.archive"];
-        if let Rule::Note(n) = rule {
-            assert_eq!(3, n.expressions.len());
-            for (i, e) in n.expressions.iter().enumerate() {
-                if let Expression::Atomic(a) = e {
-                    assert_eq!(names[i], a.get_item().as_str());
-                }
+        assert_eq!(3, n.expressions.len());
+        for (i, e) in n.expressions.iter().enumerate() {
+            if let Expression::Atomic(a) = e {
+                assert_eq!(names[i], a.get_item().as_str());
             }
         }
     }
@@ -187,18 +227,19 @@ mod unit_tests {
         let parser = parser::new_cyberpunk_parser();
         let rules = parser
             .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule");
+            .expect("Failed to parse rule")
+            .into_iter()
+            .filter_map(note)
+            .collect::<Vec<_>>();
         assert_eq!(1, rules.len());
         let rule = rules.first().expect("No rules found");
         assert_eq!("message", rule.get_comment());
 
         let names = ["a.archive", "b name.archive", "c.archive"];
-        if let Rule::Note(n) = rule {
-            assert_eq!(3, n.expressions.len());
-            for (i, e) in n.expressions.iter().enumerate() {
-                if let Expression::Atomic(a) = e {
-                    assert_eq!(names[i], a.get_item().as_str());
-                }
+        assert_eq!(3, rule.expressions.len());
+        for (i, e) in rule.expressions.iter().enumerate() {
+            if let Expression::Atomic(a) = e {
+                assert_eq!(names[i], a.get_item().as_str());
             }
         }
     }
@@ -212,18 +253,19 @@ mod unit_tests {
 
         let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule");
+            .expect("Failed to parse rule")
+            .into_iter()
+            .filter_map(note)
+            .collect::<Vec<_>>();
         assert_eq!(1, rules.len());
         let rule = rules.first().expect("No rules found");
         assert_eq!("message", rule.get_comment());
 
         let names = ["a.archive", "b.archive", "c.archive"];
-        if let Rule::Note(n) = rule {
-            assert_eq!(3, n.expressions.len());
-            for (i, e) in n.expressions.iter().enumerate() {
-                if let Expression::Atomic(a) = e {
-                    assert_eq!(names[i], a.get_item().as_str());
-                }
+        assert_eq!(3, rule.expressions.len());
+        for (i, e) in rule.expressions.iter().enumerate() {
+            if let Expression::Atomic(a) = e {
+                assert_eq!(names[i], a.get_item().as_str());
             }
         }
     }
@@ -237,18 +279,19 @@ mod unit_tests {
 
         let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule");
+            .expect("Failed to parse rule")
+            .into_iter()
+            .filter_map(note)
+            .collect::<Vec<_>>();
         assert_eq!(1, rules.len());
         let rule = rules.first().expect("No rules found");
         assert_eq!("message", rule.get_comment());
 
         let names = ["a.archive", "b.archive", "c.archive"];
-        if let Rule::Note(n) = rule {
-            assert_eq!(3, n.expressions.len());
-            for (i, e) in n.expressions.iter().enumerate() {
-                if let Expression::Atomic(a) = e {
-                    assert_eq!(names[i], a.get_item().as_str());
-                }
+        assert_eq!(3, rule.expressions.len());
+        for (i, e) in rule.expressions.iter().enumerate() {
+            if let Expression::Atomic(a) = e {
+                assert_eq!(names[i], a.get_item().as_str());
             }
         }
     }
@@ -262,18 +305,19 @@ mod unit_tests {
 
         let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule");
+            .expect("Failed to parse rule")
+            .into_iter()
+            .filter_map(note)
+            .collect::<Vec<_>>();
         assert_eq!(1, rules.len());
         let rule = rules.first().expect("No rules found");
         assert_eq!("", rule.get_comment());
 
         let names = ["a b c.archive", "b.archive"];
-        if let Rule::Note(n) = rule {
-            assert_eq!(2, n.expressions.len());
-            for (i, e) in n.expressions.iter().enumerate() {
-                if let Expression::Atomic(a) = e {
-                    assert_eq!(names[i], a.get_item().as_str());
-                }
+        assert_eq!(2, rule.expressions.len());
+        for (i, e) in rule.expressions.iter().enumerate() {
+            if let Expression::Atomic(a) = e {
+                assert_eq!(names[i], a.get_item().as_str());
             }
         }
     }
@@ -287,13 +331,14 @@ mod unit_tests {
 
         let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule");
+            .expect("Failed to parse rule")
+            .into_iter()
+            .filter_map(note)
+            .collect::<Vec<_>>();
         assert_eq!(1, rules.len());
         let rule = rules.first().expect("No rules found");
         assert_eq!("", rule.get_comment());
-        if let Rule::Note(n) = rule {
-            assert_eq!(1, n.expressions.len());
-        }
+        assert_eq!(1, rule.expressions.len());
     }
 
     ////////////////////////////////////////////////////////////////////////
@@ -308,19 +353,20 @@ mod unit_tests {
 
         let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule");
+            .expect("Failed to parse rule")
+            .into_iter()
+            .filter_map(conflict)
+            .collect::<Vec<_>>();
         assert_eq!(1, rules.len());
-        let rule = rules.first().expect("No rules found");
-        assert_eq!("message", rule.get_comment());
+        let n = rules.first().expect("No rules found");
+        assert_eq!("message", n.get_comment());
 
         let names = ["a.archive", "b.archive"];
-        if let Rule::Conflict(n) = rule {
-            assert!(n.expression_a.is_some());
-            assert!(n.expression_b.is_some());
+        assert!(n.expression_a.is_some());
+        assert!(n.expression_b.is_some());
 
-            assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
-            assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
-        }
+        assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
+        assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
     }
 
     #[test]
@@ -332,19 +378,20 @@ mod unit_tests {
 
         let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule");
+            .expect("Failed to parse rule")
+            .into_iter()
+            .filter_map(conflict)
+            .collect::<Vec<_>>();
         assert_eq!(1, rules.len());
-        let rule = rules.first().expect("No rules found");
-        assert_eq!("message", rule.get_comment());
+        let n = rules.first().expect("No rules found");
+        assert_eq!("message", n.get_comment());
 
         let names = ["a.archive", "b name.archive"];
-        if let Rule::Conflict(n) = rule {
-            assert!(n.expression_a.is_some());
-            assert!(n.expression_b.is_some());
+        assert!(n.expression_a.is_some());
+        assert!(n.expression_b.is_some());
 
-            assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
-            assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
-        }
+        assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
+        assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
     }
 
     #[test]
@@ -356,19 +403,20 @@ mod unit_tests {
 
         let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule");
+            .expect("Failed to parse rule")
+            .into_iter()
+            .filter_map(conflict)
+            .collect::<Vec<_>>();
         assert_eq!(1, rules.len());
-        let rule = rules.first().expect("No rules found");
-        assert_eq!("message", rule.get_comment());
+        let n = rules.first().expect("No rules found");
+        assert_eq!("message", n.get_comment());
 
         let names = ["a.archive", "b.archive"];
-        if let Rule::Conflict(n) = rule {
-            assert!(n.expression_a.is_some());
-            assert!(n.expression_b.is_some());
+        assert!(n.expression_a.is_some());
+        assert!(n.expression_b.is_some());
 
-            assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
-            assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
-        }
+        assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
+        assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
     }
 
     #[test]
@@ -380,19 +428,20 @@ mod unit_tests {
 
         let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule");
+            .expect("Failed to parse rule")
+            .into_iter()
+            .filter_map(conflict)
+            .collect::<Vec<_>>();
         assert_eq!(1, rules.len());
-        let rule = rules.first().expect("No rules found");
-        assert_eq!("message", rule.get_comment());
+        let n = rules.first().expect("No rules found");
+        assert_eq!("message", n.get_comment());
 
         let names = ["a.archive", "b.archive"];
-        if let Rule::Conflict(n) = rule {
-            assert!(n.expression_a.is_some());
-            assert!(n.expression_b.is_some());
+        assert!(n.expression_a.is_some());
+        assert!(n.expression_b.is_some());
 
-            assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
-            assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
-        }
+        assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
+        assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
     }
 
     #[test]
@@ -404,19 +453,20 @@ mod unit_tests {
 
         let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule");
+            .expect("Failed to parse rule")
+            .into_iter()
+            .filter_map(conflict)
+            .collect::<Vec<_>>();
         assert_eq!(1, rules.len());
-        let rule = rules.first().expect("No rules found");
-        assert_eq!("", rule.get_comment());
+        let n = rules.first().expect("No rules found");
+        assert_eq!("", n.get_comment());
 
         let names = ["name a.archive", "b.archive"];
-        if let Rule::Conflict(n) = rule {
-            assert!(n.expression_a.is_some());
-            assert!(n.expression_b.is_some());
+        assert!(n.expression_a.is_some());
+        assert!(n.expression_b.is_some());
 
-            assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
-            assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
-        }
+        assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
+        assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
     }
 
     #[test]
@@ -428,19 +478,20 @@ mod unit_tests {
 
         let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule");
+            .expect("Failed to parse rule")
+            .into_iter()
+            .filter_map(conflict)
+            .collect::<Vec<_>>();
         assert_eq!(1, rules.len());
-        let rule = rules.first().expect("No rules found");
-        assert_eq!("", rule.get_comment());
+        let n = rules.first().expect("No rules found");
+        assert_eq!("", n.get_comment());
 
         let names = ["name a.archive"];
-        if let Rule::Conflict(n) = rule {
-            assert!(n.expression_a.is_some());
-            assert!(n.expression_b.is_some());
+        assert!(n.expression_a.is_some());
+        assert!(n.expression_b.is_some());
 
-            assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
-            assert!(is_all(&n.expression_b.clone().unwrap()));
-        }
+        assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
+        assert!(is_all(&n.expression_b.clone().unwrap()));
     }
 
     ////////////////////////////////////////////////////////////////////////
@@ -455,19 +506,20 @@ mod unit_tests {
 
         let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule");
+            .expect("Failed to parse rule")
+            .into_iter()
+            .filter_map(requires)
+            .collect::<Vec<_>>();
         assert_eq!(1, rules.len());
-        let rule = rules.first().expect("No rules found");
-        assert_eq!("message", rule.get_comment());
+        let n = rules.first().expect("No rules found");
+        assert_eq!("message", n.get_comment());
 
         let names = ["a.archive", "b.archive"];
-        if let Rule::Requires(n) = rule {
-            assert!(n.expression_a.is_some());
-            assert!(n.expression_b.is_some());
+        assert!(n.expression_a.is_some());
+        assert!(n.expression_b.is_some());
 
-            assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
-            assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
-        }
+        assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
+        assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
     }
 
     #[test]
@@ -479,19 +531,20 @@ mod unit_tests {
 
         let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule");
+            .expect("Failed to parse rule")
+            .into_iter()
+            .filter_map(requires)
+            .collect::<Vec<_>>();
         assert_eq!(1, rules.len());
-        let rule = rules.first().expect("No rules found");
-        assert_eq!("message", rule.get_comment());
+        let n = rules.first().expect("No rules found");
+        assert_eq!("message", n.get_comment());
 
         let names = ["a.archive", "b name.archive"];
-        if let Rule::Requires(n) = rule {
-            assert!(n.expression_a.is_some());
-            assert!(n.expression_b.is_some());
+        assert!(n.expression_a.is_some());
+        assert!(n.expression_b.is_some());
 
-            assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
-            assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
-        }
+        assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
+        assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
     }
 
     #[test]
@@ -503,20 +556,24 @@ mod unit_tests {
 
         let rules = parser::new_cyberpunk_parser()
             .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule");
+            .expect("Failed to parse rule")
+            .into_iter()
+            .filter_map(requires)
+            .collect::<Vec<_>>();
         assert_eq!(1, rules.len());
-        let rule = rules.first().expect("No rules found");
-        assert_eq!("message", rule.get_comment());
+        let n = rules.first().expect("No rules found");
+        assert_eq!("message", n.get_comment());
 
         let names = ["a.archive", "b.archive"];
-        if let Rule::Requires(n) = rule {
-            assert!(n.expression_a.is_some());
-            assert!(n.expression_b.is_some());
+        assert!(n.expression_a.is_some());
+        assert!(n.expression_b.is_some());
 
-            assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
-            assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
-        }
+        assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
+        assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
     }
+
+    ////////////////////////////////////////////////////////////////////////
+    // PATCH
 
     ////////////////////////////////////////////////////////////////////////
     // EXPRESSIONS

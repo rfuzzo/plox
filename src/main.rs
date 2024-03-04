@@ -181,9 +181,6 @@ fn sort(
     for rule in &parser.rules {
         if rule.eval(&mods) {
             match rule {
-                rules::Rule::Order(_) => {
-                    // Order rules don't get evaluated
-                }
                 rules::Rule::Note(n) => {
                     info!("[NOTE]\n{}\n", n.get_comment());
                 }
@@ -201,7 +198,7 @@ fn sort(
     }
 
     // Sort
-    let order_rules = get_order_rules(&parser.rules);
+    let order_rules = resolve_order_rules(&parser.order_rules);
     if order_rules.is_empty() {
         info!("No order rules found, nothing to sort");
         return ExitCode::SUCCESS;
@@ -257,7 +254,7 @@ fn verify(game: ESupportedGame, rules_path: &Option<String>) -> ExitCode {
         return ExitCode::FAILURE;
     }
 
-    let order = get_order_rules(&parser.rules);
+    let order = resolve_order_rules(&parser.order_rules);
     let mods = debug_get_mods_from_rules(&order);
     match sorter::new_unstable_sorter().topo_sort(&mods, &order) {
         Ok(_) => {

@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////
 // RULES
 ////////////////////////////////////////////////////////////////////////
-use std::io::{BufRead, Error, ErrorKind, Read, Result, Seek};
+use std::io::{BufRead, Read, Result, Seek};
 
 use log::warn;
 
@@ -9,6 +9,36 @@ use crate::{
     expressions::*,
     parser::{self, read_comment},
 };
+
+///////////////////////////////////////////////////
+// ENUMS
+
+#[derive(Debug, Clone)]
+pub enum ERule {
+    EOrderRule(EOrderRule),
+    Rule(Rule),
+}
+
+#[derive(Debug, Clone)]
+pub enum EOrderRule {
+    Order(Order),
+    NearStart(NearStart),
+    NearEnd(NearEnd),
+}
+
+#[derive(Debug, Clone)]
+pub enum Rule {
+    Note(Note),
+    Conflict(Conflict),
+    Requires(Requires),
+    Patch(Patch),
+}
+
+///////////////////////////////////////////////////
+// TRAITS
+
+/// A rule as specified in the rules document
+pub trait TOrderRule {}
 
 /// A rule as specified in the rules document
 pub trait TRule {
@@ -27,19 +57,11 @@ pub trait TParser<T: TRule> {
     ) -> Result<()>;
 }
 
-#[derive(Debug, Clone)]
-pub enum Rule {
-    Order(Order),
-    Note(Note),
-    Conflict(Conflict),
-    Requires(Requires),
-    Patch(Patch),
-}
+impl TOrderRule for EOrderRule {}
 
 impl TRule for Rule {
     fn get_comment(&self) -> &str {
         match self {
-            Rule::Order(x) => x.get_comment(),
             Rule::Note(x) => x.get_comment(),
             Rule::Conflict(x) => x.get_comment(),
             Rule::Requires(x) => x.get_comment(),
@@ -49,7 +71,6 @@ impl TRule for Rule {
 
     fn set_comment(&mut self, comment: String) {
         match self {
-            Rule::Order(x) => x.set_comment(comment),
             Rule::Note(x) => x.set_comment(comment),
             Rule::Conflict(x) => x.set_comment(comment),
             Rule::Requires(x) => x.set_comment(comment),
@@ -59,7 +80,6 @@ impl TRule for Rule {
 
     fn eval(&self, items: &[String]) -> bool {
         match self {
-            Rule::Order(o) => o.eval(items),
             Rule::Note(o) => o.eval(items),
             Rule::Conflict(o) => o.eval(items),
             Rule::Requires(o) => o.eval(items),
@@ -75,13 +95,6 @@ impl TParser<Rule> for Rule {
         parser: &parser::Parser,
     ) -> Result<()> {
         match rule {
-            Rule::Order(_) => {
-                // order rules are not parsed like this
-                Err(Error::new(
-                    ErrorKind::Other,
-                    "Parsing error: Trying to Parse Order rule",
-                ))
-            }
             Rule::Note(x) => Note::parse(x, reader, parser),
             Rule::Conflict(x) => Conflict::parse(x, reader, parser),
             Rule::Requires(x) => Requires::parse(x, reader, parser),
@@ -91,12 +104,73 @@ impl TParser<Rule> for Rule {
 }
 
 // conversions
-// TODO macro this
-impl From<Order> for Rule {
-    fn from(val: Order) -> Self {
-        Rule::Order(val)
+// top level
+impl From<EOrderRule> for ERule {
+    fn from(val: EOrderRule) -> Self {
+        ERule::EOrderRule(val)
     }
 }
+impl From<Rule> for ERule {
+    fn from(val: Rule) -> Self {
+        ERule::Rule(val)
+    }
+}
+
+// Order
+impl From<Order> for ERule {
+    fn from(val: Order) -> Self {
+        ERule::EOrderRule(val.into())
+    }
+}
+impl From<NearStart> for ERule {
+    fn from(val: NearStart) -> Self {
+        ERule::EOrderRule(val.into())
+    }
+}
+impl From<NearEnd> for ERule {
+    fn from(val: NearEnd) -> Self {
+        ERule::EOrderRule(val.into())
+    }
+}
+
+impl From<Order> for EOrderRule {
+    fn from(val: Order) -> Self {
+        EOrderRule::Order(val)
+    }
+}
+impl From<NearStart> for EOrderRule {
+    fn from(val: NearStart) -> Self {
+        EOrderRule::NearStart(val)
+    }
+}
+impl From<NearEnd> for EOrderRule {
+    fn from(val: NearEnd) -> Self {
+        EOrderRule::NearEnd(val)
+    }
+}
+
+// Warnings
+impl From<Note> for ERule {
+    fn from(val: Note) -> Self {
+        ERule::Rule(val.into())
+    }
+}
+impl From<Conflict> for ERule {
+    fn from(val: Conflict) -> Self {
+        ERule::Rule(val.into())
+    }
+}
+impl From<Requires> for ERule {
+    fn from(val: Requires) -> Self {
+        ERule::Rule(val.into())
+    }
+}
+impl From<Patch> for ERule {
+    fn from(val: Patch) -> Self {
+        ERule::Rule(val.into())
+    }
+}
+
 impl From<Note> for Rule {
     fn from(val: Note) -> Self {
         Rule::Note(val)
@@ -119,7 +193,7 @@ impl From<Patch> for Rule {
 }
 
 ////////////////////////////////////////////////////////////////////////
-// IMPLEMENTATIONS
+// IMPLEMENTATIONS ORDER
 ////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////
@@ -137,16 +211,40 @@ impl Order {
         Self { name_a, name_b }
     }
 }
-impl TRule for Order {
-    fn get_comment(&self) -> &str {
-        ""
-    }
-    fn set_comment(&mut self, _comment: String) {}
 
-    fn eval(&self, _items: &[String]) -> bool {
-        false
+////////////////////////////////////////////////////////////////////////
+// NEARSTART
+
+/// The [NearStart] rule specifies that one or more plugins should appear as near as possible to the Start of the load order.
+#[derive(Default, Clone, Debug)]
+pub struct NearStart {
+    pub names: Vec<String>,
+}
+
+impl NearStart {
+    pub fn new(names: Vec<String>) -> Self {
+        Self { names }
     }
 }
+
+////////////////////////////////////////////////////////////////////////
+// NEAREND
+
+/// The [NearEnd] rule specifies that one or more plugins should appear as near as possible to the End of the load order.
+#[derive(Default, Clone, Debug)]
+pub struct NearEnd {
+    pub names: Vec<String>,
+}
+
+impl NearEnd {
+    pub fn new(names: Vec<String>) -> Self {
+        Self { names }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////
+// IMPLEMENTATIONS WARNINGS
+////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////
 // NOTE

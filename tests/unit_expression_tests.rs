@@ -123,10 +123,10 @@ mod unit_tests {
             assert!(expr.eval(&get_mods()));
         }
 
-        // check that (a and b) are present and that either (f and y) are present
+        // check that (a and b) are present and that either (x and y) are present
         {
             let nested1 = ALL::new(vec![e(A), e(B)]);
-            let nested2 = ANY::new(vec![Atomic::from("f").into(), e(Y)]);
+            let nested2 = ANY::new(vec![e(A), e(Y)]);
             let expr = ALL::new(vec![nested1.into(), nested2.into()]);
             assert!(expr.eval(&get_mods()));
         }
