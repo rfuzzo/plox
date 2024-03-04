@@ -1,6 +1,5 @@
 #[cfg(test)]
 mod unit_tests {
-    use std::{fs::File, io::Write};
 
     use rand::{seq::SliceRandom, thread_rng};
 
@@ -147,8 +146,8 @@ mod unit_tests {
         }
 
         // log to file
-        let mut file = File::create("unit_log.txt").expect("could not create log file");
-        file.write_all(msg.as_bytes()).expect("write error");
+        // let mut file = File::create("unit_log.txt").expect("could not create log file");
+        // file.write_all(msg.as_bytes()).expect("write error");
 
         // assert
         for (_n, t) in times {

@@ -6,97 +6,129 @@ mod unit_tests {
         let _ = env_logger::builder().is_test(true).try_init();
     }
 
+    const A: &str = "a.esp";
+    const B: &str = "b.esp";
+    const C: &str = "c.esp";
+    const D: &str = "d.esp";
+    const E: &str = "e.esp";
+    const F: &str = "f.esp";
+    const X: &str = "x.esp";
+    const Y: &str = "y.esp";
+
+    fn e(str: &str) -> Expression {
+        Atomic::from(str).into()
+    }
+
+    fn get_mods() -> Vec<String> {
+        [A, B, C, D, E, F].iter().map(|e| (*e).into()).collect()
+    }
+
     #[test]
     fn evaluate_all() {
         init();
 
-        let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
-            .iter()
-            .map(|e| (*e).into())
-            .collect();
+        // [ALL] is true if A and B are true
+        {
+            let expr = ALL::new(vec![e(A), e(B)]);
+            assert!(expr.eval(&get_mods()));
+        }
 
-        // check that a and b exist in my load order
-        let mut expr = ALL::new(vec![Atomic::from("a").into(), Atomic::from("b").into()]);
-        assert!(expr.eval(&mods));
+        // [ALL] is false if A is true and B is not true
+        {
+            let expr = ALL::new(vec![e(A), e(X)]);
+            assert!(!expr.eval(&get_mods()));
+        }
 
-        // check that a and x exist in my load order
-        expr = ALL::new(vec![Atomic::from("a").into(), Atomic::from("x").into()]);
-        assert!(!expr.eval(&mods)); // should fail
+        // [ALL] is false if A is not true and B is true
+        {
+            let expr = ALL::new(vec![e(X), e(A)]);
+            assert!(!expr.eval(&get_mods()));
+        }
+
+        // [ALL] is false if A is not true and B is not true
+        {
+            let expr = ALL::new(vec![e(X), e(Y)]);
+            assert!(!expr.eval(&get_mods()));
+        }
     }
 
     #[test]
     fn evaluate_any() {
         init();
 
-        let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
-            .iter()
-            .map(|e| (*e).into())
-            .collect();
+        // [ANY] is true if A and B are true
+        {
+            let expr = ANY::new(vec![e(A), e(B)]);
+            assert!(expr.eval(&get_mods()));
+        }
 
-        // check that a or x exist in my load order
-        let mut expr = ANY::new(vec![Atomic::from("a").into(), Atomic::from("x").into()]);
-        assert!(expr.eval(&mods));
+        // [ANY] is true if A is true and B is not true
+        {
+            let expr = ANY::new(vec![e(A), e(X)]);
+            assert!(expr.eval(&get_mods()));
+        }
 
-        // check that x or y exist in my load order
-        expr = ANY::new(vec![Atomic::from("y").into(), Atomic::from("x").into()]);
-        assert!(!expr.eval(&mods)); // should fail
+        // [ANY] is true if A is not true and B is true
+        {
+            let expr = ANY::new(vec![e(X), e(A)]);
+            assert!(expr.eval(&get_mods()));
+        }
+
+        // [ANY] is false if A is not true and B is not true
+        {
+            let expr = ANY::new(vec![e(X), e(Y)]);
+            assert!(!expr.eval(&get_mods()));
+        }
     }
 
     #[test]
     fn evaluate_not() {
         init();
 
-        let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
-            .iter()
-            .map(|e| (*e).into())
-            .collect();
+        // [NOT] is true if A is not true
+        {
+            let expr = NOT::new(e(X));
+            assert!(expr.eval(&get_mods()));
+        }
 
-        // check that x is not present in my load order
-        let mut expr = NOT::new(Atomic::from("x").into());
-        assert!(expr.eval(&mods));
-
-        // check that a is not present in my load order
-        expr = NOT::new(Atomic::from("a").into());
-        assert!(!expr.eval(&mods)); // should fail
+        // [NOT] is false if A is true
+        {
+            let expr = NOT::new(e(A));
+            assert!(!expr.eval(&get_mods()));
+        }
     }
 
     #[test]
     fn evaluate_nested() {
         init();
 
-        let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
-            .iter()
-            .map(|e| (*e).into())
-            .collect();
-
         // check that (a and x) are not present in the modlist
         {
-            let nested = ALL::new(vec![Atomic::from("a").into(), Atomic::from("x").into()]);
+            let nested = ALL::new(vec![e(A), e(X)]);
             let expr = NOT::new(nested.into());
-            assert!(expr.eval(&mods));
+            assert!(expr.eval(&get_mods()));
         }
         // check that (a and b) are not present in the modlist
         {
-            let nested = ALL::new(vec![Atomic::from("a").into(), Atomic::from("b").into()]);
+            let nested = ALL::new(vec![e(A), e(B)]);
             let expr = NOT::new(nested.into());
-            assert!(!expr.eval(&mods)); // should fail
+            assert!(!expr.eval(&get_mods())); // should fail
         }
 
         // check that (a and b) are present and that either (x and y) are not present
         {
-            let nested1 = ALL::new(vec![Atomic::from("a").into(), Atomic::from("b").into()]);
-            let nested2 =
-                NOT::new(ANY::new(vec![Atomic::from("x").into(), Atomic::from("y").into()]).into());
+            let nested1 = ALL::new(vec![e(A), e(B)]);
+            let nested2 = NOT::new(ANY::new(vec![e(X), e(Y)]).into());
             let expr = ALL::new(vec![nested1.into(), nested2.into()]);
-            assert!(expr.eval(&mods));
+            assert!(expr.eval(&get_mods()));
         }
 
         // check that (a and b) are present and that either (f and y) are present
         {
-            let nested1 = ALL::new(vec![Atomic::from("a").into(), Atomic::from("b").into()]);
-            let nested2 = ANY::new(vec![Atomic::from("f").into(), Atomic::from("y").into()]);
+            let nested1 = ALL::new(vec![e(A), e(B)]);
+            let nested2 = ANY::new(vec![Atomic::from("f").into(), e(Y)]);
             let expr = ALL::new(vec![nested1.into(), nested2.into()]);
-            assert!(expr.eval(&mods));
+            assert!(expr.eval(&get_mods()));
         }
     }
 }

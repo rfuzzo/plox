@@ -3,6 +3,8 @@
 ////////////////////////////////////////////////////////////////////////
 use std::io::{BufRead, Error, ErrorKind, Read, Result, Seek};
 
+use log::warn;
+
 use crate::{
     expressions::*,
     parser::{self, read_comment},
@@ -31,6 +33,7 @@ pub enum Rule {
     Note(Note),
     Conflict(Conflict),
     Requires(Requires),
+    Patch(Patch),
 }
 
 impl TRule for Rule {
@@ -40,6 +43,7 @@ impl TRule for Rule {
             Rule::Note(x) => x.get_comment(),
             Rule::Conflict(x) => x.get_comment(),
             Rule::Requires(x) => x.get_comment(),
+            Rule::Patch(x) => x.get_comment(),
         }
     }
 
@@ -49,6 +53,7 @@ impl TRule for Rule {
             Rule::Note(x) => x.set_comment(comment),
             Rule::Conflict(x) => x.set_comment(comment),
             Rule::Requires(x) => x.set_comment(comment),
+            Rule::Patch(x) => x.set_comment(comment),
         }
     }
 
@@ -58,6 +63,7 @@ impl TRule for Rule {
             Rule::Note(o) => o.eval(items),
             Rule::Conflict(o) => o.eval(items),
             Rule::Requires(o) => o.eval(items),
+            Rule::Patch(o) => o.eval(items),
         }
     }
 }
@@ -79,11 +85,13 @@ impl TParser<Rule> for Rule {
             Rule::Note(x) => Note::parse(x, reader, parser),
             Rule::Conflict(x) => Conflict::parse(x, reader, parser),
             Rule::Requires(x) => Requires::parse(x, reader, parser),
+            Rule::Patch(x) => Patch::parse(x, reader, parser),
         }
     }
 }
 
 // conversions
+// TODO macro this
 impl From<Order> for Rule {
     fn from(val: Order) -> Self {
         Rule::Order(val)
@@ -104,6 +112,11 @@ impl From<Requires> for Rule {
         Rule::Requires(val)
     }
 }
+impl From<Patch> for Rule {
+    fn from(val: Patch) -> Self {
+        Rule::Patch(val)
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////
 // IMPLEMENTATIONS
@@ -112,8 +125,7 @@ impl From<Requires> for Rule {
 ////////////////////////////////////////////////////////////////////////
 // ORDER
 
-/// The Note Rule <Note for A>
-/// Notes simply check the expression and notify the user if eval is true
+/// The [Order] rule specifies the order of plugins.
 #[derive(Default, Clone, Debug)]
 pub struct Order {
     pub name_a: String,
@@ -139,7 +151,7 @@ impl TRule for Order {
 ////////////////////////////////////////////////////////////////////////
 // NOTE
 
-/// The Note Rule <Note for A>
+/// The [Note] Rule <Note for A>
 /// The [Note] rule prints the given message when any of the following expressions is true.
 #[derive(Default, Clone, Debug)]
 pub struct Note {
@@ -192,8 +204,8 @@ impl TParser<Note> for Note {
 ////////////////////////////////////////////////////////////////////////
 // CONFLICT
 
-/// The Conflict Rule <A conflicts with B>
-/// Conflicts evaluate as true if both expressions evaluate as true
+/// The [Conflict] Rule <A conflicts with B>
+/// [Conflict] evaluate as true if both expressions evaluate as true
 #[derive(Default, Clone, Debug)]
 pub struct Conflict {
     pub comment: String,
@@ -246,7 +258,10 @@ impl TParser<Conflict> for Conflict {
                 1 => {
                     this.expression_b = Some(e);
                 }
-                _ => {}
+                _ => {
+                    // Ignore all other expressions
+                    warn!("Malformed Conflict rule: more than 2 expressions");
+                }
             }
         }
 
@@ -257,8 +272,8 @@ impl TParser<Conflict> for Conflict {
 ////////////////////////////////////////////////////////////////////////
 // REQUIRES
 
-/// The Requires Rule <A requires B>
-/// Requires evaluates as true if A is true and B is not true
+/// The [Requires] Rule <A requires B>
+/// [Requires] evaluates as true if A is true and B is not true
 #[derive(Default, Clone, Debug)]
 pub struct Requires {
     pub comment: String,
@@ -312,7 +327,81 @@ impl TParser<Requires> for Requires {
                 1 => {
                     this.expression_b = Some(e);
                 }
-                _ => {}
+                _ => {
+                    // Ignore all other expressions
+                    warn!("Malformed Requires rule: more than 2 expressions");
+                }
+            }
+        }
+
+        Ok(())
+    }
+}
+
+////////////////////////////////////////////////////////////////////////
+// PATCH
+
+/// The [Patch] rule specifies a mutual dependency
+/// we wouldn't want the patch without the original it is supposed to patch
+/// We wouldn't want the original to go unpatched.
+#[derive(Default, Clone, Debug)]
+pub struct Patch {
+    pub comment: String,
+    pub expression_a: Option<Expression>,
+    pub expression_b: Option<Expression>,
+}
+impl Patch {
+    pub fn new(comment: String, expression_a: Expression, expression_b: Expression) -> Self {
+        Self {
+            comment,
+            expression_a: Some(expression_a),
+            expression_b: Some(expression_b),
+        }
+    }
+}
+impl TRule for Patch {
+    fn get_comment(&self) -> &str {
+        self.comment.as_str()
+    }
+    fn set_comment(&mut self, comment: String) {
+        self.comment = comment;
+    }
+    /// Patch evaluates as true if A is true and B is not true or if B is true and A is not true
+    fn eval(&self, items: &[String]) -> bool {
+        if let Some(expr_a) = &self.expression_a {
+            if let Some(expr_b) = &self.expression_b {
+                return (expr_a.eval(items) && !expr_b.eval(items))
+                    || (expr_b.eval(items) && !expr_a.eval(items));
+            }
+        }
+        false
+    }
+}
+
+impl TParser<Patch> for Patch {
+    fn parse<R: Read + BufRead + Seek>(
+        this: &mut Patch,
+        mut reader: R,
+        parser: &parser::Parser,
+    ) -> Result<()> {
+        if let Ok(Some(comment)) = read_comment(&mut reader) {
+            this.set_comment(comment);
+        }
+
+        // add all parsed expressions
+        let expressions = parser.parse_expressions(reader)?;
+        for (i, e) in expressions.into_iter().enumerate() {
+            match i {
+                0 => {
+                    this.expression_a = Some(e);
+                }
+                1 => {
+                    this.expression_b = Some(e);
+                }
+                _ => {
+                    // Ignore all other expressions
+                    warn!("Malformed Patch rule: more than 2 expressions");
+                }
             }
         }
 

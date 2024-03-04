@@ -181,7 +181,9 @@ fn sort(
     for rule in &parser.rules {
         if rule.eval(&mods) {
             match rule {
-                rules::Rule::Order(_) => {}
+                rules::Rule::Order(_) => {
+                    // Order rules don't get evaluated
+                }
                 rules::Rule::Note(n) => {
                     info!("[NOTE]\n{}\n", n.get_comment());
                 }
@@ -190,6 +192,9 @@ fn sort(
                 }
                 rules::Rule::Requires(r) => {
                     warn!("[REQUIRES]\n{}\n", r.get_comment());
+                }
+                rules::Rule::Patch(p) => {
+                    warn!("[Patch]\n{}\n", p.get_comment());
                 }
             }
         }
