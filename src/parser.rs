@@ -17,7 +17,7 @@ pub struct Parser {
     pub ext: Vec<String>,
 
     pub order_rules: Vec<EOrderRule>,
-    pub rules: Vec<Rule>,
+    pub rules: Vec<EWarningRule>,
 }
 
 pub fn get_parser(game: ESupportedGame) -> Parser {
@@ -278,7 +278,7 @@ impl Parser {
                             EOrderRule::NearEnd(_) => todo!(),
                         },
                         ERule::Rule(mut x) => {
-                            Rule::parse(&mut x, body_cursor, self)?;
+                            EWarningRule::parse(&mut x, body_cursor, self)?;
                             Ok(vec![x.into()])
                         }
                     }

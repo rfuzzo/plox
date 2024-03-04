@@ -18,8 +18,10 @@ mod unit_tests {
         match f {
             ERule::EOrderRule(_) => None,
             ERule::Rule(r) => match r {
-                Rule::Note(n) => Some(n),
-                Rule::Conflict(_) | Rule::Requires(_) | Rule::Patch(_) => None,
+                EWarningRule::Note(n) => Some(n),
+                EWarningRule::Conflict(_) | EWarningRule::Requires(_) | EWarningRule::Patch(_) => {
+                    None
+                }
             },
         }
     }
@@ -28,8 +30,8 @@ mod unit_tests {
         match f {
             ERule::EOrderRule(_) => None,
             ERule::Rule(r) => match r {
-                Rule::Conflict(n) => Some(n),
-                Rule::Note(_) | Rule::Requires(_) | Rule::Patch(_) => None,
+                EWarningRule::Conflict(n) => Some(n),
+                EWarningRule::Note(_) | EWarningRule::Requires(_) | EWarningRule::Patch(_) => None,
             },
         }
     }
@@ -37,8 +39,8 @@ mod unit_tests {
         match f {
             ERule::EOrderRule(_) => None,
             ERule::Rule(r) => match r {
-                Rule::Requires(n) => Some(n),
-                Rule::Note(_) | Rule::Conflict(_) | Rule::Patch(_) => None,
+                EWarningRule::Requires(n) => Some(n),
+                EWarningRule::Note(_) | EWarningRule::Conflict(_) | EWarningRule::Patch(_) => None,
             },
         }
     }

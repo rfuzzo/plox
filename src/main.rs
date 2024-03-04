@@ -6,7 +6,7 @@ use clap::{Parser, Subcommand};
 use env_logger::Env;
 use log::{error, info, warn};
 
-use plox::rules::TRule;
+use plox::rules::TWarningRule;
 use plox::*;
 
 #[derive(Parser)]
@@ -181,16 +181,16 @@ fn sort(
     for rule in &parser.rules {
         if rule.eval(&mods) {
             match rule {
-                rules::Rule::Note(n) => {
+                rules::EWarningRule::Note(n) => {
                     info!("[NOTE]\n{}\n", n.get_comment());
                 }
-                rules::Rule::Conflict(c) => {
+                rules::EWarningRule::Conflict(c) => {
                     warn!("[CONFLICT]\n{}\n", c.get_comment());
                 }
-                rules::Rule::Requires(r) => {
+                rules::EWarningRule::Requires(r) => {
                     warn!("[REQUIRES]\n{}\n", r.get_comment());
                 }
-                rules::Rule::Patch(p) => {
+                rules::EWarningRule::Patch(p) => {
                     warn!("[Patch]\n{}\n", p.get_comment());
                 }
             }

@@ -16,7 +16,7 @@ use crate::{
 #[derive(Debug, Clone)]
 pub enum ERule {
     EOrderRule(EOrderRule),
-    Rule(Rule),
+    Rule(EWarningRule),
 }
 
 #[derive(Debug, Clone)]
@@ -27,7 +27,7 @@ pub enum EOrderRule {
 }
 
 #[derive(Debug, Clone)]
-pub enum Rule {
+pub enum EWarningRule {
     Note(Note),
     Conflict(Conflict),
     Requires(Requires),
@@ -38,10 +38,7 @@ pub enum Rule {
 // TRAITS
 
 /// A rule as specified in the rules document
-pub trait TOrderRule {}
-
-/// A rule as specified in the rules document
-pub trait TRule {
+pub trait TWarningRule {
     /// every rule may have a comment describing why it failed
     fn get_comment(&self) -> &str;
     fn set_comment(&mut self, comment: String);
@@ -49,7 +46,7 @@ pub trait TRule {
     fn eval(&self, items: &[String]) -> bool;
 }
 
-pub trait TParser<T: TRule> {
+pub trait TParser<T: TWarningRule> {
     fn parse<R: Read + BufRead + Seek>(
         rule: &mut T,
         reader: R,
@@ -57,48 +54,46 @@ pub trait TParser<T: TRule> {
     ) -> Result<()>;
 }
 
-impl TOrderRule for EOrderRule {}
-
-impl TRule for Rule {
+impl TWarningRule for EWarningRule {
     fn get_comment(&self) -> &str {
         match self {
-            Rule::Note(x) => x.get_comment(),
-            Rule::Conflict(x) => x.get_comment(),
-            Rule::Requires(x) => x.get_comment(),
-            Rule::Patch(x) => x.get_comment(),
+            EWarningRule::Note(x) => x.get_comment(),
+            EWarningRule::Conflict(x) => x.get_comment(),
+            EWarningRule::Requires(x) => x.get_comment(),
+            EWarningRule::Patch(x) => x.get_comment(),
         }
     }
 
     fn set_comment(&mut self, comment: String) {
         match self {
-            Rule::Note(x) => x.set_comment(comment),
-            Rule::Conflict(x) => x.set_comment(comment),
-            Rule::Requires(x) => x.set_comment(comment),
-            Rule::Patch(x) => x.set_comment(comment),
+            EWarningRule::Note(x) => x.set_comment(comment),
+            EWarningRule::Conflict(x) => x.set_comment(comment),
+            EWarningRule::Requires(x) => x.set_comment(comment),
+            EWarningRule::Patch(x) => x.set_comment(comment),
         }
     }
 
     fn eval(&self, items: &[String]) -> bool {
         match self {
-            Rule::Note(o) => o.eval(items),
-            Rule::Conflict(o) => o.eval(items),
-            Rule::Requires(o) => o.eval(items),
-            Rule::Patch(o) => o.eval(items),
+            EWarningRule::Note(o) => o.eval(items),
+            EWarningRule::Conflict(o) => o.eval(items),
+            EWarningRule::Requires(o) => o.eval(items),
+            EWarningRule::Patch(o) => o.eval(items),
         }
     }
 }
 
-impl TParser<Rule> for Rule {
+impl TParser<EWarningRule> for EWarningRule {
     fn parse<R: Read + BufRead + Seek>(
-        rule: &mut Rule,
+        rule: &mut EWarningRule,
         reader: R,
         parser: &parser::Parser,
     ) -> Result<()> {
         match rule {
-            Rule::Note(x) => Note::parse(x, reader, parser),
-            Rule::Conflict(x) => Conflict::parse(x, reader, parser),
-            Rule::Requires(x) => Requires::parse(x, reader, parser),
-            Rule::Patch(x) => Patch::parse(x, reader, parser),
+            EWarningRule::Note(x) => Note::parse(x, reader, parser),
+            EWarningRule::Conflict(x) => Conflict::parse(x, reader, parser),
+            EWarningRule::Requires(x) => Requires::parse(x, reader, parser),
+            EWarningRule::Patch(x) => Patch::parse(x, reader, parser),
         }
     }
 }
@@ -110,8 +105,8 @@ impl From<EOrderRule> for ERule {
         ERule::EOrderRule(val)
     }
 }
-impl From<Rule> for ERule {
-    fn from(val: Rule) -> Self {
+impl From<EWarningRule> for ERule {
+    fn from(val: EWarningRule) -> Self {
         ERule::Rule(val)
     }
 }
@@ -171,24 +166,24 @@ impl From<Patch> for ERule {
     }
 }
 
-impl From<Note> for Rule {
+impl From<Note> for EWarningRule {
     fn from(val: Note) -> Self {
-        Rule::Note(val)
+        EWarningRule::Note(val)
     }
 }
-impl From<Conflict> for Rule {
+impl From<Conflict> for EWarningRule {
     fn from(val: Conflict) -> Self {
-        Rule::Conflict(val)
+        EWarningRule::Conflict(val)
     }
 }
-impl From<Requires> for Rule {
+impl From<Requires> for EWarningRule {
     fn from(val: Requires) -> Self {
-        Rule::Requires(val)
+        EWarningRule::Requires(val)
     }
 }
-impl From<Patch> for Rule {
+impl From<Patch> for EWarningRule {
     fn from(val: Patch) -> Self {
-        Rule::Patch(val)
+        EWarningRule::Patch(val)
     }
 }
 
@@ -265,7 +260,7 @@ impl Note {
         }
     }
 }
-impl TRule for Note {
+impl TWarningRule for Note {
     fn get_comment(&self) -> &str {
         self.comment.as_str()
     }
@@ -319,7 +314,7 @@ impl Conflict {
         }
     }
 }
-impl TRule for Conflict {
+impl TWarningRule for Conflict {
     fn get_comment(&self) -> &str {
         self.comment.as_str()
     }
@@ -387,7 +382,7 @@ impl Requires {
         }
     }
 }
-impl TRule for Requires {
+impl TWarningRule for Requires {
     fn get_comment(&self) -> &str {
         self.comment.as_str()
     }
@@ -457,7 +452,7 @@ impl Patch {
         }
     }
 }
-impl TRule for Patch {
+impl TWarningRule for Patch {
     fn get_comment(&self) -> &str {
         self.comment.as_str()
     }
