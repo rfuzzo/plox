@@ -145,6 +145,9 @@ impl Parser {
                 continue;
             }
 
+            // TODO lowercase all
+            let line = line.to_lowercase();
+
             if chunk.is_some() && line.trim().is_empty() {
                 // end chunk
                 if let Some(chunk) = chunk.take() {
@@ -214,26 +217,25 @@ impl Parser {
                     let rule: ERule;
                     // parse rule name
                     {
-                        let lowercase_line = rule_expression.to_lowercase();
-                        if lowercase_line.strip_prefix("order").is_some() {
+                        if rule_expression.strip_prefix("order").is_some() {
                             rule = Order::default().into();
-                        } else if lowercase_line.strip_prefix("nearstart").is_some() {
+                        } else if rule_expression.strip_prefix("nearstart").is_some() {
                             rule = NearStart::default().into();
-                        } else if lowercase_line.strip_prefix("nearend").is_some() {
+                        } else if rule_expression.strip_prefix("nearend").is_some() {
                             rule = NearEnd::default().into();
-                        } else if let Some(rest) = lowercase_line.strip_prefix("note") {
+                        } else if let Some(rest) = rule_expression.strip_prefix("note") {
                             let mut x = Note::default();
                             x.set_comment(rest.trim().to_owned());
                             rule = x.into();
-                        } else if let Some(rest) = lowercase_line.strip_prefix("conflict") {
+                        } else if let Some(rest) = rule_expression.strip_prefix("conflict") {
                             let mut x = Conflict::default();
                             x.set_comment(rest.trim().to_owned());
                             rule = x.into();
-                        } else if let Some(rest) = lowercase_line.strip_prefix("requires") {
+                        } else if let Some(rest) = rule_expression.strip_prefix("requires") {
                             let mut x = Requires::default();
                             x.set_comment(rest.trim().to_owned());
                             rule = x.into();
-                        } else if let Some(rest) = lowercase_line.strip_prefix("patch") {
+                        } else if let Some(rest) = rule_expression.strip_prefix("patch") {
                             let mut x = Patch::default();
                             x.set_comment(rest.trim().to_owned());
                             rule = x.into();
@@ -559,17 +561,17 @@ impl Parser {
         if reader.starts_with('[') {
             // is an expression
             // parse the kind and reurse down
-            if let Some(rest) = reader.strip_prefix("[ANY") {
+            if let Some(rest) = reader.strip_prefix("[any") {
                 let expressions =
                     self.parse_expressions(rest[..rest.len() - 1].trim_start().as_bytes())?;
                 let expr = ANY::new(expressions);
                 Ok(expr.into())
-            } else if let Some(rest) = reader.strip_prefix("[ALL") {
+            } else if let Some(rest) = reader.strip_prefix("[all") {
                 let expressions =
                     self.parse_expressions(rest[..rest.len() - 1].trim_start().as_bytes())?;
                 let expr = ALL::new(expressions);
                 Ok(expr.into())
-            } else if let Some(rest) = reader.strip_prefix("[NOT") {
+            } else if let Some(rest) = reader.strip_prefix("[not") {
                 let expressions =
                     self.parse_expressions(rest[..rest.len() - 1].trim_start().as_bytes())?;
                 if let Some(first) = expressions.into_iter().last() {

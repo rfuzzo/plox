@@ -1,0 +1,4 @@
+[Requires]
+Morag Tong Polished - TR_Factions.esp
+[All	Morag Tong Polished.esp
+		TR_Factions.esp]

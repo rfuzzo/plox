@@ -75,6 +75,17 @@ mod integration_tests {
     }
 
     #[test]
+    fn test_parse_requires() {
+        init();
+
+        let rules = new_tes3_parser()
+            .parse_rules_from_path("./tests/plox/rules_requires.txt")
+            .expect("rule parse failed");
+
+        assert_eq!(1, rules.len());
+    }
+
+    #[test]
     fn test_verify_mlox_base_rules() {
         init();
 

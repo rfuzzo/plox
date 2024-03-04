@@ -119,10 +119,10 @@ mod unit_tests {
                 format!("[Order]{a} {b} {c} ; with a comment"),
                 format!("[Order]{a} \"{b}\" {c}"),
                 format!("[Order]{a}\n{b}\n{c}"),
-                //format!("[Order]{a}; with a comment\n{b}\n{c}"),
+                format!("[Order]{a}; with a comment\n{b}\n{c}"),
                 format!("[Order]{a}\n\"{b}\"\n{c}"),
                 format!("[Order]\n{a}\n{b}\n{c}"),
-                //format!("[Order]; with a comment\n{a}\n{b}\n{c}"),
+                format!("[Order]; with a comment\n{a}\n{b}\n{c}"),
                 format!("[Order]\n\"{a}\"\n{b}\n\"{c}\""),
             ];
 
@@ -187,162 +187,87 @@ mod unit_tests {
     fn test_nearend() {
         init();
 
-        let input: String = "[Nearend message] a.esp b.esp".to_owned();
-        let reader = Cursor::new(input.as_bytes());
+        let inputs = [
+            "[Nearend message] a.esp b.esp".to_owned(),
+            "[Nearend message] a.esp\nb.esp".to_owned(),
+            "[Nearend]; with a comment\na.esp\nb.esp".to_owned(),
+        ];
 
-        let rules = parser::new_tes3_parser()
-            .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule")
-            .into_iter()
-            .filter_map(nearend)
-            .collect::<Vec<_>>();
-        assert_eq!(1, rules.len());
-        let n = rules.first().expect("No rules found");
+        for input in inputs {
+            let reader = Cursor::new(input.as_bytes());
 
-        assert_eq!(2, n.names.len());
+            let rules = parser::new_tes3_parser()
+                .parse_rules_from_reader(reader)
+                .expect("Failed to parse rule")
+                .into_iter()
+                .filter_map(nearend)
+                .collect::<Vec<_>>();
+            assert_eq!(1, rules.len());
+            let n = rules.first().expect("No rules found");
 
-        assert_eq!("a.esp", n.names[0]);
-        assert_eq!("b.esp", n.names[1]);
+            assert_eq!(2, n.names.len());
+
+            assert_eq!("a.esp", n.names[0]);
+            assert_eq!("b.esp", n.names[1]);
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////
     // NOTE
 
     #[test]
-    fn test_inline_note() {
+    fn test_note() {
         init();
 
-        let input = "[Note message] a.archive b.archive c.archive".to_owned();
-        let reader = Cursor::new(input.as_bytes());
+        let tokens = [
+            ("a.archive", "b.archive", "c.archive"),
+            ("a with a whitespace.archive", "b.archive", "c.archive"),
+        ];
 
-        let parser = parser::new_cyberpunk_parser();
-        let rules = parser
-            .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule")
-            .into_iter()
-            .filter_map(note)
-            .collect::<Vec<_>>();
+        for token in tokens {
+            let a = token.0;
+            let b = token.1;
+            let c = token.2;
 
-        assert_eq!(1, rules.len());
-        let n = rules.first().expect("No rules found");
-        assert_eq!("message", n.get_comment());
+            let inputs = [
+                format!("[Note message]{a} {b} {c}"),
+                format!("[Note message]{a}; with a comment\n{b} {c}"),
+                format!("[Note message]{a} {b} {c} ; with a comment"),
+                format!("[Note message]{a} \"{b}\" {c}"),
+                format!("[Note message]{a}\n{b}\n{c}"),
+                format!("[Note message]{a}; with a comment\n{b}\n{c}"),
+                format!("[Note message]{a}\n\"{b}\"\n{c}"),
+                format!("[Note message]\n{a}\n{b}\n{c}"),
+                format!("[Note message]; with a comment\n{a}\n{b}\n{c}"),
+                format!("[Note message]\n\"{a}\"\n{b}\n\"{c}\""),
+                format!("[Note message]\n\"{a}\"\n{b}\n\"{c}\""),
+            ];
 
-        let names = ["a.archive", "b.archive", "c.archive"];
-        assert_eq!(3, n.expressions.len());
-        for (i, e) in n.expressions.iter().enumerate() {
-            if let Expression::Atomic(a) = e {
-                assert_eq!(names[i], a.get_item().as_str());
+            for input in inputs {
+                let reader = Cursor::new(input.as_bytes());
+
+                let rules = parser::new_cyberpunk_parser()
+                    .parse_rules_from_reader(reader)
+                    .expect("Failed to parse rule")
+                    .into_iter()
+                    .filter_map(note)
+                    .collect::<Vec<_>>();
+
+                assert_eq!(1, rules.len());
+
+                let n = rules.first().expect("No rules found");
+                assert_eq!("message", n.get_comment());
+                assert_eq!(3, n.expressions.len());
+
+                assert!(is_atomic(&n.expressions[0], a));
+                assert!(is_atomic(&n.expressions[1], b));
+                assert!(is_atomic(&n.expressions[2], c));
             }
         }
     }
 
     #[test]
-    fn test_inline_note2() {
-        init();
-
-        let input = "[Note message] a.archive b name.archive c.archive".to_owned();
-        let reader = Cursor::new(input.as_bytes());
-
-        let parser = parser::new_cyberpunk_parser();
-        let rules = parser
-            .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule")
-            .into_iter()
-            .filter_map(note)
-            .collect::<Vec<_>>();
-        assert_eq!(1, rules.len());
-        let rule = rules.first().expect("No rules found");
-        assert_eq!("message", rule.get_comment());
-
-        let names = ["a.archive", "b name.archive", "c.archive"];
-        assert_eq!(3, rule.expressions.len());
-        for (i, e) in rule.expressions.iter().enumerate() {
-            if let Expression::Atomic(a) = e {
-                assert_eq!(names[i], a.get_item().as_str());
-            }
-        }
-    }
-
-    #[test]
-    fn test_multiline_note() {
-        init();
-
-        let input = "[Note message]\na.archive\nb.archive\nc.archive".to_owned();
-        let reader = Cursor::new(input.as_bytes());
-
-        let rules = parser::new_cyberpunk_parser()
-            .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule")
-            .into_iter()
-            .filter_map(note)
-            .collect::<Vec<_>>();
-        assert_eq!(1, rules.len());
-        let rule = rules.first().expect("No rules found");
-        assert_eq!("message", rule.get_comment());
-
-        let names = ["a.archive", "b.archive", "c.archive"];
-        assert_eq!(3, rule.expressions.len());
-        for (i, e) in rule.expressions.iter().enumerate() {
-            if let Expression::Atomic(a) = e {
-                assert_eq!(names[i], a.get_item().as_str());
-            }
-        }
-    }
-
-    #[test]
-    fn test_multiline_note_with_comment() {
-        init();
-
-        let input = "[Note]\n message\na.archive\nb.archive\nc.archive";
-        let reader = Cursor::new(input.as_bytes());
-
-        let rules = parser::new_cyberpunk_parser()
-            .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule")
-            .into_iter()
-            .filter_map(note)
-            .collect::<Vec<_>>();
-        assert_eq!(1, rules.len());
-        let rule = rules.first().expect("No rules found");
-        assert_eq!("message", rule.get_comment());
-
-        let names = ["a.archive", "b.archive", "c.archive"];
-        assert_eq!(3, rule.expressions.len());
-        for (i, e) in rule.expressions.iter().enumerate() {
-            if let Expression::Atomic(a) = e {
-                assert_eq!(names[i], a.get_item().as_str());
-            }
-        }
-    }
-
-    #[test]
-    fn test_split_note() {
-        init();
-
-        let input = "[Note]\na b c.archive\nb.archive";
-        let reader = Cursor::new(input.as_bytes());
-
-        let rules = parser::new_cyberpunk_parser()
-            .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule")
-            .into_iter()
-            .filter_map(note)
-            .collect::<Vec<_>>();
-        assert_eq!(1, rules.len());
-        let rule = rules.first().expect("No rules found");
-        assert_eq!("", rule.get_comment());
-
-        let names = ["a b c.archive", "b.archive"];
-        assert_eq!(2, rule.expressions.len());
-        for (i, e) in rule.expressions.iter().enumerate() {
-            if let Expression::Atomic(a) = e {
-                assert_eq!(names[i], a.get_item().as_str());
-            }
-        }
-    }
-
-    #[test]
-    fn test_nested_note() {
+    fn test_note_nested() {
         init();
 
         let input = "[Note]\n[ALL a.archive [NOT b.archive]]";
@@ -364,7 +289,7 @@ mod unit_tests {
     // CONFLICT
 
     #[test]
-    fn test_inline_conflict() {
+    fn test_conflict() {
         let tokens = [
             ("a.archive", "b.archive", "c.archive"),
             ("a with a whitespace.archive", "b.archive", "c.archive"),
@@ -379,6 +304,8 @@ mod unit_tests {
                 format!("[Conflict message] {a} {b}"),
                 format!("[Conflict message]\n{a}\n{b}"),
                 format!("[Conflict message] {a}\n{b}"),
+                format!("[Conflict message] {a}; with a comment\n{b}"),
+                format!("[Conflict message] {a}\n{b}; and comment"),
             ];
 
             for input in inputs {
@@ -401,7 +328,7 @@ mod unit_tests {
     }
 
     #[test]
-    fn test_multiline_conflict_expression() {
+    fn test_conflict_nested() {
         init();
 
         let input = "[Conflict]\nname a.archive\n[ALL b.archive c name.archive]".to_owned();
@@ -425,156 +352,93 @@ mod unit_tests {
     // REQUIRES
 
     #[test]
-    fn test_inline_requires() {
-        init();
+    fn test_requires() {
+        let tokens = [
+            ("a.archive", "b.archive", "c.archive"),
+            ("a with a whitespace.archive", "b.archive", "c.archive"),
+        ];
 
-        let input: String = "[Requires message] a.archive b.archive".to_owned();
-        let reader = Cursor::new(input.as_bytes());
+        for token in tokens {
+            let a = token.0;
+            let b = token.1;
+            //let c = token.2;
 
-        let rules = parser::new_cyberpunk_parser()
-            .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule")
-            .into_iter()
-            .filter_map(requires)
-            .collect::<Vec<_>>();
-        assert_eq!(1, rules.len());
-        let n = rules.first().expect("No rules found");
-        assert_eq!("message", n.get_comment());
+            let inputs = [
+                format!("[Requires message] {a} {b}"),
+                format!("[Requires message]\n{a}\n{b}"),
+                format!("[Requires message] {a}\n{b}"),
+                format!("[Requires message] {a}; with a comment\n{b}"),
+                format!("[Requires message] {a}\n{b}; and comment"),
+            ];
 
-        let names = ["a.archive", "b.archive"];
-        assert!(n.expression_a.is_some());
-        assert!(n.expression_b.is_some());
+            for input in inputs {
+                let reader = Cursor::new(input.as_bytes());
 
-        assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
-        assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
-    }
+                let rules = parser::new_cyberpunk_parser()
+                    .parse_rules_from_reader(reader)
+                    .expect("Failed to parse rule")
+                    .into_iter()
+                    .filter_map(requires)
+                    .collect::<Vec<_>>();
 
-    #[test]
-    fn test_inline_requires_whitespace() {
-        init();
+                assert_eq!(1, rules.len());
+                let n = rules.first().expect("No rules found");
+                assert_eq!("message", n.get_comment());
 
-        let input = "[Requires message] a.archive b name.archive".to_owned();
-        let reader = Cursor::new(input.as_bytes());
+                let names = ["a.archive", "b name.archive"];
+                assert!(n.expression_a.is_some());
+                assert!(n.expression_b.is_some());
 
-        let rules = parser::new_cyberpunk_parser()
-            .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule")
-            .into_iter()
-            .filter_map(requires)
-            .collect::<Vec<_>>();
-        assert_eq!(1, rules.len());
-        let n = rules.first().expect("No rules found");
-        assert_eq!("message", n.get_comment());
-
-        let names = ["a.archive", "b name.archive"];
-        assert!(n.expression_a.is_some());
-        assert!(n.expression_b.is_some());
-
-        assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
-        assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
-    }
-
-    #[test]
-    fn test_multiline_requires() {
-        init();
-
-        let input = "[Requires message]\na.archive\nb.archive".to_owned();
-        let reader = Cursor::new(input.as_bytes());
-
-        let rules = parser::new_cyberpunk_parser()
-            .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule")
-            .into_iter()
-            .filter_map(requires)
-            .collect::<Vec<_>>();
-        assert_eq!(1, rules.len());
-        let n = rules.first().expect("No rules found");
-        assert_eq!("message", n.get_comment());
-
-        let names = ["a.archive", "b.archive"];
-        assert!(n.expression_a.is_some());
-        assert!(n.expression_b.is_some());
-
-        assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
-        assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
+                assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
+                assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
+            }
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////
     // PATCH
 
     #[test]
-    fn test_inline_patch() {
-        init();
+    fn test_patch() {
+        let tokens = [
+            ("a.archive", "b.archive", "c.archive"),
+            ("a with a whitespace.archive", "b.archive", "c.archive"),
+        ];
 
-        let input: String = "[Patch message] patch.esp original.esp".to_owned();
-        let reader = Cursor::new(input.as_bytes());
+        for token in tokens {
+            let a = token.0;
+            let b = token.1;
+            //let c = token.2;
 
-        let rules = parser::new_tes3_parser()
-            .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule")
-            .into_iter()
-            .filter_map(patch)
-            .collect::<Vec<_>>();
-        assert_eq!(1, rules.len());
-        let n = rules.first().expect("No rules found");
-        assert_eq!("message", n.get_comment());
+            let inputs = [
+                format!("[Requires message] {a} {b}"),
+                format!("[Requires message]\n{a}\n{b}"),
+                format!("[Requires message] {a}\n{b}"),
+                format!("[Requires message] {a}; with a comment\n{b}"),
+                format!("[Requires message] {a}\n{b}; and comment"),
+            ];
 
-        let names = ["patch.esp", "original.esp"];
-        assert!(n.expression_a.is_some());
-        assert!(n.expression_b.is_some());
+            for input in inputs {
+                let reader = Cursor::new(input.as_bytes());
 
-        assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
-        assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
-    }
+                let rules = parser::new_cyberpunk_parser()
+                    .parse_rules_from_reader(reader)
+                    .expect("Failed to parse rule")
+                    .into_iter()
+                    .filter_map(patch)
+                    .collect::<Vec<_>>();
 
-    #[test]
-    fn test_inline_patch_whitespace() {
-        init();
+                assert_eq!(1, rules.len());
+                let n = rules.first().expect("No rules found");
+                assert_eq!("message", n.get_comment());
 
-        let input = "[Patch message] patch.esp original with spaces.esp".to_owned();
-        let reader = Cursor::new(input.as_bytes());
+                assert!(n.expression_a.is_some());
+                assert!(n.expression_b.is_some());
 
-        let rules = parser::new_tes3_parser()
-            .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule")
-            .into_iter()
-            .filter_map(patch)
-            .collect::<Vec<_>>();
-        assert_eq!(1, rules.len());
-        let n = rules.first().expect("No rules found");
-        assert_eq!("message", n.get_comment());
-
-        let names = ["patch.esp", "original with spaces.esp"];
-        assert!(n.expression_a.is_some());
-        assert!(n.expression_b.is_some());
-
-        assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
-        assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
-    }
-
-    #[test]
-    fn test_multiline_patch() {
-        init();
-
-        let input = "[Patch message]\npatch.esp\noriginal.esp".to_owned();
-        let reader = Cursor::new(input.as_bytes());
-
-        let rules = parser::new_tes3_parser()
-            .parse_rules_from_reader(reader)
-            .expect("Failed to parse rule")
-            .into_iter()
-            .filter_map(patch)
-            .collect::<Vec<_>>();
-        assert_eq!(1, rules.len());
-        let n = rules.first().expect("No rules found");
-        assert_eq!("message", n.get_comment());
-
-        let names = ["patch.esp", "original.esp"];
-        assert!(n.expression_a.is_some());
-        assert!(n.expression_b.is_some());
-
-        assert!(is_atomic(&n.expression_a.clone().unwrap(), names[0]));
-        assert!(is_atomic(&n.expression_b.clone().unwrap(), names[1]));
+                assert!(is_atomic(&n.expression_a.clone().unwrap(), a));
+                assert!(is_atomic(&n.expression_b.clone().unwrap(), b));
+            }
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////
