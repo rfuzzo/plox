@@ -2,6 +2,8 @@
 // EXPRESSIONS
 ////////////////////////////////////////////////////////////////////////
 
+use serde::{Deserialize, Serialize};
+
 use crate::wild_contains;
 
 // An expression may be evaluated against a load order
@@ -9,7 +11,7 @@ pub trait TExpression {
     fn eval(&self, items: &[String]) -> bool;
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum Expression {
     Atomic(Atomic),
     ALL(ALL),
@@ -66,7 +68,7 @@ impl From<DESC> for Expression {
 
 /// The atomic expression (EXISTS)
 /// atomics evaluate as true if the input list contains the item
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Atomic {
     pub item: String,
 }
@@ -99,7 +101,7 @@ impl From<String> for Atomic {
 
 /// The ALL expression
 /// ALL evaluates as true if all expressions evaluate as true
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ALL {
     pub expressions: Vec<Expression>,
 }
@@ -127,7 +129,7 @@ impl TExpression for ALL {
 
 /// The ANY expression (OR)
 /// ANY evaluates as true if any expressions evaluates as true
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ANY {
     pub expressions: Vec<Expression>,
 }
@@ -155,7 +157,7 @@ impl TExpression for ANY {
 
 /// The NOT expression
 /// NOT evaluates as true if the wrapped expression evaluates as true
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct NOT {
     pub expression: Box<Expression>,
 }
@@ -185,7 +187,7 @@ impl Clone for NOT {
 
 /// The DESC expression (OR)
 /// TODO DESC evaluates as true if the expression evaluates as true
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct DESC {
     pub description: String,
     pub expression: Box<Expression>,

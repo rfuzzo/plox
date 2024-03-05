@@ -1,3 +1,14 @@
+[Conflict] ; (ref: included readme https://www.nexusmods.com/morrowind/mods/51050 ) (yohannes)
+	Use either only the merged plugin 'Alchemical_Hustle.esp' or a combination of the modular plugins.
+Alchemical_Hustle.esp
+[ANY	AH_GMSTs.esp
+	AH_Ingredients.esp
+	AH_Magic.esp
+	AH_Potions.esp
+	AH_Toxicity_Default.esp
+	AH_Toxicity_Hard.esp
+	AH_Toxicity_Spell_Effect.esp]
+
 [Conflict]
 	"Yet Another Guard Diversity" is already merged into and expanded upon in "Interesting Outfits - Kinsmer".
 IO - Kinsmer.esp

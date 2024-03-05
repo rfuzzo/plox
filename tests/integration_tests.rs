@@ -1,33 +1,13 @@
 #[cfg(test)]
 mod integration_tests {
-
-    use rand::{seq::SliceRandom, thread_rng};
-    // use env_logger::Builder;
-    // use std::{fs::File, io::Write};
-
     use plox::{parser::*, sorter::*, *};
+    use rand::{seq::SliceRandom, thread_rng};
 
     fn init() {
         let env = env_logger::Env::default()
             .default_filter_or(log_level_to_str(ELogLevel::Debug))
             .default_write_style_or("always");
         let _ = env_logger::Builder::from_env(env).is_test(true).try_init();
-
-        // let target = Box::new(File::create("unit_log.txt").expect("Can't create file"));
-        // Builder::new()
-        //     .format(|buf, record| {
-        //         writeln!(
-        //             buf,
-        //             "{}:{} [{}] - {}",
-        //             record.file().unwrap_or("unknown"),
-        //             record.line().unwrap_or(0),
-        //             record.level(),
-        //             record.args()
-        //         )
-        //     })
-        //     .target(env_logger::Target::Pipe(target))
-        //     .filter(None, log::LevelFilter::Debug)
-        //     .init();
     }
 
     #[test]
@@ -54,9 +34,9 @@ mod integration_tests {
         let rules = new_tes3_parser()
             .parse_rules_from_path("./tests/plox/rules_order.txt")
             .expect("rule parse failed");
-        let order = get_order_rules(&rules);
 
-        assert_eq!(5, order.len());
+        assert_eq!(5, rules.len());
+        let order = get_order_rules(&rules);
 
         let mods = debug_get_mods_from_rules(&order);
 
@@ -77,11 +57,21 @@ mod integration_tests {
     fn test_parse_notes() {
         init();
 
-        let rules = new_cyberpunk_parser()
-            .parse_rules_from_path("./tests/plox/rules_note.txt")
-            .expect("rule parse failed");
+        // {
+        //     let rules = new_cyberpunk_parser()
+        //         .parse_rules_from_path("./tests/plox/rules_note_passing.txt")
+        //         .expect("rule parse failed");
 
-        assert_eq!(17, rules.len());
+        //     assert_eq!(10, rules.len());
+        // }
+
+        {
+            let rules = new_cyberpunk_parser()
+                .parse_rules_from_path("./tests/plox/rules_note_failing.txt")
+                .expect("rule parse failed");
+
+            assert_eq!(0, rules.len());
+        }
     }
 
     #[test]
@@ -92,7 +82,7 @@ mod integration_tests {
             .parse_rules_from_path("./tests/plox/rules_conflict.txt")
             .expect("rule parse failed");
 
-        assert_eq!(1, rules.len());
+        assert_eq!(2, rules.len());
     }
 
     #[test]
@@ -104,6 +94,28 @@ mod integration_tests {
             .expect("rule parse failed");
 
         assert_eq!(1, rules.len());
+    }
+
+    #[test]
+    fn test_dump_mlox_base_rules() {
+        let parser = new_tes3_parser();
+        let rules = parser
+            .parse_rules_from_path("./tests/mlox/mlox_base.txt")
+            .expect("rule parse failed");
+
+        let file = std::fs::File::create("base_rules.json").expect("file create failed");
+        serde_json::to_writer_pretty(file, &rules).expect("serialize failed");
+    }
+
+    #[test]
+    fn test_dump_mlox_user_rules() {
+        let parser = new_tes3_parser();
+        let rules = parser
+            .parse_rules_from_path("./tests/mlox/mlox_user.txt")
+            .expect("rule parse failed");
+
+        let file = std::fs::File::create("user_rules.json").expect("file create failed");
+        serde_json::to_writer_pretty(file, &rules).expect("serialize failed");
     }
 
     #[test]

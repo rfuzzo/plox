@@ -1,0 +1,36 @@
+
+[Note]
+ message
+a
+
+
+[Note My message with some [brakets?] is a stupid idea!] a.archive
+
+
+[Note]
+ multi line 
+ message
+a
+b
+
+[Note message]
+a
+mod with spaces.archive
+c
+
+[Note message] a b c
+
+[Note message] a "mod with spaces.archive" "c"
+
+
+
+;;show this message for MCA 5.1 and 5.2, but not the Undead 3.0 compatible version of MCA 5.2
+[Note]
+ Under certain conditions, NPCs spawned by MCA will vanish. This is undesirable when you have used Vampire Embrace to turn them into your children or thrall. You might consider using the "Vampire Embrace MCA Patch" which keeps MCA-spawned NPCs in the game if they have been touched by "Vampire Embrace".
+ Download "Vampire Embrace MCA Patch" by Deylendor from Morrowind Modding History: http://mw.modhistory.com/download-76-11591
+[ALL [NOT Vampire Embrace MCA Patch.archive]
+	 [ANY [DESC /over 1000 friendly/ MCA.ESM]
+		  [ALL [DESC /over 1200 friendly/ MCA.ESM]
+			   [SIZE	!2519851 MCA.ESM]]]
+	 Vampire_Embrace.archive]
+

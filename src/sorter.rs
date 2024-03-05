@@ -170,15 +170,7 @@ impl Sorter {
         // add edges
         let mut edges: Vec<(usize, usize)> = vec![];
         for (a, b) in order {
-            //TODO wildcards
-            if a.contains('?') {
-                warn!("skipping {}", a);
-                continue;
-            }
-            if b.contains('?') {
-                warn!("skipping {}", b);
-                continue;
-            }
+            //TODO wildcards <VER>
             if a.contains("<VER>") {
                 warn!("skipping {}", a);
                 continue;

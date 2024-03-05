@@ -210,6 +210,7 @@ impl Parser {
                 // start parsing
                 let mut buf = vec![];
                 // read until the end of the rule expression: e.g. [NOTE comment] body
+                // TODO this may fail for stuff like [Note My message with some [brakets?]
                 let _ = reader.read_until(b']', &mut buf)?;
                 if let Ok(rule_expression) = String::from_utf8(buf[..buf.len() - 1].to_vec()) {
                     let mut rule: ERule;
@@ -249,19 +250,51 @@ impl Parser {
                     // parse body
 
                     // construct the body out of each line with comments trimmed
+                    let mut is_first_line = false;
+                    let mut comment = String::new();
                     let mut body = String::new();
-                    for line in reader.lines().map_while(Result::ok).map(|f| {
-                        if let Some(index) = f.find(';') {
-                            f[..index].to_owned()
-                        } else {
-                            f.to_owned() // Return the entire string if ';' is not found
+                    for (idx, line) in reader
+                        .lines()
+                        .map_while(Result::ok)
+                        .map(|f| {
+                            if let Some(index) = f.find(';') {
+                                f[..index].to_owned()
+                            } else {
+                                f.to_owned() // Return the entire string if ';' is not found
+                            }
+                        })
+                        .filter(|p| !p.trim().is_empty())
+                        .enumerate()
+                    {
+                        if idx == 0 {
+                            is_first_line = true;
                         }
-                    }) {
+
+                        // check for those darned comments
+                        if is_first_line {
+                            if let Some(first_char) = line.chars().next() {
+                                if first_char.is_ascii_whitespace() {
+                                    // TODO these are comments
+                                    comment += line.as_str();
+                                    continue;
+                                }
+                            }
+
+                            if !comment.is_empty() {
+                                if let ERule::EWarningRule(w) = &mut rule {
+                                    w.set_comment(comment.clone().trim().into());
+                                }
+                                comment.clear();
+                            }
+
+                            is_first_line = false;
+                        }
+
+                        // this is a proper line
                         body += format!("{}\n", line).as_str();
                     }
 
-                    let mut body = body.trim_start_matches('\n');
-                    body = body.trim();
+                    let body = body.trim();
                     let body_cursor = Cursor::new(body);
 
                     // now parse rule body

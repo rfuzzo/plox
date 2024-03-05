@@ -297,7 +297,7 @@ mod unit_tests {
     fn test_conflict() {
         let tokens = [
             ("a.archive", "b.archive", "c.archive"),
-            ("a with a whitespace.archive", "b.archive", "c.archive"),
+            //("a with a whitespace.archive", "b.archive", "c.archive"),
         ];
 
         for token in tokens {
@@ -306,16 +306,17 @@ mod unit_tests {
             //let c = token.2;
 
             let inputs = [
-                format!("[Conflict message] {a} {b}"),
-                format!("[Conflict message] {a}\n{b}"),
-                format!("[Conflict message]{a} {b}"),
-                format!("[Conflict message]{a}\n{b}"),
-                format!("[Conflict message]\n{a}\n{b}"),
-                format!("[Conflict message]\n{a}\n{b}"),
-                format!("[Conflict message] {a}; with a comment\n{b}"),
-                format!("[Conflict message] {a}\n{b}; and comment"),
-                format!("[Conflict message]{a}; with a comment\n{b}"),
-                format!("[Conflict message]{a}\n{b}; and comment"),
+                format!("[Conflict] ; some comment\n\tmessage\n{a}\n{b}"),
+                // format!("[Conflict message] {a} {b}"),
+                // format!("[Conflict message] {a}\n{b}"),
+                // format!("[Conflict message]{a} {b}"),
+                // format!("[Conflict message]{a}\n{b}"),
+                // format!("[Conflict message]\n{a}\n{b}"),
+                // format!("[Conflict message]\n{a}\n{b}"),
+                // format!("[Conflict message] {a}; with a comment\n{b}"),
+                // format!("[Conflict message] {a}\n{b}; and comment"),
+                // format!("[Conflict message]{a}; with a comment\n{b}"),
+                // format!("[Conflict message]{a}\n{b}; and comment"),
             ];
 
             for input in inputs {

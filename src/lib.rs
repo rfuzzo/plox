@@ -51,13 +51,7 @@ pub const PLOX_RULES_BASE: &str = "plox_base.txt";
 pub fn debug_get_mods_from_rules(order: &[(String, String)]) -> Vec<String> {
     let mut result: Vec<String> = vec![];
     for (a, b) in order.iter() {
-        //TODO wildcards
-        if a.contains('?') {
-            continue;
-        }
-        if b.contains('?') {
-            continue;
-        }
+        //TODO wildcards <VER>
         if a.contains("<VER>") {
             continue;
         }
@@ -495,10 +489,12 @@ where
 }
 
 pub fn wild_contains(list: &[String], str: &String) -> Option<Vec<String>> {
-    if str.contains('*') {
+    if str.contains('*') || str.contains('?') {
         let mut results = vec![];
         // Replace * with .* to match any sequence of characters
         let mut regex_pattern = str.replace('*', ".*");
+        regex_pattern = regex_pattern.replace('?', ".");
+
         regex_pattern = format!("^{}$", regex_pattern);
         if let Ok(regex) = regex::Regex::new(&regex_pattern) {
             for item in list {

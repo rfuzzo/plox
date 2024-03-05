@@ -4,6 +4,7 @@
 use std::io::{BufRead, Error, ErrorKind, Read, Result, Seek};
 
 use log::warn;
+use serde::{Deserialize, Serialize};
 
 use crate::{
     expressions::*,
@@ -13,20 +14,20 @@ use crate::{
 ///////////////////////////////////////////////////
 // ENUMS
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum ERule {
     EOrderRule(EOrderRule),
     EWarningRule(EWarningRule),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum EOrderRule {
     Order(Order),
     NearStart(NearStart),
     NearEnd(NearEnd),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum EWarningRule {
     Note(Note),
     Conflict(Conflict),
@@ -222,7 +223,7 @@ impl From<Patch> for EWarningRule {
 // ORDER
 
 /// The [Order] rule specifies the order of plugins.
-#[derive(Default, Clone, Debug)]
+#[derive(Default, Clone, Debug, Serialize, Deserialize)]
 pub struct Order {
     pub names: Vec<String>,
 }
@@ -247,7 +248,7 @@ impl TParser<Order> for Order {
             // HANDLE RULE PARSE
             // each line gets tokenized
             for token in parser.tokenize(line) {
-                if !parser.ends_with_vec3(&token) {
+                if !token.ends_with(']') && !parser.ends_with_vec3(&token) {
                     return Err(Error::new(
                         ErrorKind::Other,
                         "Parsing error: tokenize failed",
@@ -260,10 +261,10 @@ impl TParser<Order> for Order {
         this.names = names;
 
         if this.names.len() < 2 {
-            warn!("Malformed Conflict rule: less than 2 expressions");
+            warn!("Malformed Order rule: less than 2 expressions");
             return Err(Error::new(
                 ErrorKind::Other,
-                "Malformed Conflict rule: less than 2 expressions",
+                "Malformed Order rule: less than 2 expressions",
             ));
         }
 
@@ -275,7 +276,7 @@ impl TParser<Order> for Order {
 // NEARSTART
 
 /// The [NearStart] rule specifies that one or more plugins should appear as near as possible to the Start of the load order.
-#[derive(Default, Clone, Debug)]
+#[derive(Default, Clone, Debug, Serialize, Deserialize)]
 pub struct NearStart {
     pub names: Vec<String>,
 }
@@ -300,7 +301,7 @@ impl TParser<NearStart> for NearStart {
             // HANDLE RULE PARSE
             // each line gets tokenized
             for token in parser.tokenize(line) {
-                if !parser.ends_with_vec3(&token) {
+                if !token.ends_with(']') && !parser.ends_with_vec3(&token) {
                     return Err(Error::new(
                         ErrorKind::Other,
                         "Parsing error: tokenize failed",
@@ -320,7 +321,7 @@ impl TParser<NearStart> for NearStart {
 // NEAREND
 
 /// The [NearEnd] rule specifies that one or more plugins should appear as near as possible to the End of the load order.
-#[derive(Default, Clone, Debug)]
+#[derive(Default, Clone, Debug, Serialize, Deserialize)]
 pub struct NearEnd {
     pub names: Vec<String>,
 }
@@ -345,7 +346,7 @@ impl TParser<NearEnd> for NearEnd {
             // HANDLE RULE PARSE
             // each line gets tokenized
             for token in parser.tokenize(line) {
-                if !parser.ends_with_vec3(&token) {
+                if !token.ends_with(']') && !parser.ends_with_vec3(&token) {
                     return Err(Error::new(
                         ErrorKind::Other,
                         "Parsing error: tokenize failed",
@@ -370,7 +371,7 @@ impl TParser<NearEnd> for NearEnd {
 
 /// The [Note] Rule <Note for A>
 /// The [Note] rule prints the given message when any of the following expressions is true.
-#[derive(Default, Clone, Debug)]
+#[derive(Default, Clone, Debug, Serialize, Deserialize)]
 pub struct Note {
     pub comment: String,
     pub expressions: Vec<Expression>,
@@ -415,10 +416,10 @@ impl TParser<Note> for Note {
         this.expressions = parser.parse_expressions(reader)?;
 
         if this.expressions.is_empty() {
-            warn!("Malformed Conflict rule: less than 2 expressions");
+            warn!("Malformed Note rule: no expressions parsed");
             return Err(Error::new(
                 ErrorKind::Other,
-                "Malformed Conflict rule: less than 2 expressions",
+                "Malformed Note rule: no expressions parsed",
             ));
         }
 
@@ -431,7 +432,7 @@ impl TParser<Note> for Note {
 
 /// The [Conflict] Rule <A conflicts with B>
 /// [Conflict] evaluate as true if both expressions evaluate as true
-#[derive(Default, Clone, Debug)]
+#[derive(Default, Clone, Debug, Serialize, Deserialize)]
 pub struct Conflict {
     pub comment: String,
     pub expressions: Vec<Expression>,
@@ -493,7 +494,7 @@ impl TParser<Conflict> for Conflict {
 
 /// The [Requires] Rule <A requires B>
 /// [Requires] evaluates as true if A is true and B is not true
-#[derive(Default, Clone, Debug)]
+#[derive(Default, Clone, Debug, Serialize, Deserialize)]
 pub struct Requires {
     pub comment: String,
     pub expression_a: Option<Expression>,
@@ -559,7 +560,7 @@ impl TParser<Requires> for Requires {
 /// The [Patch] rule specifies a mutual dependency
 /// we wouldn't want the patch without the original it is supposed to patch
 /// We wouldn't want the original to go unpatched.
-#[derive(Default, Clone, Debug)]
+#[derive(Default, Clone, Debug, Serialize, Deserialize)]
 pub struct Patch {
     pub comment: String,
     pub expression_a: Option<Expression>,
@@ -606,10 +607,10 @@ impl TParser<Patch> for Patch {
         // add all parsed expressions
         let expressions = parser.parse_expressions(reader)?;
         if expressions.len() != 2 {
-            warn!("Malformed Patch rule: more than 2 expressions");
+            warn!("Malformed Patch rule: not exactly 2 expressions");
             return Err(Error::new(
                 ErrorKind::Other,
-                "Malformed Patch rule: more than 2 expressions",
+                "Malformed Patch rule: not exactly 2 expressions",
             ));
         }
 
