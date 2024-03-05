@@ -16,7 +16,7 @@ use crate::{
 #[derive(Debug, Clone)]
 pub enum ERule {
     EOrderRule(EOrderRule),
-    Rule(EWarningRule),
+    EWarningRule(EWarningRule),
 }
 
 #[derive(Debug, Clone)]
@@ -44,14 +44,6 @@ pub trait TWarningRule {
     fn set_comment(&mut self, comment: String);
     /// every rule may be evaluated
     fn eval(&self, items: &[String]) -> bool;
-}
-
-pub trait TParser<T: TWarningRule> {
-    fn parse<R: Read + BufRead + Seek>(
-        rule: &mut T,
-        reader: R,
-        parser: &parser::Parser,
-    ) -> Result<()>;
 }
 
 impl TWarningRule for EWarningRule {
@@ -83,6 +75,27 @@ impl TWarningRule for EWarningRule {
     }
 }
 
+pub trait TParser<T> {
+    fn parse<R: Read + BufRead + Seek>(
+        rule: &mut T,
+        reader: R,
+        parser: &parser::Parser,
+    ) -> Result<()>;
+}
+
+impl TParser<ERule> for ERule {
+    fn parse<R: Read + BufRead + Seek>(
+        rule: &mut ERule,
+        reader: R,
+        parser: &parser::Parser,
+    ) -> Result<()> {
+        match rule {
+            ERule::EOrderRule(rule) => EOrderRule::parse(rule, reader, parser),
+            ERule::EWarningRule(rule) => EWarningRule::parse(rule, reader, parser),
+        }
+    }
+}
+
 impl TParser<EWarningRule> for EWarningRule {
     fn parse<R: Read + BufRead + Seek>(
         rule: &mut EWarningRule,
@@ -90,10 +103,24 @@ impl TParser<EWarningRule> for EWarningRule {
         parser: &parser::Parser,
     ) -> Result<()> {
         match rule {
-            EWarningRule::Note(x) => Note::parse(x, reader, parser),
-            EWarningRule::Conflict(x) => Conflict::parse(x, reader, parser),
-            EWarningRule::Requires(x) => Requires::parse(x, reader, parser),
-            EWarningRule::Patch(x) => Patch::parse(x, reader, parser),
+            EWarningRule::Note(rule) => Note::parse(rule, reader, parser),
+            EWarningRule::Conflict(rule) => Conflict::parse(rule, reader, parser),
+            EWarningRule::Requires(rule) => Requires::parse(rule, reader, parser),
+            EWarningRule::Patch(rule) => Patch::parse(rule, reader, parser),
+        }
+    }
+}
+
+impl TParser<EOrderRule> for EOrderRule {
+    fn parse<R: Read + BufRead + Seek>(
+        rule: &mut EOrderRule,
+        reader: R,
+        parser: &parser::Parser,
+    ) -> Result<()> {
+        match rule {
+            EOrderRule::Order(rule) => Order::parse(rule, reader, parser),
+            EOrderRule::NearStart(rule) => NearStart::parse(rule, reader, parser),
+            EOrderRule::NearEnd(rule) => NearEnd::parse(rule, reader, parser),
         }
     }
 }
@@ -107,7 +134,7 @@ impl From<EOrderRule> for ERule {
 }
 impl From<EWarningRule> for ERule {
     fn from(val: EWarningRule) -> Self {
-        ERule::Rule(val)
+        ERule::EWarningRule(val)
     }
 }
 
@@ -147,22 +174,22 @@ impl From<NearEnd> for EOrderRule {
 // Warnings
 impl From<Note> for ERule {
     fn from(val: Note) -> Self {
-        ERule::Rule(val.into())
+        ERule::EWarningRule(val.into())
     }
 }
 impl From<Conflict> for ERule {
     fn from(val: Conflict) -> Self {
-        ERule::Rule(val.into())
+        ERule::EWarningRule(val.into())
     }
 }
 impl From<Requires> for ERule {
     fn from(val: Requires) -> Self {
-        ERule::Rule(val.into())
+        ERule::EWarningRule(val.into())
     }
 }
 impl From<Patch> for ERule {
     fn from(val: Patch) -> Self {
-        ERule::Rule(val.into())
+        ERule::EWarningRule(val.into())
     }
 }
 
@@ -197,13 +224,50 @@ impl From<Patch> for EWarningRule {
 /// The [Order] rule specifies the order of plugins.
 #[derive(Default, Clone, Debug)]
 pub struct Order {
-    pub name_a: String,
-    pub name_b: String,
+    pub names: Vec<String>,
 }
-
 impl Order {
-    pub fn new(name_a: String, name_b: String) -> Self {
-        Self { name_a, name_b }
+    pub fn new(names: Vec<String>) -> Self {
+        Self { names }
+    }
+}
+impl TParser<Order> for Order {
+    fn parse<R: Read + BufRead + Seek>(
+        this: &mut Order,
+        reader: R,
+        parser: &parser::Parser,
+    ) -> Result<()> {
+        // parse each line
+        let mut names: Vec<String> = vec![];
+        for line in reader
+            .lines()
+            .map_while(Result::ok)
+            .map(|l| l.trim().to_owned())
+        {
+            // HANDLE RULE PARSE
+            // each line gets tokenized
+            for token in parser.tokenize(line) {
+                if !parser.ends_with_vec3(&token) {
+                    return Err(Error::new(
+                        ErrorKind::Other,
+                        "Parsing error: tokenize failed",
+                    ));
+                }
+                names.push(token);
+            }
+        }
+
+        this.names = names;
+
+        if this.names.len() < 2 {
+            warn!("Malformed Conflict rule: less than 2 expressions");
+            return Err(Error::new(
+                ErrorKind::Other,
+                "Malformed Conflict rule: less than 2 expressions",
+            ));
+        }
+
+        Ok(())
     }
 }
 
@@ -215,10 +279,40 @@ impl Order {
 pub struct NearStart {
     pub names: Vec<String>,
 }
-
 impl NearStart {
     pub fn new(names: Vec<String>) -> Self {
         Self { names }
+    }
+}
+impl TParser<NearStart> for NearStart {
+    fn parse<R: Read + BufRead + Seek>(
+        this: &mut NearStart,
+        reader: R,
+        parser: &parser::Parser,
+    ) -> Result<()> {
+        // parse each line
+        let mut names: Vec<String> = vec![];
+        for line in reader
+            .lines()
+            .map_while(Result::ok)
+            .map(|l| l.trim().to_owned())
+        {
+            // HANDLE RULE PARSE
+            // each line gets tokenized
+            for token in parser.tokenize(line) {
+                if !parser.ends_with_vec3(&token) {
+                    return Err(Error::new(
+                        ErrorKind::Other,
+                        "Parsing error: tokenize failed",
+                    ));
+                }
+                names.push(token);
+            }
+        }
+
+        this.names = names;
+
+        Ok(())
     }
 }
 
@@ -230,10 +324,40 @@ impl NearStart {
 pub struct NearEnd {
     pub names: Vec<String>,
 }
-
 impl NearEnd {
     pub fn new(names: Vec<String>) -> Self {
         Self { names }
+    }
+}
+impl TParser<NearEnd> for NearEnd {
+    fn parse<R: Read + BufRead + Seek>(
+        this: &mut NearEnd,
+        reader: R,
+        parser: &parser::Parser,
+    ) -> Result<()> {
+        // parse each line
+        let mut names: Vec<String> = vec![];
+        for line in reader
+            .lines()
+            .map_while(Result::ok)
+            .map(|l| l.trim().to_owned())
+        {
+            // HANDLE RULE PARSE
+            // each line gets tokenized
+            for token in parser.tokenize(line) {
+                if !parser.ends_with_vec3(&token) {
+                    return Err(Error::new(
+                        ErrorKind::Other,
+                        "Parsing error: tokenize failed",
+                    ));
+                }
+                names.push(token);
+            }
+        }
+
+        this.names = names;
+
+        Ok(())
     }
 }
 
@@ -290,6 +414,14 @@ impl TParser<Note> for Note {
         // add all parsed expressions
         this.expressions = parser.parse_expressions(reader)?;
 
+        if this.expressions.is_empty() {
+            warn!("Malformed Conflict rule: less than 2 expressions");
+            return Err(Error::new(
+                ErrorKind::Other,
+                "Malformed Conflict rule: less than 2 expressions",
+            ));
+        }
+
         Ok(())
     }
 }
@@ -343,7 +475,8 @@ impl TParser<Conflict> for Conflict {
 
         // add all parsed expressions
         this.expressions = parser.parse_expressions(reader)?;
-        if this.expressions.is_empty() {
+
+        if this.expressions.len() < 2 {
             warn!("Malformed Conflict rule: less than 2 expressions");
             return Err(Error::new(
                 ErrorKind::Other,

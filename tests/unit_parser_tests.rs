@@ -15,26 +15,26 @@ mod unit_tests {
 
     fn note(f: ERule) -> Option<Note> {
         match f {
-            ERule::Rule(EWarningRule::Note(n)) => Some(n),
+            ERule::EWarningRule(EWarningRule::Note(n)) => Some(n),
             _ => None,
         }
     }
 
     fn conflict(f: ERule) -> Option<Conflict> {
         match f {
-            ERule::Rule(EWarningRule::Conflict(n)) => Some(n),
+            ERule::EWarningRule(EWarningRule::Conflict(n)) => Some(n),
             _ => None,
         }
     }
     fn requires(f: ERule) -> Option<Requires> {
         match f {
-            ERule::Rule(EWarningRule::Requires(n)) => Some(n),
+            ERule::EWarningRule(EWarningRule::Requires(n)) => Some(n),
             _ => None,
         }
     }
     fn patch(f: ERule) -> Option<Patch> {
         match f {
-            ERule::Rule(EWarningRule::Patch(n)) => Some(n),
+            ERule::EWarningRule(EWarningRule::Patch(n)) => Some(n),
             _ => None,
         }
     }
@@ -139,12 +139,12 @@ mod unit_tests {
                 assert_eq!(2, rules.len());
 
                 let mut n = rules.first().expect("No rules found");
-                assert_eq!(a, n.name_a.as_str());
-                assert_eq!(b, n.name_b.as_str());
+                assert_eq!(a, n.names[0]);
+                assert_eq!(b, n.names[1]);
 
                 n = rules.get(1).expect("No rules found");
-                assert_eq!(b, n.name_a.as_str());
-                assert_eq!(c, n.name_b.as_str());
+                assert_eq!(b, n.names[0]);
+                assert_eq!(c, n.names[1]);
             }
         }
     }

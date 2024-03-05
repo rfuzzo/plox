@@ -198,7 +198,7 @@ fn sort(
     }
 
     // Sort
-    let order_rules = resolve_order_rules(&parser.order_rules);
+    let order_rules = get_order_rules2(&parser.order_rules);
     if order_rules.is_empty() {
         info!("No order rules found, nothing to sort");
         return ExitCode::SUCCESS;
@@ -254,7 +254,7 @@ fn verify(game: ESupportedGame, rules_path: &Option<String>) -> ExitCode {
         return ExitCode::FAILURE;
     }
 
-    let order = resolve_order_rules(&parser.order_rules);
+    let order = get_order_rules2(&parser.order_rules);
     let mods = debug_get_mods_from_rules(&order);
     match sorter::new_unstable_sorter().topo_sort(&mods, &order) {
         Ok(_) => {

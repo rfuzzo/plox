@@ -1,7 +1,5 @@
 ////////////////////////////////////////////////////////////////////////
-/// PARSER
-////////////////////////////////////////////////////////////////////////
-use std::cmp::Ordering;
+
 use std::fs::File;
 use std::io::{BufRead, BufReader, Cursor, Error, ErrorKind, Read, Result, Seek, SeekFrom};
 use std::path::Path;
@@ -98,7 +96,7 @@ impl Parser {
                             ERule::EOrderRule(o) => {
                                 self.order_rules.push(o);
                             }
-                            ERule::Rule(w) => {
+                            ERule::EWarningRule(w) => {
                                 self.rules.push(w);
                             }
                         }
@@ -179,7 +177,7 @@ impl Parser {
             let cursor = Cursor::new(&chunk.data);
             match self.parse_chunk(cursor) {
                 Ok(it) => {
-                    rules.extend(it);
+                    rules.push(it);
                 }
                 Err(err) => {
                     // log error and skip chunk
@@ -201,7 +199,7 @@ impl Parser {
     /// # Errors
     ///
     /// This function will return an error if parsing fails
-    fn parse_chunk<R>(&self, mut reader: R) -> Result<Vec<ERule>>
+    fn parse_chunk<R>(&self, mut reader: R) -> Result<ERule>
     where
         R: Read + BufRead + Seek,
     {
@@ -214,7 +212,7 @@ impl Parser {
                 // read until the end of the rule expression: e.g. [NOTE comment] body
                 let _ = reader.read_until(b']', &mut buf)?;
                 if let Ok(rule_expression) = String::from_utf8(buf[..buf.len() - 1].to_vec()) {
-                    let rule: ERule;
+                    let mut rule: ERule;
                     // parse rule name
                     {
                         if rule_expression.strip_prefix("order").is_some() {
@@ -267,23 +265,8 @@ impl Parser {
                     let body_cursor = Cursor::new(body);
 
                     // now parse rule body
-                    match rule {
-                        ERule::EOrderRule(o) => match o {
-                            EOrderRule::Order(_) => self.parse_order_rule(body_cursor),
-                            EOrderRule::NearStart(_) => {
-                                let names = self.parse_near_rule(body_cursor)?;
-                                Ok(vec![NearStart::new(names).into()])
-                            }
-                            EOrderRule::NearEnd(_) => {
-                                let names = self.parse_near_rule(body_cursor)?;
-                                Ok(vec![NearEnd::new(names).into()])
-                            }
-                        },
-                        ERule::Rule(mut x) => {
-                            EWarningRule::parse(&mut x, body_cursor, self)?;
-                            Ok(vec![x.into()])
-                        }
-                    }
+                    ERule::parse(&mut rule, body_cursor, self)?;
+                    Ok(rule)
                 } else {
                     Err(Error::new(ErrorKind::Other, "Parsing error: unknown rule"))
                 }
@@ -296,89 +279,6 @@ impl Parser {
                 ))
             }
         }
-    }
-
-    fn parse_near_rule<R>(&self, reader: R) -> Result<Vec<String>>
-    where
-        R: Read + BufRead,
-    {
-        // parse each line
-        let mut names: Vec<String> = vec![];
-        for line in reader
-            .lines()
-            .map_while(Result::ok)
-            .map(|l| l.trim().to_owned())
-        {
-            // HANDLE RULE PARSE
-            // each line gets tokenized
-            for token in self.tokenize(line) {
-                if !self.ends_with_vec3(&token) {
-                    return Err(Error::new(
-                        ErrorKind::Other,
-                        "Parsing error: tokenize failed",
-                    ));
-                }
-                names.push(token);
-            }
-        }
-
-        Ok(names)
-    }
-
-    /// .Parse an order rule, it can have up to N items
-    ///
-    /// # Errors
-    ///
-    /// This function will return an error if Order rule is missformed
-    fn parse_order_rule<R>(&self, reader: R) -> Result<Vec<ERule>>
-    where
-        R: Read + BufRead,
-    {
-        // parse each line
-        let mut order: Vec<String> = vec![];
-        for line in reader
-            .lines()
-            .map_while(Result::ok)
-            .map(|l| l.trim().to_owned())
-        {
-            // HANDLE RULE PARSE
-            // each line gets tokenized
-            for token in self.tokenize(line) {
-                if !self.ends_with_vec3(&token) {
-                    return Err(Error::new(
-                        ErrorKind::Other,
-                        "Parsing error: tokenize failed",
-                    ));
-                }
-                order.push(token);
-            }
-        }
-
-        // process order rules
-        let mut rules: Vec<ERule> = vec![];
-        match order.len().cmp(&2) {
-            Ordering::Less => {
-                // Rule with only one element is an error
-                return Err(Error::new(
-                    ErrorKind::Other,
-                    "Logic error: order rule with less than two elements",
-                ));
-            }
-            Ordering::Equal => rules.push(
-                EOrderRule::Order(Order::new(order[0].to_owned(), order[1].to_owned())).into(),
-            ),
-            Ordering::Greater => {
-                // add all pairs
-                for i in 0..order.len() - 1 {
-                    rules.push(
-                        EOrderRule::Order(Order::new(order[i].to_owned(), order[i + 1].to_owned()))
-                            .into(),
-                    );
-                }
-            }
-        }
-
-        Ok(rules)
     }
 
     // TODO Clean up this shit :D

@@ -1,7 +1,7 @@
 use std::env;
 use std::fs::{self, File};
+use std::io;
 use std::io::BufRead;
-use std::io::{self};
 use std::path::{Path, PathBuf};
 
 use clap::ValueEnum;
@@ -398,26 +398,58 @@ fn update_tes3(_result: Vec<String>) {
 
 /// Extracts a list of ordering-pairs from the order rules
 pub fn get_order_rules(rules: &Vec<ERule>) -> Vec<(String, String)> {
-    let mut order: Vec<(String, String)> = vec![];
+    let mut orders: Vec<(String, String)> = vec![];
+
     for r in rules {
         if let ERule::EOrderRule(EOrderRule::Order(o)) = r {
-            order.push((o.name_a.to_owned(), o.name_b.to_owned()));
+            // process order rules
+            match o.names.len().cmp(&2) {
+                std::cmp::Ordering::Less => {
+                    // Rule with only one element is an error
+                    continue;
+                }
+                std::cmp::Ordering::Equal => {
+                    orders.push((o.names[0].to_owned(), o.names[1].to_owned()))
+                }
+                std::cmp::Ordering::Greater => {
+                    // add all pairs
+                    for i in 0..o.names.len() - 1 {
+                        orders.push((o.names[i].to_owned(), o.names[i + 1].to_owned()));
+                    }
+                }
+            }
         }
     }
 
-    order
+    orders
 }
 
 /// Extracts a list of ordering-pairs from the order rules
-pub fn resolve_order_rules(rules: &Vec<EOrderRule>) -> Vec<(String, String)> {
-    let mut order: Vec<(String, String)> = vec![];
+pub fn get_order_rules2(rules: &Vec<EOrderRule>) -> Vec<(String, String)> {
+    let mut orders: Vec<(String, String)> = vec![];
+
     for r in rules {
         if let EOrderRule::Order(o) = r {
-            order.push((o.name_a.to_owned(), o.name_b.to_owned()));
+            // process order rules
+            match o.names.len().cmp(&2) {
+                std::cmp::Ordering::Less => {
+                    // Rule with only one element is an error
+                    continue;
+                }
+                std::cmp::Ordering::Equal => {
+                    orders.push((o.names[0].to_owned(), o.names[1].to_owned()))
+                }
+                std::cmp::Ordering::Greater => {
+                    // add all pairs
+                    for i in 0..o.names.len() - 1 {
+                        orders.push((o.names[i].to_owned(), o.names[i + 1].to_owned()));
+                    }
+                }
+            }
         }
     }
 
-    order
+    orders
 }
 
 pub fn is_current_directory_name(name_to_check: &str) -> bool {
