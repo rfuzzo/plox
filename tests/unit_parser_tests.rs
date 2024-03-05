@@ -3,60 +3,10 @@ mod unit_tests {
     use core::panic;
     use std::io::Cursor;
 
-    use plox::{
-        expressions::*,
-        parser::{self},
-        rules::*,
-    };
+    use plox::{expressions::Expression, rules::TWarningRule, *};
 
     fn init() {
         let _ = env_logger::builder().is_test(true).try_init();
-    }
-
-    fn note(f: ERule) -> Option<Note> {
-        match f {
-            ERule::EWarningRule(EWarningRule::Note(n)) => Some(n),
-            _ => None,
-        }
-    }
-
-    fn conflict(f: ERule) -> Option<Conflict> {
-        match f {
-            ERule::EWarningRule(EWarningRule::Conflict(n)) => Some(n),
-            _ => None,
-        }
-    }
-    fn requires(f: ERule) -> Option<Requires> {
-        match f {
-            ERule::EWarningRule(EWarningRule::Requires(n)) => Some(n),
-            _ => None,
-        }
-    }
-    fn patch(f: ERule) -> Option<Patch> {
-        match f {
-            ERule::EWarningRule(EWarningRule::Patch(n)) => Some(n),
-            _ => None,
-        }
-    }
-
-    // order
-    fn order(f: ERule) -> Option<Order> {
-        match f {
-            ERule::EOrderRule(EOrderRule::Order(o)) => Some(o),
-            _ => None,
-        }
-    }
-    fn nearstart(f: ERule) -> Option<NearStart> {
-        match f {
-            ERule::EOrderRule(EOrderRule::NearStart(o)) => Some(o),
-            _ => None,
-        }
-    }
-    fn nearend(f: ERule) -> Option<NearEnd> {
-        match f {
-            ERule::EOrderRule(EOrderRule::NearEnd(o)) => Some(o),
-            _ => None,
-        }
     }
 
     #[test]

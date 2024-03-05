@@ -4,7 +4,7 @@ mod unit_tests {
     use rand::{seq::SliceRandom, thread_rng};
 
     use plox::{
-        debug_get_mods_from_rules, get_order_rules, parser,
+        debug_get_mods_from_rules, get_ordering, parser,
         sorter::{self, Sorter},
         wild_contains,
     };
@@ -94,7 +94,7 @@ mod unit_tests {
         let rules = parser::new_tes3_parser()
             .parse_rules_from_path("./tests/mlox/mlox_base.txt")
             .expect("rule parse failed");
-        let order = get_order_rules(&rules);
+        let order = get_ordering(&rules);
 
         let mut rng = thread_rng();
         let mut mods = debug_get_mods_from_rules(&order);
@@ -118,7 +118,7 @@ mod unit_tests {
         let rules = parser::new_tes3_parser()
             .parse_rules_from_path("./tests/mlox/mlox_base.txt")
             .expect("rule parse failed");
-        let order = get_order_rules(&rules);
+        let order = get_ordering(&rules);
 
         let mut rng = thread_rng();
         let mut mods = debug_get_mods_from_rules(&order);

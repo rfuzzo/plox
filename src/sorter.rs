@@ -166,29 +166,34 @@ impl Sorter {
         for (i, m) in mods.iter().enumerate() {
             index_dict.insert(m, i);
         }
+        // reverse
+        let mut index_dict_rev: HashMap<usize, &str> = HashMap::default();
+        for (k, v) in &index_dict {
+            index_dict_rev.insert(*v, k);
+        }
 
         // add edges
         let mut edges: Vec<(usize, usize)> = vec![];
         for (a, b) in order {
             //TODO wildcards <VER>
-            if a.contains("<VER>") {
+            if a.contains("<ver>") {
                 warn!("skipping {}", a);
                 continue;
             }
-            if b.contains("<VER>") {
+            if b.contains("<ver>") {
                 warn!("skipping {}", b);
                 continue;
             }
 
             if let Some(results_for_a) = wild_contains(mods, a) {
                 if let Some(results_for_b) = wild_contains(mods, b) {
-                    // e.g. all esms before all esps
-                    // [ORDER]
-                    // *.esm
-                    // *.esp
-                    // forach esm i, add an edge to all esps j
+                    // foreach esm i, add an edge to all esps j
                     for i in &results_for_a {
                         for j in &results_for_b {
+                            if i == j {
+                                warn!("Skipping circular edge: {}", i);
+                                continue;
+                            }
                             let idx_a = index_dict[i.as_str()];
                             let idx_b = index_dict[j.as_str()];
 
@@ -213,13 +218,9 @@ impl Sorter {
                 error!("SCC: {}", err.len());
                 for er in err {
                     error!("cycles:");
-                    error!(
-                        "{}",
-                        er.iter()
-                            .map(|f| f.to_string())
-                            .collect::<Vec<_>>()
-                            .join(";")
-                    );
+                    for e in er {
+                        error!("\t{}: {}", e, index_dict_rev[&e]);
+                    }
                 }
 
                 return Err("Graph contains a cycle");
@@ -231,12 +232,6 @@ impl Sorter {
         // sort
         let n = mods.len();
         let mut result: Vec<String> = mods.to_vec();
-
-        // reverse
-        let mut index_dict_rev: HashMap<usize, &str> = HashMap::default();
-        for (k, v) in &index_dict {
-            index_dict_rev.insert(*v, k);
-        }
 
         let mut index = 0;
 

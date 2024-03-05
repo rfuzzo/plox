@@ -52,16 +52,16 @@ pub fn debug_get_mods_from_rules(order: &[(String, String)]) -> Vec<String> {
     let mut result: Vec<String> = vec![];
     for (a, b) in order.iter() {
         //TODO wildcards <VER>
-        if a.contains("<VER>") {
+        if a.contains("<ver>") {
             continue;
         }
-        if b.contains("<VER>") {
+        if b.contains("<ver>") {
             continue;
         }
 
         for a in [a, b] {
-            if a.contains('*') {
-                let name1 = a.replace('*', "");
+            if a.contains('*') || a.contains('?') {
+                let name1 = a.replace(['*', '?'], "");
                 if !result.contains(&name1) {
                     result.push(name1.to_owned());
                 }
@@ -70,6 +70,9 @@ pub fn debug_get_mods_from_rules(order: &[(String, String)]) -> Vec<String> {
             }
         }
     }
+
+    result.dedup();
+
     result
 }
 
@@ -391,7 +394,7 @@ fn update_tes3(_result: Vec<String>) {
 ////////////////////////////////////////////////////////////////////////
 
 /// Extracts a list of ordering-pairs from the order rules
-pub fn get_order_rules(rules: &Vec<ERule>) -> Vec<(String, String)> {
+pub fn get_ordering(rules: &Vec<ERule>) -> Vec<(String, String)> {
     let mut orders: Vec<(String, String)> = vec![];
 
     for r in rules {
@@ -419,7 +422,7 @@ pub fn get_order_rules(rules: &Vec<ERule>) -> Vec<(String, String)> {
 }
 
 /// Extracts a list of ordering-pairs from the order rules
-pub fn get_order_rules2(rules: &Vec<EOrderRule>) -> Vec<(String, String)> {
+pub fn get_ordering_from_order_rules(rules: &Vec<EOrderRule>) -> Vec<(String, String)> {
     let mut orders: Vec<(String, String)> = vec![];
 
     for r in rules {
@@ -438,6 +441,32 @@ pub fn get_order_rules2(rules: &Vec<EOrderRule>) -> Vec<(String, String)> {
                     for i in 0..o.names.len() - 1 {
                         orders.push((o.names[i].to_owned(), o.names[i + 1].to_owned()));
                     }
+                }
+            }
+        }
+    }
+
+    orders
+}
+
+/// Extracts a list of ordering-pairs from the order rules
+pub fn get_ordering_from_orders(rules: &Vec<Order>) -> Vec<(String, String)> {
+    let mut orders: Vec<(String, String)> = vec![];
+
+    for o in rules {
+        // process order rules
+        match o.names.len().cmp(&2) {
+            std::cmp::Ordering::Less => {
+                // Rule with only one element is an error
+                continue;
+            }
+            std::cmp::Ordering::Equal => {
+                orders.push((o.names[0].to_owned(), o.names[1].to_owned()))
+            }
+            std::cmp::Ordering::Greater => {
+                // add all pairs
+                for i in 0..o.names.len() - 1 {
+                    orders.push((o.names[i].to_owned(), o.names[i + 1].to_owned()));
                 }
             }
         }
@@ -517,4 +546,56 @@ pub fn wild_contains(list: &[String], str: &String) -> Option<Vec<String>> {
     }
 
     None
+}
+
+pub fn note(f: ERule) -> Option<Note> {
+    match f {
+        ERule::EWarningRule(EWarningRule::Note(n)) => Some(n),
+        _ => None,
+    }
+}
+
+pub fn conflict(f: ERule) -> Option<Conflict> {
+    match f {
+        ERule::EWarningRule(EWarningRule::Conflict(n)) => Some(n),
+        _ => None,
+    }
+}
+pub fn requires(f: ERule) -> Option<Requires> {
+    match f {
+        ERule::EWarningRule(EWarningRule::Requires(n)) => Some(n),
+        _ => None,
+    }
+}
+pub fn patch(f: ERule) -> Option<Patch> {
+    match f {
+        ERule::EWarningRule(EWarningRule::Patch(n)) => Some(n),
+        _ => None,
+    }
+}
+
+// order
+pub fn order(f: ERule) -> Option<Order> {
+    match f {
+        ERule::EOrderRule(EOrderRule::Order(o)) => Some(o),
+        _ => None,
+    }
+}
+pub fn order2(f: EOrderRule) -> Option<Order> {
+    match f {
+        EOrderRule::Order(o) => Some(o),
+        _ => None,
+    }
+}
+pub fn nearstart(f: ERule) -> Option<NearStart> {
+    match f {
+        ERule::EOrderRule(EOrderRule::NearStart(o)) => Some(o),
+        _ => None,
+    }
+}
+pub fn nearend(f: ERule) -> Option<NearEnd> {
+    match f {
+        ERule::EOrderRule(EOrderRule::NearEnd(o)) => Some(o),
+        _ => None,
+    }
 }
