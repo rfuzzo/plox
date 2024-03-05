@@ -413,6 +413,9 @@ impl TParser<Requires> for Requires {
             ));
         }
 
+        this.expression_a = Some(expressions[0].clone());
+        this.expression_b = Some(expressions[1].clone());
+
         Ok(())
     }
 }
@@ -476,6 +479,9 @@ impl TParser<Patch> for Patch {
                 "Malformed Patch rule: more than 2 expressions",
             ));
         }
+
+        this.expression_a = Some(expressions[0].clone());
+        this.expression_b = Some(expressions[1].clone());
 
         Ok(())
     }

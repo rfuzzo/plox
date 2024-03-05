@@ -1,17 +1,21 @@
+[order] ; container entry conflicts ( ref: https://www.nexusmods.com/morrowind/mods/50308 ) (pharis)
+btb's game improvements (necro edit) tweaked.esp
+[desc /patches poison crafting/ mwse_poisoncrafting.esp]
+
 [Order] ; comment
-e.archive
-c.archive
+e.esp
+c.esp
 
 [Order]
-a.archive
-b.archive
-c.archive
+a.esp
+b.esp
+c.esp
 
 [Order]
-d.archive
-e.archive
+d.esp
+e.esp
 
 ; comment
 [Order]
-e.archive
-c.archive
+e.esp
+c.esp

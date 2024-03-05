@@ -15,6 +15,7 @@ pub enum Expression {
     ALL(ALL),
     ANY(ANY),
     NOT(NOT),
+    DESC(DESC),
 }
 
 // pass-through
@@ -25,6 +26,7 @@ impl TExpression for Expression {
             Expression::ALL(x) => x.eval(items),
             Expression::ANY(x) => x.eval(items),
             Expression::NOT(x) => x.eval(items),
+            Expression::DESC(x) => x.eval(items),
         }
     }
 }
@@ -47,6 +49,11 @@ impl From<ANY> for Expression {
 impl From<NOT> for Expression {
     fn from(val: NOT) -> Self {
         Expression::NOT(val)
+    }
+}
+impl From<DESC> for Expression {
+    fn from(val: DESC) -> Self {
+        Expression::DESC(val)
     }
 }
 
@@ -152,14 +159,6 @@ impl TExpression for ANY {
 pub struct NOT {
     pub expression: Box<Expression>,
 }
-
-impl Clone for NOT {
-    fn clone(&self) -> Self {
-        Self {
-            expression: self.expression.clone(),
-        }
-    }
-}
 impl NOT {
     pub fn new(expression: Expression) -> Self {
         Self {
@@ -171,5 +170,45 @@ impl TExpression for NOT {
     // NOT evaluates as true if the wrapped expression evaluates as true
     fn eval(&self, items: &[String]) -> bool {
         !self.expression.eval(items)
+    }
+}
+impl Clone for NOT {
+    fn clone(&self) -> Self {
+        Self {
+            expression: self.expression.clone(),
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////
+// DESC
+
+/// The DESC expression (OR)
+/// TODO DESC evaluates as true if the expression evaluates as true
+#[derive(Debug)]
+pub struct DESC {
+    pub description: String,
+    pub expression: Box<Expression>,
+}
+impl DESC {
+    pub fn new(expression: Expression, description: String) -> Self {
+        Self {
+            expression: Box::new(expression),
+            description,
+        }
+    }
+}
+impl TExpression for DESC {
+    // TODO DESC evaluates as true if the expression evaluates as true
+    fn eval(&self, items: &[String]) -> bool {
+        self.expression.eval(items)
+    }
+}
+impl Clone for DESC {
+    fn clone(&self) -> Self {
+        Self {
+            expression: self.expression.clone(),
+            description: self.description.clone(),
+        }
     }
 }

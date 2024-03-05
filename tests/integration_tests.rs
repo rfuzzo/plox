@@ -1,6 +1,9 @@
 #[cfg(test)]
 mod integration_tests {
+
     use rand::{seq::SliceRandom, thread_rng};
+    // use env_logger::Builder;
+    // use std::{fs::File, io::Write};
 
     use plox::{parser::*, sorter::*, *};
 
@@ -9,6 +12,22 @@ mod integration_tests {
             .default_filter_or(log_level_to_str(ELogLevel::Debug))
             .default_write_style_or("always");
         let _ = env_logger::Builder::from_env(env).is_test(true).try_init();
+
+        // let target = Box::new(File::create("unit_log.txt").expect("Can't create file"));
+        // Builder::new()
+        //     .format(|buf, record| {
+        //         writeln!(
+        //             buf,
+        //             "{}:{} [{}] - {}",
+        //             record.file().unwrap_or("unknown"),
+        //             record.line().unwrap_or(0),
+        //             record.level(),
+        //             record.args()
+        //         )
+        //     })
+        //     .target(env_logger::Target::Pipe(target))
+        //     .filter(None, log::LevelFilter::Debug)
+        //     .init();
     }
 
     #[test]
@@ -29,13 +48,15 @@ mod integration_tests {
     }
 
     #[test]
-    fn test_verify_order_rules() {
+    fn test_parse_order() {
         init();
 
-        let rules = new_cyberpunk_parser()
+        let rules = new_tes3_parser()
             .parse_rules_from_path("./tests/plox/rules_order.txt")
             .expect("rule parse failed");
         let order = get_order_rules(&rules);
+
+        assert_eq!(5, order.len());
 
         let mods = debug_get_mods_from_rules(&order);
 
@@ -60,7 +81,7 @@ mod integration_tests {
             .parse_rules_from_path("./tests/plox/rules_note.txt")
             .expect("rule parse failed");
 
-        assert_eq!(15, rules.len());
+        assert_eq!(17, rules.len());
     }
 
     #[test]

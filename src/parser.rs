@@ -262,14 +262,22 @@ impl Parser {
                         body += format!("{}\n", line).as_str();
                     }
 
-                    let body_cursor = Cursor::new(body.trim_start_matches('\n'));
+                    let mut body = body.trim_start_matches('\n');
+                    body = body.trim();
+                    let body_cursor = Cursor::new(body);
 
                     // now parse rule body
                     match rule {
                         ERule::EOrderRule(o) => match o {
                             EOrderRule::Order(_) => self.parse_order_rule(body_cursor),
-                            EOrderRule::NearStart(_) => self.parse_near_rule(body_cursor),
-                            EOrderRule::NearEnd(_) => self.parse_near_rule(body_cursor),
+                            EOrderRule::NearStart(_) => {
+                                let names = self.parse_near_rule(body_cursor)?;
+                                Ok(vec![NearStart::new(names).into()])
+                            }
+                            EOrderRule::NearEnd(_) => {
+                                let names = self.parse_near_rule(body_cursor)?;
+                                Ok(vec![NearEnd::new(names).into()])
+                            }
                         },
                         ERule::Rule(mut x) => {
                             EWarningRule::parse(&mut x, body_cursor, self)?;
@@ -290,7 +298,7 @@ impl Parser {
         }
     }
 
-    fn parse_near_rule<R>(&self, reader: R) -> Result<Vec<ERule>>
+    fn parse_near_rule<R>(&self, reader: R) -> Result<Vec<String>>
     where
         R: Read + BufRead,
     {
@@ -314,7 +322,7 @@ impl Parser {
             }
         }
 
-        Ok(vec![NearStart::new(names).into()])
+        Ok(names)
     }
 
     /// .Parse an order rule, it can have up to N items
@@ -526,6 +534,7 @@ impl Parser {
                 current_buffer += &(b as char).to_string();
             }
         }
+
         // rest
         if !current_buffer.is_empty() {
             buffers.push(current_buffer.to_owned());
@@ -583,6 +592,21 @@ impl Parser {
                         "Parsing error: unknown expression",
                     ))
                 }
+            } else if let Some(rest) = reader.strip_prefix("[desc") {
+                // [DESC /regex/ A.esp] or // [DESC !/regex/ A.esp]
+                let body = rest[..rest.len() - 1].trim_start();
+                if let Some((regex, expr)) = Self::parse_desc_input(body) {
+                    // do something
+                    let expressions = self.parse_expressions(expr.as_bytes())?;
+                    if let Some(first) = expressions.into_iter().last() {
+                        let expr = DESC::new(first, regex);
+                        return Ok(expr.into());
+                    }
+                }
+                Err(Error::new(
+                    ErrorKind::Other,
+                    "Parsing error: unknown expression",
+                ))
             } else {
                 // unknown expression
                 Err(Error::new(
@@ -595,6 +619,34 @@ impl Parser {
             // in this case just return an atomic
             Ok(Atomic::from(reader).into())
         }
+    }
+
+    fn parse_desc_input(input: &str) -> Option<(String, String)> {
+        if let Some(start_index) = input.find('/') {
+            if let Some(end_index) = input.rfind('/') {
+                // Extract the substring between "/" and "/"
+                let left_part = input[start_index + 1..end_index].trim().to_string();
+
+                // Extract the substring right of the last "/"
+                let right_part = input[end_index + 1..].trim().to_string();
+
+                // TODO fix negation
+                return Some((left_part, right_part));
+            }
+        }
+
+        if let Some(start_index) = input.find("!/") {
+            if let Some(end_index) = input.rfind('/') {
+                // Extract the substring between "/" and "/"
+                let left_part = input[start_index + 2..end_index].trim().to_string();
+
+                // Extract the substring right of the last "/"
+                let right_part = input[end_index + 1..].trim().to_string();
+
+                return Some((left_part, right_part));
+            }
+        }
+        None
     }
 }
 
