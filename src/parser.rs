@@ -315,10 +315,10 @@ impl Parser {
     }
 
     // TODO Clean up this shit :D
-    pub fn ends_with_vec3(&self, current_buffer: &str) -> bool {
+    pub fn ends_with_vec(&self, current_buffer: &str) -> bool {
         let mut b = false;
         for ext in &self.ext {
-            if current_buffer.to_lowercase().ends_with(ext) {
+            if current_buffer.ends_with(ext) {
                 b = true;
                 break;
             }
@@ -326,14 +326,10 @@ impl Parser {
 
         b
     }
-
-    fn ends_with_vec(&self, current_buffer: &str) -> bool {
+    fn ends_with_vec_whitespace(&self, current_buffer: &str) -> bool {
         let mut b = false;
         for ext in &self.ext {
-            if current_buffer
-                .to_lowercase()
-                .ends_with(format!("{} ", ext).as_str())
-            {
+            if current_buffer.ends_with(format!("{} ", ext).as_str()) {
                 b = true;
                 break;
             }
@@ -341,16 +337,11 @@ impl Parser {
 
         b
     }
-
-    fn ends_with_vec2(&self, current_buffer: &str) -> bool {
+    fn ends_with_vec2_whitespace_or_newline(&self, current_buffer: &str) -> bool {
         let mut b = false;
         for ext in &self.ext {
-            if current_buffer
-                .to_lowercase()
-                .ends_with(format!("{} ", ext).as_str())
-                || current_buffer
-                    .to_lowercase()
-                    .ends_with(format!("{}\n", ext).as_str())
+            if current_buffer.ends_with(format!("{} ", ext).as_str())
+                || current_buffer.ends_with(format!("{}\n", ext).as_str())
             {
                 b = true;
                 break;
@@ -385,13 +376,11 @@ impl Parser {
                     is_quoted = true;
                 }
                 continue;
-            } else {
-                // read into token
-                current_token += c.to_string().as_str();
             }
+            current_token += c.to_string().as_str();
 
             // check if we found an end
-            if self.ends_with_vec(&current_token) {
+            if self.ends_with_vec_whitespace(&current_token) {
                 // ignore whitespace in quoted segments
                 if !is_quoted {
                     // end token
@@ -448,7 +437,7 @@ impl Parser {
                 // if parsing tokens, check when ".archive" was parsed into the buffer and end
                 current_buffer += &(b as char).to_string();
 
-                if self.ends_with_vec2(&current_buffer) {
+                if self.ends_with_vec2_whitespace_or_newline(&current_buffer) {
                     is_token = false;
                     buffers.push(current_buffer[..current_buffer.len() - 1].to_owned());
                     current_buffer.clear();
@@ -550,6 +539,10 @@ impl Parser {
         } else {
             // is a token
             // in this case just return an atomic
+            if !self.ends_with_vec(reader) {
+                return Err(Error::new(ErrorKind::Other, "Parsing error: Not an atomic"));
+            }
+
             Ok(Atomic::from(reader).into())
         }
     }

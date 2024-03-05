@@ -4,13 +4,13 @@
 [Note]
  test
 [ALL [NOT Vampire Embrace MCA Patch.archive]
-	 [ANY [DESC /over 1000 friendly/ MCA.ESM]
+	 [ANY [DESC /over 1000 friendly/ MCA.archive]
 		  B.archive]
 	 Vampire_Embrace.archive]
 
 [Note]
 	According to its readme "ADVANCED GUARDS IV DOES NOT affect third party mods. So the guards from the Bank mod, for example, will not be affected. If you are concerned about this, you must check the special GUARDS.archive as well. This will make the low-level spawns of guards just as strong as the high level spawns of guards, however."
-[ALL	ADVANCED GUARDS.esm
+[ALL	ADVANCED GUARDS.archive
 	 	[NOT	GUARDS.archive]]
 
 

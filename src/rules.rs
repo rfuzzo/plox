@@ -248,7 +248,7 @@ impl TParser<Order> for Order {
             // HANDLE RULE PARSE
             // each line gets tokenized
             for token in parser.tokenize(line) {
-                if !token.ends_with(']') && !parser.ends_with_vec3(&token) {
+                if !token.ends_with(']') && !parser.ends_with_vec(&token) {
                     return Err(Error::new(
                         ErrorKind::Other,
                         "Parsing error: tokenize failed",
@@ -301,7 +301,7 @@ impl TParser<NearStart> for NearStart {
             // HANDLE RULE PARSE
             // each line gets tokenized
             for token in parser.tokenize(line) {
-                if !token.ends_with(']') && !parser.ends_with_vec3(&token) {
+                if !token.ends_with(']') && !parser.ends_with_vec(&token) {
                     return Err(Error::new(
                         ErrorKind::Other,
                         "Parsing error: tokenize failed",
@@ -346,7 +346,7 @@ impl TParser<NearEnd> for NearEnd {
             // HANDLE RULE PARSE
             // each line gets tokenized
             for token in parser.tokenize(line) {
-                if !token.ends_with(']') && !parser.ends_with_vec3(&token) {
+                if !token.ends_with(']') && !parser.ends_with_vec(&token) {
                     return Err(Error::new(
                         ErrorKind::Other,
                         "Parsing error: tokenize failed",

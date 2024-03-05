@@ -57,13 +57,13 @@ mod integration_tests {
     fn test_parse_notes() {
         init();
 
-        // {
-        //     let rules = new_cyberpunk_parser()
-        //         .parse_rules_from_path("./tests/plox/rules_note_passing.txt")
-        //         .expect("rule parse failed");
+        {
+            let rules = new_cyberpunk_parser()
+                .parse_rules_from_path("./tests/plox/rules_note_passing.txt")
+                .expect("rule parse failed");
 
-        //     assert_eq!(10, rules.len());
-        // }
+            assert_eq!(10, rules.len());
+        }
 
         {
             let rules = new_cyberpunk_parser()

@@ -4827,25 +4827,6 @@
   {
     "EWarningRule": {
       "Conflict": {
-        "comment": "landmass conflict. ( ref: http://www.fliggerty.com/phpbb3/viewtopic.php?f=28&t=5764 )",
-        "expressions": [
-          {
-            "Atomic": {
-              "item": "annastia v3.3.esp"
-            }
-          },
-          {
-            "Atomic": {
-              "item": "volcano island"
-            }
-          }
-        ]
-      }
-    }
-  },
-  {
-    "EWarningRule": {
-      "Conflict": {
         "comment": "use only one of these plugins:  another balmora (illuminated order version).esp - if you are running ldones' \"illuminated order\".  another balmora (nom version).esp - if you are running \"necessities of morrowind\".  another balmora (nom + illuminated order).esp - if you are running both \"illuminated order\" and \"necessities of morrowind\".  another balmora.esp - if you are running none of these other mods. ( ref: another_balmora_1.1.rar\\another balmora 1.1\\readme.txt )",
         "expressions": [
           {
@@ -42602,25 +42583,6 @@
   {
     "EWarningRule": {
       "Conflict": {
-        "comment": "landmass conflict ( ref: http://www.mwmythicmods.com/mapomodsbycyronaut.jpg )",
-        "expressions": [
-          {
-            "Atomic": {
-              "item": "helios_keep.esp"
-            }
-          },
-          {
-            "Atomic": {
-              "item": "volcano island"
-            }
-          }
-        ]
-      }
-    }
-  },
-  {
-    "EWarningRule": {
-      "Conflict": {
         "comment": "sandman101's h.e.l.l.u.v.a. armor completion provides female versions of all of morrowind's (including expansions) armors. h.e.l.l.u.v.a. armor completion also adds many other armor items to complete the armor sets. there is no need to run any of the other plugins that add female versions.",
         "expressions": [
           {
@@ -59006,55 +58968,6 @@
                   }
                 }
               ]
-            }
-          }
-        ]
-      }
-    }
-  },
-  {
-    "EWarningRule": {
-      "Conflict": {
-        "comment": "all of these plugins allow the player to regenerate lost magicka, use only one of them.",
-        "expressions": [
-          {
-            "Atomic": {
-              "item": "amrp 1.2.esp\t\t\t\t\t\t\t\t\t\t\t\t\naprogasmagickaregenerate.20021210.esp\t\t\t\t\t\t\nbetter gameplay.esp\t\t\t\t\t\t\t\t\t\t\t\n[any\tdynamicmagickaregeneration-2.0.esp\t\t\t\t\t\n\t\tdynamicmagickaregeneration-2.0-tribunal.esp]\n[any\tdynamicmagickaregeneration-2.1.esp\t\t\t\t\t\n\t\tdynamicmagickaregeneration-2.1-tribunal.esp]\n[any\tadj_magicka regen (0.10%).esp\t\t\t\t\t\t\n\t\tadj_magicka regen (0.25%).esp"
-            }
-          },
-          {
-            "Atomic": {
-              "item": "adj_magicka regen (0.50%).esp"
-            }
-          },
-          {
-            "Atomic": {
-              "item": "adj_magicka regen (1.00%).esp]\nfair magicka regen 2.0b.esp\t\t\t\t\t\t\t\t\t\nkiasyd_magick_regenerator_1.4.esp\t\t\t\t\t\t\t\n[any\tclean manareg 0.1percent.esp\t\t\t\t\t\t\n\t\tclean manareg 0.5percent.esp"
-            }
-          },
-          {
-            "Atomic": {
-              "item": "clean manareg 1percent.esp"
-            }
-          },
-          {
-            "Atomic": {
-              "item": "clean manareg 2percent.esp"
-            }
-          },
-          {
-            "Atomic": {
-              "item": "clean manareg 5percent.esp]\nclean manareg willbased.esp\t\t\t\t\t\t\t\t\t\nmagicka regeneration-8537.esp\t\t\t\t\t\t\t\t\nmagickaregen-v20.esp\t\t\t\t\t\t\t\t\t\t\nmana_regen_v13.esp\t\t\t\t\t\t\t\t\t\t\t\noblivionized magicka regeneration.esp\t\t\t\t\t\t\n[any\tregional_mana_regen-mw+bm.esp\t\t\t\t\t\t\n\t\tregional_mana_regen-mw+t+bm.esp"
-            }
-          },
-          {
-            "Atomic": {
-              "item": "regional_mana_regen-mw+t.esp"
-            }
-          },
-          {
-            "Atomic": {
-              "item": "regional_mana_regen-mw.esp]\n[any\ttyrmagickaregen.esp\t\t\t\t\t\t\t\t\t\n\t\ttyrmagickaregenslower.esp]"
             }
           }
         ]
