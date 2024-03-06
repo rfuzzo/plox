@@ -1,3 +1,15 @@
+[Conflict]
+Oblivionized Magicka Regeneration.esp						;;Oblivionized Magicka Regeneration 1.22 [andylam222]
+[ANY	Regional_Mana_Regen-MW+BM.esp						;;Regional Mana 2.0 [Wildman]
+		Regional_Mana_Regen-MW.esp]
+
+;; Siege At Firemoth Replacer
+[Conflict]
+	Use the edited version of "Siege at Firemoth" provided with "Morrowind Rebirth".
+[ALL	Morrowind Rebirth [Main].esp
+		[ANY	[Official]Siege at Firemoth.esp]]
+[NOT	Siege at Firemoth [For Rebirth].esp]
+
 [Conflict] ; (ref: included readme https://www.nexusmods.com/morrowind/mods/51050 ) (yohannes)
 	Use either only the merged plugin 'Alchemical_Hustle.esp' or a combination of the modular plugins.
 Alchemical_Hustle.esp

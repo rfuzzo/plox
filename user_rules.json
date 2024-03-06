@@ -1364,6 +1364,40 @@
   {
     "EWarningRule": {
       "Conflict": {
+        "comment": "an esp replacer for \"the beacon of st rilms\" that is compatible with \"beautiful cities of morrowind\" is provided on the \"the beacon of st rilms\" mod page.\t[replacer download]( https://www.nexusmods.com/morrowind/mods/49515 )",
+        "expressions": [
+          {
+            "ALL": {
+              "expressions": [
+                {
+                  "Atomic": {
+                    "item": "beautiful cities of morrowind.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "beaconofstrilmsredmtnreborn.esp"
+                  }
+                },
+                {
+                  "NOT": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "beaconofstrilmsbcomreborn.esp"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Conflict": {
         "comment": "an esp replacer for \"the beacon of st rilms\" that is compatible with \"mountainous red mountain\" is provided on the \"the beacon of st rilms\" mod page.\t[replacer download]( https://www.nexusmods.com/morrowind/mods/49515 )",
         "expressions": [
           {
@@ -3337,7 +3371,8 @@
                 "Atomic": {
                   "item": "mwse_poisoncrafting.esp"
                 }
-              }
+              },
+              "is_negated": true
             }
           }
         ]
@@ -10260,7 +10295,8 @@
                     "Atomic": {
                       "item": "camonna tong.esp"
                     }
-                  }
+                  },
+                  "is_negated": false
                 }
               }
             ]
@@ -10323,7 +10359,8 @@
                     "Atomic": {
                       "item": "camonna tong.esp"
                     }
-                  }
+                  },
+                  "is_negated": true
                 }
               }
             ]
@@ -11851,6 +11888,31 @@
           {
             "Atomic": {
               "item": "imperial stables bcom.esp"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Conflict": {
+        "comment": "an esp replacer for \"complete duke's guard silver\" that is compatible with \"imperium - imperial armour expanded\" is provided on the \"imperium - imperial armour expanded\" mod page.\t[replacer download]( https://www.nexusmods.com/morrowind/mods/51408?tab=description )",
+        "expressions": [
+          {
+            "ALL": {
+              "expressions": [
+                {
+                  "Atomic": {
+                    "item": "imperialarmorexpanded.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "rv dukes guard.esp"
+                  }
+                }
+              ]
             }
           }
         ]
@@ -14721,6 +14783,131 @@
   {
     "EWarningRule": {
       "Conflict": {
+        "comment": "use the edited version of \"siege at firemoth\" provided with \"morrowind rebirth\".",
+        "expressions": [
+          {
+            "ALL": {
+              "expressions": [
+                {
+                  "Atomic": {
+                    "item": "morrowind rebirth [main].esp"
+                  }
+                },
+                {
+                  "ANY": {
+                    "expressions": [
+                      {
+                        "Atomic": {
+                          "item": "siege at firemoth.esp"
+                        }
+                      },
+                      {
+                        "Atomic": {
+                          "item": "siege at firemoth naturalized.esp"
+                        }
+                      },
+                      {
+                        "Atomic": {
+                          "item": "legionatfiremoth.esp"
+                        }
+                      },
+                      {
+                        "Atomic": {
+                          "item": "triumph at firemoth - siege at firemoth.esp"
+                        }
+                      },
+                      {
+                        "Atomic": {
+                          "item": "firemothreclaimed.esp"
+                        }
+                      },
+                      {
+                        "Atomic": {
+                          "item": "siegeatfiremoth.esp"
+                        }
+                      },
+                      {
+                        "Atomic": {
+                          "item": "[official]siege at firemoth.esp"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "NOT": {
+              "expression": {
+                "Atomic": {
+                  "item": "siege at firemoth [for rebirth].esp"
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Conflict": {
+        "comment": "use only one of these plugins:\t\t'siege at firemoth [for rebirth].esp' - if you are using \"morrowind rebirth\".\t\t'insert any other version here' - if you are not using \"morrowind rebirth\".",
+        "expressions": [
+          {
+            "Atomic": {
+              "item": "siege at firemoth [for rebirth].esp"
+            }
+          },
+          {
+            "ANY": {
+              "expressions": [
+                {
+                  "Atomic": {
+                    "item": "siege at firemoth.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "siege at firemoth naturalized.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "legionatfiremoth.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "triumph at firemoth - siege at firemoth.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "firemothreclaimed.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "siegeatfiremoth.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "[official]siege at firemoth.esp"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Conflict": {
         "comment": "use the edited version of \"province cyrodiil\" provided with \"morrowind rebirth\".",
         "expressions": [
           {
@@ -14924,6 +15111,51 @@
           {
             "Atomic": {
               "item": "main_quest_overhaul.esp"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Conflict": {
+        "comment": "an esp replacer for \"julan, ashlander companion\" that is compatible with \"morrowind rebirth\" is provided in the \"morrowind rebirth\" archive.",
+        "expressions": [
+          {
+            "ALL": {
+              "expressions": [
+                {
+                  "Atomic": {
+                    "item": "morrowind rebirth [main].esp"
+                  }
+                },
+                {
+                  "ANY": {
+                    "expressions": [
+                      {
+                        "Atomic": {
+                          "item": "ks_julan_ashlander companion_<ver>.esp"
+                        }
+                      },
+                      {
+                        "Atomic": {
+                          "item": "ks_julan_ashlander companion_3.0_beta.esp"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "NOT": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "julan ashlander companion <ver>*[for rebirth].esp"
+                      }
+                    }
+                  }
+                }
+              ]
             }
           }
         ]
@@ -19938,7 +20170,8 @@
                       "Atomic": {
                         "item": "tr_mainland.esm"
                       }
-                    }
+                    },
+                    "is_negated": false
                   }
                 },
                 {
@@ -19984,7 +20217,8 @@
                       "Atomic": {
                         "item": "tr_mainland.esm"
                       }
-                    }
+                    },
+                    "is_negated": false
                   }
                 },
                 {
@@ -20725,6 +20959,40 @@
                 {
                   "Atomic": {
                     "item": "wanted posters.esp"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Conflict": {
+        "comment": "an esp replacer for \"thirsk expanded\" that is compatible with \"solstheim - tomb of the snow prince\" is available.\t[replacer download]( https://www.nexusmods.com/morrowind/mods/48422 )",
+        "expressions": [
+          {
+            "ALL": {
+              "expressions": [
+                {
+                  "Atomic": {
+                    "item": "thirsk expanded.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "solstheim tomb of the snow prince.esm"
+                  }
+                },
+                {
+                  "NOT": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "thirsk expanded for totsp.esp"
+                      }
+                    }
                   }
                 }
               ]
@@ -21744,6 +22012,231 @@
           {
             "Atomic": {
               "item": "beautiful cities of morrowind.esp"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Conflict": {
+        "comment": "you are using the merged \"umopp\" plugin alongside at least one of the separate official plugins. use either only the merged plugin, any combination of the modular \"umopp\" plugins, or a combination of modular \"umopp\" plugins and alternate versions ( such as pikachunotm's \"naturalized\" versions ).",
+        "expressions": [
+          {
+            "Atomic": {
+              "item": "unofficial morrowind official plugins patched.esp"
+            }
+          },
+          {
+            "ANY": {
+              "expressions": [
+                {
+                  "Atomic": {
+                    "item": "adamantiumarmor.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "adamantium armor naturalized.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "vivec - adamantium armor (umopp) [replacer].esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "vivec - adamantium armor (naturalized) [replacer].esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "improvedadamantiumarmor.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "[official]adamantium armor.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "areaeffectarrows.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "area effect arrows integrated.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "area effect arrows naturalized.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "vivec - area of effect (remiros) [replacer].esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "vivec - area of effect (remiros + naturalized) [replacer].esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "area effect arrows.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "areaeffectarrows xb edition.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "area effect projectiles.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "area effect projectiles (par edit).esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "cleanareaeffectarrows.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "[official]area effect arrows.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "entertainers.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "entertainers expanded.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "cleanentertainers.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "[official]entertainers.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "ebq_artifact.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "helm of tohan naturalized.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "cleanhelmoftohan.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "helmoftohan.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "[official]helm of tohan.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "lefemmarmor.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "[official]lefemm armor.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "master_index.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "master index naturalized.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "masterindexredux.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "cleanmasterindex.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "masterindex.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "[official]master index.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "siege at firemoth.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "siege at firemoth naturalized.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "legionatfiremoth.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "triumph at firemoth - siege at firemoth.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "firemothreclaimed.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "siegeatfiremoth.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "[official]siege at firemoth.esp"
+                  }
+                }
+              ]
             }
           }
         ]

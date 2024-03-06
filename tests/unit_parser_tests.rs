@@ -9,7 +9,6 @@ mod unit_tests {
         let _ = env_logger::builder().is_test(true).try_init();
     }
 
-   
     ////////////////////////////////////////////////////////////////////////
     // ORDER
 
@@ -384,7 +383,12 @@ mod unit_tests {
     fn test_atomic_expr() {
         init();
 
-        let inputs = [("a.archive"), ("a name.archive")];
+        let inputs = [
+            ("[]Siege at Firemoth.esp"),
+            ("[Official]Siege at Firemoth.esp"),
+            ("a.esp"),
+            ("a name.esp"),
+        ];
 
         for a in inputs {
             test_atomic(a, a);
@@ -392,16 +396,15 @@ mod unit_tests {
     }
 
     fn test_atomic(input: &str, expected: &str) {
-        let parser = parser::new_cyberpunk_parser();
-        assert_eq!(
-            1,
-            parser
-                .parse_expressions(Cursor::new(input.as_bytes()))
-                .expect("No expressions parsed")
-                .len()
-        );
+        let parser = parser::new_tes3_parser();
+
+        let exprs = parser
+            .parse_expressions(Cursor::new(input.as_bytes()))
+            .expect("No expressions parsed");
+        assert_eq!(1, exprs.len());
+
         let e = parser
-            .parse_expression(input)
+            .parse_expression(input, false)
             .expect("No expressions parsed");
         assert!(is_atomic(&e, expected));
     }
@@ -436,7 +439,7 @@ mod unit_tests {
                 .len()
         );
         let expr = parser
-            .parse_expression(input)
+            .parse_expression(input, true)
             .expect("No expressions parsed");
         if let Expression::ALL(b) = expr {
             assert_eq!(expected.len(), b.expressions.len());
@@ -494,12 +497,13 @@ mod unit_tests {
         );
 
         let expr = parser
-            .parse_expression(input)
+            .parse_expression(input, true)
             .expect("No expressions parsed");
 
         if let Expression::DESC(e) = expr {
             assert!(is_atomic(e.expression.as_ref(), expected[1]));
             assert_eq!(format!("/{}/", e.description), expected[0]);
+            assert!(!e.is_negated);
         } else {
             panic!("wrong type");
         }
@@ -517,12 +521,85 @@ mod unit_tests {
         );
 
         let expr = parser
-            .parse_expression(input)
+            .parse_expression(input, true)
             .expect("No expressions parsed");
 
         if let Expression::DESC(e) = expr {
             assert!(is_atomic(e.expression.as_ref(), expected[1]));
             assert_eq!(format!("!/{}/", e.description), expected[0]);
+            assert!(e.is_negated);
+        } else {
+            panic!("wrong type");
+        }
+    }
+
+    // SIZE
+    #[test]
+    fn test_size_expr() {
+        init();
+
+        let inputs = [("30881", "a.archive"), ("30881", "a some name.archive")];
+
+        for (a, b) in inputs {
+            test_size(
+                format!("[SIZE {a} {b}]").to_lowercase().as_str(),
+                [a, b].to_vec(),
+            );
+        }
+
+        let inputs = [("!30881", "a.archive"), ("!30881", "a some name.archive")];
+
+        for (a, b) in inputs {
+            test_size_neg(
+                format!("[SIZE {a} {b}]").to_lowercase().as_str(),
+                [a, b].to_vec(),
+            );
+        }
+    }
+
+    fn test_size(input: &str, expected: Vec<&str>) {
+        let parser = parser::new_cyberpunk_parser();
+
+        assert_eq!(
+            1,
+            parser
+                .parse_expressions(Cursor::new(input.as_bytes()))
+                .expect("No expressions parsed")
+                .len()
+        );
+
+        let expr = parser
+            .parse_expression(input, true)
+            .expect("No expressions parsed");
+
+        if let Expression::SIZE(e) = expr {
+            assert!(is_atomic(e.expression.as_ref(), expected[1]));
+            assert_eq!(format!("{}", e.size), expected[0]);
+            assert!(!e.is_negated);
+        } else {
+            panic!("wrong type");
+        }
+    }
+
+    fn test_size_neg(input: &str, expected: Vec<&str>) {
+        let parser = parser::new_cyberpunk_parser();
+
+        assert_eq!(
+            1,
+            parser
+                .parse_expressions(Cursor::new(input.as_bytes()))
+                .expect("No expressions parsed")
+                .len()
+        );
+
+        let expr = parser
+            .parse_expression(input, true)
+            .expect("No expressions parsed");
+
+        if let Expression::SIZE(e) = expr {
+            assert!(is_atomic(e.expression.as_ref(), expected[1]));
+            assert_eq!(format!("!{}", e.size), expected[0]);
+            assert!(e.is_negated);
         } else {
             panic!("wrong type");
         }

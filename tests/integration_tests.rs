@@ -2,7 +2,6 @@
 mod integration_tests {
     use std::fs::create_dir_all;
 
-    use log::warn;
     use plox::{parser::*, sorter::*, *};
     //use rand::{seq::SliceRandom, thread_rng};
 
@@ -85,7 +84,7 @@ mod integration_tests {
             .parse_rules_from_path("./tests/plox/rules_conflict.txt")
             .expect("rule parse failed");
 
-        assert_eq!(2, rules.len());
+        assert_eq!(4, rules.len());
     }
 
     #[test]
@@ -145,33 +144,7 @@ mod integration_tests {
     }
 
     #[test]
-    fn scc() {
-        init();
-        let g = toposort_scc::IndexGraph::from_adjacency_list(&[
-            vec![3],
-            vec![3, 4],
-            vec![4, 7],
-            vec![5, 6, 7],
-            vec![6],
-            vec![],
-            vec![],
-            vec![],
-        ]);
-
-        let mut g2 = g.clone();
-        g2.add_edge(6, 2); // cycle [2, 4, 6]
-
-        let scc = g2.scc();
-        for (is, s) in scc.iter().enumerate() {
-            warn!("s: {}", is);
-            for i in s {
-                warn!("\t{}", i);
-            }
-        }
-    }
-
-    #[test]
-    fn test_mlox_user_order() {
+    fn test_mlox_user_rules() {
         init();
 
         let parser = new_tes3_parser();

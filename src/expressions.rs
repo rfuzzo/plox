@@ -18,6 +18,7 @@ pub enum Expression {
     ANY(ANY),
     NOT(NOT),
     DESC(DESC),
+    SIZE(SIZE),
 }
 
 // pass-through
@@ -29,6 +30,7 @@ impl TExpression for Expression {
             Expression::ANY(x) => x.eval(items),
             Expression::NOT(x) => x.eval(items),
             Expression::DESC(x) => x.eval(items),
+            Expression::SIZE(x) => x.eval(items),
         }
     }
 }
@@ -56,6 +58,11 @@ impl From<NOT> for Expression {
 impl From<DESC> for Expression {
     fn from(val: DESC) -> Self {
         Expression::DESC(val)
+    }
+}
+impl From<SIZE> for Expression {
+    fn from(val: SIZE) -> Self {
+        Expression::SIZE(val)
     }
 }
 
@@ -185,18 +192,20 @@ impl Clone for NOT {
 ////////////////////////////////////////////////////////////////////////
 // DESC
 
-/// The DESC expression (OR)
+/// The DESC expression
 /// TODO DESC evaluates as true if the expression evaluates as true
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DESC {
     pub description: String,
     pub expression: Box<Expression>,
+    pub is_negated: bool,
 }
 impl DESC {
-    pub fn new(expression: Expression, description: String) -> Self {
+    pub fn new(expression: Expression, description: String, is_negated: bool) -> Self {
         Self {
             expression: Box::new(expression),
             description,
+            is_negated,
         }
     }
 }
@@ -211,6 +220,43 @@ impl Clone for DESC {
         Self {
             expression: self.expression.clone(),
             description: self.description.clone(),
+            is_negated: self.is_negated,
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////
+// SIZE
+
+/// The SIZE expression
+/// TODO SIZE evaluates as true if the expression evaluates as true
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SIZE {
+    pub size: usize,
+    pub expression: Box<Expression>,
+    pub is_negated: bool,
+}
+impl SIZE {
+    pub fn new(expression: Expression, size: usize, is_negated: bool) -> Self {
+        Self {
+            expression: Box::new(expression),
+            size,
+            is_negated,
+        }
+    }
+}
+impl TExpression for SIZE {
+    // TODO SIZE evaluates as true if the expression evaluates as true
+    fn eval(&self, items: &[String]) -> bool {
+        self.expression.eval(items)
+    }
+}
+impl Clone for SIZE {
+    fn clone(&self) -> Self {
+        Self {
+            expression: self.expression.clone(),
+            size: self.size,
+            is_negated: self.is_negated,
         }
     }
 }

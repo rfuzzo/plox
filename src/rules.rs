@@ -477,11 +477,11 @@ impl TParser<Conflict> for Conflict {
         // add all parsed expressions
         this.expressions = parser.parse_expressions(reader)?;
 
-        if this.expressions.len() < 2 {
-            warn!("Malformed Conflict rule: less than 2 expressions");
+        if this.expressions.is_empty() {
+            warn!("Malformed Conflict rule: no expressions parsed");
             return Err(Error::new(
                 ErrorKind::Other,
-                "Malformed Conflict rule: less than 2 expressions",
+                "Malformed Conflict rule: no expressions parsed",
             ));
         }
 

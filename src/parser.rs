@@ -3,6 +3,7 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader, Cursor, Error, ErrorKind, Read, Result, Seek, SeekFrom};
 use std::path::Path;
+use std::usize;
 
 use byteorder::ReadBytesExt;
 use log::*;
@@ -142,9 +143,14 @@ impl Parser {
             if line.trim_start().starts_with(';') {
                 continue;
             }
-
             // lowercase all
-            let line = line.to_lowercase();
+            let mut line = line.to_lowercase();
+
+            line = if let Some(index) = line.find(';') {
+                line[..index].trim_end().to_owned()
+            } else {
+                line.trim_end().to_owned()
+            };
 
             if chunk.is_some() && line.trim().is_empty() {
                 // end chunk
@@ -402,32 +408,52 @@ impl Parser {
     /// # Errors
     ///
     /// This function will return an error if parsing fails anywhere
-    pub fn parse_expressions<R: Read + BufRead>(&self, mut reader: R) -> Result<Vec<Expression>> {
+    pub fn parse_expressions<R>(&self, mut reader: R) -> Result<Vec<Expression>>
+    where
+        R: Read + BufRead,
+    {
         let mut buffer = vec![];
         reader.read_to_end(&mut buffer)?;
 
         // pre-parse expressions into chunks
-        let mut buffers: Vec<String> = vec![];
+        let mut chunks: Vec<(String, bool)> = vec![];
         let mut current_buffer: String = String::new();
         let mut is_expr = false;
         let mut is_token = false;
-        let mut cnt = 0;
+        let mut depth = 0;
 
         for b in buffer {
             if is_expr {
                 // if parsing an expression, just count brackets and read the rest into the buffer
                 if b == b'[' {
-                    cnt += 1;
+                    depth += 1;
                 } else if b == b']' {
-                    cnt -= 1;
+                    depth -= 1;
                 }
                 current_buffer += &(b as char).to_string();
 
-                if cnt == 0 {
+                // check if really an expression
+                // valid expressions are [ANY], [ALL], [NOT], [DESC], [SIZE]
+
+                if depth == 0 {
                     // we reached the end of the current expression
-                    is_expr = false;
-                    buffers.push(current_buffer.to_owned());
-                    current_buffer.clear();
+                    let trimmed = current_buffer.trim();
+                    if starts_with_whitespace(trimmed, "[any")
+                        || starts_with_whitespace(trimmed, "[all")
+                        || starts_with_whitespace(trimmed, "[not")
+                        || starts_with_whitespace(trimmed, "[desc")
+                        || starts_with_whitespace(trimmed, "[size")
+                    {
+                        is_expr = false;
+                        chunks.push((trimmed.to_owned(), true));
+
+                        current_buffer.clear();
+                    } else {
+                        // not a valid expression
+                        // move into token
+                        is_expr = false;
+                        is_token = true;
+                    }
                 }
             } else if is_token {
                 // if parsing tokens, check when ".archive" was parsed into the buffer and end
@@ -435,7 +461,7 @@ impl Parser {
 
                 if self.ends_with_vec2_whitespace_or_newline(&current_buffer) {
                     is_token = false;
-                    buffers.push(current_buffer[..current_buffer.len() - 1].to_owned());
+                    chunks.push((current_buffer[..current_buffer.len() - 1].to_owned(), false));
                     current_buffer.clear();
                 }
             } else {
@@ -443,7 +469,7 @@ impl Parser {
                 if b == b'[' {
                     // start an expression
                     is_expr = true;
-                    cnt += 1;
+                    depth += 1;
                 }
                 // ignore whitespace
                 else if !b.is_ascii_whitespace() {
@@ -455,24 +481,24 @@ impl Parser {
 
         // rest
         if !current_buffer.is_empty() {
-            buffers.push(current_buffer.to_owned());
+            chunks.push((current_buffer.to_owned(), is_expr));
             current_buffer.clear();
         }
 
-        buffers = buffers
+        chunks = chunks
             .iter()
-            .map(|f| f.trim().to_owned())
-            .filter(|p| !p.is_empty())
+            .map(|f| (f.0.trim().to_owned(), f.1))
+            .filter(|p| !p.0.is_empty())
             .collect();
 
         let mut expressions: Vec<Expression> = vec![];
-        for buffer in buffers {
-            match self.parse_expression(buffer.as_str()) {
+        for (chunk, is_expr) in chunks {
+            match self.parse_expression(chunk.as_str(), is_expr) {
                 Ok(it) => {
                     expressions.push(it);
                 }
                 Err(err) => return Err(err),
-            };
+            }
         }
 
         Ok(expressions)
@@ -483,8 +509,18 @@ impl Parser {
     /// # Errors
     ///
     /// This function will return an error if parsing fails
-    pub fn parse_expression(&self, reader: &str) -> Result<Expression> {
+    pub fn parse_expression(&self, reader: &str, is_expression: bool) -> Result<Expression> {
         // an expression may start with
+        if !is_expression {
+            // is a token
+            // in this case just return an atomic
+            if !self.ends_with_vec(reader) {
+                return Err(Error::new(ErrorKind::Other, "Parsing error: Not an atomic"));
+            }
+
+            return Ok(Atomic::from(reader).into());
+        }
+
         if reader.starts_with('[') {
             // is an expression
             // parse the kind and reurse down
@@ -511,13 +547,26 @@ impl Parser {
                     ))
                 }
             } else if let Some(rest) = reader.strip_prefix("[desc") {
-                // [DESC /regex/ A.esp] or // [DESC !/regex/ A.esp]
                 let body = rest[..rest.len() - 1].trim_start();
-                if let Some((regex, expr)) = parse_desc_input(body) {
+                if let Some((regex, expr, negated)) = parse_desc_input(body) {
                     // do something
                     let expressions = self.parse_expressions(expr.as_bytes())?;
                     if let Some(first) = expressions.into_iter().last() {
-                        let expr = DESC::new(first, regex);
+                        let expr = DESC::new(first, regex, negated);
+                        return Ok(expr.into());
+                    }
+                }
+                Err(Error::new(
+                    ErrorKind::Other,
+                    "Parsing error: unknown expression",
+                ))
+            } else if let Some(rest) = reader.strip_prefix("[size") {
+                let body = rest[..rest.len() - 1].trim_start();
+                if let Some((size, expr, negated)) = parse_size_input(body) {
+                    // do something
+                    let expressions = self.parse_expressions(expr.as_bytes())?;
+                    if let Some(first) = expressions.into_iter().last() {
+                        let expr = SIZE::new(first, size, negated);
                         return Ok(expr.into());
                     }
                 }
@@ -533,15 +582,17 @@ impl Parser {
                 ))
             }
         } else {
-            // is a token
-            // in this case just return an atomic
-            if !self.ends_with_vec(reader) {
-                return Err(Error::new(ErrorKind::Other, "Parsing error: Not an atomic"));
-            }
-
-            Ok(Atomic::from(reader).into())
+            Err(Error::new(
+                ErrorKind::Other,
+                "Parsing error: Not an expression",
+            ))
         }
     }
+}
+
+fn starts_with_whitespace(current_buffer: &str, arg: &str) -> bool {
+    current_buffer.starts_with(format!("{} ", arg).as_str())
+        || current_buffer.starts_with(format!("{}\t", arg).as_str())
 }
 
 /// Reads the first comment lines of a rule chunk and returns the rest as byte buffer
@@ -569,31 +620,59 @@ pub fn read_comment<R: Read + BufRead + Seek>(reader: &mut R) -> Result<Option<S
     }
 }
 
-fn parse_desc_input(input: &str) -> Option<(String, String)> {
-    if let Some(start_index) = input.find('/') {
+fn parse_desc_input(input: &str) -> Option<(String, String, bool)> {
+    //  !/Bite works only with Vampire Embrace/ DW_assassination.esp]
+    if let Some(input) = input.strip_prefix("!/") {
         if let Some(end_index) = input.rfind('/') {
             // Extract the substring between "/" and "/"
-            let left_part = input[start_index + 1..end_index].trim().to_string();
+            let left_part = input[..end_index].trim().to_string();
 
             // Extract the substring right of the last "/"
             let right_part = input[end_index + 1..].trim().to_string();
 
-            // TODO fix negation
-            return Some((left_part, right_part));
+            return Some((left_part, right_part, true));
         }
     }
-
-    if let Some(start_index) = input.find("!/") {
+    //  /This version is compatible with Better Robes and Better Clothes./ UFR_v3dot2.esp]
+    else if let Some(input) = input.strip_prefix('/') {
         if let Some(end_index) = input.rfind('/') {
             // Extract the substring between "/" and "/"
-            let left_part = input[start_index + 2..end_index].trim().to_string();
+            let left_part = input[..end_index].trim().to_string();
 
             // Extract the substring right of the last "/"
             let right_part = input[end_index + 1..].trim().to_string();
 
-            return Some((left_part, right_part));
+            return Some((left_part, right_part, false));
         }
     }
+
+    None
+}
+
+fn parse_size_input(input: &str) -> Option<(usize, String, bool)> {
+    // !4921700 Annastia V3.3.esp]
+    if let Some(input) = input.strip_prefix('!') {
+        let mut iter = input.split_whitespace();
+        if let Some(left_part) = iter.next() {
+            if let Some(right_part) = input.strip_prefix(left_part) {
+                if let Ok(size) = left_part.parse::<usize>() {
+                    return Some((size, right_part[1..].to_owned(), true));
+                }
+            }
+        }
+    }
+    // 591786 BMS_Timers_Patch.esp]
+    else {
+        let mut iter = input.split_whitespace();
+        if let Some(left_part) = iter.next() {
+            if let Some(right_part) = input.strip_prefix(left_part) {
+                if let Ok(size) = left_part.parse::<usize>() {
+                    return Some((size, right_part[1..].to_owned(), false));
+                }
+            }
+        }
+    }
+
     None
 }
 
