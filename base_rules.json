@@ -2016,12 +2016,12 @@
               "expressions": [
                 {
                   "SIZE": {
-                    "size": 40618,
                     "expression": {
                       "Atomic": {
                         "item": "airship5_holo-deck2.esp"
                       }
                     },
+                    "size": 40618,
                     "is_negated": false
                   }
                 },
@@ -2478,12 +2478,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 11054,
               "expression": {
                 "Atomic": {
                   "item": "ash 2.0.esp"
                 }
               },
+              "size": 11054,
               "is_negated": true
             }
           }
@@ -2564,12 +2564,12 @@
           },
           {
             "SIZE": {
-              "size": 304650,
               "expression": {
                 "Atomic": {
                   "item": "redaynia village.esp"
                 }
               },
+              "size": 304650,
               "is_negated": false
             }
           }
@@ -2587,23 +2587,23 @@
               "expressions": [
                 {
                   "SIZE": {
-                    "size": 1106213,
                     "expression": {
                       "Atomic": {
                         "item": "ald redaynia extended.esp"
                       }
                     },
+                    "size": 1106213,
                     "is_negated": false
                   }
                 },
                 {
                   "SIZE": {
-                    "size": 1114009,
                     "expression": {
                       "Atomic": {
                         "item": "ald redaynia extended com.esp"
                       }
                     },
+                    "size": 1114009,
                     "is_negated": false
                   }
                 }
@@ -2872,67 +2872,67 @@
               "expressions": [
                 {
                   "SIZE": {
-                    "size": 10204798,
                     "expression": {
                       "Atomic": {
                         "item": "ald-vendras_v31.esp"
                       }
                     },
+                    "size": 10204798,
                     "is_negated": false
                   }
                 },
                 {
                   "SIZE": {
-                    "size": 9978740,
                     "expression": {
                       "Atomic": {
                         "item": "ald-vendras_v31-lokken.esp"
                       }
                     },
+                    "size": 9978740,
                     "is_negated": false
                   }
                 },
                 {
                   "SIZE": {
-                    "size": 9789132,
                     "expression": {
                       "Atomic": {
                         "item": "ald-vendras_v31-lokken-sc.esp"
                       }
                     },
+                    "size": 9789132,
                     "is_negated": false
                   }
                 },
                 {
                   "SIZE": {
-                    "size": 10053493,
                     "expression": {
                       "Atomic": {
                         "item": "ald-vendras_v3.esp"
                       }
                     },
+                    "size": 10053493,
                     "is_negated": false
                   }
                 },
                 {
                   "SIZE": {
-                    "size": 9827301,
                     "expression": {
                       "Atomic": {
                         "item": "ald-vendras_v3-lokken.esp"
                       }
                     },
+                    "size": 9827301,
                     "is_negated": false
                   }
                 },
                 {
                   "SIZE": {
-                    "size": 9630441,
                     "expression": {
                       "Atomic": {
                         "item": "ald-vendras_v3-lokken-sc.esp"
                       }
                     },
+                    "size": 9630441,
                     "is_negated": false
                   }
                 }
@@ -3032,6 +3032,37 @@
           {
             "Atomic": {
               "item": "nevena's assistants & apprentices 1.0.esp"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Note": {
+        "comment": "!! there is no need to run rellac's \"alighiere's blood thirst fix\" with version 1.52 or higher of \"rise of house telvanni\" by pozzo, karpik777, bhl et al.\t!! the \"alighiere's blood thirst\" spell is already set as non-\"auto calulate cost\"",
+        "expressions": [
+          {
+            "ALL": {
+              "expressions": [
+                {
+                  "Atomic": {
+                    "item": "alighiere's blood thirst fix.esp"
+                  }
+                },
+                {
+                  "VER": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "rise of house telvanni.esm"
+                      }
+                    },
+                    "operator": "Greater",
+                    "version": "1.51"
+                  }
+                }
+              ]
             }
           }
         ]
@@ -3749,23 +3780,23 @@
                   "expressions": [
                     {
                       "DESC": {
-                        "description": "adds 1000 types of npcs to over 400",
                         "expression": {
                           "Atomic": {
                             "item": "mca.esm"
                           }
                         },
+                        "description": "adds 1000 types of npcs to over 400",
                         "is_negated": false
                       }
                     },
                     {
                       "DESC": {
-                        "description": "adds 1100 types of npcs to over 550",
                         "expression": {
                           "Atomic": {
                             "item": "mca.esm"
                           }
                         },
+                        "description": "adds 1100 types of npcs to over 550",
                         "is_negated": false
                       }
                     }
@@ -4919,12 +4950,12 @@
         "expressions": [
           {
             "DESC": {
-              "description": "spirithawke edit",
               "expression": {
                 "Atomic": {
                   "item": "animated_morrowind - expanded.esp"
                 }
               },
+              "description": "spirithawke edit",
               "is_negated": true
             }
           }
@@ -4939,12 +4970,12 @@
         "expressions": [
           {
             "DESC": {
-              "description": "spirithawke edit",
               "expression": {
                 "Atomic": {
                   "item": "animated morrowind - expanded - mca_patch.esp"
                 }
               },
+              "description": "spirithawke edit",
               "is_negated": true
             }
           }
@@ -5127,12 +5158,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 4921700,
               "expression": {
                 "Atomic": {
                   "item": "annastia v3.3.esp"
                 }
               },
+              "size": 4921700,
               "is_negated": true
             }
           }
@@ -7484,12 +7515,12 @@
                 },
                 {
                   "SIZE": {
-                    "size": 411947,
                     "expression": {
                       "Atomic": {
                         "item": "asgard.esp"
                       }
                     },
+                    "size": 411947,
                     "is_negated": false
                   }
                 }
@@ -8686,12 +8717,12 @@
         "comment": "'ashlandertentdx - nom addon.esp' requires necessities of morrowind 2.13",
         "expression_a": {
           "SIZE": {
-            "size": 2287,
             "expression": {
               "Atomic": {
                 "item": "ashlandertentdx - nom addon.esp"
               }
             },
+            "size": 2287,
             "is_negated": false
           }
         },
@@ -8731,12 +8762,12 @@
         "comment": "'ashlandertentdx - nom addon.esp' requires necessities of morrowind 3.0 ( ref: readme - atdx - nom v3 addon.txt )",
         "expression_a": {
           "SIZE": {
-            "size": 4126,
             "expression": {
               "Atomic": {
                 "item": "ashlandertentdx - nom addon.esp"
               }
             },
+            "size": 4126,
             "is_negated": false
           }
         },
@@ -8878,12 +8909,12 @@
         "expressions": [
           {
             "DESC": {
-              "description": "bite works only with vampire embrace",
               "expression": {
                 "Atomic": {
                   "item": "dw_assassination.esp"
                 }
               },
+              "description": "bite works only with vampire embrace",
               "is_negated": true
             }
           },
@@ -8898,17 +8929,40 @@
   },
   {
     "EWarningRule": {
+      "Requires": {
+        "comment": "( ref: dw_assassination_readme.txt )",
+        "expression_a": {
+          "Atomic": {
+            "item": "dw_assassination_ve.esp"
+          }
+        },
+        "expression_b": {
+          "VER": {
+            "expression": {
+              "Atomic": {
+                "item": "vampire_embrace.esp"
+              }
+            },
+            "operator": "Greater",
+            "version": "2.3"
+          }
+        }
+      }
+    }
+  },
+  {
+    "EWarningRule": {
       "Note": {
         "comment": "the crime detection scripts in assassination 2.0 may not work for you. if this is a problem you can downgrade to 1.5:  http://mw.modhistory.com/download--8943 ( ref: dw_assassination_readme.txt )",
         "expressions": [
           {
             "DESC": {
-              "description": "bite works only with vampire embrace",
               "expression": {
                 "Atomic": {
                   "item": "dw_assassination.esp"
                 }
               },
+              "description": "bite works only with vampire embrace",
               "is_negated": false
             }
           }
@@ -13811,6 +13865,26 @@
   {
     "EWarningRule": {
       "Note": {
+        "comment": "a newer of \"balmora university\" from crlsniper is available, download it here:\t( http://mw.modhistory.com/download-80-6423 )",
+        "expressions": [
+          {
+            "VER": {
+              "expression": {
+                "Atomic": {
+                  "item": "balmora university v<ver>.esp"
+                }
+              },
+              "operator": "Less",
+              "version": "2.3"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Note": {
         "comment": "an updated version of \"balmora university\" is available from crlsniper, download it here:\t( http://mw.modhistory.com/download-80-6423 )",
         "expressions": [
           {
@@ -14506,12 +14580,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 52679,
               "expression": {
                 "Atomic": {
                   "item": "the bedroll shop 2.esp"
                 }
               },
+              "size": 52679,
               "is_negated": true
             }
           }
@@ -16183,12 +16257,12 @@
           },
           {
             "DESC": {
-              "description": "better morrowind armor",
               "expression": {
                 "Atomic": {
                   "item": "complete armor joints.esp"
                 }
               },
+              "description": "better morrowind armor",
               "is_negated": true
             }
           }
@@ -16221,12 +16295,12 @@
               "expressions": [
                 {
                   "DESC": {
-                    "description": "lefemm(tm) armor",
                     "expression": {
                       "Atomic": {
                         "item": "lefemmarmor.esp"
                       }
                     },
+                    "description": "lefemm(tm) armor",
                     "is_negated": false
                   }
                 },
@@ -16314,12 +16388,12 @@
           },
           {
             "DESC": {
-              "description": "a model replacer for the ancient steel armor",
               "expression": {
                 "Atomic": {
                   "item": "snow prince armor redux.esp"
                 }
               },
+              "description": "a model replacer for the ancient steel armor",
               "is_negated": true
             }
           }
@@ -16603,12 +16677,12 @@
                 },
                 {
                   "SIZE": {
-                    "size": 591786,
                     "expression": {
                       "Atomic": {
                         "item": "bms_timers_patch.esp"
                       }
                     },
+                    "size": 591786,
                     "is_negated": false
                   }
                 }
@@ -17137,12 +17211,12 @@
               "expressions": [
                 {
                   "DESC": {
-                    "description": "this version is compatible with better robes and better clothes.",
                     "expression": {
                       "Atomic": {
                         "item": "ufr_v3dot2.esp"
                       }
                     },
+                    "description": "this version is compatible with better robes and better clothes.",
                     "is_negated": true
                   }
                 },
@@ -17169,12 +17243,12 @@
         "comment": "this patch of \"unique finery replacer\" also adopts shoes from \"ufr\" to \"better bodies\" and requires \"better clothes\" too.",
         "expression_a": {
           "DESC": {
-            "description": "this version is compatible with better robes and better clothes.",
             "expression": {
               "Atomic": {
                 "item": "ufr_v3dot2.esp"
               }
             },
+            "description": "this version is compatible with better robes and better clothes.",
             "is_negated": false
           }
         },
@@ -17285,12 +17359,12 @@
               },
               {
                 "DESC": {
-                  "description": "this version is compatible with better robes and better clothes.",
                   "expression": {
                     "Atomic": {
                       "item": "ufr_v3dot2.esp"
                     }
                   },
+                  "description": "this version is compatible with better robes and better clothes.",
                   "is_negated": false
                 }
               },
@@ -17459,12 +17533,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 87068,
               "expression": {
                 "Atomic": {
                   "item": "better_sounds.esp"
                 }
               },
+              "size": 87068,
               "is_negated": true
             }
           },
@@ -17508,12 +17582,12 @@
               "expressions": [
                 {
                   "SIZE": {
-                    "size": 87068,
                     "expression": {
                       "Atomic": {
                         "item": "better_sounds.esp"
                       }
                     },
+                    "size": 87068,
                     "is_negated": true
                   }
                 },
@@ -17658,45 +17732,45 @@
               "expressions": [
                 {
                   "SIZE": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "better_sounds.esp"
+                      }
+                    },
                     "size": 82084,
-                    "expression": {
-                      "Atomic": {
-                        "item": "better_sounds.esp"
-                      }
-                    },
                     "is_negated": false
                   }
                 },
                 {
                   "SIZE": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "better_sounds.esp"
+                      }
+                    },
                     "size": 81877,
-                    "expression": {
-                      "Atomic": {
-                        "item": "better_sounds.esp"
-                      }
-                    },
                     "is_negated": false
                   }
                 },
                 {
                   "SIZE": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "better_sounds.esp"
+                      }
+                    },
                     "size": 107425,
-                    "expression": {
-                      "Atomic": {
-                        "item": "better_sounds.esp"
-                      }
-                    },
                     "is_negated": false
                   }
                 },
                 {
                   "SIZE": {
-                    "size": 106539,
                     "expression": {
                       "Atomic": {
                         "item": "better_sounds.esp"
                       }
                     },
+                    "size": 106539,
                     "is_negated": false
                   }
                 }
@@ -18187,12 +18261,12 @@
           },
           {
             "SIZE": {
-              "size": 4646696,
               "expression": {
                 "Atomic": {
                   "item": "havish.esm"
                 }
               },
+              "size": 4646696,
               "is_negated": false
             }
           }
@@ -18461,12 +18535,12 @@
           },
           {
             "SIZE": {
-              "size": 14993627,
               "expression": {
                 "Atomic": {
                   "item": "wizards islands - scourge of the frost bringer.esm"
                 }
               },
+              "size": 14993627,
               "is_negated": false
             }
           }
@@ -18638,12 +18712,12 @@
                 },
                 {
                   "SIZE": {
-                    "size": 14993627,
                     "expression": {
                       "Atomic": {
                         "item": "wizards islands - scourge of the frost bringer.esm"
                       }
                     },
+                    "size": 14993627,
                     "is_negated": true
                   }
                 },
@@ -18997,6 +19071,85 @@
         "names": [
           "creatures (semi).esp",
           "blightedanimalsretextured.esp"
+        ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Note": {
+        "comment": "! the latest version of thelys' \"blood and gore\" is 2.14\t! download it from morrowind modding history - ( http://mw.modhistory.com/download-56-14938 )",
+        "expressions": [
+          {
+            "VER": {
+              "expression": {
+                "Atomic": {
+                  "item": "blood and gore.esp"
+                }
+              },
+              "operator": "Less",
+              "version": "2.14"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Note": {
+        "comment": "!! thelys' blood and gore 2.14 will throw errors if 'blood and gore morrowind alone add-on.esp' or 'blood and gore morrowind-tribunal add-on.esp' are loaded:\t!! cell \"_tlgore_test_cell\" not found for dialogue type voice\t!! info \"empty\"\t!! dragon32 has published an edited version of 'blood and gore.esp' fixes those errors.\t!! download the edit from the additional files section on morrowind modding history - ( http://mw.modhistory.com/download-56-14938 )",
+        "expressions": [
+          {
+            "ALL": {
+              "expressions": [
+                {
+                  "ALL": {
+                    "expressions": [
+                      {
+                        "VER": {
+                          "expression": {
+                            "Atomic": {
+                              "item": "blood and gore.esp"
+                            }
+                          },
+                          "operator": "Equal",
+                          "version": "2.14"
+                        }
+                      },
+                      {
+                        "DESC": {
+                          "expression": {
+                            "Atomic": {
+                              "item": "blood and gore.esp"
+                            }
+                          },
+                          "description": "dragon32",
+                          "is_negated": true
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "ANY": {
+                    "expressions": [
+                      {
+                        "Atomic": {
+                          "item": "blood and gore morrowind alone add-on.esp"
+                        }
+                      },
+                      {
+                        "Atomic": {
+                          "item": "blood and gore morrowind-tribunal add-on.esp"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
         ]
       }
     }
@@ -20390,12 +20543,12 @@
         },
         "expression_b": {
           "SIZE": {
-            "size": 134091,
             "expression": {
               "Atomic": {
                 "item": "bob's armory.esp"
               }
             },
+            "size": 134091,
             "is_negated": false
           }
         }
@@ -21013,12 +21166,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 1536911,
               "expression": {
                 "Atomic": {
                   "item": "juniper's twin lamps (1.1 tribunal).esp"
                 }
               },
+              "size": 1536911,
               "is_negated": false
             }
           },
@@ -22291,12 +22444,12 @@
         "expressions": [
           {
             "DESC": {
-              "description": "tooplex",
               "expression": {
                 "Atomic": {
                   "item": "btb - equipment.esp"
                 }
               },
+              "description": "tooplex",
               "is_negated": true
             }
           },
@@ -22308,12 +22461,12 @@
                     "expressions": [
                       {
                         "SIZE": {
-                          "size": 34529,
                           "expression": {
                             "Atomic": {
                               "item": "uniquefinery.esp"
                             }
                           },
+                          "size": 34529,
                           "is_negated": false
                         }
                       },
@@ -22354,12 +22507,12 @@
         "expressions": [
           {
             "DESC": {
-              "description": "tooplex",
               "expression": {
                 "Atomic": {
                   "item": "btb - equipment.esp"
                 }
               },
+              "description": "tooplex",
               "is_negated": false
             }
           },
@@ -22368,12 +22521,12 @@
               "expressions": [
                 {
                   "SIZE": {
-                    "size": 34529,
                     "expression": {
                       "Atomic": {
                         "item": "uniquefinery.esp"
                       }
                     },
+                    "size": 34529,
                     "is_negated": false
                   }
                 },
@@ -22411,12 +22564,12 @@
         "expressions": [
           {
             "DESC": {
-              "description": "left gloves addon",
               "expression": {
                 "Atomic": {
                   "item": "btb - equipment.esp"
                 }
               },
+              "description": "left gloves addon",
               "is_negated": true
             }
           },
@@ -22436,12 +22589,12 @@
         "expressions": [
           {
             "DESC": {
-              "description": "left gloves addon",
               "expression": {
                 "Atomic": {
                   "item": "btb - equipment.esp"
                 }
               },
+              "description": "left gloves addon",
               "is_negated": false
             }
           },
@@ -22492,23 +22645,23 @@
         "expressions": [
           {
             "DESC": {
-              "description": "tooplex",
               "expression": {
                 "Atomic": {
                   "item": "btb - equipment.esp"
                 }
               },
+              "description": "tooplex",
               "is_negated": false
             }
           },
           {
             "DESC": {
-              "description": "tooplex",
               "expression": {
                 "Atomic": {
                   "item": "better clothes complete (btb edit).esp"
                 }
               },
+              "description": "tooplex",
               "is_negated": true
             }
           }
@@ -22533,12 +22686,12 @@
         "expressions": [
           {
             "DESC": {
-              "description": "tooplex",
               "expression": {
                 "Atomic": {
                   "item": "sirluthor-tools.esp"
                 }
               },
+              "description": "tooplex",
               "is_negated": true
             }
           },
@@ -22589,12 +22742,12 @@
         "expressions": [
           {
             "DESC": {
-              "description": "tooplex",
               "expression": {
                 "Atomic": {
                   "item": "btb - spells.esp"
                 }
               },
+              "description": "tooplex",
               "is_negated": true
             }
           },
@@ -22614,12 +22767,12 @@
         "expressions": [
           {
             "DESC": {
-              "description": "tooplex",
               "expression": {
                 "Atomic": {
                   "item": "btb - spells.esp"
                 }
               },
+              "description": "tooplex",
               "is_negated": false
             }
           },
@@ -22644,12 +22797,12 @@
           },
           {
             "DESC": {
-              "description": "tooplex",
               "expression": {
                 "Atomic": {
                   "item": "btb - spells.esp"
                 }
               },
+              "description": "tooplex",
               "is_negated": false
             }
           }
@@ -22664,12 +22817,12 @@
         "expressions": [
           {
             "DESC": {
-              "description": "tooplex",
               "expression": {
                 "Atomic": {
                   "item": "syc_athomealchemy.esp"
                 }
               },
+              "description": "tooplex",
               "is_negated": true
             }
           },
@@ -22699,12 +22852,12 @@
         "expressions": [
           {
             "DESC": {
-              "description": "tooplex",
               "expression": {
                 "Atomic": {
                   "item": "btb - alchemy.esp"
                 }
               },
+              "description": "tooplex",
               "is_negated": true
             }
           },
@@ -22724,12 +22877,12 @@
         "expressions": [
           {
             "DESC": {
-              "description": "tooplex",
               "expression": {
                 "Atomic": {
                   "item": "btb - alchemy.esp"
                 }
               },
+              "description": "tooplex",
               "is_negated": false
             }
           },
@@ -22749,12 +22902,12 @@
         "expressions": [
           {
             "DESC": {
-              "description": "tooplex",
               "expression": {
                 "Atomic": {
                   "item": "btb - alchemy.esp"
                 }
               },
+              "description": "tooplex",
               "is_negated": false
             }
           }
@@ -24021,12 +24174,12 @@
         "expressions": [
           {
             "DESC": {
-              "description": "changes all faces",
               "expression": {
                 "Atomic": {
                   "item": "changing faces replacer.esp"
                 }
               },
+              "description": "changes all faces",
               "is_negated": false
             }
           }
@@ -24842,12 +24995,43 @@
   },
   {
     "EWarningRule": {
+      "Note": {
+        "comment": "! a new version of \"class abilities\" is available ( https://www.nexusmods.com/morrowind/mods/47951)",
+        "expressions": [
+          {
+            "VER": {
+              "expression": {
+                "Atomic": {
+                  "item": "class abilities <ver>.esp"
+                }
+              },
+              "operator": "Less",
+              "version": "3.1"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
       "Conflict": {
         "comment": "ahead of the classes includes class abilities.",
         "expressions": [
           {
+            "VER": {
+              "expression": {
+                "Atomic": {
+                  "item": "class abilities <ver>.esp"
+                }
+              },
+              "operator": "Less",
+              "version": "3.1"
+            }
+          },
+          {
             "Atomic": {
-              "item": "[ver < 3.1 class abilities <ver>.esp]\nahead of the classes.esp"
+              "item": "ahead of the classes.esp"
             }
           }
         ]
@@ -25025,12 +25209,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 851243,
               "expression": {
                 "Atomic": {
                   "item": "bb_clothiers_of_vvardenfell_v1.1.esp"
                 }
               },
+              "size": 851243,
               "is_negated": false
             }
           },
@@ -25050,12 +25234,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 851243,
               "expression": {
                 "Atomic": {
                   "item": "bb_clothiers_of_vvardenfell_v1.1.esp"
                 }
               },
+              "size": 851243,
               "is_negated": false
             }
           },
@@ -29806,6 +29990,43 @@
     }
   },
   {
+    "EWarningRule": {
+      "Note": {
+        "comment": "! you are using an older version of decorator+, the current version is 1.1.1:\t! download it from morrowind modding history - http://mw.modhistory.com/download-95-10574",
+        "expressions": [
+          {
+            "ANY": {
+              "expressions": [
+                {
+                  "VER": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "decorator+ (balanced).esp"
+                      }
+                    },
+                    "operator": "Less",
+                    "version": "1.1.1"
+                  }
+                },
+                {
+                  "VER": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "decorator+.esp"
+                      }
+                    },
+                    "operator": "Less",
+                    "version": "1.1.1"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
     "EOrderRule": {
       "Order": {
         "names": [
@@ -30293,12 +30514,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 1587770,
               "expression": {
                 "Atomic": {
                   "item": "devil's rock for vivec's soul.esp"
                 }
               },
+              "size": 1587770,
               "is_negated": true
             }
           }
@@ -30320,12 +30541,12 @@
             "expressions": [
               {
                 "DESC": {
-                  "description": "vampire embrace 2.4",
                   "expression": {
                     "Atomic": {
                       "item": "vampire_embrace.esp"
                     }
                   },
+                  "description": "vampire embrace 2.4",
                   "is_negated": false
                 }
               },
@@ -30334,23 +30555,23 @@
                   "expressions": [
                     {
                       "SIZE": {
-                        "size": 2458536,
                         "expression": {
                           "Atomic": {
                             "item": "mca.esm"
                           }
                         },
+                        "size": 2458536,
                         "is_negated": false
                       }
                     },
                     {
                       "DESC": {
-                        "description": "over 1200 friendly",
                         "expression": {
                           "Atomic": {
                             "item": "mca.esm"
                           }
                         },
+                        "description": "over 1200 friendly",
                         "is_negated": false
                       }
                     }
@@ -32906,12 +33127,12 @@
                     "expressions": [
                       {
                         "SIZE": {
-                          "size": 4315,
                           "expression": {
                             "Atomic": {
                               "item": "dwemerclock.esp"
                             }
                           },
+                          "size": 4315,
                           "is_negated": false
                         }
                       },
@@ -32952,23 +33173,23 @@
                     "expressions": [
                       {
                         "SIZE": {
-                          "size": 4315,
                           "expression": {
                             "Atomic": {
                               "item": "dwemerclock.esp"
                             }
                           },
+                          "size": 4315,
                           "is_negated": false
                         }
                       },
                       {
                         "SIZE": {
-                          "size": 23039,
                           "expression": {
                             "Atomic": {
                               "item": "dwemerclock.esp"
                             }
                           },
+                          "size": 23039,
                           "is_negated": false
                         }
                       }
@@ -33099,6 +33320,31 @@
           {
             "Atomic": {
               "item": "dwemer_sentinel__morrowind_only.esp"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Note": {
+        "comment": "the latest version of \"dwemer shock gun\" is 2.3: http://www.nexusmods.com/morrowind/mods/8620/",
+        "expressions": [
+          {
+            "Atomic": {
+              "item": "dwemer shock gunv2.2 scripted.esp"
+            }
+          },
+          {
+            "VER": {
+              "expression": {
+                "Atomic": {
+                  "item": "dwemer shock gun tribute.esp"
+                }
+              },
+              "operator": "Less",
+              "version": "2.3"
             }
           }
         ]
@@ -33791,6 +34037,175 @@
   {
     "EWarningRule": {
       "Requires": {
+        "comment": "\"elders mca add-on\" version 2.0 requires \"elders of vvardenfell\" and \"morrowind comes alive\" v5.0 by neoptolemus. ( ref: \"elders mca addon_readme.txt\" )",
+        "expression_a": {
+          "VER": {
+            "expression": {
+              "Atomic": {
+                "item": "elders mca add-on v2.0.esp"
+              }
+            },
+            "operator": "Equal",
+            "version": "2.0"
+          }
+        },
+        "expression_b": {
+          "ALL": {
+            "expressions": [
+              {
+                "ANY": {
+                  "expressions": [
+                    {
+                      "Atomic": {
+                        "item": "the morrowind npc makeover.esp"
+                      }
+                    },
+                    {
+                      "Atomic": {
+                        "item": "the morrowind npc makeover.esm"
+                      }
+                    },
+                    {
+                      "Atomic": {
+                        "item": "elders of vvardenfell.esp"
+                      }
+                    },
+                    {
+                      "Atomic": {
+                        "item": "elders 0 count npc add-on (trib & bm).esp"
+                      }
+                    },
+                    {
+                      "Atomic": {
+                        "item": "elders 0 count npc add-on.esp"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "SIZE": {
+                  "expression": {
+                    "Atomic": {
+                      "item": "mca.esm"
+                    }
+                  },
+                  "size": 2303212,
+                  "is_negated": false
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Requires": {
+        "comment": "\"elders mca add-on\" version 2.02 requires \"elders of vvardenfell\" and \"morrowind comes alive\" v5.2 by neoptolemus. ( ref: \"elders mca addon_readme.txt\" )",
+        "expression_a": {
+          "VER": {
+            "expression": {
+              "Atomic": {
+                "item": "elders mca add-on v2.0.esp"
+              }
+            },
+            "operator": "Equal",
+            "version": "2.02"
+          }
+        },
+        "expression_b": {
+          "ALL": {
+            "expressions": [
+              {
+                "ANY": {
+                  "expressions": [
+                    {
+                      "Atomic": {
+                        "item": "the morrowind npc makeover.esp"
+                      }
+                    },
+                    {
+                      "Atomic": {
+                        "item": "the morrowind npc makeover.esm"
+                      }
+                    },
+                    {
+                      "Atomic": {
+                        "item": "elders of vvardenfell.esp"
+                      }
+                    },
+                    {
+                      "Atomic": {
+                        "item": "elders 0 count npc add-on (trib & bm).esp"
+                      }
+                    },
+                    {
+                      "Atomic": {
+                        "item": "elders 0 count npc add-on.esp"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "DESC": {
+                  "expression": {
+                    "Atomic": {
+                      "item": "mca.esm"
+                    }
+                  },
+                  "description": "over 1200 friendly",
+                  "is_negated": false
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Note": {
+        "comment": "!! \"elders mca add-on\" version 2.02 needs to be edited before it will work without errors with neoptolemus' \"morrowind comes alive\" v5.2.\t!! you need to edit two npcs:\t!!  \"_elder_ashlander_f1\"\t!!  \"_elder_ashlander_m1\"\t!! to remove the levelled item:\t!!  \"_mca_ashlander_scarf_random\"",
+        "expressions": [
+          {
+            "ALL": {
+              "expressions": [
+                {
+                  "SIZE": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "elders mca add-on v2.0.esp"
+                      }
+                    },
+                    "size": 123422,
+                    "is_negated": false
+                  }
+                },
+                {
+                  "VER": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "elders mca add-on v2.0.esp"
+                      }
+                    },
+                    "operator": "Equal",
+                    "version": "2.02"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Requires": {
         "comment": "\"[elemental magicka ii.esp] is the master that contains all of my scripts and methods.\" ( ref: \"elemental magicka ii.txt\" )",
         "expression_a": {
           "ANY": {
@@ -33860,12 +34275,12 @@
                     },
                     {
                       "DESC": {
-                        "description": "tooplex",
                         "expression": {
                           "Atomic": {
                             "item": "btb - spells.esp"
                           }
                         },
+                        "description": "tooplex",
                         "is_negated": false
                       }
                     },
@@ -34323,12 +34738,12 @@
         "expressions": [
           {
             "DESC": {
-              "description": "redoes turenyal to be better than things.",
               "expression": {
                 "Atomic": {
                   "item": "turenyalredone.esp"
                 }
               },
+              "description": "redoes turenyal to be better than things.",
               "is_negated": true
             }
           }
@@ -36116,12 +36531,12 @@
             "expressions": [
               {
                 "DESC": {
-                  "description": "over 1200 friendly",
                   "expression": {
                     "Atomic": {
                       "item": "mca.esm"
                     }
                   },
+                  "description": "over 1200 friendly",
                   "is_negated": false
                 }
               },
@@ -38132,12 +38547,12 @@
                 },
                 {
                   "DESC": {
-                    "description": "solstheim",
                     "expression": {
                       "Atomic": {
                         "item": "ships of the imperial navy.esp"
                       }
                     },
+                    "description": "solstheim",
                     "is_negated": true
                   }
                 }
@@ -39323,12 +39738,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 843986,
               "expression": {
                 "Atomic": {
                   "item": "ghostpath 1.41a.esp"
                 }
               },
+              "size": 843986,
               "is_negated": false
             }
           }
@@ -40086,12 +40501,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 1841362,
               "expression": {
                 "Atomic": {
                   "item": "giants.esm"
                 }
               },
+              "size": 1841362,
               "is_negated": false
             }
           },
@@ -40127,12 +40542,12 @@
                     "expressions": [
                       {
                         "SIZE": {
-                          "size": 1841362,
                           "expression": {
                             "Atomic": {
                               "item": "giants.esm"
                             }
                           },
+                          "size": 1841362,
                           "is_negated": false
                         }
                       },
@@ -40380,12 +40795,12 @@
           },
           {
             "SIZE": {
-              "size": 4646696,
               "expression": {
                 "Atomic": {
                   "item": "havish.esm"
                 }
               },
+              "size": 4646696,
               "is_negated": false
             }
           }
@@ -40639,12 +41054,12 @@
         },
         "expression_b": {
           "SIZE": {
-            "size": 2537,
             "expression": {
               "Atomic": {
                 "item": "golden gold.esp"
               }
             },
+            "size": 2537,
             "is_negated": true
           }
         }
@@ -44087,12 +44502,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 4646696,
               "expression": {
                 "Atomic": {
                   "item": "havish.esm"
                 }
               },
+              "size": 4646696,
               "is_negated": false
             }
           },
@@ -44112,12 +44527,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 4646696,
               "expression": {
                 "Atomic": {
                   "item": "havish.esm"
                 }
               },
+              "size": 4646696,
               "is_negated": false
             }
           },
@@ -44566,6 +44981,29 @@
   },
   {
     "EWarningRule": {
+      "Patch": {
+        "comment": "\"havish mini-patch\" by tyraa rane fixes errors with the \"fighters guild: a visitor from havish\", \"thieves guild: the damsel in distress\" and \"mages guild: teleporter crystals\" quests. download \"havish mini-patch\" by tyraa rane from morrowind modding history - http://mw.modhistory.com/download-13-13281 ( ref: havish patch readme.txt )",
+        "expression_a": {
+          "Atomic": {
+            "item": "havish mini patch.esp"
+          }
+        },
+        "expression_b": {
+          "VER": {
+            "expression": {
+              "Atomic": {
+                "item": "havish.esm"
+              }
+            },
+            "operator": "Equal",
+            "version": "1.3"
+          }
+        }
+      }
+    }
+  },
+  {
+    "EWarningRule": {
       "Conflict": {
         "comment": "\"if using havish m or havishmn (abot's moved havish mods), you do not need the havish mini patch by tyraa rane, as abot has made changes to account for the problems already. note, abot has made different changes and it is likely that the mini patch will cause problems if used with abot's moved havish mods.\"",
         "expressions": [
@@ -44591,6 +45029,88 @@
             }
           }
         ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Note": {
+        "comment": "! the latest version of \"havish mini-patch\" by tyraa rane is 2.0\t! download it from morrowind modding history - http://mw.modhistory.com/download-13-13281",
+        "expressions": [
+          {
+            "VER": {
+              "expression": {
+                "Atomic": {
+                  "item": "havish mini patch.esp"
+                }
+              },
+              "operator": "Less",
+              "version": "2.0"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Patch": {
+        "comment": "captainjorge's \"havish necessities of morrowind patch\" adds nom functionality to the normal wells, nom food to the tavernkeeper's stock and nom supplies to the trader and pawnbroker in havish 1.3. http://mw.modhistory.com/download-48-13625 ( ref: readme - havish 1-3 nom patch.txt )",
+        "expression_a": {
+          "Atomic": {
+            "item": "havish13_nom_patch.esp"
+          }
+        },
+        "expression_b": {
+          "ALL": {
+            "expressions": [
+              {
+                "ANY": {
+                  "expressions": [
+                    {
+                      "VER": {
+                        "expression": {
+                          "Atomic": {
+                            "item": "havish.esm"
+                          }
+                        },
+                        "operator": "Equal",
+                        "version": "1.3"
+                      }
+                    },
+                    {
+                      "VER": {
+                        "expression": {
+                          "Atomic": {
+                            "item": "havishm.esm"
+                          }
+                        },
+                        "operator": "Equal",
+                        "version": "1.3"
+                      }
+                    },
+                    {
+                      "VER": {
+                        "expression": {
+                          "Atomic": {
+                            "item": "havishmn.esm"
+                          }
+                        },
+                        "operator": "Equal",
+                        "version": "1.3"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "Atomic": {
+                  "item": "nom 2.13.esp"
+                }
+              }
+            ]
+          }
+        }
       }
     }
   },
@@ -44635,6 +45155,65 @@
             ]
           }
         }
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Note": {
+        "comment": "version 1.3 of jog's havish mod already includes lochnarus' \"forested havish\" addon. ( ref: havish.txt )",
+        "expressions": [
+          {
+            "ALL": {
+              "expressions": [
+                {
+                  "ANY": {
+                    "expressions": [
+                      {
+                        "VER": {
+                          "expression": {
+                            "Atomic": {
+                              "item": "havish.esm"
+                            }
+                          },
+                          "operator": "Equal",
+                          "version": "1.3"
+                        }
+                      },
+                      {
+                        "VER": {
+                          "expression": {
+                            "Atomic": {
+                              "item": "havishm.esm"
+                            }
+                          },
+                          "operator": "Equal",
+                          "version": "1.3"
+                        }
+                      },
+                      {
+                        "VER": {
+                          "expression": {
+                            "Atomic": {
+                              "item": "havishmn.esm"
+                            }
+                          },
+                          "operator": "Equal",
+                          "version": "1.3"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "forested_havish_add-on.esp"
+                  }
+                }
+              ]
+            }
+          }
+        ]
       }
     }
   },
@@ -46924,12 +47503,12 @@
               },
               {
                 "DESC": {
-                  "description": "v8.1",
                   "expression": {
                     "Atomic": {
                       "item": "mca.esm"
                     }
                   },
+                  "description": "v8.1",
                   "is_negated": false
                 }
               }
@@ -47492,45 +48071,45 @@
               "expressions": [
                 {
                   "DESC": {
-                    "description": "hollaajith",
                     "expression": {
                       "Atomic": {
                         "item": "better morrowind armor defemm(a).esp"
                       }
                     },
+                    "description": "hollaajith",
                     "is_negated": true
                   }
                 },
                 {
                   "DESC": {
-                    "description": "hollaajith",
                     "expression": {
                       "Atomic": {
                         "item": "better morrowind armor defemm(o).esp"
                       }
                     },
+                    "description": "hollaajith",
                     "is_negated": true
                   }
                 },
                 {
                   "DESC": {
-                    "description": "hollaajith",
                     "expression": {
                       "Atomic": {
                         "item": "better morrowind armor defemm(r).esp"
                       }
                     },
+                    "description": "hollaajith",
                     "is_negated": true
                   }
                 },
                 {
                   "DESC": {
-                    "description": "hollaajith",
                     "expression": {
                       "Atomic": {
                         "item": "better morrowind armor.esp"
                       }
                     },
+                    "description": "hollaajith",
                     "is_negated": true
                   }
                 },
@@ -47539,23 +48118,23 @@
                     "expressions": [
                       {
                         "DESC": {
-                          "description": "hollaajith",
                           "expression": {
                             "Atomic": {
                               "item": "complete armor joints.esp"
                             }
                           },
+                          "description": "hollaajith",
                           "is_negated": true
                         }
                       },
                       {
                         "DESC": {
-                          "description": "better morrowind armor",
                           "expression": {
                             "Atomic": {
                               "item": "complete armor joints.esp"
                             }
                           },
+                          "description": "better morrowind armor",
                           "is_negated": false
                         }
                       }
@@ -47567,23 +48146,23 @@
                     "expressions": [
                       {
                         "DESC": {
-                          "description": "hollaajith",
                           "expression": {
                             "Atomic": {
                               "item": "snow prince armor redux.esp"
                             }
                           },
+                          "description": "hollaajith",
                           "is_negated": true
                         }
                       },
                       {
                         "DESC": {
-                          "description": "a model replacer for the ancient steel armor",
                           "expression": {
                             "Atomic": {
                               "item": "snow prince armor redux.esp"
                             }
                           },
+                          "description": "a model replacer for the ancient steel armor",
                           "is_negated": false
                         }
                       }
@@ -47743,23 +48322,23 @@
               "expressions": [
                 {
                   "DESC": {
-                    "description": "hollaajith",
                     "expression": {
                       "Atomic": {
                         "item": "complete armor joints.esp"
                       }
                     },
+                    "description": "hollaajith",
                     "is_negated": true
                   }
                 },
                 {
                   "DESC": {
-                    "description": "better morrowind armor",
                     "expression": {
                       "Atomic": {
                         "item": "complete armor joints.esp"
                       }
                     },
+                    "description": "better morrowind armor",
                     "is_negated": true
                   }
                 }
@@ -47816,23 +48395,23 @@
               "expressions": [
                 {
                   "DESC": {
-                    "description": "hollaajith",
                     "expression": {
                       "Atomic": {
                         "item": "snow prince armor redux.esp"
                       }
                     },
+                    "description": "hollaajith",
                     "is_negated": true
                   }
                 },
                 {
                   "DESC": {
-                    "description": "a model replacer for the ancient steel armor",
                     "expression": {
                       "Atomic": {
                         "item": "snow prince armor redux.esp"
                       }
                     },
+                    "description": "a model replacer for the ancient steel armor",
                     "is_negated": true
                   }
                 }
@@ -48027,12 +48606,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 123894,
               "expression": {
                 "Atomic": {
                   "item": "house_spear.esp"
                 }
               },
+              "size": 123894,
               "is_negated": false
             }
           }
@@ -48648,12 +49227,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 134091,
               "expression": {
                 "Atomic": {
                   "item": "bob's armory.esp"
                 }
               },
+              "size": 134091,
               "is_negated": true
             }
           }
@@ -53468,12 +54047,12 @@
             "expressions": [
               {
                 "DESC": {
-                  "description": "adds 1100 types of npcs to over 550",
                   "expression": {
                     "Atomic": {
                       "item": "mca.esm"
                     }
                   },
+                  "description": "adds 1100 types of npcs to over 550",
                   "is_negated": false
                 }
               },
@@ -54342,23 +54921,23 @@
               "expressions": [
                 {
                   "SIZE": {
-                    "size": 64535,
                     "expression": {
                       "Atomic": {
                         "item": "kynareth.esp"
                       }
                     },
+                    "size": 64535,
                     "is_negated": false
                   }
                 },
                 {
                   "SIZE": {
-                    "size": 324570,
                     "expression": {
                       "Atomic": {
                         "item": "knights of tamriel.esp"
                       }
                     },
+                    "size": 324570,
                     "is_negated": false
                   }
                 }
@@ -54766,12 +55345,12 @@
               },
               {
                 "SIZE": {
-                  "size": 1915997,
                   "expression": {
                     "Atomic": {
                       "item": "giants.esm"
                     }
                   },
+                  "size": 1915997,
                   "is_negated": false
                 }
               }
@@ -54810,12 +55389,12 @@
               },
               {
                 "SIZE": {
-                  "size": 1825067,
                   "expression": {
                     "Atomic": {
                       "item": "giants.esm"
                     }
                   },
+                  "size": 1825067,
                   "is_negated": false
                 }
               }
@@ -56564,23 +57143,23 @@
                   "expressions": [
                     {
                       "DESC": {
-                        "description": "over 1000 friendly",
                         "expression": {
                           "Atomic": {
                             "item": "mca.esm"
                           }
                         },
+                        "description": "over 1000 friendly",
                         "is_negated": false
                       }
                     },
                     {
                       "DESC": {
-                        "description": "over 1200 friendly",
                         "expression": {
                           "Atomic": {
                             "item": "mca.esm"
                           }
                         },
+                        "description": "over 1200 friendly",
                         "is_negated": false
                       }
                     }
@@ -56590,6 +57169,42 @@
             ]
           }
         }
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Conflict": {
+        "comment": "lgnpc seyda neen 0.31 conflicts with some mods that change chargen, specifically when the npc socucius ergalla is no longer nolore the dialog for the quest about the murdered taxman gets broken.",
+        "expressions": [
+          {
+            "VER": {
+              "expression": {
+                "Atomic": {
+                  "item": "lgnpc_sn.esp"
+                }
+              },
+              "operator": "Less",
+              "version": "0.32"
+            }
+          },
+          {
+            "ANY": {
+              "expressions": [
+                {
+                  "Atomic": {
+                    "item": "alternate beginnings 2.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "chargen_revamped_v14.esp"
+                  }
+                }
+              ]
+            }
+          }
+        ]
       }
     }
   },
@@ -59838,12 +60453,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 4646696,
               "expression": {
                 "Atomic": {
                   "item": "havish.esm"
                 }
               },
+              "size": 4646696,
               "is_negated": false
             }
           },
@@ -61150,12 +61765,12 @@
                 },
                 {
                   "DESC": {
-                    "description": "tooplex",
                     "expression": {
                       "Atomic": {
                         "item": "btb - spells.esp"
                       }
                     },
+                    "description": "tooplex",
                     "is_negated": false
                   }
                 },
@@ -61305,12 +61920,12 @@
                       },
                       {
                         "SIZE": {
-                          "size": 1629334,
                           "expression": {
                             "Atomic": {
                               "item": "mtt iv master.esp"
                             }
                           },
+                          "size": 1629334,
                           "is_negated": true
                         }
                       }
@@ -61449,12 +62064,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 1629334,
               "expression": {
                 "Atomic": {
                   "item": "mtt iv master.esp"
                 }
               },
+              "size": 1629334,
               "is_negated": false
             }
           },
@@ -61709,12 +62324,12 @@
                 },
                 {
                   "DESC": {
-                    "description": "tooplex",
                     "expression": {
                       "Atomic": {
                         "item": "btb - spells.esp"
                       }
                     },
+                    "description": "tooplex",
                     "is_negated": false
                   }
                 },
@@ -62850,12 +63465,12 @@
         "expressions": [
           {
             "DESC": {
-              "description": "abot",
               "expression": {
                 "Atomic": {
                   "item": "mqe_mainquestenhancers.esp"
                 }
               },
+              "description": "abot",
               "is_negated": true
             }
           }
@@ -63021,12 +63636,12 @@
         "comment": "",
         "expression_a": {
           "SIZE": {
-            "size": 101249,
             "expression": {
               "Atomic": {
                 "item": "marandus abode mca patch.esp"
               }
             },
+            "size": 101249,
             "is_negated": false
           }
         },
@@ -63067,12 +63682,12 @@
               "expressions": [
                 {
                   "SIZE": {
-                    "size": 101249,
                     "expression": {
                       "Atomic": {
                         "item": "marandus abode mca patch.esp"
                       }
                     },
+                    "size": 101249,
                     "is_negated": false
                   }
                 },
@@ -64653,12 +65268,12 @@
               "expressions": [
                 {
                   "SIZE": {
-                    "size": 112173,
                     "expression": {
                       "Atomic": {
                         "item": "mca wizard hats addon.esp"
                       }
                     },
+                    "size": 112173,
                     "is_negated": false
                   }
                 },
@@ -64969,12 +65584,12 @@
         "expressions": [
           {
             "DESC": {
-              "description": "abot",
               "expression": {
                 "Atomic": {
                   "item": "mills of morrowind.esp"
                 }
               },
+              "description": "abot",
               "is_negated": true
             }
           }
@@ -64988,12 +65603,12 @@
         "comment": "although not mentioned in the readme, rubberman's \"mills of morrowind\" is dependent on \"better heads\".",
         "expression_a": {
           "DESC": {
-            "description": "abot",
             "expression": {
               "Atomic": {
                 "item": "mills of morrowind.esp"
               }
             },
+            "description": "abot",
             "is_negated": true
           }
         },
@@ -66226,12 +66841,12 @@
         },
         "expression_b": {
           "DESC": {
-            "description": "over 1200 friendly",
             "expression": {
               "Atomic": {
                 "item": "mca.esm"
               }
             },
+            "description": "over 1200 friendly",
             "is_negated": false
           }
         }
@@ -68266,12 +68881,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 687982,
               "expression": {
                 "Atomic": {
                   "item": "mw_a01.esp"
                 }
               },
+              "size": 687982,
               "is_negated": true
             }
           }
@@ -69217,6 +69832,43 @@
   {
     "EWarningRule": {
       "Note": {
+        "comment": "! the latest version of neoptolemus' \"morrowind comes alive\" is 8.2, you should upgrade.\t! http://morrowind.nexusmods.com/mods/6006",
+        "expressions": [
+          {
+            "ANY": {
+              "expressions": [
+                {
+                  "DESC": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "mca.esm"
+                      }
+                    },
+                    "description": "adds 1200 types of npcs to over 550",
+                    "is_negated": true
+                  }
+                },
+                {
+                  "VER": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "mca.esm"
+                      }
+                    },
+                    "operator": "Less",
+                    "version": "8.2"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Note": {
         "comment": "!! if you are running more than one mca clothing add-on then exclude all of the mca clothing add-ons when creating your merged objects. otherwise:\t!! \"the clothing add-ons don't work if you merge them - you get npcs wearing mismatched clothing.\"",
         "expressions": [
           {
@@ -69755,34 +70407,34 @@
               "expressions": [
                 {
                   "DESC": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "mca.esm"
+                      }
+                    },
                     "description": "adds 1000 types of npcs to over 400",
-                    "expression": {
-                      "Atomic": {
-                        "item": "mca.esm"
-                      }
-                    },
                     "is_negated": false
                   }
                 },
                 {
                   "DESC": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "mca.esm"
+                      }
+                    },
                     "description": "adds 1100 types of npcs to over 550",
-                    "expression": {
-                      "Atomic": {
-                        "item": "mca.esm"
-                      }
-                    },
                     "is_negated": false
                   }
                 },
                 {
                   "DESC": {
-                    "description": "v8",
                     "expression": {
                       "Atomic": {
                         "item": "mca.esm"
                       }
                     },
+                    "description": "v8",
                     "is_negated": false
                   }
                 }
@@ -69824,23 +70476,23 @@
               "expressions": [
                 {
                   "DESC": {
-                    "description": "adds 1100 types of npcs to over 550",
                     "expression": {
                       "Atomic": {
                         "item": "mca.esm"
                       }
                     },
+                    "description": "adds 1100 types of npcs to over 550",
                     "is_negated": false
                   }
                 },
                 {
                   "DESC": {
-                    "description": "v8",
                     "expression": {
                       "Atomic": {
                         "item": "mca.esm"
                       }
                     },
+                    "description": "v8",
                     "is_negated": false
                   }
                 }
@@ -69866,23 +70518,23 @@
               "expressions": [
                 {
                   "DESC": {
-                    "description": "adds 1100 types of npcs to over 550",
                     "expression": {
                       "Atomic": {
                         "item": "mca.esm"
                       }
                     },
+                    "description": "adds 1100 types of npcs to over 550",
                     "is_negated": false
                   }
                 },
                 {
                   "DESC": {
-                    "description": "v8",
                     "expression": {
                       "Atomic": {
                         "item": "mca.esm"
                       }
                     },
+                    "description": "v8",
                     "is_negated": false
                   }
                 }
@@ -69906,23 +70558,23 @@
                     "expressions": [
                       {
                         "DESC": {
-                          "description": "adds 1000 types of npcs to over 400",
                           "expression": {
                             "Atomic": {
                               "item": "mca.esm"
                             }
                           },
+                          "description": "adds 1000 types of npcs to over 400",
                           "is_negated": false
                         }
                       },
                       {
                         "DESC": {
-                          "description": "adds 1100 types of npcs to over 550",
                           "expression": {
                             "Atomic": {
                               "item": "mca.esm"
                             }
                           },
+                          "description": "adds 1100 types of npcs to over 550",
                           "is_negated": false
                         }
                       }
@@ -69955,23 +70607,23 @@
               "expressions": [
                 {
                   "DESC": {
-                    "description": "adds 1000 types of npcs to over 400",
                     "expression": {
                       "Atomic": {
                         "item": "mca.esm"
                       }
                     },
+                    "description": "adds 1000 types of npcs to over 400",
                     "is_negated": false
                   }
                 },
                 {
                   "DESC": {
-                    "description": "adds 1100 types of npcs to over 550",
                     "expression": {
                       "Atomic": {
                         "item": "mca.esm"
                       }
                     },
+                    "description": "adds 1100 types of npcs to over 550",
                     "is_negated": false
                   }
                 }
@@ -70036,45 +70688,45 @@
                     "expressions": [
                       {
                         "DESC": {
+                          "expression": {
+                            "Atomic": {
+                              "item": "mca.esm"
+                            }
+                          },
                           "description": "over 1000 friendly",
-                          "expression": {
-                            "Atomic": {
-                              "item": "mca.esm"
-                            }
-                          },
                           "is_negated": false
                         }
                       },
                       {
                         "DESC": {
+                          "expression": {
+                            "Atomic": {
+                              "item": "mca.esm"
+                            }
+                          },
                           "description": "over 1200 friendly",
-                          "expression": {
-                            "Atomic": {
-                              "item": "mca.esm"
-                            }
-                          },
                           "is_negated": false
                         }
                       },
                       {
                         "DESC": {
+                          "expression": {
+                            "Atomic": {
+                              "item": "mca.esm"
+                            }
+                          },
                           "description": "adds 1000 types of npcs to over 400",
-                          "expression": {
-                            "Atomic": {
-                              "item": "mca.esm"
-                            }
-                          },
                           "is_negated": false
                         }
                       },
                       {
                         "DESC": {
-                          "description": "adds 1100 types of npcs to over 550",
                           "expression": {
                             "Atomic": {
                               "item": "mca.esm"
                             }
                           },
+                          "description": "adds 1100 types of npcs to over 550",
                           "is_negated": false
                         }
                       }
@@ -70153,23 +70805,23 @@
               "expressions": [
                 {
                   "DESC": {
-                    "description": "v8",
                     "expression": {
                       "Atomic": {
                         "item": "mca.esm"
                       }
                     },
+                    "description": "v8",
                     "is_negated": true
                   }
                 },
                 {
                   "DESC": {
-                    "description": "7.1a",
                     "expression": {
                       "Atomic": {
                         "item": "mca - tr addon.esp"
                       }
                     },
+                    "description": "7.1a",
                     "is_negated": true
                   }
                 }
@@ -70194,34 +70846,34 @@
             "expressions": [
               {
                 "DESC": {
+                  "expression": {
+                    "Atomic": {
+                      "item": "mca.esm"
+                    }
+                  },
                   "description": "over 1000 friendly",
-                  "expression": {
-                    "Atomic": {
-                      "item": "mca.esm"
-                    }
-                  },
                   "is_negated": false
                 }
               },
               {
                 "DESC": {
+                  "expression": {
+                    "Atomic": {
+                      "item": "mca.esm"
+                    }
+                  },
                   "description": "over 1200 friendly",
-                  "expression": {
-                    "Atomic": {
-                      "item": "mca.esm"
-                    }
-                  },
                   "is_negated": false
                 }
               },
               {
                 "DESC": {
-                  "description": "adds 1000 types of npcs to over 400",
                   "expression": {
                     "Atomic": {
                       "item": "mca.esm"
                     }
                   },
+                  "description": "adds 1000 types of npcs to over 400",
                   "is_negated": false
                 }
               }
@@ -70248,23 +70900,23 @@
                   "expressions": [
                     {
                       "SIZE": {
-                        "size": 2551516,
                         "expression": {
                           "Atomic": {
                             "item": "mca.esm"
                           }
                         },
+                        "size": 2551516,
                         "is_negated": false
                       }
                     },
                     {
                       "SIZE": {
-                        "size": 2559987,
                         "expression": {
                           "Atomic": {
                             "item": "mca.esm"
                           }
                         },
+                        "size": 2559987,
                         "is_negated": false
                       }
                     }
@@ -70304,12 +70956,12 @@
           },
           {
             "SIZE": {
-              "size": 2597537,
               "expression": {
                 "Atomic": {
                   "item": "mca.esm"
                 }
               },
+              "size": 2597537,
               "is_negated": false
             }
           }
@@ -70372,12 +71024,12 @@
                     "expressions": [
                       {
                         "DESC": {
-                          "description": "over 1000 friendly",
                           "expression": {
                             "Atomic": {
                               "item": "mca.esm"
                             }
                           },
+                          "description": "over 1000 friendly",
                           "is_negated": false
                         }
                       },
@@ -70386,23 +71038,23 @@
                           "expressions": [
                             {
                               "DESC": {
-                                "description": "over 1200 friendly",
                                 "expression": {
                                   "Atomic": {
                                     "item": "mca.esm"
                                   }
                                 },
+                                "description": "over 1200 friendly",
                                 "is_negated": false
                               }
                             },
                             {
                               "SIZE": {
-                                "size": 2519851,
                                 "expression": {
                                   "Atomic": {
                                     "item": "mca.esm"
                                   }
                                 },
+                                "size": 2519851,
                                 "is_negated": true
                               }
                             }
@@ -70443,12 +71095,12 @@
                 },
                 {
                   "SIZE": {
-                    "size": 2519851,
                     "expression": {
                       "Atomic": {
                         "item": "mca.esm"
                       }
                     },
+                    "size": 2519851,
                     "is_negated": false
                   }
                 },
@@ -70471,23 +71123,23 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 2519851,
               "expression": {
                 "Atomic": {
                   "item": "mca.esm"
                 }
               },
+              "size": 2519851,
               "is_negated": false
             }
           },
           {
             "SIZE": {
-              "size": 150081,
               "expression": {
                 "Atomic": {
                   "item": "vampire embrace mca patch.esp"
                 }
               },
+              "size": 150081,
               "is_negated": false
             }
           }
@@ -70512,23 +71164,23 @@
                   "expressions": [
                     {
                       "DESC": {
-                        "description": "over 1000 friendly",
                         "expression": {
                           "Atomic": {
                             "item": "mca.esm"
                           }
                         },
+                        "description": "over 1000 friendly",
                         "is_negated": false
                       }
                     },
                     {
                       "DESC": {
-                        "description": "over 1200 friendly",
                         "expression": {
                           "Atomic": {
                             "item": "mca.esm"
                           }
                         },
+                        "description": "over 1200 friendly",
                         "is_negated": false
                       }
                     }
@@ -70563,23 +71215,23 @@
                   "expressions": [
                     {
                       "DESC": {
-                        "description": "over 1000 friendly",
                         "expression": {
                           "Atomic": {
                             "item": "mca.esm"
                           }
                         },
+                        "description": "over 1000 friendly",
                         "is_negated": false
                       }
                     },
                     {
                       "DESC": {
-                        "description": "over 1200 friendly",
                         "expression": {
                           "Atomic": {
                             "item": "mca.esm"
                           }
                         },
+                        "description": "over 1200 friendly",
                         "is_negated": false
                       }
                     }
@@ -70704,12 +71356,12 @@
           },
           {
             "DESC": {
-              "description": "over 1000 friendly",
               "expression": {
                 "Atomic": {
                   "item": "mca.esm"
                 }
               },
+              "description": "over 1000 friendly",
               "is_negated": false
             }
           }
@@ -70732,23 +71384,23 @@
               "expressions": [
                 {
                   "DESC": {
-                    "description": "adds 1000 types of npcs to over 400",
                     "expression": {
                       "Atomic": {
                         "item": "mca.esm"
                       }
                     },
+                    "description": "adds 1000 types of npcs to over 400",
                     "is_negated": false
                   }
                 },
                 {
                   "DESC": {
-                    "description": "adds 1100 types of npcs to over 550",
                     "expression": {
                       "Atomic": {
                         "item": "mca.esm"
                       }
                     },
+                    "description": "adds 1100 types of npcs to over 550",
                     "is_negated": false
                   }
                 }
@@ -70861,12 +71513,12 @@
             "expressions": [
               {
                 "DESC": {
-                  "description": "over 1200 friendly",
                   "expression": {
                     "Atomic": {
                       "item": "mca.esm"
                     }
                   },
+                  "description": "over 1200 friendly",
                   "is_negated": false
                 }
               },
@@ -70952,23 +71604,23 @@
             "expressions": [
               {
                 "DESC": {
-                  "description": "over 1000 friendly",
                   "expression": {
                     "Atomic": {
                       "item": "mca.esm"
                     }
                   },
+                  "description": "over 1000 friendly",
                   "is_negated": false
                 }
               },
               {
                 "DESC": {
-                  "description": "over 1200 friendly",
                   "expression": {
                     "Atomic": {
                       "item": "mca.esm"
                     }
                   },
+                  "description": "over 1200 friendly",
                   "is_negated": false
                 }
               }
@@ -71031,12 +71683,12 @@
         },
         "expression_b": {
           "DESC": {
-            "description": "over 1200 friendly",
             "expression": {
               "Atomic": {
                 "item": "mca.esm"
               }
             },
+            "description": "over 1200 friendly",
             "is_negated": false
           }
         }
@@ -71106,12 +71758,12 @@
         },
         "expression_b": {
           "DESC": {
-            "description": "over 1200 friendly",
             "expression": {
               "Atomic": {
                 "item": "mca.esm"
               }
             },
+            "description": "over 1200 friendly",
             "is_negated": false
           }
         }
@@ -71151,12 +71803,12 @@
             "expressions": [
               {
                 "DESC": {
-                  "description": "over 1200 friendly",
                   "expression": {
                     "Atomic": {
                       "item": "mca.esm"
                     }
                   },
+                  "description": "over 1200 friendly",
                   "is_negated": false
                 }
               },
@@ -71195,12 +71847,12 @@
             "expressions": [
               {
                 "SIZE": {
-                  "size": 2597537,
                   "expression": {
                     "Atomic": {
                       "item": "mca.esm"
                     }
                   },
+                  "size": 2597537,
                   "is_negated": false
                 }
               },
@@ -71239,12 +71891,12 @@
             "expressions": [
               {
                 "SIZE": {
-                  "size": 2442550,
                   "expression": {
                     "Atomic": {
                       "item": "morrowind comes alive.esm"
                     }
                   },
+                  "size": 2442550,
                   "is_negated": false
                 }
               },
@@ -71311,12 +71963,12 @@
         },
         "expression_b": {
           "SIZE": {
-            "size": 2458536,
             "expression": {
               "Atomic": {
                 "item": "mca.esm"
               }
             },
+            "size": 2458536,
             "is_negated": false
           }
         }
@@ -71464,12 +72116,12 @@
         },
         "expression_b": {
           "SIZE": {
-            "size": 2303212,
             "expression": {
               "Atomic": {
                 "item": "mca.esm"
               }
             },
+            "size": 2303212,
             "is_negated": false
           }
         }
@@ -71497,12 +72149,12 @@
         },
         "expression_b": {
           "DESC": {
-            "description": "over 1200 friendly",
             "expression": {
               "Atomic": {
                 "item": "mca.esm"
               }
             },
+            "description": "over 1200 friendly",
             "is_negated": false
           }
         }
@@ -71570,12 +72222,12 @@
         },
         "expression_b": {
           "DESC": {
-            "description": "over 1200 friendly",
             "expression": {
               "Atomic": {
                 "item": "mca.esm"
               }
             },
+            "description": "over 1200 friendly",
             "is_negated": false
           }
         }
@@ -71593,12 +72245,12 @@
         },
         "expression_b": {
           "DESC": {
-            "description": "adds 1100 types of npcs to over 550",
             "expression": {
               "Atomic": {
                 "item": "mca.esm"
               }
             },
+            "description": "adds 1100 types of npcs to over 550",
             "is_negated": false
           }
         }
@@ -71619,12 +72271,12 @@
             "expressions": [
               {
                 "DESC": {
-                  "description": "adds 1100 types of npcs to over 550",
                   "expression": {
                     "Atomic": {
                       "item": "mca.esm"
                     }
                   },
+                  "description": "adds 1100 types of npcs to over 550",
                   "is_negated": false
                 }
               },
@@ -71660,12 +72312,12 @@
         },
         "expression_b": {
           "DESC": {
-            "description": "v8.1",
             "expression": {
               "Atomic": {
                 "item": "mca.esm"
               }
             },
+            "description": "v8.1",
             "is_negated": false
           }
         }
@@ -71686,12 +72338,12 @@
             "expressions": [
               {
                 "DESC": {
-                  "description": "v8.1",
                   "expression": {
                     "Atomic": {
                       "item": "mca.esm"
                     }
                   },
+                  "description": "v8.1",
                   "is_negated": false
                 }
               },
@@ -71730,12 +72382,12 @@
             "expressions": [
               {
                 "SIZE": {
-                  "size": 2442550,
                   "expression": {
                     "Atomic": {
                       "item": "morrowind comes alive.esm"
                     }
                   },
+                  "size": 2442550,
                   "is_negated": false
                 }
               },
@@ -71787,12 +72439,12 @@
         },
         "expression_b": {
           "DESC": {
-            "description": "over 1200 friendly",
             "expression": {
               "Atomic": {
                 "item": "mca.esm"
               }
             },
+            "description": "over 1200 friendly",
             "is_negated": false
           }
         }
@@ -71810,12 +72462,12 @@
         },
         "expression_b": {
           "DESC": {
-            "description": "over 1200 friendly",
             "expression": {
               "Atomic": {
                 "item": "mca.esm"
               }
             },
+            "description": "over 1200 friendly",
             "is_negated": false
           }
         }
@@ -71833,12 +72485,12 @@
         },
         "expression_b": {
           "SIZE": {
-            "size": 2597537,
             "expression": {
               "Atomic": {
                 "item": "mca.esm"
               }
             },
+            "size": 2597537,
             "is_negated": false
           }
         }
@@ -71867,12 +72519,12 @@
         },
         "expression_b": {
           "DESC": {
-            "description": "v8.1",
             "expression": {
               "Atomic": {
                 "item": "mca.esm"
               }
             },
+            "description": "v8.1",
             "is_negated": false
           }
         }
@@ -71963,12 +72615,12 @@
         },
         "expression_b": {
           "SIZE": {
-            "size": 2597537,
             "expression": {
               "Atomic": {
                 "item": "mca.esm"
               }
             },
+            "size": 2597537,
             "is_negated": false
           }
         }
@@ -72047,12 +72699,12 @@
         },
         "expression_b": {
           "DESC": {
-            "description": "over 1200 friendly",
             "expression": {
               "Atomic": {
                 "item": "mca.esm"
               }
             },
+            "description": "over 1200 friendly",
             "is_negated": false
           }
         }
@@ -72157,12 +72809,12 @@
         },
         "expression_b": {
           "SIZE": {
-            "size": 2597537,
             "expression": {
               "Atomic": {
                 "item": "mca.esm"
               }
             },
+            "size": 2597537,
             "is_negated": false
           }
         }
@@ -72219,12 +72871,12 @@
           },
           {
             "SIZE": {
-              "size": 2303212,
               "expression": {
                 "Atomic": {
                   "item": "mca.esm"
                 }
               },
+              "size": 2303212,
               "is_negated": true
             }
           }
@@ -72298,23 +72950,23 @@
             "expressions": [
               {
                 "SIZE": {
-                  "size": 56487,
                   "expression": {
                     "Atomic": {
                       "item": "mca tamriel knights addon.esp"
                     }
                   },
+                  "size": 56487,
                   "is_negated": false
                 }
               },
               {
                 "SIZE": {
-                  "size": 96642,
                   "expression": {
                     "Atomic": {
                       "item": "mca tamriel knights addon.esp"
                     }
                   },
+                  "size": 96642,
                   "is_negated": false
                 }
               }
@@ -72336,12 +72988,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 56487,
               "expression": {
                 "Atomic": {
                   "item": "mca tamriel knights addon.esp"
                 }
               },
+              "size": 56487,
               "is_negated": false
             }
           }
@@ -72355,23 +73007,23 @@
         "comment": "marbred's \"mca tamriel knights addon\" requires \"morrowind comes alive\" v5.2 by neoptolemus.",
         "expression_a": {
           "SIZE": {
-            "size": 56269,
             "expression": {
               "Atomic": {
                 "item": "mca tamriel knights addon.esp"
               }
             },
+            "size": 56269,
             "is_negated": false
           }
         },
         "expression_b": {
           "DESC": {
-            "description": "over 1200 friendly",
             "expression": {
               "Atomic": {
                 "item": "mca.esm"
               }
             },
+            "description": "over 1200 friendly",
             "is_negated": false
           }
         }
@@ -72391,23 +73043,23 @@
                     "expressions": [
                       {
                         "SIZE": {
-                          "size": 56487,
                           "expression": {
                             "Atomic": {
                               "item": "mca tamriel knights addon.esp"
                             }
                           },
+                          "size": 56487,
                           "is_negated": false
                         }
                       },
                       {
                         "SIZE": {
-                          "size": 96642,
                           "expression": {
                             "Atomic": {
                               "item": "mca tamriel knights addon.esp"
                             }
                           },
+                          "size": 96642,
                           "is_negated": false
                         }
                       }
@@ -72513,12 +73165,12 @@
             "expressions": [
               {
                 "DESC": {
-                  "description": "over 1200 friendly",
                   "expression": {
                     "Atomic": {
                       "item": "mca.esm"
                     }
                   },
+                  "description": "over 1200 friendly",
                   "is_negated": false
                 }
               },
@@ -72572,23 +73224,23 @@
         "comment": "marbred's \"mca 5.1 wizard hats addon\" requires version 5.1 of neoptolemus' \"morrowind comes alive\" if you wish to use it with version 5.2 of \"morrowind comes alive\" then you need to remove this npc record from marbred's mod:   _mca_illusionist_alt_m if you wish to use it with the undead-compatible version of mca v5.2 then as well you will need to remove the following npc records:   _mca_bm_skel_shaman   _mca_dremora_battlemage   _mca_phan_mage   _mca_phan_sorceror   _mca_skel_mage   _mca_skel_sorceror   _mca_zombie_mage01   _mca_zombie_mage02' ( ref: mca51wizhatsaddon.zip\\readme - mca wizard hats addon.txt )",
         "expression_a": {
           "SIZE": {
-            "size": 143700,
             "expression": {
               "Atomic": {
                 "item": "mca wizard hats addon.esp"
               }
             },
+            "size": 143700,
             "is_negated": false
           }
         },
         "expression_b": {
           "SIZE": {
-            "size": 2458536,
             "expression": {
               "Atomic": {
                 "item": "mca.esm"
               }
             },
+            "size": 2458536,
             "is_negated": false
           }
         }
@@ -72601,12 +73253,12 @@
         "comment": "marbred's \"mca wizardhats addon\" requires version 4.1 of neoptolemus' \"morrowind comes alive\" ( ref: mca wizardhats addon.zip\\readme - mca wizard hats addon.txt )",
         "expression_a": {
           "SIZE": {
-            "size": 112173,
             "expression": {
               "Atomic": {
                 "item": "mca wizard hats addon.esp"
               }
             },
+            "size": 112173,
             "is_negated": false
           }
         },
@@ -72654,12 +73306,12 @@
         },
         "expression_b": {
           "DESC": {
-            "description": "over 1200 friendly",
             "expression": {
               "Atomic": {
                 "item": "mca.esm"
               }
             },
+            "description": "over 1200 friendly",
             "is_negated": false
           }
         }
@@ -74233,23 +74885,23 @@
               "expressions": [
                 {
                   "SIZE": {
-                    "size": 755202,
                     "expression": {
                       "Atomic": {
                         "item": "otr_coast_variety.esp"
                       }
                     },
+                    "size": 755202,
                     "is_negated": false
                   }
                 },
                 {
                   "SIZE": {
-                    "size": 20029,
                     "expression": {
                       "Atomic": {
                         "item": "poorly placed object fix 1.2.esm"
                       }
                     },
+                    "size": 20029,
                     "is_negated": false
                   }
                 }
@@ -74286,12 +74938,12 @@
           },
           {
             "SIZE": {
-              "size": 19994,
               "expression": {
                 "Atomic": {
                   "item": "poorly placed object fix 1.2.esm"
                 }
               },
+              "size": 19994,
               "is_negated": false
             }
           }
@@ -77639,12 +78291,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 2652,
               "expression": {
                 "Atomic": {
                   "item": "mh transportation.esp"
                 }
               },
+              "size": 2652,
               "is_negated": false
             }
           }
@@ -78009,12 +78661,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 1582308,
               "expression": {
                 "Atomic": {
                   "item": "muffinwind.esp"
                 }
               },
+              "size": 1582308,
               "is_negated": false
             }
           }
@@ -80103,12 +80755,12 @@
           },
           {
             "SIZE": {
-              "size": 813641,
               "expression": {
                 "Atomic": {
                   "item": "creatures.esp"
                 }
               },
+              "size": 813641,
               "is_negated": true
             }
           }
@@ -80140,12 +80792,12 @@
           },
           {
             "SIZE": {
-              "size": 739807,
               "expression": {
                 "Atomic": {
                   "item": "real_wildlife_2b complete.esp"
                 }
               },
+              "size": 739807,
               "is_negated": true
             }
           }
@@ -82531,12 +83183,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 54955,
               "expression": {
                 "Atomic": {
                   "item": "nimawia pearl farm.esp"
                 }
               },
+              "size": 54955,
               "is_negated": false
             }
           }
@@ -85744,12 +86396,12 @@
                 },
                 {
                   "DESC": {
-                    "description": "lefemm(tm) armor",
                     "expression": {
                       "Atomic": {
                         "item": "lefemmarmor.esp"
                       }
                     },
+                    "description": "lefemm(tm) armor",
                     "is_negated": false
                   }
                 },
@@ -88343,12 +88995,12 @@
         "expressions": [
           {
             "DESC": {
-              "description": "spirithawke",
               "expression": {
                 "Atomic": {
                   "item": "pssorticon.esp"
                 }
               },
+              "description": "spirithawke",
               "is_negated": true
             }
           }
@@ -90622,23 +91274,23 @@
               "expressions": [
                 {
                   "SIZE": {
-                    "size": 739677,
                     "expression": {
                       "Atomic": {
                         "item": "real_wildlife_2b complete.esp"
                       }
                     },
+                    "size": 739677,
                     "is_negated": false
                   }
                 },
                 {
                   "SIZE": {
-                    "size": 547424,
                     "expression": {
                       "Atomic": {
                         "item": "real_wildlife_2b.esp"
                       }
                     },
+                    "size": 547424,
                     "is_negated": false
                   }
                 }
@@ -91024,23 +91676,23 @@
               "expressions": [
                 {
                   "SIZE": {
-                    "size": 238938,
                     "expression": {
                       "Atomic": {
                         "item": "redaynia village.esp"
                       }
                     },
+                    "size": 238938,
                     "is_negated": true
                   }
                 },
                 {
                   "SIZE": {
-                    "size": 238710,
                     "expression": {
                       "Atomic": {
                         "item": "redaynia village.esp"
                       }
                     },
+                    "size": 238710,
                     "is_negated": true
                   }
                 }
@@ -91097,12 +91749,12 @@
               },
               {
                 "SIZE": {
-                  "size": 1683326,
                   "expression": {
                     "Atomic": {
                       "item": "mw_children_1_0.esm"
                     }
                   },
+                  "size": 1683326,
                   "is_negated": true
                 }
               }
@@ -91123,12 +91775,12 @@
         },
         "expression_b": {
           "SIZE": {
-            "size": 1683326,
             "expression": {
               "Atomic": {
                 "item": "mw_children_1_0.esm"
               }
             },
+            "size": 1683326,
             "is_negated": true
           }
         }
@@ -91150,12 +91802,12 @@
                 },
                 {
                   "SIZE": {
-                    "size": 1683326,
                     "expression": {
                       "Atomic": {
                         "item": "mw_children_1_0.esm"
                       }
                     },
+                    "size": 1683326,
                     "is_negated": false
                   }
                 }
@@ -91273,12 +91925,12 @@
           },
           {
             "SIZE": {
-              "size": 457977,
               "expression": {
                 "Atomic": {
                   "item": "house of mannequins v1.0.esp"
                 }
               },
+              "size": 457977,
               "is_negated": false
             }
           }
@@ -91332,12 +91984,12 @@
                 },
                 {
                   "SIZE": {
-                    "size": 30094,
                     "expression": {
                       "Atomic": {
                         "item": "areaeffectarrows.esp"
                       }
                     },
+                    "size": 30094,
                     "is_negated": true
                   }
                 },
@@ -91510,12 +92162,12 @@
         },
         "expression_b": {
           "DESC": {
-            "description": "over 1200 friendly",
             "expression": {
               "Atomic": {
                 "item": "mca.esm"
               }
             },
+            "description": "over 1200 friendly",
             "is_negated": false
           }
         }
@@ -93115,6 +93767,54 @@
                 {
                   "Atomic": {
                     "item": "clean ebonheart interior expansion.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "rise of house telvanni.esm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Note": {
+        "comment": "!! there are conflicts between \"rise of house telvanni\" and \"less generic npcs (lgnpc) pax redoran\", v1.20 and earlier, and versions of \"less generic npcs (lgnpc) tel uvirith\" earlier than v1.20.\t!! the lgnpc quests require that the player talks to duke dren, which will become impossible during the questline of \"rise of house telvanni\".\t!! patches for \"less generic npcs (lgnpc) pax redoran\" will be made with the next version.\t!! ( ref: \"rise of house telvanni v1.5 readme.txt\" )",
+        "expressions": [
+          {
+            "ALL": {
+              "expressions": [
+                {
+                  "ANY": {
+                    "expressions": [
+                      {
+                        "VER": {
+                          "expression": {
+                            "Atomic": {
+                              "item": "lgnpc_paxredoran*.esp"
+                            }
+                          },
+                          "operator": "Less",
+                          "version": "1.21"
+                        }
+                      },
+                      {
+                        "VER": {
+                          "expression": {
+                            "Atomic": {
+                              "item": "lgnpc_teluvirith_v<ver>.esp"
+                            }
+                          },
+                          "operator": "Less",
+                          "version": "1.20"
+                        }
+                      }
+                    ]
                   }
                 },
                 {
@@ -95343,12 +96043,12 @@
                 },
                 {
                   "DESC": {
-                    "description": "tooplex",
                     "expression": {
                       "Atomic": {
                         "item": "btb - spells.esp"
                       }
                     },
+                    "description": "tooplex",
                     "is_negated": false
                   }
                 },
@@ -96613,23 +97313,23 @@
               "expressions": [
                 {
                   "DESC": {
-                    "description": "version 2.01",
                     "expression": {
                       "Atomic": {
                         "item": "sg1-sgaileach_estate.esp"
                       }
                     },
+                    "description": "version 2.01",
                     "is_negated": true
                   }
                 },
                 {
                   "DESC": {
-                    "description": "version 2.01",
                     "expression": {
                       "Atomic": {
                         "item": "sg1-sgaileach_estate-nom.esp"
                       }
                     },
+                    "description": "version 2.01",
                     "is_negated": true
                   }
                 }
@@ -96652,8 +97352,19 @@
                   "ANY": {
                     "expressions": [
                       {
+                        "VER": {
+                          "expression": {
+                            "Atomic": {
+                              "item": "stinkers.esp"
+                            }
+                          },
+                          "operator": "Greater",
+                          "version": "1.71"
+                        }
+                      },
+                      {
                         "Atomic": {
-                          "item": "[ver >1.71 stinkers.esp]\n\t\t  stinkersbe.esp"
+                          "item": "stinkersbe.esp"
                         }
                       },
                       {
@@ -96674,23 +97385,23 @@
                     "expressions": [
                       {
                         "DESC": {
-                          "description": "version 2.01",
                           "expression": {
                             "Atomic": {
                               "item": "sg1-sgaileach_estate.esp"
                             }
                           },
+                          "description": "version 2.01",
                           "is_negated": false
                         }
                       },
                       {
                         "DESC": {
-                          "description": "version 2.01",
                           "expression": {
                             "Atomic": {
                               "item": "sg1-sgaileach_estate-nom.esp"
                             }
                           },
+                          "description": "version 2.01",
                           "is_negated": false
                         }
                       }
@@ -96721,23 +97432,23 @@
                   "expressions": [
                     {
                       "DESC": {
-                        "description": "version 2.01",
                         "expression": {
                           "Atomic": {
                             "item": "sg1-sgaileach_estate.esp"
                           }
                         },
+                        "description": "version 2.01",
                         "is_negated": false
                       }
                     },
                     {
                       "DESC": {
-                        "description": "version 2.01",
                         "expression": {
                           "Atomic": {
                             "item": "sg1-sgaileach_estate-nom.esp"
                           }
                         },
+                        "description": "version 2.01",
                         "is_negated": false
                       }
                     }
@@ -96748,8 +97459,19 @@
                 "ANY": {
                   "expressions": [
                     {
+                      "VER": {
+                        "expression": {
+                          "Atomic": {
+                            "item": "stinkers.esp"
+                          }
+                        },
+                        "operator": "Greater",
+                        "version": "1.71"
+                      }
+                    },
+                    {
                       "Atomic": {
-                        "item": "[ver >1.71 stinkers.esp]\n\t\t  stinkersbe.esp"
+                        "item": "stinkersbe.esp"
                       }
                     },
                     {
@@ -96818,23 +97540,23 @@
                     "expressions": [
                       {
                         "DESC": {
-                          "description": "version 2.01",
                           "expression": {
                             "Atomic": {
                               "item": "sg1-sgaileach_estate.esp"
                             }
                           },
+                          "description": "version 2.01",
                           "is_negated": false
                         }
                       },
                       {
                         "DESC": {
-                          "description": "version 2.01",
                           "expression": {
                             "Atomic": {
                               "item": "sg1-sgaileach_estate-nom.esp"
                             }
                           },
+                          "description": "version 2.01",
                           "is_negated": false
                         }
                       }
@@ -97138,12 +97860,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 30881,
               "expression": {
                 "Atomic": {
                   "item": "silentchargen.esp"
                 }
               },
+              "size": 30881,
               "is_negated": true
             }
           }
@@ -97406,12 +98128,12 @@
           },
           {
             "SIZE": {
-              "size": 4646696,
               "expression": {
                 "Atomic": {
                   "item": "havish.esm"
                 }
               },
+              "size": 4646696,
               "is_negated": false
             }
           }
@@ -97947,12 +98669,12 @@
                 },
                 {
                   "SIZE": {
-                    "size": 14993627,
                     "expression": {
                       "Atomic": {
                         "item": "wizards islands - scourge of the frost bringer.esm"
                       }
                     },
+                    "size": 14993627,
                     "is_negated": true
                   }
                 }
@@ -98296,12 +99018,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 10592,
               "expression": {
                 "Atomic": {
                   "item": "slof's better beasts a.esp"
                 }
               },
+              "size": 10592,
               "is_negated": false
             }
           }
@@ -98424,12 +99146,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 290646,
               "expression": {
                 "Atomic": {
                   "item": "slof's goth shop 1.1.esp"
                 }
               },
+              "size": 290646,
               "is_negated": false
             }
           },
@@ -98535,12 +99257,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 1815,
               "expression": {
                 "Atomic": {
                   "item": "slof's pillow book.esp"
                 }
               },
+              "size": 1815,
               "is_negated": false
             }
           }
@@ -98558,12 +99280,12 @@
               "expressions": [
                 {
                   "SIZE": {
-                    "size": 1815,
                     "expression": {
                       "Atomic": {
                         "item": "slof's pillow book.esp"
                       }
                     },
+                    "size": 1815,
                     "is_negated": false
                   }
                 },
@@ -99970,12 +100692,12 @@
             "expressions": [
               {
                 "DESC": {
-                  "description": "over 1200 friendly",
                   "expression": {
                     "Atomic": {
                       "item": "mca.esm"
                     }
                   },
+                  "description": "over 1200 friendly",
                   "is_negated": false
                 }
               },
@@ -100463,12 +101185,12 @@
                 },
                 {
                   "DESC": {
-                    "description": "tooplex",
                     "expression": {
                       "Atomic": {
                         "item": "btb - spells.esp"
                       }
                     },
+                    "description": "tooplex",
                     "is_negated": false
                   }
                 },
@@ -100824,6 +101546,29 @@
   },
   {
     "EWarningRule": {
+      "Requires": {
+        "comment": "you are missing \"sri alchemy bm list patch\". \"sris_alchemy_bm.esp\" (version 1.1109) uses deprecated addtolev* function to modify bethsoft leveled lists. for an explanation of why the functions addtolev*/removefromlev* are deprecated, please see: http://www.uesp.net/wiki/tes3mod:leveled_lists some patches may be available at that link. you can also get a replacement sris_alchemy_bm.esp that includes the patch here: http://morrowind.nexusmods.com/mods/20882",
+        "expression_a": {
+          "VER": {
+            "expression": {
+              "Atomic": {
+                "item": "sris_alchemy_bm.esp"
+              }
+            },
+            "operator": "Equal",
+            "version": "1.1109"
+          }
+        },
+        "expression_b": {
+          "Atomic": {
+            "item": "sri alchemy bm list patch.esp"
+          }
+        }
+      }
+    }
+  },
+  {
+    "EWarningRule": {
       "Note": {
         "comment": "! you should use srikandi's alchemy bloodmoon edition.\t! download from morrowind modding history - http://mw.modhistory.com/download-37-12192",
         "expressions": [
@@ -100864,12 +101609,12 @@
         "expressions": [
           {
             "DESC": {
-              "description": "adelie",
               "expression": {
                 "Atomic": {
                   "item": "sris_alchemy_bm.esp"
                 }
               },
+              "description": "adelie",
               "is_negated": false
             }
           },
@@ -101504,12 +102249,12 @@
         "expressions": [
           {
             "DESC": {
-              "description": "redesigned vivec compatible version",
               "expression": {
                 "Atomic": {
                   "item": "starfires npc additions ver-1.11.esp"
                 }
               },
+              "description": "redesigned vivec compatible version",
               "is_negated": true
             }
           },
@@ -102033,6 +102778,26 @@
   },
   {
     "EWarningRule": {
+      "Note": {
+        "comment": "!! grvulture's \"stinkers\" uses deprecated addtolev* function to modify bethsoft leveled lists. for an explanation of why the functions addtolev*/removefromlev* are deprecated, please see:\t!! http://www.uesp.net/wiki/tes3mod:leveled_lists\t!! gaius atrius has revised and updated grvulture's \"the bathing mod\", including removing its use of the addtolev* function:\t!! http://mw.modhistory.com/download-53-6415",
+        "expressions": [
+          {
+            "VER": {
+              "expression": {
+                "Atomic": {
+                  "item": "stinkers.esp"
+                }
+              },
+              "operator": "Less",
+              "version": "2"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
       "Conflict": {
         "comment": "\"in case you use the provincial bath shoppe v.1 by korana (with stinkers), be sure to check *also* provincial_bath_shoppe_for_stinkers.esp *instead* of the provincial_bath_shoppe_v1.esp.\" ( ref: \"stinkers_readme_v1.71.txt\" )",
         "expressions": [
@@ -102040,8 +102805,19 @@
             "ANY": {
               "expressions": [
                 {
+                  "VER": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "stinkers.esp"
+                      }
+                    },
+                    "operator": "Less",
+                    "version": "2"
+                  }
+                },
+                {
                   "Atomic": {
-                    "item": "[ver <2 stinkers.esp]\n\t provincial_bath _shoppe_for_stinkers.esp"
+                    "item": "provincial_bath _shoppe_for_stinkers.esp"
                   }
                 }
               ]
@@ -102099,8 +102875,19 @@
           "ALL": {
             "expressions": [
               {
+                "VER": {
+                  "expression": {
+                    "Atomic": {
+                      "item": "stinkers.esp"
+                    }
+                  },
+                  "operator": "Less",
+                  "version": "2"
+                }
+              },
+              {
                 "Atomic": {
-                  "item": "[ver <2 stinkers.esp]\n\t ascadian_rose_cottage_ver1.0.esp"
+                  "item": "ascadian_rose_cottage_ver1.0.esp"
                 }
               }
             ]
@@ -102130,6 +102917,37 @@
     }
   },
   {
+    "EWarningRule": {
+      "Conflict": {
+        "comment": "when using stinkers mod with \"gardeners of morrowind\", you should use the version of \"gardeners of morrowind.esp\" that is included in the stinkers mod. ( ref: \"stinkers_readme_v1.71.txt\" )",
+        "expressions": [
+          {
+            "VER": {
+              "expression": {
+                "Atomic": {
+                  "item": "stinkers.esp"
+                }
+              },
+              "operator": "Less",
+              "version": "2"
+            }
+          },
+          {
+            "SIZE": {
+              "expression": {
+                "Atomic": {
+                  "item": "gardeners of morrowind.esp"
+                }
+              },
+              "size": 364308,
+              "is_negated": true
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
     "EOrderRule": {
       "Order": {
         "names": [
@@ -102141,6 +102959,96 @@
           "balmora expansion - lite 1.0.esp",
           "be+(1.4) better looking morrowind.esp",
           "be_bathing_patch.esp"
+        ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Patch": {
+        "comment": "( ref: \"stinkers_readme_v1.71.txt\" )",
+        "expression_a": {
+          "Atomic": {
+            "item": "be_bathing_patch.esp"
+          }
+        },
+        "expression_b": {
+          "ALL": {
+            "expressions": [
+              {
+                "VER": {
+                  "expression": {
+                    "Atomic": {
+                      "item": "stinkers.esp"
+                    }
+                  },
+                  "operator": "Less",
+                  "version": "2"
+                }
+              },
+              {
+                "ANY": {
+                  "expressions": [
+                    {
+                      "Atomic": {
+                        "item": "balmora expansion v1.4.esp"
+                      }
+                    },
+                    {
+                      "Atomic": {
+                        "item": "balmora expansion v1.4+(1.4).esp"
+                      }
+                    },
+                    {
+                      "Atomic": {
+                        "item": "balmora expansion - lite 1.0.esp"
+                      }
+                    },
+                    {
+                      "Atomic": {
+                        "item": "be+(1.4) better looking morrowind.esp"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Note": {
+        "comment": "grvulture has released a patch to his bathing mod which fixes an issue of soap sellers only restocking soaps every four months (the default spawning cycle for morrowind). if this is too long for you, you can load this patch. be warned that this will give to a soap seller the same kind of soaps every time you barter with him/her though. ( ref: http://mw.modhistory.com/download-56-10392 )",
+        "expressions": [
+          {
+            "ALL": {
+              "expressions": [
+                {
+                  "VER": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "stinkers.esp"
+                      }
+                    },
+                    "operator": "Less",
+                    "version": "2"
+                  }
+                },
+                {
+                  "NOT": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "stinkers_patch.esp"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
         ]
       }
     }
@@ -102202,8 +103110,19 @@
             "ANY": {
               "expressions": [
                 {
+                  "VER": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "stinkers.esp"
+                      }
+                    },
+                    "operator": "Greater",
+                    "version": "1.71"
+                  }
+                },
+                {
                   "Atomic": {
-                    "item": "[ver >1.71 stinkers.esp]\n\t stinkersbe.esp"
+                    "item": "stinkersbe.esp"
                   }
                 },
                 {
@@ -102312,8 +103231,19 @@
                 "ANY": {
                   "expressions": [
                     {
+                      "VER": {
+                        "expression": {
+                          "Atomic": {
+                            "item": "stinkers.esp"
+                          }
+                        },
+                        "operator": "Greater",
+                        "version": "1.71"
+                      }
+                    },
+                    {
                       "Atomic": {
-                        "item": "[ver >1.71 stinkers.esp]\n\t\t  stinkersbe.esp"
+                        "item": "stinkersbe.esp"
                       }
                     },
                     {
@@ -102387,6 +103317,57 @@
           "stinkers.esp",
           "stinkersbe.esp",
           "stinkers v2 - ascadian rose cottage patch.esp"
+        ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Conflict": {
+        "comment": "when using stinkers/the bathing mod v2 with balmora expansion, use \"stinkersbe.esp\" instead of \"stinkers.esp\". ( ref: http://mw.modhistory.com/download-53-6415 )",
+        "expressions": [
+          {
+            "VER": {
+              "expression": {
+                "Atomic": {
+                  "item": "stinkers.esp"
+                }
+              },
+              "operator": "Greater",
+              "version": "1.71"
+            }
+          },
+          {
+            "ANY": {
+              "expressions": [
+                {
+                  "Atomic": {
+                    "item": "balmora expansion v1.4.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "balmora expansion v1.4+(1.4).esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "balmora expansion - lite 1.0.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "be+(1.4) better looking morrowind.esp"
+                  }
+                },
+                {
+                  "Atomic": {
+                    "item": "stinkersbe.esp"
+                  }
+                }
+              ]
+            }
+          }
         ]
       }
     }
@@ -102639,8 +103620,19 @@
                 "ANY": {
                   "expressions": [
                     {
+                      "VER": {
+                        "expression": {
+                          "Atomic": {
+                            "item": "stinkers.esp"
+                          }
+                        },
+                        "operator": "Greater",
+                        "version": "1.71"
+                      }
+                    },
+                    {
                       "Atomic": {
-                        "item": "[ver >1.71 stinkers.esp]\n\t\t  stinkersbe.esp"
+                        "item": "stinkersbe.esp"
                       }
                     },
                     {
@@ -103483,12 +104475,12 @@
                 },
                 {
                   "DESC": {
-                    "description": "lefemm(tm) armor",
                     "expression": {
                       "Atomic": {
                         "item": "lefemmarmor.esp"
                       }
                     },
+                    "description": "lefemm(tm) armor",
                     "is_negated": false
                   }
                 },
@@ -103833,12 +104825,12 @@
               "expressions": [
                 {
                   "SIZE": {
-                    "size": 2086615,
                     "expression": {
                       "Atomic": {
                         "item": "suran_underworld_2.5.esp"
                       }
                     },
+                    "size": 2086615,
                     "is_negated": false
                   }
                 },
@@ -103935,12 +104927,12 @@
               "expressions": [
                 {
                   "SIZE": {
-                    "size": 2086615,
                     "expression": {
                       "Atomic": {
                         "item": "suran_underworld_2.5.esp"
                       }
                     },
+                    "size": 2086615,
                     "is_negated": false
                   }
                 },
@@ -104439,12 +105431,12 @@
               "expressions": [
                 {
                   "DESC": {
-                    "description": "lefemm(tm) armor",
                     "expression": {
                       "Atomic": {
                         "item": "lefemmarmor.esp"
                       }
                     },
+                    "description": "lefemm(tm) armor",
                     "is_negated": false
                   }
                 },
@@ -104860,12 +105852,12 @@
               "expressions": [
                 {
                   "DESC": {
-                    "description": "lefemm(tm) armor",
                     "expression": {
                       "Atomic": {
                         "item": "lefemmarmor.esp"
                       }
                     },
+                    "description": "lefemm(tm) armor",
                     "is_negated": false
                   }
                 },
@@ -105937,12 +106929,12 @@
           },
           {
             "SIZE": {
-              "size": 4646696,
               "expression": {
                 "Atomic": {
                   "item": "havish.esm"
                 }
               },
+              "size": 4646696,
               "is_negated": false
             }
           }
@@ -107443,12 +108435,12 @@
               },
               {
                 "DESC": {
-                  "description": "over 1200 friendly",
                   "expression": {
                     "Atomic": {
                       "item": "mca.esm"
                     }
                   },
+                  "description": "over 1200 friendly",
                   "is_negated": false
                 }
               }
@@ -107527,6 +108519,31 @@
         "names": [
           "bt_whitewolf_2_0.esp",
           "temperature lokken addon.esp"
+        ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Conflict": {
+        "comment": "you probably should not be trying to use two versions of \"texture fix\" at the same time. you should only need the latest version.",
+        "expressions": [
+          {
+            "Atomic": {
+              "item": "texture fix 2.0.esm"
+            }
+          },
+          {
+            "VER": {
+              "expression": {
+                "Atomic": {
+                  "item": "texture fix <ver>.esm"
+                }
+              },
+              "operator": "Less",
+              "version": "2.0"
+            }
+          }
         ]
       }
     }
@@ -110064,12 +111081,12 @@
           },
           {
             "SIZE": {
-              "size": 2519851,
               "expression": {
                 "Atomic": {
                   "item": "mca.esm"
                 }
               },
+              "size": 2519851,
               "is_negated": true
             }
           }
@@ -111829,12 +112846,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 5935708,
               "expression": {
                 "Atomic": {
                   "item": "the_underground.esp"
                 }
               },
+              "size": 5935708,
               "is_negated": false
             }
           }
@@ -111947,12 +112964,12 @@
                 },
                 {
                   "SIZE": {
-                    "size": 2519851,
                     "expression": {
                       "Atomic": {
                         "item": "mca.esm"
                       }
                     },
+                    "size": 2519851,
                     "is_negated": true
                   }
                 }
@@ -111978,12 +112995,12 @@
                 },
                 {
                   "SIZE": {
-                    "size": 2519851,
                     "expression": {
                       "Atomic": {
                         "item": "mca.esm"
                       }
                     },
+                    "size": 2519851,
                     "is_negated": false
                   }
                 }
@@ -112862,12 +113879,12 @@
                 },
                 {
                   "SIZE": {
-                    "size": 22585,
                     "expression": {
                       "Atomic": {
                         "item": "uniquefinery.esp"
                       }
                     },
+                    "size": 22585,
                     "is_negated": true
                   }
                 }
@@ -112928,12 +113945,12 @@
                 },
                 {
                   "SIZE": {
-                    "size": 22585,
                     "expression": {
                       "Atomic": {
                         "item": "uniquefinery.esp"
                       }
                     },
+                    "size": 22585,
                     "is_negated": true
                   }
                 }
@@ -113018,12 +114035,12 @@
                       },
                       {
                         "SIZE": {
-                          "size": 22585,
                           "expression": {
                             "Atomic": {
                               "item": "uniquefinery.esp"
                             }
                           },
+                          "size": 22585,
                           "is_negated": true
                         }
                       }
@@ -113075,12 +114092,12 @@
                                 },
                                 {
                                   "SIZE": {
-                                    "size": 22585,
                                     "expression": {
                                       "Atomic": {
                                         "item": "uniquefinery.esp"
                                       }
                                     },
+                                    "size": 22585,
                                     "is_negated": true
                                   }
                                 }
@@ -113584,12 +114601,12 @@
         },
         "expression_b": {
           "DESC": {
-            "description": "over 1200 friendly",
             "expression": {
               "Atomic": {
                 "item": "mca.esm"
               }
             },
+            "description": "over 1200 friendly",
             "is_negated": false
           }
         }
@@ -113658,12 +114675,12 @@
                 },
                 {
                   "SIZE": {
-                    "size": 3471,
                     "expression": {
                       "Atomic": {
                         "item": "ci_global.esp"
                       }
                     },
+                    "size": 3471,
                     "is_negated": true
                   }
                 }
@@ -113782,34 +114799,34 @@
               "expressions": [
                 {
                   "SIZE": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "uvirith inside.esp"
+                      }
+                    },
                     "size": 1118342,
-                    "expression": {
-                      "Atomic": {
-                        "item": "uvirith inside.esp"
-                      }
-                    },
                     "is_negated": false
                   }
                 },
                 {
                   "SIZE": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "uvirith inside.esp"
+                      }
+                    },
                     "size": 1100376,
-                    "expression": {
-                      "Atomic": {
-                        "item": "uvirith inside.esp"
-                      }
-                    },
                     "is_negated": false
                   }
                 },
                 {
                   "SIZE": {
-                    "size": 1110978,
                     "expression": {
                       "Atomic": {
                         "item": "uvirith inside.esp"
                       }
                     },
+                    "size": 1110978,
                     "is_negated": false
                   }
                 }
@@ -113826,8 +114843,19 @@
         "comment": "\"ul_mwse_patch.esp\" is for versions of stuporstar's \"uvirith's legacy\" prior to version 3.2. version 3.52's mwse addon is \"ul_3.5_mwse_add-on.esp\" and should be used instead.",
         "expressions": [
           {
+            "VER": {
+              "expression": {
+                "Atomic": {
+                  "item": "uvirith's legacy_<ver>.esp"
+                }
+              },
+              "operator": "Greater",
+              "version": "3.1"
+            }
+          },
+          {
             "Atomic": {
-              "item": "[ver >3.1 uvirith's legacy_<ver>.esp]\nul_mwse_patch.esp"
+              "item": "ul_mwse_patch.esp"
             }
           }
         ]
@@ -113876,6 +114904,31 @@
             "item": "uvirith's legacy_<ver>.esp"
           }
         }
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Conflict": {
+        "comment": "the mwse companion addon for stuporstar's \"uvirith's legacy\" has been updated, use \"ul_mwse_companions_v2.esp\" instead.",
+        "expressions": [
+          {
+            "Atomic": {
+              "item": "ul_mwse_companions.esp"
+            }
+          },
+          {
+            "VER": {
+              "expression": {
+                "Atomic": {
+                  "item": "uvirith's legacy_<ver>.esp"
+                }
+              },
+              "operator": "Greater",
+              "version": "3.2"
+            }
+          }
+        ]
       }
     }
   },
@@ -116570,12 +117623,12 @@
                 },
                 {
                   "SIZE": {
-                    "size": 288521,
                     "expression": {
                       "Atomic": {
                         "item": "vampiric hunger base.esp"
                       }
                     },
+                    "size": 288521,
                     "is_negated": false
                   }
                 }
@@ -116767,12 +117820,12 @@
               },
               {
                 "DESC": {
-                  "description": "vampire embrace 2.4",
                   "expression": {
                     "Atomic": {
                       "item": "vampire_embrace.esp"
                     }
                   },
+                  "description": "vampire embrace 2.4",
                   "is_negated": false
                 }
               }
@@ -118057,12 +119110,12 @@
               "expressions": [
                 {
                   "SIZE": {
-                    "size": 1482242,
                     "expression": {
                       "Atomic": {
                         "item": "vivec expansion 2.0.esp"
                       }
                     },
+                    "size": 1482242,
                     "is_negated": true
                   }
                 },
@@ -118090,12 +119143,12 @@
         "expressions": [
           {
             "DESC": {
-              "description": "fixed the floating door",
               "expression": {
                 "Atomic": {
                   "item": "vivec expansion 2.0.esp"
                 }
               },
+              "description": "fixed the floating door",
               "is_negated": true
             }
           }
@@ -118164,12 +119217,12 @@
           },
           {
             "SIZE": {
-              "size": 55096,
               "expression": {
                 "Atomic": {
                   "item": "vivec_voice_addon mw only.esp"
                 }
               },
+              "size": 55096,
               "is_negated": true
             }
           }
@@ -118199,12 +119252,12 @@
           },
           {
             "SIZE": {
-              "size": 64990,
               "expression": {
                 "Atomic": {
                   "item": "vivec_voice_addon tribunal.esp"
                 }
               },
+              "size": 64990,
               "is_negated": true
             }
           }
@@ -119612,8 +120665,19 @@
         "comment": "version 1.13 and above of abot's \"water life\" includes arcimaestro antares' \"gondoliers\" ( ref: abotwaterlife.txt )",
         "expressions": [
           {
+            "VER": {
+              "expression": {
+                "Atomic": {
+                  "item": "abotwaterlife.esm"
+                }
+              },
+              "operator": "Greater",
+              "version": "1.12"
+            }
+          },
+          {
             "Atomic": {
-              "item": "[ver > 1.12 abotwaterlife.esm]\ngondoliers.esp"
+              "item": "gondoliers.esp"
             }
           }
         ]
@@ -119626,8 +120690,19 @@
         "comment": "version 1.17 and above of abot's \"water life\" includes arcimaestro antares' \"cecaelia\" ( ref: abotwaterlife.txt )",
         "expressions": [
           {
+            "VER": {
+              "expression": {
+                "Atomic": {
+                  "item": "abotwaterlife.esm"
+                }
+              },
+              "operator": "Greater",
+              "version": "1.16"
+            }
+          },
+          {
             "Atomic": {
-              "item": "[ver > 1.16 abotwaterlife.esm]\nantares' creatures -  cecaelia.esp"
+              "item": "antares' creatures -  cecaelia.esp"
             }
           }
         ]
@@ -120550,12 +121625,12 @@
                       },
                       {
                         "SIZE": {
-                          "size": 23039,
                           "expression": {
                             "Atomic": {
                               "item": "dwemerclock.esp"
                             }
                           },
+                          "size": 23039,
                           "is_negated": false
                         }
                       }
@@ -122594,12 +123669,12 @@
         "expressions": [
           {
             "DESC": {
-              "description": "abot",
               "expression": {
                 "Atomic": {
                   "item": "windows glow - raven rock eng.esp"
                 }
               },
+              "description": "abot",
               "is_negated": true
             }
           }
@@ -122830,12 +123905,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 14993627,
               "expression": {
                 "Atomic": {
                   "item": "wizards islands - scourge of the frost bringer.esm"
                 }
               },
+              "size": 14993627,
               "is_negated": true
             }
           },
@@ -122855,12 +123930,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 14993627,
               "expression": {
                 "Atomic": {
                   "item": "wizards islands - scourge of the frost bringer.esm"
                 }
               },
+              "size": 14993627,
               "is_negated": true
             }
           },
@@ -122880,12 +123955,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 14993627,
               "expression": {
                 "Atomic": {
                   "item": "wizards islands - scourge of the frost bringer.esm"
                 }
               },
+              "size": 14993627,
               "is_negated": true
             }
           },
@@ -123398,12 +124473,12 @@
         "expressions": [
           {
             "SIZE": {
-              "size": 63823,
               "expression": {
                 "Atomic": {
                   "item": "wrye patches m.esp"
                 }
               },
+              "size": 63823,
               "is_negated": false
             }
           }

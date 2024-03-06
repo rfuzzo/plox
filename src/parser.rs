@@ -433,7 +433,7 @@ impl Parser {
                 current_buffer += &(b as char).to_string();
 
                 // check if really an expression
-                // valid expressions are [ANY], [ALL], [NOT], [DESC], [SIZE]
+                // valid expressions are [ANY], [ALL], [NOT], [DESC], [SIZE], [VER]
 
                 if depth == 0 {
                     // we reached the end of the current expression
@@ -443,6 +443,7 @@ impl Parser {
                         || starts_with_whitespace(trimmed, "[not")
                         || starts_with_whitespace(trimmed, "[desc")
                         || starts_with_whitespace(trimmed, "[size")
+                        || starts_with_whitespace(trimmed, "[ver")
                     {
                         is_expr = false;
                         chunks.push((trimmed.to_owned(), true));
@@ -548,7 +549,7 @@ impl Parser {
                 }
             } else if let Some(rest) = reader.strip_prefix("[desc") {
                 let body = rest[..rest.len() - 1].trim_start();
-                if let Some((regex, expr, negated)) = parse_desc_input(body) {
+                if let Some((expr, regex, negated)) = parse_desc(body) {
                     // do something
                     let expressions = self.parse_expressions(expr.as_bytes())?;
                     if let Some(first) = expressions.into_iter().last() {
@@ -562,11 +563,25 @@ impl Parser {
                 ))
             } else if let Some(rest) = reader.strip_prefix("[size") {
                 let body = rest[..rest.len() - 1].trim_start();
-                if let Some((size, expr, negated)) = parse_size_input(body) {
+                if let Some((expr, size, negated)) = parse_size(body) {
                     // do something
                     let expressions = self.parse_expressions(expr.as_bytes())?;
                     if let Some(first) = expressions.into_iter().last() {
                         let expr = SIZE::new(first, size, negated);
+                        return Ok(expr.into());
+                    }
+                }
+                Err(Error::new(
+                    ErrorKind::Other,
+                    "Parsing error: unknown expression",
+                ))
+            } else if let Some(rest) = reader.strip_prefix("[ver") {
+                let body = rest[..rest.len() - 1].trim_start();
+                if let Some((expr, operator, version)) = parse_ver(body) {
+                    // do something
+                    let expressions = self.parse_expressions(expr.as_bytes())?;
+                    if let Some(first) = expressions.into_iter().last() {
+                        let expr = VER::new(first, operator, version);
                         return Ok(expr.into());
                     }
                 }
@@ -620,7 +635,7 @@ pub fn read_comment<R: Read + BufRead + Seek>(reader: &mut R) -> Result<Option<S
     }
 }
 
-fn parse_desc_input(input: &str) -> Option<(String, String, bool)> {
+fn parse_desc(input: &str) -> Option<(String, String, bool)> {
     //  !/Bite works only with Vampire Embrace/ DW_assassination.esp]
     if let Some(input) = input.strip_prefix("!/") {
         if let Some(end_index) = input.rfind('/') {
@@ -630,7 +645,7 @@ fn parse_desc_input(input: &str) -> Option<(String, String, bool)> {
             // Extract the substring right of the last "/"
             let right_part = input[end_index + 1..].trim().to_string();
 
-            return Some((left_part, right_part, true));
+            return Some((right_part, left_part, true));
         }
     }
     //  /This version is compatible with Better Robes and Better Clothes./ UFR_v3dot2.esp]
@@ -642,33 +657,68 @@ fn parse_desc_input(input: &str) -> Option<(String, String, bool)> {
             // Extract the substring right of the last "/"
             let right_part = input[end_index + 1..].trim().to_string();
 
-            return Some((left_part, right_part, false));
+            return Some((right_part, left_part, false));
         }
     }
 
     None
 }
 
-fn parse_size_input(input: &str) -> Option<(usize, String, bool)> {
+fn parse_size(input: &str) -> Option<(String, usize, bool)> {
     // !4921700 Annastia V3.3.esp]
     if let Some(input) = input.strip_prefix('!') {
-        let mut iter = input.split_whitespace();
-        if let Some(left_part) = iter.next() {
-            if let Some(right_part) = input.strip_prefix(left_part) {
+        if let Some(left_part) = input.split_whitespace().next() {
+            if let Some(right_part) = input.trim_start().strip_prefix(left_part) {
                 if let Ok(size) = left_part.parse::<usize>() {
-                    return Some((size, right_part[1..].to_owned(), true));
+                    return Some((right_part[1..].to_owned(), size, true));
                 }
             }
         }
     }
     // 591786 BMS_Timers_Patch.esp]
-    else {
-        let mut iter = input.split_whitespace();
-        if let Some(left_part) = iter.next() {
-            if let Some(right_part) = input.strip_prefix(left_part) {
-                if let Ok(size) = left_part.parse::<usize>() {
-                    return Some((size, right_part[1..].to_owned(), false));
-                }
+    else if let Some(left_part) = input.split_whitespace().next() {
+        if let Some(right_part) = input.trim_start().strip_prefix(left_part) {
+            if let Ok(size) = left_part.parse::<usize>() {
+                return Some((right_part[1..].to_owned(), size, false));
+            }
+        }
+    }
+
+    None
+}
+
+fn parse_ver(input: &str) -> Option<(String, EVerOperator, String)> {
+    // >1.51 Rise of House Telvanni.esm
+    // = 2.14 Blood and Gore.esp
+    // < 3.1 Class Abilities <VER>.esp
+    if let Some(input) = input.strip_prefix('<') {
+        if let Some(version) = input.split_whitespace().next() {
+            if let Some(right_part) = input.trim_start().strip_prefix(version) {
+                return Some((
+                    right_part.to_owned(),
+                    EVerOperator::Less,
+                    version.to_owned(),
+                ));
+            }
+        }
+    } else if let Some(input) = input.strip_prefix('>') {
+        if let Some(version) = input.split_whitespace().next() {
+            if let Some(right_part) = input.trim_start().strip_prefix(version) {
+                return Some((
+                    right_part.to_owned(),
+                    EVerOperator::Greater,
+                    version.to_owned(),
+                ));
+            }
+        }
+    } else if let Some(input) = input.strip_prefix('=') {
+        if let Some(version) = input.split_whitespace().next() {
+            if let Some(right_part) = input.trim_start().strip_prefix(version) {
+                return Some((
+                    right_part.to_owned(),
+                    EVerOperator::Equal,
+                    version.to_owned(),
+                ));
             }
         }
     }

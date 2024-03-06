@@ -3366,12 +3366,12 @@
           },
           {
             "DESC": {
-              "description": "patches poison crafting",
               "expression": {
                 "Atomic": {
                   "item": "mwse_poisoncrafting.esp"
                 }
               },
+              "description": "patches poison crafting",
               "is_negated": true
             }
           }
@@ -10290,12 +10290,12 @@
               },
               {
                 "DESC": {
-                  "description": "enjoy!",
                   "expression": {
                     "Atomic": {
                       "item": "camonna tong.esp"
                     }
                   },
+                  "description": "enjoy!",
                   "is_negated": false
                 }
               }
@@ -10354,12 +10354,12 @@
               },
               {
                 "DESC": {
-                  "description": "enjoy!",
                   "expression": {
                     "Atomic": {
                       "item": "camonna tong.esp"
                     }
                   },
+                  "description": "enjoy!",
                   "is_negated": true
                 }
               }
@@ -20165,12 +20165,12 @@
               "expressions": [
                 {
                   "DESC": {
-                    "description": "main file v. 22.11",
                     "expression": {
                       "Atomic": {
                         "item": "tr_mainland.esm"
                       }
                     },
+                    "description": "main file v. 22.11",
                     "is_negated": false
                   }
                 },
@@ -20212,12 +20212,12 @@
               "expressions": [
                 {
                   "DESC": {
-                    "description": "main file v. 22.11",
                     "expression": {
                       "Atomic": {
                         "item": "tr_mainland.esm"
                       }
                     },
+                    "description": "main file v. 22.11",
                     "is_negated": false
                   }
                 },

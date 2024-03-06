@@ -605,7 +605,54 @@ mod unit_tests {
         }
     }
 
+    // VER
+    #[test]
+    fn test_ver_expr() {
+        init();
+
+        let inputs = [
+            ("<", "1.51", "a.archive"),
+            ("<", "1.51", "a some name.archive"),
+            (">", "1.51", "a.archive"),
+            (">", "1.51", "a some name.archive"),
+            ("=", "1.51", "a.archive"),
+            ("=", "1.51", "a some name.archive"),
+        ];
+
+        for (a, b, c) in inputs {
+            test_ver(
+                format!("[VER {a} {b} {c}]").to_lowercase().as_str(),
+                [a, b, c].to_vec(),
+            );
+        }
+    }
+
+    fn test_ver(input: &str, expected: Vec<&str>) {
+        let parser = parser::new_cyberpunk_parser();
+
+        assert_eq!(
+            1,
+            parser
+                .parse_expressions(Cursor::new(input.as_bytes()))
+                .expect("No expressions parsed")
+                .len()
+        );
+
+        let expr = parser
+            .parse_expression(input, true)
+            .expect("No expressions parsed");
+
+        if let Expression::VER(e) = expr {
+            assert_eq!(format!("{}", e.operator), expected[0]);
+            assert_eq!(format!("{}", e.version), expected[1]);
+            assert!(is_atomic(e.expression.as_ref(), expected[2]));
+        } else {
+            panic!("wrong type");
+        }
+    }
+
     // Helpers
+
     fn is_atomic(e: &Expression, expected: &str) -> bool {
         if let Expression::Atomic(b) = e {
             assert_eq!(expected, b.get_item().as_str());

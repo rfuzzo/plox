@@ -1,3 +1,9 @@
+[conflict]
+	you should use v0.3 or better of yacoby's "encumbrance bar" with "rage indicator", otherwise the bars will conflict.
+	( ref: readme - rage indicator.esp)
+rage indicator.esp
+[ver <0.3 encumbrance bar.esp]
+
 [Conflict]
 Oblivionized Magicka Regeneration.esp						;;Oblivionized Magicka Regeneration 1.22 [andylam222]
 [ANY	Regional_Mana_Regen-MW+BM.esp						;;Regional Mana 2.0 [Wildman]

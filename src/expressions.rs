@@ -2,6 +2,8 @@
 // EXPRESSIONS
 ////////////////////////////////////////////////////////////////////////
 
+use std::fmt::Display;
+
 use serde::{Deserialize, Serialize};
 
 use crate::wild_contains;
@@ -19,6 +21,7 @@ pub enum Expression {
     NOT(NOT),
     DESC(DESC),
     SIZE(SIZE),
+    VER(VER),
 }
 
 // pass-through
@@ -31,6 +34,7 @@ impl TExpression for Expression {
             Expression::NOT(x) => x.eval(items),
             Expression::DESC(x) => x.eval(items),
             Expression::SIZE(x) => x.eval(items),
+            Expression::VER(x) => x.eval(items),
         }
     }
 }
@@ -63,6 +67,11 @@ impl From<DESC> for Expression {
 impl From<SIZE> for Expression {
     fn from(val: SIZE) -> Self {
         Expression::SIZE(val)
+    }
+}
+impl From<VER> for Expression {
+    fn from(val: VER) -> Self {
+        Expression::VER(val)
     }
 }
 
@@ -192,12 +201,11 @@ impl Clone for NOT {
 ////////////////////////////////////////////////////////////////////////
 // DESC
 
-/// The DESC expression
-/// TODO DESC evaluates as true if the expression evaluates as true
+/// TODO The Desc predicate is a special predicate that matches strings in the header of a plugin with regular expressions.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DESC {
-    pub description: String,
     pub expression: Box<Expression>,
+    pub description: String,
     pub is_negated: bool,
 }
 impl DESC {
@@ -210,7 +218,6 @@ impl DESC {
     }
 }
 impl TExpression for DESC {
-    // TODO DESC evaluates as true if the expression evaluates as true
     fn eval(&self, items: &[String]) -> bool {
         self.expression.eval(items)
     }
@@ -228,12 +235,11 @@ impl Clone for DESC {
 ////////////////////////////////////////////////////////////////////////
 // SIZE
 
-/// The SIZE expression
-/// TODO SIZE evaluates as true if the expression evaluates as true
+/// TODO The Size predicate is a special predicate that matches the filesize of the plugin
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SIZE {
-    pub size: usize,
     pub expression: Box<Expression>,
+    pub size: usize,
     pub is_negated: bool,
 }
 impl SIZE {
@@ -246,7 +252,6 @@ impl SIZE {
     }
 }
 impl TExpression for SIZE {
-    // TODO SIZE evaluates as true if the expression evaluates as true
     fn eval(&self, items: &[String]) -> bool {
         self.expression.eval(items)
     }
@@ -257,6 +262,60 @@ impl Clone for SIZE {
             expression: self.expression.clone(),
             size: self.size,
             is_negated: self.is_negated,
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////
+// VER
+
+#[derive(Debug, Serialize, Deserialize, Clone, Copy)]
+pub enum EVerOperator {
+    Less,
+    Equal,
+    Greater,
+}
+
+impl Display for EVerOperator {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            EVerOperator::Less => write!(f, "<"),
+            EVerOperator::Equal => write!(f, "="),
+            EVerOperator::Greater => write!(f, ">"),
+        }
+    }
+}
+
+/// TODO The Ver predicate is a special predicate that first tries to match the version number string stored in the plugin header,
+/// and if that fails it tries to match the version number from the plugin filename.
+/// If a version number is found, it can be used in a comparison.
+/// Syntax: [VER operator version plugin.esp]
+#[derive(Debug, Serialize, Deserialize)]
+pub struct VER {
+    pub expression: Box<Expression>,
+    pub operator: EVerOperator,
+    pub version: String,
+}
+impl VER {
+    pub fn new(expression: Expression, operator: EVerOperator, version: String) -> Self {
+        Self {
+            expression: Box::new(expression),
+            operator,
+            version,
+        }
+    }
+}
+impl TExpression for VER {
+    fn eval(&self, items: &[String]) -> bool {
+        self.expression.eval(items)
+    }
+}
+impl Clone for VER {
+    fn clone(&self) -> Self {
+        Self {
+            expression: self.expression.clone(),
+            operator: self.operator,
+            version: self.version.clone(),
         }
     }
 }
