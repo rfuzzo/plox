@@ -9,43 +9,7 @@ mod unit_tests {
         let _ = env_logger::builder().is_test(true).try_init();
     }
 
-    #[test]
-    fn test_tokenize() {
-        init();
-
-        let parser = parser::new_cyberpunk_parser();
-
-        {
-            let input = "a.archive my e3.archive.archive";
-            let expected = ["a.archive", "my e3.archive.archive"];
-            assert_eq!(expected, parser.tokenize(input.to_owned()).as_slice());
-        }
-
-        {
-            let input = " a.archive \"mod with spaces.archive\" b.archive";
-            let expected = ["a.archive", "mod with spaces.archive", "b.archive"];
-            assert_eq!(expected, parser.tokenize(input.to_owned()).as_slice());
-        }
-
-        {
-            let input = " a.archive \"mod with spaces.archive\" \"c.archive\"";
-            let expected = ["a.archive", "mod with spaces.archive", "c.archive"];
-            assert_eq!(expected, parser.tokenize(input.to_owned()).as_slice());
-        }
-
-        {
-            let input = "a mod with spaces.archive";
-            let expected = ["a mod with spaces.archive"];
-            assert_eq!(expected, parser.tokenize(input.to_owned()).as_slice());
-        }
-
-        {
-            let input = "a.archive";
-            let expected = ["a.archive"];
-            assert_eq!(expected, parser.tokenize(input.to_owned()).as_slice());
-        }
-    }
-
+   
     ////////////////////////////////////////////////////////////////////////
     // ORDER
 

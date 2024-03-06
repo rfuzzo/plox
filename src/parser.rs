@@ -143,7 +143,7 @@ impl Parser {
                 continue;
             }
 
-            // TODO lowercase all
+            // lowercase all
             let line = line.to_lowercase();
 
             if chunk.is_some() && line.trim().is_empty() {
@@ -208,11 +208,9 @@ impl Parser {
         match start {
             '[' => {
                 // start parsing
-                let mut buf = vec![];
                 // read until the end of the rule expression: e.g. [NOTE comment] body
-                // TODO this may fail for stuff like [Note My message with some [brakets?]
-                let _ = reader.read_until(b']', &mut buf)?;
-                if let Ok(rule_expression) = String::from_utf8(buf[..buf.len() - 1].to_vec()) {
+                if let Ok(mut rule_expression) = parse_rule_expression(&mut reader) {
+                    rule_expression.pop();
                     let mut rule: ERule;
                     // parse rule name
                     {
@@ -274,7 +272,6 @@ impl Parser {
                         if is_first_line {
                             if let Some(first_char) = line.chars().next() {
                                 if first_char.is_ascii_whitespace() {
-                                    // TODO these are comments
                                     comment += line.as_str();
                                     continue;
                                 }
@@ -314,7 +311,6 @@ impl Parser {
         }
     }
 
-    // TODO Clean up this shit :D
     pub fn ends_with_vec(&self, current_buffer: &str) -> bool {
         let mut b = false;
         for ext in &self.ext {
@@ -517,7 +513,7 @@ impl Parser {
             } else if let Some(rest) = reader.strip_prefix("[desc") {
                 // [DESC /regex/ A.esp] or // [DESC !/regex/ A.esp]
                 let body = rest[..rest.len() - 1].trim_start();
-                if let Some((regex, expr)) = Self::parse_desc_input(body) {
+                if let Some((regex, expr)) = parse_desc_input(body) {
                     // do something
                     let expressions = self.parse_expressions(expr.as_bytes())?;
                     if let Some(first) = expressions.into_iter().last() {
@@ -546,37 +542,9 @@ impl Parser {
             Ok(Atomic::from(reader).into())
         }
     }
-
-    fn parse_desc_input(input: &str) -> Option<(String, String)> {
-        if let Some(start_index) = input.find('/') {
-            if let Some(end_index) = input.rfind('/') {
-                // Extract the substring between "/" and "/"
-                let left_part = input[start_index + 1..end_index].trim().to_string();
-
-                // Extract the substring right of the last "/"
-                let right_part = input[end_index + 1..].trim().to_string();
-
-                // TODO fix negation
-                return Some((left_part, right_part));
-            }
-        }
-
-        if let Some(start_index) = input.find("!/") {
-            if let Some(end_index) = input.rfind('/') {
-                // Extract the substring between "/" and "/"
-                let left_part = input[start_index + 2..end_index].trim().to_string();
-
-                // Extract the substring right of the last "/"
-                let right_part = input[end_index + 1..].trim().to_string();
-
-                return Some((left_part, right_part));
-            }
-        }
-        None
-    }
 }
 
-/// .Reads the first comment lines of a rule chunk and returns the rest as byte buffer
+/// Reads the first comment lines of a rule chunk and returns the rest as byte buffer
 ///
 /// # Errors
 ///
@@ -598,5 +566,131 @@ pub fn read_comment<R: Read + BufRead + Seek>(reader: &mut R) -> Result<Option<S
     } else {
         reader.seek(SeekFrom::Current(-1))?;
         Ok(None)
+    }
+}
+
+fn parse_desc_input(input: &str) -> Option<(String, String)> {
+    if let Some(start_index) = input.find('/') {
+        if let Some(end_index) = input.rfind('/') {
+            // Extract the substring between "/" and "/"
+            let left_part = input[start_index + 1..end_index].trim().to_string();
+
+            // Extract the substring right of the last "/"
+            let right_part = input[end_index + 1..].trim().to_string();
+
+            // TODO fix negation
+            return Some((left_part, right_part));
+        }
+    }
+
+    if let Some(start_index) = input.find("!/") {
+        if let Some(end_index) = input.rfind('/') {
+            // Extract the substring between "/" and "/"
+            let left_part = input[start_index + 2..end_index].trim().to_string();
+
+            // Extract the substring right of the last "/"
+            let right_part = input[end_index + 1..].trim().to_string();
+
+            return Some((left_part, right_part));
+        }
+    }
+    None
+}
+
+fn parse_rule_expression<R>(mut reader: R) -> Result<String>
+where
+    R: Read,
+{
+    let mut scope = 1;
+    let mut buffer = Vec::new();
+    let end_index;
+
+    loop {
+        let mut byte = [0; 1];
+        match reader.read_exact(&mut byte) {
+            Ok(_) => {
+                buffer.push(byte[0]);
+                if byte[0] == b'[' {
+                    scope += 1;
+                } else if byte[0] == b']' {
+                    scope -= 1;
+                    if scope == 0 {
+                        end_index = buffer.len();
+                        break;
+                    }
+                }
+            }
+            Err(err) => {
+                eprintln!("Error reading input: {}", err);
+                return Err(err);
+            }
+        }
+    }
+
+    buffer.truncate(end_index);
+    Ok(String::from_utf8_lossy(&buffer).into_owned())
+}
+
+#[cfg(test)]
+mod tests {
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    use super::*;
+
+    #[test]
+    fn test_parse_rule_expression() -> Result<()> {
+        {
+            let inputs = [
+                ("NOTE comment] more content.", "NOTE comment]"),
+                ("NOTE] more content.", "NOTE]"),
+                ("NOTE comment]", "NOTE comment]"),
+                ("NOTE with [nested] comment]", "NOTE with [nested] comment]"),
+                (
+                    "NOTE with [nested] comment] and more",
+                    "NOTE with [nested] comment]",
+                ),
+            ];
+
+            for (input, expected) in inputs {
+                assert_eq!(
+                    expected.to_owned(),
+                    parse_rule_expression(input.as_bytes())?
+                );
+            }
+        }
+
+        {
+            let inputs = [
+                ("NOTE comment[]"),
+                ("NOTE comment[with] [[[[[broken scope]"),
+            ];
+
+            for input in inputs {
+                assert!(parse_rule_expression(input.as_bytes()).is_err())
+            }
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_tokenize() {
+        let parser = new_cyberpunk_parser();
+
+        let inputs = [
+            vec!["a.archive", "my e3.archive.archive"],
+            vec![" a.archive", "\"mod with spaces.archive\"", "b.archive"],
+            vec![" a.archive", "\"mod with spaces.archive\"", "\"c.archive\""],
+            vec!["a mod with spaces.archive"],
+            vec!["a.archive"],
+        ];
+
+        for input_vec in inputs {
+            let input = input_vec.join(" ");
+            let expected = input_vec
+                .iter()
+                .map(|f| f.trim().trim_matches('"').trim())
+                .collect::<Vec<_>>();
+            assert_eq!(expected, parser.tokenize(input.to_owned()).as_slice());
+        }
     }
 }
