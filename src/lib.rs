@@ -1,8 +1,7 @@
 use std::env;
 use std::error::Error;
 use std::fs::{self, File};
-use std::io;
-use std::io::BufRead;
+use std::io::{self, BufRead, Write};
 use std::ops::ControlFlow;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
@@ -14,6 +13,7 @@ pub mod parser;
 pub mod rules;
 pub mod sorter;
 
+use ini::Ini;
 use log::{error, info, warn};
 use openmw_cfg::config_path;
 use reqwest::header::LAST_MODIFIED;
@@ -437,9 +437,6 @@ where
     plugins
 }
 
-#[macro_use]
-extern crate ini;
-
 pub fn gather_tes3_mods<P>(path: &P) -> Vec<String>
 where
     P: AsRef<Path>,
@@ -459,25 +456,24 @@ where
     let morrowind_ini_path = PathBuf::from("Morrowind.ini");
     if morrowind_ini_path.exists() {
         // parse ini
-        let path = morrowind_ini_path.to_str().expect("Invalid path string");
-        let map = ini!(path);
-        let mut final_files: Vec<String> = vec![];
-        if let Some(section) = map.get("game files") {
-            let mods_in_ini = section
-                .values()
-                .flatten()
-                .map(|f| f.to_owned())
-                .collect::<Vec<_>>();
-
-            for plugin_name in names {
-                if mods_in_ini.contains(&plugin_name) {
-                    final_files.push(plugin_name.to_owned());
+        if let Ok(ini) = Ini::load_from_file(morrowind_ini_path) {
+            let mut final_files: Vec<String> = vec![];
+            if let Some(section) = ini.section(Some("Game Files")) {
+                let mods_in_ini: Vec<_> = section.iter().map(|f| f.1).collect();
+                for plugin_name in names {
+                    if mods_in_ini.contains(&plugin_name.as_str()) {
+                        final_files.push(plugin_name.to_owned());
+                    }
                 }
-            }
 
-            return final_files;
+                return final_files;
+            }
+            warn!(
+                "Morrowind.ini found but no [Game Files] section, using all plugins in Data Files"
+            );
+        } else {
+            error!("Morrowind.ini could not be read");
         }
-        warn!("Morrowind.ini found but no [Game Files] section, using all plugins in Data Files");
     } else {
         warn!("No Morrowind.ini found, using all plugins in Data Files");
     }
@@ -558,23 +554,32 @@ pub fn update_new_load_order(game: ESupportedGame, result: &[String]) -> std::io
 }
 
 fn update_cp77(_result: &[String]) -> std::io::Result<()> {
-    todo!()
+    // TODO CP77 update mods
+    panic!("Not implemented")
 }
 
 fn update_openmw(result: &[String]) -> std::io::Result<()> {
     // in openMW we just update the cfg with the new order
-    if let Ok(mut cfg) = openmw_cfg::get_config() {
-        let general = cfg.general_section_mut();
-        // remove
-        let _ = general.remove_all("content");
+    if let Ok(_cfg) = openmw_cfg::get_config() {
+        // parse ini
+        let mut buf = Vec::new();
+        for line in read_lines(config_path())?.map_while(Result::ok) {
+            // skip plugin lines
 
-        // add back
-        for name in result {
-            general.append("content", name);
+            if line.starts_with("content=") {
+                continue;
+            }
+            writeln!(buf, "{}", line)?;
+        }
+
+        // add filenames
+        for r in result {
+            writeln!(buf, "content={}", r)?;
         }
 
         // save
-        cfg.write_to_file(config_path())?;
+        let mut file = File::create(config_path())?;
+        file.write_all(&buf)?;
     } else {
         error!("No openmw.cfg found");
     }
@@ -582,27 +587,40 @@ fn update_openmw(result: &[String]) -> std::io::Result<()> {
     Ok(())
 }
 
-fn update_tes3(_result: &[String]) -> std::io::Result<()> {
+fn update_tes3(result: &[String]) -> std::io::Result<()> {
     // in tes3 we first update the ini with the new order (this is technically not important but we might as well)
     // check against mw ini
     let morrowind_ini_path = PathBuf::from("Morrowind.ini");
     if morrowind_ini_path.exists() {
         // parse ini
-        let path = morrowind_ini_path.to_str().expect("Invalid path string");
-        let map = ini!(path);
-        let mut final_files: Vec<String> = vec![];
-        if let Some(section) = map.get("game files") {
-
-            // TODO
+        let mut buf = Vec::new();
+        for line in read_lines(&morrowind_ini_path)?.map_while(Result::ok) {
+            // skip plugin lines
+            if line.starts_with("[Game Files]") {
+                continue;
+            }
+            if line.starts_with("GameFile") {
+                continue;
+            }
+            writeln!(buf, "{}", line)?;
         }
-        warn!("Morrowind.ini found but no [Game Files] section, using all plugins in Data Files");
+
+        // add filenames
+        writeln!(buf, "[Game Files]")?;
+        for (i, r) in result.iter().enumerate() {
+            writeln!(buf, "GameFile{}={}", i, r)?;
+        }
+
+        // save
+        let mut file = File::create(morrowind_ini_path)?;
+        file.write_all(&buf)?;
     } else {
         warn!("No Morrowind.ini found, using all plugins in Data Files");
     }
 
     // then actually reset the filetimes on all plugins hooray
 
-    todo!()
+    Ok(())
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -864,7 +882,6 @@ mod tests {
         }
 
         // Fails
-
         {
             let input = "Hold it - replace.esp".to_lowercase().to_owned();
             assert!(wild_contains(&[input], &pattern).is_none());
@@ -886,7 +903,6 @@ mod tests {
         }
 
         // Fails
-
         {
             let input = "Rem_LoCAA.esp".to_lowercase().to_owned();
             assert!(wild_contains(&[input], &pattern).is_none());
@@ -934,7 +950,6 @@ mod tests {
         }
 
         // Fails
-
         {
             let input = "ADN-GDRv1.0_comment.esp".to_lowercase().to_owned();
             assert!(wild_contains(&[input], &pattern).is_none());
@@ -950,4 +965,38 @@ mod tests {
             assert!(wild_contains(&[input], &pattern).is_none());
         }
     }
+
+    // #[test]
+    // fn test_update_openmw() {
+    //     let result = ["a".to_owned(), "b".to_owned(), "c".to_owned()];
+    //     update_openmw(&result).expect("write failed");
+    // }
+
+    // #[test]
+    // fn test_update_tes3() {
+    //     let result = ["a".to_owned(), "b".to_owned(), "c".to_owned()];
+    //     update_tes3(&result).expect("write failed");
+    // }
+
+    // #[test]
+    // fn test_update_tes3() {
+    //     let morrowind_ini_path = PathBuf::from("Morrowind.ini");
+    //     if morrowind_ini_path.exists() {
+    //         // parse ini
+    //         if let Ok(ini) = Ini::load_from_file(morrowind_ini_path) {
+    //             if let Some(section) = ini.section(Some("Game Files")) {
+    //                 for m in section.iter().map(|f| f.1) {
+    //                     eprintln!("{}", m);
+    //                 }
+    //             }
+    //             warn!(
+    //             "Morrowind.ini found but no [Game Files] section, using all plugins in Data Files"
+    //         );
+    //         } else {
+    //             error!("Morrowind.ini could not be read");
+    //         }
+    //     } else {
+    //         warn!("No Morrowind.ini found, using all plugins in Data Files");
+    //     }
+    // }
 }
