@@ -25,6 +25,19 @@ pub enum Expression {
 }
 
 // pass-through
+impl Display for Expression {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Expression::Atomic(x) => x.fmt(f),
+            Expression::ALL(x) => x.fmt(f),
+            Expression::ANY(x) => x.fmt(f),
+            Expression::NOT(x) => x.fmt(f),
+            Expression::DESC(x) => x.fmt(f),
+            Expression::SIZE(x) => x.fmt(f),
+            Expression::VER(x) => x.fmt(f),
+        }
+    }
+}
 impl TExpression for Expression {
     fn eval(&self, items: &[String]) -> Option<Vec<String>> {
         match self {
@@ -38,6 +51,7 @@ impl TExpression for Expression {
         }
     }
 }
+
 // conversions
 impl From<Atomic> for Expression {
     fn from(val: Atomic) -> Self {
@@ -112,6 +126,12 @@ impl From<String> for Atomic {
     }
 }
 
+impl Display for Atomic {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.item)
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////
 // ALL
 
@@ -146,6 +166,20 @@ impl TExpression for ALL {
         } else {
             None
         }
+    }
+}
+
+impl Display for ALL {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "[ALL {}]",
+            self.expressions
+                .iter()
+                .map(|x| x.to_string())
+                .collect::<Vec<_>>()
+                .join("\n\t")
+        )
     }
 }
 
@@ -184,6 +218,20 @@ impl TExpression for ANY {
     }
 }
 
+impl Display for ANY {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "[ANY {}]",
+            self.expressions
+                .iter()
+                .map(|x| x.to_string())
+                .collect::<Vec<_>>()
+                .join("\n\t")
+        )
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////
 // NOT
 
@@ -206,8 +254,8 @@ impl TExpression for NOT {
         if let Some(_plugins) = self.expression.eval(items) {
             None
         } else {
-            // TODO NOT and resolving names
-            Some(vec![])
+            // NOT and resolving names
+            Some(vec![self.to_string()])
         }
     }
 }
@@ -219,21 +267,28 @@ impl Clone for NOT {
     }
 }
 
+impl Display for NOT {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "[NOT {}]", self.expression.clone())
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////
 // DESC
 
 /// TODO The Desc predicate is a special predicate that matches strings in the header of a plugin with regular expressions.
+/// [DESC /regex/ A.esp] or [DESC !/regex/ A.esp]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DESC {
     pub expression: Box<Expression>,
-    pub description: String,
+    pub regex: String,
     pub is_negated: bool,
 }
 impl DESC {
     pub fn new(expression: Expression, description: String, is_negated: bool) -> Self {
         Self {
             expression: Box::new(expression),
-            description,
+            regex: description,
             is_negated,
         }
     }
@@ -247,8 +302,18 @@ impl Clone for DESC {
     fn clone(&self) -> Self {
         Self {
             expression: self.expression.clone(),
-            description: self.description.clone(),
+            regex: self.regex.clone(),
             is_negated: self.is_negated,
+        }
+    }
+}
+
+impl Display for DESC {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if self.is_negated {
+            write!(f, "[DESC !/{}/ {}]", self.regex, self.expression.clone())
+        } else {
+            write!(f, "[DESC /{}/ {}]", self.regex, self.expression.clone())
         }
     }
 }
@@ -257,6 +322,7 @@ impl Clone for DESC {
 // SIZE
 
 /// TODO The Size predicate is a special predicate that matches the filesize of the plugin
+/// [SIZE ### A.esp] or [SIZE !### A.esp]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SIZE {
     pub expression: Box<Expression>,
@@ -283,6 +349,16 @@ impl Clone for SIZE {
             expression: self.expression.clone(),
             size: self.size,
             is_negated: self.is_negated,
+        }
+    }
+}
+
+impl Display for SIZE {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if self.is_negated {
+            write!(f, "[SIZE !{} {}]", self.size, self.expression.clone())
+        } else {
+            write!(f, "[SIZE {} {}]", self.size, self.expression.clone())
         }
     }
 }
@@ -338,5 +414,17 @@ impl Clone for VER {
             operator: self.operator,
             version: self.version.clone(),
         }
+    }
+}
+
+impl Display for VER {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "[VER {} {} {}]",
+            self.operator,
+            self.version,
+            self.expression.clone()
+        )
     }
 }

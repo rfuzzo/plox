@@ -1,7 +1,10 @@
 ////////////////////////////////////////////////////////////////////////
 // RULES
 ////////////////////////////////////////////////////////////////////////
-use std::io::{BufRead, Error, ErrorKind, Read, Result, Seek};
+use std::{
+    fmt::Display,
+    io::{BufRead, Error, ErrorKind, Read, Result, Seek},
+};
 
 use log::warn;
 use serde::{Deserialize, Serialize};
@@ -372,6 +375,17 @@ impl TParser<NearEnd> for NearEnd {
 // IMPLEMENTATIONS WARNINGS
 ////////////////////////////////////////////////////////////////////////
 
+impl Display for EWarningRule {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            EWarningRule::Note(x) => x.fmt(f),
+            EWarningRule::Conflict(x) => x.fmt(f),
+            EWarningRule::Requires(x) => x.fmt(f),
+            EWarningRule::Patch(x) => x.fmt(f),
+        }
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////
 // NOTE
 
@@ -439,6 +453,16 @@ impl TParser<Note> for Note {
     }
 }
 
+impl Display for Note {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut block = format!("[NOTE]\n\t{}\n", self.comment);
+        for e in &self.expressions {
+            block += format!("{}\n", e).as_str();
+        }
+        write!(f, "{}", block)
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////
 // CONFLICT
 
@@ -502,6 +526,16 @@ impl TParser<Conflict> for Conflict {
         }
 
         Ok(())
+    }
+}
+
+impl Display for Conflict {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut block = format!("[CONFLICT]\n\t{}\n", self.comment);
+        for e in &self.expressions {
+            block += format!("{}\n", e).as_str();
+        }
+        write!(f, "{}", block)
     }
 }
 
@@ -576,6 +610,19 @@ impl TParser<Requires> for Requires {
         this.expression_b = Some(expressions[1].clone());
 
         Ok(())
+    }
+}
+
+impl Display for Requires {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut block = format!("[REQUIRES]\n\t{}\n", self.comment);
+        if let Some(a) = &self.expression_a {
+            block += format!("{}\n", a).as_str();
+        }
+        if let Some(b) = &self.expression_b {
+            block += format!("{}\n", b).as_str();
+        }
+        write!(f, "{}", block)
     }
 }
 
@@ -658,5 +705,18 @@ impl TParser<Patch> for Patch {
         this.expression_b = Some(expressions[1].clone());
 
         Ok(())
+    }
+}
+
+impl Display for Patch {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut block = format!("[PATCH]\n\t{}\n", self.comment);
+        if let Some(a) = &self.expression_a {
+            block += format!("{}\n", a).as_str();
+        }
+        if let Some(b) = &self.expression_b {
+            block += format!("{}\n", b).as_str();
+        }
+        write!(f, "{}", block)
     }
 }

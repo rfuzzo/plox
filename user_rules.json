@@ -1106,7 +1106,7 @@
                 "item": "mwse_poisoncrafting.esp"
               }
             },
-            "description": "patches poison crafting",
+            "regex": "patches poison crafting",
             "is_negated": true
           }
         }
@@ -3782,7 +3782,7 @@
                     "item": "camonna tong.esp"
                   }
                 },
-                "description": "enjoy!",
+                "regex": "enjoy!",
                 "is_negated": false
               }
             }
@@ -3815,7 +3815,7 @@
                     "item": "camonna tong.esp"
                   }
                 },
-                "description": "enjoy!",
+                "regex": "enjoy!",
                 "is_negated": true
               }
             }
@@ -8591,7 +8591,7 @@
                       "item": "tr_mainland.esm"
                     }
                   },
-                  "description": "main file v. 22.11",
+                  "regex": "main file v. 22.11",
                   "is_negated": false
                 }
               },
@@ -8637,7 +8637,7 @@
                       "item": "tr_mainland.esm"
                     }
                   },
-                  "description": "main file v. 22.11",
+                  "regex": "main file v. 22.11",
                   "is_negated": false
                 }
               },

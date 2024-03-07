@@ -2963,7 +2963,7 @@
                           "item": "mca.esm"
                         }
                       },
-                      "description": "adds 1000 types of npcs to over 400",
+                      "regex": "adds 1000 types of npcs to over 400",
                       "is_negated": false
                     }
                   },
@@ -2974,7 +2974,7 @@
                           "item": "mca.esm"
                         }
                       },
-                      "description": "adds 1100 types of npcs to over 550",
+                      "regex": "adds 1100 types of npcs to over 550",
                       "is_negated": false
                     }
                   }
@@ -3937,7 +3937,7 @@
                 "item": "animated_morrowind - expanded.esp"
               }
             },
-            "description": "spirithawke edit",
+            "regex": "spirithawke edit",
             "is_negated": true
           }
         }
@@ -3956,7 +3956,7 @@
                 "item": "animated morrowind - expanded - mca_patch.esp"
               }
             },
-            "description": "spirithawke edit",
+            "regex": "spirithawke edit",
             "is_negated": true
           }
         }
@@ -6601,7 +6601,7 @@
                 "item": "dw_assassination.esp"
               }
             },
-            "description": "bite works only with vampire embrace",
+            "regex": "bite works only with vampire embrace",
             "is_negated": true
           }
         },
@@ -6647,7 +6647,7 @@
                 "item": "dw_assassination.esp"
               }
             },
-            "description": "bite works only with vampire embrace",
+            "regex": "bite works only with vampire embrace",
             "is_negated": false
           }
         }
@@ -11102,7 +11102,7 @@
                 "item": "complete armor joints.esp"
               }
             },
-            "description": "better morrowind armor",
+            "regex": "better morrowind armor",
             "is_negated": true
           }
         }
@@ -11129,7 +11129,7 @@
                       "item": "lefemmarmor.esp"
                     }
                   },
-                  "description": "lefemm(tm) armor",
+                  "regex": "lefemm(tm) armor",
                   "is_negated": false
                 }
               },
@@ -11161,7 +11161,7 @@
                 "item": "snow prince armor redux.esp"
               }
             },
-            "description": "a model replacer for the ancient steel armor",
+            "regex": "a model replacer for the ancient steel armor",
             "is_negated": true
           }
         }
@@ -11932,7 +11932,7 @@
                       "item": "ufr_v3dot2.esp"
                     }
                   },
-                  "description": "this version is compatible with better robes and better clothes.",
+                  "regex": "this version is compatible with better robes and better clothes.",
                   "is_negated": true
                 }
               },
@@ -11963,7 +11963,7 @@
               "item": "ufr_v3dot2.esp"
             }
           },
-          "description": "this version is compatible with better robes and better clothes.",
+          "regex": "this version is compatible with better robes and better clothes.",
           "is_negated": false
         }
       },
@@ -12067,7 +12067,7 @@
                     "item": "ufr_v3dot2.esp"
                   }
                 },
-                "description": "this version is compatible with better robes and better clothes.",
+                "regex": "this version is compatible with better robes and better clothes.",
                 "is_negated": false
               }
             },
@@ -13026,7 +13026,7 @@
                             "item": "blood and gore.esp"
                           }
                         },
-                        "description": "dragon32",
+                        "regex": "dragon32",
                         "is_negated": true
                       }
                     }
@@ -15695,7 +15695,7 @@
                 "item": "btb - equipment.esp"
               }
             },
-            "description": "tooplex",
+            "regex": "tooplex",
             "is_negated": true
           }
         },
@@ -15757,7 +15757,7 @@
                 "item": "btb - equipment.esp"
               }
             },
-            "description": "tooplex",
+            "regex": "tooplex",
             "is_negated": false
           }
         },
@@ -15813,7 +15813,7 @@
                 "item": "btb - equipment.esp"
               }
             },
-            "description": "left gloves addon",
+            "regex": "left gloves addon",
             "is_negated": true
           }
         },
@@ -15837,7 +15837,7 @@
                 "item": "btb - equipment.esp"
               }
             },
-            "description": "left gloves addon",
+            "regex": "left gloves addon",
             "is_negated": false
           }
         },
@@ -15861,7 +15861,7 @@
                 "item": "btb - equipment.esp"
               }
             },
-            "description": "tooplex",
+            "regex": "tooplex",
             "is_negated": false
           }
         },
@@ -15872,7 +15872,7 @@
                 "item": "better clothes complete (btb edit).esp"
               }
             },
-            "description": "tooplex",
+            "regex": "tooplex",
             "is_negated": true
           }
         }
@@ -15891,7 +15891,7 @@
                 "item": "sirluthor-tools.esp"
               }
             },
-            "description": "tooplex",
+            "regex": "tooplex",
             "is_negated": true
           }
         },
@@ -15926,7 +15926,7 @@
                 "item": "btb - spells.esp"
               }
             },
-            "description": "tooplex",
+            "regex": "tooplex",
             "is_negated": true
           }
         },
@@ -15950,7 +15950,7 @@
                 "item": "btb - spells.esp"
               }
             },
-            "description": "tooplex",
+            "regex": "tooplex",
             "is_negated": false
           }
         },
@@ -15979,7 +15979,7 @@
                 "item": "btb - spells.esp"
               }
             },
-            "description": "tooplex",
+            "regex": "tooplex",
             "is_negated": false
           }
         }
@@ -15998,7 +15998,7 @@
                 "item": "syc_athomealchemy.esp"
               }
             },
-            "description": "tooplex",
+            "regex": "tooplex",
             "is_negated": true
           }
         },
@@ -16022,7 +16022,7 @@
                 "item": "btb - alchemy.esp"
               }
             },
-            "description": "tooplex",
+            "regex": "tooplex",
             "is_negated": true
           }
         },
@@ -16046,7 +16046,7 @@
                 "item": "btb - alchemy.esp"
               }
             },
-            "description": "tooplex",
+            "regex": "tooplex",
             "is_negated": false
           }
         },
@@ -16070,7 +16070,7 @@
                 "item": "btb - alchemy.esp"
               }
             },
-            "description": "tooplex",
+            "regex": "tooplex",
             "is_negated": false
           }
         }
@@ -17052,7 +17052,7 @@
                 "item": "changing faces replacer.esp"
               }
             },
-            "description": "changes all faces",
+            "regex": "changes all faces",
             "is_negated": false
           }
         }
@@ -21918,7 +21918,7 @@
                     "item": "vampire_embrace.esp"
                   }
                 },
-                "description": "vampire embrace 2.4",
+                "regex": "vampire embrace 2.4",
                 "is_negated": false
               }
             },
@@ -21943,7 +21943,7 @@
                           "item": "mca.esm"
                         }
                       },
-                      "description": "over 1200 friendly",
+                      "regex": "over 1200 friendly",
                       "is_negated": false
                     }
                   }
@@ -21974,7 +21974,7 @@
                     "item": "vampire_embrace.esp"
                   }
                 },
-                "description": "vampire embrace 2.4",
+                "regex": "vampire embrace 2.4",
                 "is_negated": false
               }
             },
@@ -24800,7 +24800,7 @@
                     "item": "mca.esm"
                   }
                 },
-                "description": "over 1200 friendly",
+                "regex": "over 1200 friendly",
                 "is_negated": false
               }
             }
@@ -24909,7 +24909,7 @@
                           "item": "btb - spells.esp"
                         }
                       },
-                      "description": "tooplex",
+                      "regex": "tooplex",
                       "is_negated": false
                     }
                   },
@@ -25239,7 +25239,7 @@
                 "item": "turenyalredone.esp"
               }
             },
-            "description": "redoes turenyal to be better than things.",
+            "regex": "redoes turenyal to be better than things.",
             "is_negated": true
           }
         }
@@ -26515,7 +26515,7 @@
                     "item": "mca.esm"
                   }
                 },
-                "description": "over 1200 friendly",
+                "regex": "over 1200 friendly",
                 "is_negated": false
               }
             },
@@ -28186,7 +28186,7 @@
                       "item": "ships of the imperial navy.esp"
                     }
                   },
-                  "description": "solstheim",
+                  "regex": "solstheim",
                   "is_negated": true
                 }
               }
@@ -35108,7 +35108,7 @@
                     "item": "mca.esm"
                   }
                 },
-                "description": "v8.1",
+                "regex": "v8.1",
                 "is_negated": false
               }
             }
@@ -35298,7 +35298,7 @@
                       "item": "better morrowind armor defemm(a).esp"
                     }
                   },
-                  "description": "hollaajith",
+                  "regex": "hollaajith",
                   "is_negated": true
                 }
               },
@@ -35309,7 +35309,7 @@
                       "item": "better morrowind armor defemm(o).esp"
                     }
                   },
-                  "description": "hollaajith",
+                  "regex": "hollaajith",
                   "is_negated": true
                 }
               },
@@ -35320,7 +35320,7 @@
                       "item": "better morrowind armor defemm(r).esp"
                     }
                   },
-                  "description": "hollaajith",
+                  "regex": "hollaajith",
                   "is_negated": true
                 }
               },
@@ -35331,7 +35331,7 @@
                       "item": "better morrowind armor.esp"
                     }
                   },
-                  "description": "hollaajith",
+                  "regex": "hollaajith",
                   "is_negated": true
                 }
               },
@@ -35345,7 +35345,7 @@
                             "item": "complete armor joints.esp"
                           }
                         },
-                        "description": "hollaajith",
+                        "regex": "hollaajith",
                         "is_negated": true
                       }
                     },
@@ -35356,7 +35356,7 @@
                             "item": "complete armor joints.esp"
                           }
                         },
-                        "description": "better morrowind armor",
+                        "regex": "better morrowind armor",
                         "is_negated": false
                       }
                     }
@@ -35373,7 +35373,7 @@
                             "item": "snow prince armor redux.esp"
                           }
                         },
-                        "description": "hollaajith",
+                        "regex": "hollaajith",
                         "is_negated": true
                       }
                     },
@@ -35384,7 +35384,7 @@
                             "item": "snow prince armor redux.esp"
                           }
                         },
-                        "description": "a model replacer for the ancient steel armor",
+                        "regex": "a model replacer for the ancient steel armor",
                         "is_negated": false
                       }
                     }
@@ -35428,7 +35428,7 @@
                       "item": "complete armor joints.esp"
                     }
                   },
-                  "description": "hollaajith",
+                  "regex": "hollaajith",
                   "is_negated": true
                 }
               },
@@ -35439,7 +35439,7 @@
                       "item": "complete armor joints.esp"
                     }
                   },
-                  "description": "better morrowind armor",
+                  "regex": "better morrowind armor",
                   "is_negated": true
                 }
               }
@@ -35480,7 +35480,7 @@
                       "item": "snow prince armor redux.esp"
                     }
                   },
-                  "description": "hollaajith",
+                  "regex": "hollaajith",
                   "is_negated": true
                 }
               },
@@ -35491,7 +35491,7 @@
                       "item": "snow prince armor redux.esp"
                     }
                   },
-                  "description": "a model replacer for the ancient steel armor",
+                  "regex": "a model replacer for the ancient steel armor",
                   "is_negated": true
                 }
               }
@@ -39437,7 +39437,7 @@
                     "item": "mca.esm"
                   }
                 },
-                "description": "adds 1100 types of npcs to over 550",
+                "regex": "adds 1100 types of npcs to over 550",
                 "is_negated": false
               }
             },
@@ -41357,7 +41357,7 @@
                           "item": "mca.esm"
                         }
                       },
-                      "description": "over 1000 friendly",
+                      "regex": "over 1000 friendly",
                       "is_negated": false
                     }
                   },
@@ -41368,7 +41368,7 @@
                           "item": "mca.esm"
                         }
                       },
-                      "description": "over 1200 friendly",
+                      "regex": "over 1200 friendly",
                       "is_negated": false
                     }
                   }
@@ -44464,7 +44464,7 @@
                       "item": "btb - spells.esp"
                     }
                   },
-                  "description": "tooplex",
+                  "regex": "tooplex",
                   "is_negated": false
                 }
               },
@@ -44835,7 +44835,7 @@
                       "item": "btb - spells.esp"
                     }
                   },
-                  "description": "tooplex",
+                  "regex": "tooplex",
                   "is_negated": false
                 }
               },
@@ -45927,7 +45927,7 @@
                 "item": "mqe_mainquestenhancers.esp"
               }
             },
-            "description": "abot",
+            "regex": "abot",
             "is_negated": true
           }
         }
@@ -47475,7 +47475,7 @@
                 "item": "mills of morrowind.esp"
               }
             },
-            "description": "abot",
+            "regex": "abot",
             "is_negated": true
           }
         }
@@ -47493,7 +47493,7 @@
               "item": "mills of morrowind.esp"
             }
           },
-          "description": "abot",
+          "regex": "abot",
           "is_negated": true
         }
       },
@@ -48386,7 +48386,7 @@
               "item": "mca.esm"
             }
           },
-          "description": "over 1200 friendly",
+          "regex": "over 1200 friendly",
           "is_negated": false
         }
       },
@@ -50316,7 +50316,7 @@
                       "item": "mca.esm"
                     }
                   },
-                  "description": "adds 1200 types of npcs to over 550",
+                  "regex": "adds 1200 types of npcs to over 550",
                   "is_negated": true
                 }
               },
@@ -50703,7 +50703,7 @@
                       "item": "mca.esm"
                     }
                   },
-                  "description": "adds 1000 types of npcs to over 400",
+                  "regex": "adds 1000 types of npcs to over 400",
                   "is_negated": false
                 }
               },
@@ -50714,7 +50714,7 @@
                       "item": "mca.esm"
                     }
                   },
-                  "description": "adds 1100 types of npcs to over 550",
+                  "regex": "adds 1100 types of npcs to over 550",
                   "is_negated": false
                 }
               },
@@ -50725,7 +50725,7 @@
                       "item": "mca.esm"
                     }
                   },
-                  "description": "v8",
+                  "regex": "v8",
                   "is_negated": false
                 }
               }
@@ -50771,7 +50771,7 @@
                       "item": "mca.esm"
                     }
                   },
-                  "description": "adds 1100 types of npcs to over 550",
+                  "regex": "adds 1100 types of npcs to over 550",
                   "is_negated": false
                 }
               },
@@ -50782,7 +50782,7 @@
                       "item": "mca.esm"
                     }
                   },
-                  "description": "v8",
+                  "regex": "v8",
                   "is_negated": false
                 }
               }
@@ -50812,7 +50812,7 @@
                       "item": "mca.esm"
                     }
                   },
-                  "description": "adds 1100 types of npcs to over 550",
+                  "regex": "adds 1100 types of npcs to over 550",
                   "is_negated": false
                 }
               },
@@ -50823,7 +50823,7 @@
                       "item": "mca.esm"
                     }
                   },
-                  "description": "v8",
+                  "regex": "v8",
                   "is_negated": false
                 }
               }
@@ -50851,7 +50851,7 @@
                             "item": "mca.esm"
                           }
                         },
-                        "description": "adds 1000 types of npcs to over 400",
+                        "regex": "adds 1000 types of npcs to over 400",
                         "is_negated": false
                       }
                     },
@@ -50862,7 +50862,7 @@
                             "item": "mca.esm"
                           }
                         },
-                        "description": "adds 1100 types of npcs to over 550",
+                        "regex": "adds 1100 types of npcs to over 550",
                         "is_negated": false
                       }
                     }
@@ -50899,7 +50899,7 @@
                       "item": "mca.esm"
                     }
                   },
-                  "description": "adds 1000 types of npcs to over 400",
+                  "regex": "adds 1000 types of npcs to over 400",
                   "is_negated": false
                 }
               },
@@ -50910,7 +50910,7 @@
                       "item": "mca.esm"
                     }
                   },
-                  "description": "adds 1100 types of npcs to over 550",
+                  "regex": "adds 1100 types of npcs to over 550",
                   "is_negated": false
                 }
               }
@@ -50979,7 +50979,7 @@
                             "item": "mca.esm"
                           }
                         },
-                        "description": "over 1000 friendly",
+                        "regex": "over 1000 friendly",
                         "is_negated": false
                       }
                     },
@@ -50990,7 +50990,7 @@
                             "item": "mca.esm"
                           }
                         },
-                        "description": "over 1200 friendly",
+                        "regex": "over 1200 friendly",
                         "is_negated": false
                       }
                     },
@@ -51001,7 +51001,7 @@
                             "item": "mca.esm"
                           }
                         },
-                        "description": "adds 1000 types of npcs to over 400",
+                        "regex": "adds 1000 types of npcs to over 400",
                         "is_negated": false
                       }
                     },
@@ -51012,7 +51012,7 @@
                             "item": "mca.esm"
                           }
                         },
-                        "description": "adds 1100 types of npcs to over 550",
+                        "regex": "adds 1100 types of npcs to over 550",
                         "is_negated": false
                       }
                     }
@@ -51094,7 +51094,7 @@
                       "item": "mca.esm"
                     }
                   },
-                  "description": "v8",
+                  "regex": "v8",
                   "is_negated": true
                 }
               },
@@ -51105,7 +51105,7 @@
                       "item": "mca - tr addon.esp"
                     }
                   },
-                  "description": "7.1a",
+                  "regex": "7.1a",
                   "is_negated": true
                 }
               }
@@ -51134,7 +51134,7 @@
                     "item": "mca.esm"
                   }
                 },
-                "description": "over 1000 friendly",
+                "regex": "over 1000 friendly",
                 "is_negated": false
               }
             },
@@ -51145,7 +51145,7 @@
                     "item": "mca.esm"
                   }
                 },
-                "description": "over 1200 friendly",
+                "regex": "over 1200 friendly",
                 "is_negated": false
               }
             },
@@ -51156,7 +51156,7 @@
                     "item": "mca.esm"
                   }
                 },
-                "description": "adds 1000 types of npcs to over 400",
+                "regex": "adds 1000 types of npcs to over 400",
                 "is_negated": false
               }
             }
@@ -51297,7 +51297,7 @@
                             "item": "mca.esm"
                           }
                         },
-                        "description": "over 1000 friendly",
+                        "regex": "over 1000 friendly",
                         "is_negated": false
                       }
                     },
@@ -51311,7 +51311,7 @@
                                   "item": "mca.esm"
                                 }
                               },
-                              "description": "over 1200 friendly",
+                              "regex": "over 1200 friendly",
                               "is_negated": false
                             }
                           },
@@ -51434,7 +51434,7 @@
                           "item": "mca.esm"
                         }
                       },
-                      "description": "over 1000 friendly",
+                      "regex": "over 1000 friendly",
                       "is_negated": false
                     }
                   },
@@ -51445,7 +51445,7 @@
                           "item": "mca.esm"
                         }
                       },
-                      "description": "over 1200 friendly",
+                      "regex": "over 1200 friendly",
                       "is_negated": false
                     }
                   }
@@ -51484,7 +51484,7 @@
                           "item": "mca.esm"
                         }
                       },
-                      "description": "over 1000 friendly",
+                      "regex": "over 1000 friendly",
                       "is_negated": false
                     }
                   },
@@ -51495,7 +51495,7 @@
                           "item": "mca.esm"
                         }
                       },
-                      "description": "over 1200 friendly",
+                      "regex": "over 1200 friendly",
                       "is_negated": false
                     }
                   }
@@ -51610,7 +51610,7 @@
                 "item": "mca.esm"
               }
             },
-            "description": "over 1000 friendly",
+            "regex": "over 1000 friendly",
             "is_negated": false
           }
         }
@@ -51637,7 +51637,7 @@
                       "item": "mca.esm"
                     }
                   },
-                  "description": "adds 1000 types of npcs to over 400",
+                  "regex": "adds 1000 types of npcs to over 400",
                   "is_negated": false
                 }
               },
@@ -51648,7 +51648,7 @@
                       "item": "mca.esm"
                     }
                   },
-                  "description": "adds 1100 types of npcs to over 550",
+                  "regex": "adds 1100 types of npcs to over 550",
                   "is_negated": false
                 }
               }
@@ -51761,7 +51761,7 @@
                     "item": "mca.esm"
                   }
                 },
-                "description": "over 1200 friendly",
+                "regex": "over 1200 friendly",
                 "is_negated": false
               }
             },
@@ -51849,7 +51849,7 @@
                     "item": "mca.esm"
                   }
                 },
-                "description": "over 1000 friendly",
+                "regex": "over 1000 friendly",
                 "is_negated": false
               }
             },
@@ -51860,7 +51860,7 @@
                     "item": "mca.esm"
                   }
                 },
-                "description": "over 1200 friendly",
+                "regex": "over 1200 friendly",
                 "is_negated": false
               }
             }
@@ -51925,7 +51925,7 @@
               "item": "mca.esm"
             }
           },
-          "description": "over 1200 friendly",
+          "regex": "over 1200 friendly",
           "is_negated": false
         }
       },
@@ -51987,7 +51987,7 @@
               "item": "mca.esm"
             }
           },
-          "description": "over 1200 friendly",
+          "regex": "over 1200 friendly",
           "is_negated": false
         }
       },
@@ -52030,7 +52030,7 @@
                     "item": "mca.esm"
                   }
                 },
-                "description": "over 1200 friendly",
+                "regex": "over 1200 friendly",
                 "is_negated": false
               }
             },
@@ -52201,7 +52201,7 @@
               "item": "mca.esm"
             }
           },
-          "description": "over 1200 friendly",
+          "regex": "over 1200 friendly",
           "is_negated": false
         }
       },
@@ -52223,7 +52223,7 @@
               "item": "mca.esm"
             }
           },
-          "description": "over 1200 friendly",
+          "regex": "over 1200 friendly",
           "is_negated": false
         }
       },
@@ -52245,7 +52245,7 @@
               "item": "mca.esm"
             }
           },
-          "description": "adds 1100 types of npcs to over 550",
+          "regex": "adds 1100 types of npcs to over 550",
           "is_negated": false
         }
       },
@@ -52270,7 +52270,7 @@
                     "item": "mca.esm"
                   }
                 },
-                "description": "adds 1100 types of npcs to over 550",
+                "regex": "adds 1100 types of npcs to over 550",
                 "is_negated": false
               }
             },
@@ -52300,7 +52300,7 @@
               "item": "mca.esm"
             }
           },
-          "description": "v8.1",
+          "regex": "v8.1",
           "is_negated": false
         }
       },
@@ -52325,7 +52325,7 @@
                     "item": "mca.esm"
                   }
                 },
-                "description": "v8.1",
+                "regex": "v8.1",
                 "is_negated": false
               }
             },
@@ -52414,7 +52414,7 @@
               "item": "mca.esm"
             }
           },
-          "description": "over 1200 friendly",
+          "regex": "over 1200 friendly",
           "is_negated": false
         }
       },
@@ -52436,7 +52436,7 @@
               "item": "mca.esm"
             }
           },
-          "description": "over 1200 friendly",
+          "regex": "over 1200 friendly",
           "is_negated": false
         }
       },
@@ -52491,7 +52491,7 @@
               "item": "mca.esm"
             }
           },
-          "description": "v8.1",
+          "regex": "v8.1",
           "is_negated": false
         }
       },
@@ -52647,7 +52647,7 @@
               "item": "mca.esm"
             }
           },
-          "description": "over 1200 friendly",
+          "regex": "over 1200 friendly",
           "is_negated": false
         }
       },
@@ -52945,7 +52945,7 @@
               "item": "mca.esm"
             }
           },
-          "description": "over 1200 friendly",
+          "regex": "over 1200 friendly",
           "is_negated": false
         }
       },
@@ -53090,7 +53090,7 @@
                     "item": "mca.esm"
                   }
                 },
-                "description": "over 1200 friendly",
+                "regex": "over 1200 friendly",
                 "is_negated": false
               }
             },
@@ -53227,7 +53227,7 @@
               "item": "mca.esm"
             }
           },
-          "description": "over 1200 friendly",
+          "regex": "over 1200 friendly",
           "is_negated": false
         }
       },
@@ -62515,7 +62515,7 @@
                       "item": "lefemmarmor.esp"
                     }
                   },
-                  "description": "lefemm(tm) armor",
+                  "regex": "lefemm(tm) armor",
                   "is_negated": false
                 }
               },
@@ -64319,7 +64319,7 @@
                 "item": "pssorticon.esp"
               }
             },
-            "description": "spirithawke",
+            "regex": "spirithawke",
             "is_negated": true
           }
         }
@@ -66530,7 +66530,7 @@
               "item": "mca.esm"
             }
           },
-          "description": "over 1200 friendly",
+          "regex": "over 1200 friendly",
           "is_negated": false
         }
       },
@@ -69889,7 +69889,7 @@
                       "item": "btb - spells.esp"
                     }
                   },
-                  "description": "tooplex",
+                  "regex": "tooplex",
                   "is_negated": false
                 }
               },
@@ -71047,7 +71047,7 @@
                       "item": "sg1-sgaileach_estate.esp"
                     }
                   },
-                  "description": "version 2.01",
+                  "regex": "version 2.01",
                   "is_negated": true
                 }
               },
@@ -71058,7 +71058,7 @@
                       "item": "sg1-sgaileach_estate-nom.esp"
                     }
                   },
-                  "description": "version 2.01",
+                  "regex": "version 2.01",
                   "is_negated": true
                 }
               }
@@ -71118,7 +71118,7 @@
                             "item": "sg1-sgaileach_estate.esp"
                           }
                         },
-                        "description": "version 2.01",
+                        "regex": "version 2.01",
                         "is_negated": false
                       }
                     },
@@ -71129,7 +71129,7 @@
                             "item": "sg1-sgaileach_estate-nom.esp"
                           }
                         },
-                        "description": "version 2.01",
+                        "regex": "version 2.01",
                         "is_negated": false
                       }
                     }
@@ -71164,7 +71164,7 @@
                           "item": "sg1-sgaileach_estate.esp"
                         }
                       },
-                      "description": "version 2.01",
+                      "regex": "version 2.01",
                       "is_negated": false
                     }
                   },
@@ -71175,7 +71175,7 @@
                           "item": "sg1-sgaileach_estate-nom.esp"
                         }
                       },
-                      "description": "version 2.01",
+                      "regex": "version 2.01",
                       "is_negated": false
                     }
                   }
@@ -71251,7 +71251,7 @@
                             "item": "sg1-sgaileach_estate.esp"
                           }
                         },
-                        "description": "version 2.01",
+                        "regex": "version 2.01",
                         "is_negated": false
                       }
                     },
@@ -71262,7 +71262,7 @@
                             "item": "sg1-sgaileach_estate-nom.esp"
                           }
                         },
-                        "description": "version 2.01",
+                        "regex": "version 2.01",
                         "is_negated": false
                       }
                     }
@@ -73668,7 +73668,7 @@
                     "item": "mca.esm"
                   }
                 },
-                "description": "over 1200 friendly",
+                "regex": "over 1200 friendly",
                 "is_negated": false
               }
             },
@@ -74074,7 +74074,7 @@
                       "item": "btb - spells.esp"
                     }
                   },
-                  "description": "tooplex",
+                  "regex": "tooplex",
                   "is_negated": false
                 }
               },
@@ -74372,7 +74372,7 @@
                 "item": "sris_alchemy_bm.esp"
               }
             },
-            "description": "adelie",
+            "regex": "adelie",
             "is_negated": false
           }
         },
@@ -74918,7 +74918,7 @@
                 "item": "starfires npc additions ver-1.11.esp"
               }
             },
-            "description": "redesigned vivec compatible version",
+            "regex": "redesigned vivec compatible version",
             "is_negated": true
           }
         },
@@ -76587,7 +76587,7 @@
                       "item": "lefemmarmor.esp"
                     }
                   },
-                  "description": "lefemm(tm) armor",
+                  "regex": "lefemm(tm) armor",
                   "is_negated": false
                 }
               },
@@ -77430,7 +77430,7 @@
                       "item": "lefemmarmor.esp"
                     }
                   },
-                  "description": "lefemm(tm) armor",
+                  "regex": "lefemm(tm) armor",
                   "is_negated": false
                 }
               },
@@ -77802,7 +77802,7 @@
                       "item": "lefemmarmor.esp"
                     }
                   },
-                  "description": "lefemm(tm) armor",
+                  "regex": "lefemm(tm) armor",
                   "is_negated": false
                 }
               },
@@ -79835,7 +79835,7 @@
                     "item": "mca.esm"
                   }
                 },
-                "description": "over 1200 friendly",
+                "regex": "over 1200 friendly",
                 "is_negated": false
               }
             }
@@ -84466,7 +84466,7 @@
               "item": "mca.esm"
             }
           },
-          "description": "over 1200 friendly",
+          "regex": "over 1200 friendly",
           "is_negated": false
         }
       },
@@ -86593,7 +86593,7 @@
                     "item": "vampire_embrace.esp"
                   }
                 },
-                "description": "vampire embrace 2.4",
+                "regex": "vampire embrace 2.4",
                 "is_negated": false
               }
             }
@@ -86755,7 +86755,7 @@
                     "item": "vampire_embrace.esp"
                   }
                 },
-                "description": "vampire embrace 2.4",
+                "regex": "vampire embrace 2.4",
                 "is_negated": false
               }
             }
@@ -88035,7 +88035,7 @@
                 "item": "vivec expansion 2.0.esp"
               }
             },
-            "description": "fixed the floating door",
+            "regex": "fixed the floating door",
             "is_negated": true
           }
         }
@@ -91511,7 +91511,7 @@
                 "item": "windows glow - raven rock eng.esp"
               }
             },
-            "description": "abot",
+            "regex": "abot",
             "is_negated": true
           }
         }

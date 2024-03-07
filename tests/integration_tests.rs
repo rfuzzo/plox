@@ -1,5 +1,7 @@
 #[cfg(test)]
 mod integration_tests {
+    use std::{fs::create_dir_all, io::Write};
+
     use plox::{parser::*, rules::EOrderRule, sorter::*, *};
     //use rand::{seq::SliceRandom, thread_rng};
 
@@ -137,6 +139,41 @@ mod integration_tests {
                 let file =
                     std::fs::File::create("user_rules_order.json").expect("file create failed");
                 serde_json::to_writer_pretty(file, &parser.order_rules).expect("serialize failed");
+            }
+
+            Ok(())
+        }
+    }
+
+    #[test]
+    fn test_dump_display_rules() -> std::io::Result<()> {
+        init();
+
+        {
+            let mut parser = new_tes3_parser();
+            parser.init_from_file("./tests/mlox/mlox_base.txt")?;
+
+            {
+                create_dir_all("tmp").expect("could not create dir");
+                let mut file =
+                    std::fs::File::create("tmp/base_rules.txt").expect("file create failed");
+                for rule in parser.rules {
+                    writeln!(file, "{}", rule).expect("could not write to file");
+                }
+            }
+        }
+
+        {
+            let mut parser = new_tes3_parser();
+            parser.init_from_file("./tests/mlox/mlox_user.txt")?;
+
+            {
+                create_dir_all("tmp").expect("could not create dir");
+                let mut file =
+                    std::fs::File::create("tmp/user_rules.txt").expect("file create failed");
+                for rule in parser.rules {
+                    writeln!(file, "{}", rule).expect("could not write to file");
+                }
             }
 
             Ok(())

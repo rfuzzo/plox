@@ -502,7 +502,7 @@ mod unit_tests {
 
         if let Expression::DESC(e) = expr {
             assert!(is_atomic(e.expression.as_ref(), expected[1]));
-            assert_eq!(format!("/{}/", e.description), expected[0]);
+            assert_eq!(format!("/{}/", e.regex), expected[0]);
             assert!(!e.is_negated);
         } else {
             panic!("wrong type");
@@ -526,7 +526,7 @@ mod unit_tests {
 
         if let Expression::DESC(e) = expr {
             assert!(is_atomic(e.expression.as_ref(), expected[1]));
-            assert_eq!(format!("!/{}/", e.description), expected[0]);
+            assert_eq!(format!("!/{}/", e.regex), expected[0]);
             assert!(e.is_negated);
         } else {
             panic!("wrong type");
