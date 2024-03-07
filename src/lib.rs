@@ -56,8 +56,6 @@ pub fn sort(
     unstable: bool,
     no_download: bool,
 ) -> ExitCode {
-    info!("Sorting mods...");
-
     // get game root
     let root = match root {
         Some(path) => path.clone(),
@@ -85,6 +83,8 @@ pub fn sort(
 
     if !no_download {
         download_latest_rules(game, &rules_dir);
+    } else {
+        info!("Skipping downloading latest rules")
     }
 
     let mut parser = parser::get_parser(game);
@@ -93,62 +93,69 @@ pub fn sort(
         return ExitCode::FAILURE;
     }
 
+    // Print Warnings and Notes
     if parser.rules.is_empty() {
         warn!("No rules found to evaluate");
-        return ExitCode::FAILURE;
-    }
-
-    // Print Warnings and Notes
-    info!("Evaluating mod list...");
-    for rule in &parser.rules {
-        if rule.eval(&mods) {
-            match rule {
-                EWarningRule::Note(n) => {
-                    info!("[NOTE]\n{}\n", n.get_comment());
-                }
-                EWarningRule::Conflict(c) => {
-                    warn!("[CONFLICT]\n{}\n", c.get_comment());
-                }
-                EWarningRule::Requires(r) => {
-                    warn!("[REQUIRES]\n{}\n", r.get_comment());
-                }
-                EWarningRule::Patch(p) => {
-                    warn!("[Patch]\n{}\n", p.get_comment());
+    } else {
+        info!("Evaluating mod list...\n");
+        for rule in &mut parser.rules {
+            if rule.eval(&mods) {
+                match rule {
+                    EWarningRule::Note(n) => {
+                        info!("[NOTE]\n{}", n.get_comment());
+                        info!("[{}]\n", n.plugins.join(";"));
+                    }
+                    EWarningRule::Conflict(c) => {
+                        warn!("[CONFLICT]\n{}", c.get_comment());
+                        info!("[{}]\n", c.plugins.join(";"));
+                    }
+                    EWarningRule::Requires(r) => {
+                        warn!("[REQUIRES]\n{}", r.get_comment());
+                        info!("[{}]\n", r.plugins.join(";"));
+                    }
+                    EWarningRule::Patch(p) => {
+                        warn!("[Patch]\n{}", p.get_comment());
+                        info!("[{}]\n", p.plugins.join(";"));
+                    }
                 }
             }
         }
     }
 
     // Sort
-
-    info!("Sorting mods...");
-    let mut sorter = if unstable {
-        sorter::new_unstable_sorter()
+    if parser.order_rules.is_empty() {
+        warn!("No rules found to sort");
+        ExitCode::SUCCESS
     } else {
-        sorter::new_stable_sorter()
-    };
-    match sorter.topo_sort(&mods, &parser.order_rules) {
-        Ok(result) => {
-            if dry_run {
-                info!("Dry run...");
-                info!("New:\n{:?}", result);
-            } else {
-                info!("Current:\n{:?}", &mods);
-
-                if mods.eq(&result) {
-                    info!("Mods are in correct order, no sorting needed.");
-                } else {
+        info!("Sorting mods...");
+        let mut sorter = if unstable {
+            sorter::new_unstable_sorter()
+        } else {
+            sorter::new_stable_sorter()
+        };
+        match sorter.topo_sort(&mods, &parser.order_rules) {
+            Ok(result) => {
+                if dry_run {
+                    info!("Dry run...");
                     info!("New:\n{:?}", result);
+                } else {
+                    info!("Current:\n{:?}", &mods);
 
-                    update_new_load_order(game, result);
+                    if mods.eq(&result) {
+                        info!("Mods are in correct order, no sorting needed.");
+                    } else {
+                        info!("New:\n{:?}", result);
+
+                        update_new_load_order(game, result);
+                    }
                 }
-            }
 
-            ExitCode::SUCCESS
-        }
-        Err(e) => {
-            error!("error sorting: {e:?}");
-            ExitCode::FAILURE
+                ExitCode::SUCCESS
+            }
+            Err(e) => {
+                error!("error sorting: {e:?}");
+                ExitCode::FAILURE
+            }
         }
     }
 }

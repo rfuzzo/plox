@@ -30,25 +30,25 @@ mod unit_tests {
         // [ALL] is true if A and B are true
         {
             let expr = ALL::new(vec![e(A), e(B)]);
-            assert!(expr.eval(&get_mods()));
+            assert!(expr.eval(&get_mods()).is_some());
         }
 
         // [ALL] is false if A is true and B is not true
         {
             let expr = ALL::new(vec![e(A), e(X)]);
-            assert!(!expr.eval(&get_mods()));
+            assert!(expr.eval(&get_mods()).is_none());
         }
 
         // [ALL] is false if A is not true and B is true
         {
             let expr = ALL::new(vec![e(X), e(A)]);
-            assert!(!expr.eval(&get_mods()));
+            assert!(expr.eval(&get_mods()).is_none());
         }
 
         // [ALL] is false if A is not true and B is not true
         {
             let expr = ALL::new(vec![e(X), e(Y)]);
-            assert!(!expr.eval(&get_mods()));
+            assert!(expr.eval(&get_mods()).is_none());
         }
     }
 
@@ -59,25 +59,25 @@ mod unit_tests {
         // [ANY] is true if A and B are true
         {
             let expr = ANY::new(vec![e(A), e(B)]);
-            assert!(expr.eval(&get_mods()));
+            assert!(expr.eval(&get_mods()).is_some());
         }
 
         // [ANY] is true if A is true and B is not true
         {
             let expr = ANY::new(vec![e(A), e(X)]);
-            assert!(expr.eval(&get_mods()));
+            assert!(expr.eval(&get_mods()).is_some());
         }
 
         // [ANY] is true if A is not true and B is true
         {
             let expr = ANY::new(vec![e(X), e(A)]);
-            assert!(expr.eval(&get_mods()));
+            assert!(expr.eval(&get_mods()).is_some());
         }
 
         // [ANY] is false if A is not true and B is not true
         {
             let expr = ANY::new(vec![e(X), e(Y)]);
-            assert!(!expr.eval(&get_mods()));
+            assert!(expr.eval(&get_mods()).is_none());
         }
     }
 
@@ -88,13 +88,13 @@ mod unit_tests {
         // [NOT] is true if A is not true
         {
             let expr = NOT::new(e(X));
-            assert!(expr.eval(&get_mods()));
+            assert!(expr.eval(&get_mods()).is_some());
         }
 
         // [NOT] is false if A is true
         {
             let expr = NOT::new(e(A));
-            assert!(!expr.eval(&get_mods()));
+            assert!(expr.eval(&get_mods()).is_none());
         }
     }
 
@@ -106,13 +106,13 @@ mod unit_tests {
         {
             let nested = ALL::new(vec![e(A), e(X)]);
             let expr = NOT::new(nested.into());
-            assert!(expr.eval(&get_mods()));
+            assert!(expr.eval(&get_mods()).is_some());
         }
         // check that (a and b) are not present in the modlist
         {
             let nested = ALL::new(vec![e(A), e(B)]);
             let expr = NOT::new(nested.into());
-            assert!(!expr.eval(&get_mods())); // should fail
+            assert!(expr.eval(&get_mods()).is_none()); // should fail
         }
 
         // check that (a and b) are present and that either (x and y) are not present
@@ -120,7 +120,7 @@ mod unit_tests {
             let nested1 = ALL::new(vec![e(A), e(B)]);
             let nested2 = NOT::new(ANY::new(vec![e(X), e(Y)]).into());
             let expr = ALL::new(vec![nested1.into(), nested2.into()]);
-            assert!(expr.eval(&get_mods()));
+            assert!(expr.eval(&get_mods()).is_some());
         }
 
         // check that (a and b) are present and that either (x and y) are present
@@ -128,7 +128,7 @@ mod unit_tests {
             let nested1 = ALL::new(vec![e(A), e(B)]);
             let nested2 = ANY::new(vec![e(A), e(Y)]);
             let expr = ALL::new(vec![nested1.into(), nested2.into()]);
-            assert!(expr.eval(&get_mods()));
+            assert!(expr.eval(&get_mods()).is_some());
         }
     }
 }

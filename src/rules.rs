@@ -44,7 +44,7 @@ pub trait TWarningRule {
     fn get_comment(&self) -> &str;
     fn set_comment(&mut self, comment: String);
     /// every rule may be evaluated
-    fn eval(&self, items: &[String]) -> bool;
+    fn eval(&mut self, items: &[String]) -> bool;
 }
 
 impl TWarningRule for EWarningRule {
@@ -66,7 +66,7 @@ impl TWarningRule for EWarningRule {
         }
     }
 
-    fn eval(&self, items: &[String]) -> bool {
+    fn eval(&mut self, items: &[String]) -> bool {
         match self {
             EWarningRule::Note(o) => o.eval(items),
             EWarningRule::Conflict(o) => o.eval(items),
@@ -381,6 +381,8 @@ impl TParser<NearEnd> for NearEnd {
 pub struct Note {
     pub comment: String,
     pub expressions: Vec<Expression>,
+
+    pub plugins: Vec<String>,
 }
 
 impl Note {
@@ -388,6 +390,7 @@ impl Note {
         Self {
             comment,
             expressions: expressions.to_vec(),
+            plugins: vec![],
         }
     }
 }
@@ -399,13 +402,16 @@ impl TWarningRule for Note {
         self.comment = comment;
     }
     /// Notes evaluate as true if any of the containing expressions evaluates as true
-    fn eval(&self, items: &[String]) -> bool {
+    fn eval(&mut self, items: &[String]) -> bool {
+        let mut result = false;
         for expr in &self.expressions {
-            if expr.eval(items) {
-                return true;
+            if let Some(plugins) = expr.eval(items) {
+                result = true;
+                // track plugins
+                self.plugins.extend(plugins);
             }
         }
-        false
+        result
     }
 }
 impl TParser<Note> for Note {
@@ -442,12 +448,15 @@ impl TParser<Note> for Note {
 pub struct Conflict {
     pub comment: String,
     pub expressions: Vec<Expression>,
+
+    pub plugins: Vec<String>,
 }
 impl Conflict {
     pub fn new(comment: String, expressions: &[Expression]) -> Self {
         Self {
             comment,
             expressions: expressions.to_vec(),
+            plugins: vec![],
         }
     }
 }
@@ -459,10 +468,11 @@ impl TWarningRule for Conflict {
         self.comment = comment;
     }
     /// Conflicts evaluate as true if both expressions evaluate as true
-    fn eval(&self, items: &[String]) -> bool {
+    fn eval(&mut self, items: &[String]) -> bool {
         let mut i = 0;
         for e in &self.expressions {
-            if e.eval(items) {
+            if let Some(plugins) = e.eval(items) {
+                self.plugins.extend(plugins);
                 i += 1;
             }
         }
@@ -505,6 +515,8 @@ pub struct Requires {
     pub comment: String,
     pub expression_a: Option<Expression>,
     pub expression_b: Option<Expression>,
+
+    pub plugins: Vec<String>,
 }
 impl Requires {
     pub fn new(comment: String, expression_a: Expression, expression_b: Expression) -> Self {
@@ -512,6 +524,7 @@ impl Requires {
             comment,
             expression_a: Some(expression_a),
             expression_b: Some(expression_b),
+            plugins: vec![],
         }
     }
 }
@@ -523,13 +536,19 @@ impl TWarningRule for Requires {
         self.comment = comment;
     }
     /// Requires evaluates as true if A is true and B is not true
-    fn eval(&self, items: &[String]) -> bool {
+    fn eval(&mut self, items: &[String]) -> bool {
+        let mut result = false;
         if let Some(expr_a) = &self.expression_a {
             if let Some(expr_b) = &self.expression_b {
-                return expr_a.eval(items) && !expr_b.eval(items);
+                if let Some(plugins) = expr_a.eval(items) {
+                    if expr_b.eval(items).is_none() {
+                        result = true;
+                        self.plugins.extend(plugins);
+                    }
+                }
             }
         }
-        false
+        result
     }
 }
 
@@ -571,6 +590,8 @@ pub struct Patch {
     pub comment: String,
     pub expression_a: Option<Expression>,
     pub expression_b: Option<Expression>,
+
+    pub plugins: Vec<String>,
 }
 impl Patch {
     pub fn new(comment: String, expression_a: Expression, expression_b: Expression) -> Self {
@@ -578,6 +599,7 @@ impl Patch {
             comment,
             expression_a: Some(expression_a),
             expression_b: Some(expression_b),
+            plugins: vec![],
         }
     }
 }
@@ -589,14 +611,26 @@ impl TWarningRule for Patch {
         self.comment = comment;
     }
     /// Patch evaluates as true if A is true and B is not true or if B is true and A is not true
-    fn eval(&self, items: &[String]) -> bool {
+    fn eval(&mut self, items: &[String]) -> bool {
+        let mut result = false;
         if let Some(expr_a) = &self.expression_a {
             if let Some(expr_b) = &self.expression_b {
-                return (expr_a.eval(items) && !expr_b.eval(items))
-                    || (expr_b.eval(items) && !expr_a.eval(items));
+                if let Some(plugins_a) = expr_a.eval(items) {
+                    if expr_b.eval(items).is_none() {
+                        result = true;
+                        self.plugins.extend(plugins_a);
+                    }
+                }
+
+                if let Some(plugins_b) = expr_b.eval(items) {
+                    if expr_a.eval(items).is_none() {
+                        result = true;
+                        self.plugins.extend(plugins_b);
+                    }
+                }
             }
         }
-        false
+        result
     }
 }
 

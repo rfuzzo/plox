@@ -10,7 +10,7 @@ use crate::wild_contains;
 
 // An expression may be evaluated against a load order
 pub trait TExpression {
-    fn eval(&self, items: &[String]) -> bool;
+    fn eval(&self, items: &[String]) -> Option<Vec<String>>;
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -26,7 +26,7 @@ pub enum Expression {
 
 // pass-through
 impl TExpression for Expression {
-    fn eval(&self, items: &[String]) -> bool {
+    fn eval(&self, items: &[String]) -> Option<Vec<String>> {
         match self {
             Expression::Atomic(x) => x.eval(items),
             Expression::ALL(x) => x.eval(items),
@@ -96,8 +96,8 @@ impl Atomic {
 }
 impl TExpression for Atomic {
     /// atomics evaluate as true if the input list contains the item
-    fn eval(&self, items: &[String]) -> bool {
-        wild_contains(items, &self.item).is_some()
+    fn eval(&self, items: &[String]) -> Option<Vec<String>> {
+        wild_contains(items, &self.item)
     }
 }
 
@@ -128,15 +128,24 @@ impl ALL {
 }
 impl TExpression for ALL {
     /// ALL evaluates as true if all expressions evaluate as true
-    fn eval(&self, items: &[String]) -> bool {
-        let mut r = true;
-        self.expressions
-            .iter()
-            .map(|e| e.eval(items))
-            .for_each(|e| {
-                r = r && e;
-            });
-        r
+    fn eval(&self, items: &[String]) -> Option<Vec<String>> {
+        let mut result = true;
+        let mut results: Vec<String> = vec![];
+
+        for e in &self.expressions {
+            if let Some(plugins) = e.eval(items) {
+                results.extend(plugins);
+            } else {
+                // any failure can set it to false
+                result = false;
+            }
+        }
+
+        if result {
+            Some(results)
+        } else {
+            None
+        }
     }
 }
 
@@ -156,15 +165,22 @@ impl ANY {
 }
 impl TExpression for ANY {
     // ANY evaluate as true if any expressions evaluates as true
-    fn eval(&self, items: &[String]) -> bool {
-        let mut r = false;
-        self.expressions
-            .iter()
-            .map(|e| e.eval(items))
-            .for_each(|e| {
-                r = r || e;
-            });
-        r
+    fn eval(&self, items: &[String]) -> Option<Vec<String>> {
+        let mut result = false;
+        let mut results: Vec<String> = vec![];
+
+        for e in &self.expressions {
+            if let Some(plugins) = e.eval(items) {
+                result = true;
+                results.extend(plugins);
+            }
+        }
+
+        if result {
+            Some(results)
+        } else {
+            None
+        }
     }
 }
 
@@ -186,8 +202,13 @@ impl NOT {
 }
 impl TExpression for NOT {
     // NOT evaluates as true if the wrapped expression evaluates as true
-    fn eval(&self, items: &[String]) -> bool {
-        !self.expression.eval(items)
+    fn eval(&self, items: &[String]) -> Option<Vec<String>> {
+        if let Some(_plugins) = self.expression.eval(items) {
+            None
+        } else {
+            // TODO NOT and resolving names
+            Some(vec![])
+        }
     }
 }
 impl Clone for NOT {
@@ -218,7 +239,7 @@ impl DESC {
     }
 }
 impl TExpression for DESC {
-    fn eval(&self, items: &[String]) -> bool {
+    fn eval(&self, items: &[String]) -> Option<Vec<String>> {
         self.expression.eval(items)
     }
 }
@@ -252,7 +273,7 @@ impl SIZE {
     }
 }
 impl TExpression for SIZE {
-    fn eval(&self, items: &[String]) -> bool {
+    fn eval(&self, items: &[String]) -> Option<Vec<String>> {
         self.expression.eval(items)
     }
 }
@@ -306,7 +327,7 @@ impl VER {
     }
 }
 impl TExpression for VER {
-    fn eval(&self, items: &[String]) -> bool {
+    fn eval(&self, items: &[String]) -> Option<Vec<String>> {
         self.expression.eval(items)
     }
 }

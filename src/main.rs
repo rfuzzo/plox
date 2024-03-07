@@ -79,7 +79,9 @@ fn main() -> ExitCode {
     let env = Env::default()
         .default_filter_or(log_level_to_str(level))
         .default_write_style_or("always");
-    env_logger::Builder::from_env(env).init();
+    env_logger::Builder::from_env(env)
+        .format_timestamp(None)
+        .init();
 
     // detect game
     let game = if let Some(game) = cli.game {
@@ -124,4 +126,3 @@ fn main() -> ExitCode {
 
     code
 }
-

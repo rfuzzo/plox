@@ -13,7 +13,8 @@
             "item": "nv_thegoat_tr.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -66,7 +67,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -83,7 +85,8 @@
             "item": "ah_toxicity_hard.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -115,7 +118,8 @@
             "item": "aldruhn_seat_of_power_rr_skar_rmr.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -158,7 +162,8 @@
             "item": "ald-ruhn temple expansion 1.5.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -175,7 +180,8 @@
             "item": "andranotomb+retribution.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -192,7 +198,8 @@
             "item": "animated_morrowind - danaes edits.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -209,7 +216,8 @@
             "item": "animated_morrowind - danaes edits.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -231,7 +239,8 @@
             "item": "area effect projectiles integrated (par edit).esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -248,7 +257,8 @@
             "item": "sheogorad - groves of the north.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -265,7 +275,8 @@
             "item": "invasion of stormwatch.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -297,7 +308,8 @@
             "item": "higher ministry of truth.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -314,7 +326,8 @@
             "item": "balmoragravemarketbcom.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -345,7 +358,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -372,7 +386,8 @@
             "item": "balmorasouthgatehouse.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -416,7 +431,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -448,7 +464,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -512,7 +529,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -544,7 +562,8 @@
             "item": "beaconofstrilmsmrm.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -561,7 +580,8 @@
             "item": "rp_arena_backstage.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -578,7 +598,8 @@
             "item": "bcom rocky west gash.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -595,7 +616,8 @@
             "item": "far_from_home.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -612,7 +634,8 @@
             "item": "balmora waterworks.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -665,7 +688,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -682,7 +706,8 @@
             "item": "balmoradocks.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -975,7 +1000,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -992,7 +1018,8 @@
             "item": "balmorahightownbellbcom.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -1009,7 +1036,8 @@
             "item": "suranbellwhite.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -1024,7 +1052,8 @@
         "Atomic": {
           "item": "siege at firemoth naturalized.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -1039,7 +1068,8 @@
         "Atomic": {
           "item": "betterdwemerinteriors.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -1056,7 +1086,8 @@
             "item": "improved argonians.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -1079,7 +1110,8 @@
             "is_negated": true
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -1105,7 +1137,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -1131,7 +1164,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -1157,7 +1191,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -1199,7 +1234,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -1225,7 +1261,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -1251,7 +1288,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -1277,7 +1315,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -1314,7 +1353,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -1340,7 +1380,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -1379,7 +1420,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -1405,7 +1447,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -1431,7 +1474,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -1468,7 +1512,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -1495,7 +1540,8 @@
             "item": "btbgi loot patch tcboo weapons integrated.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -1526,7 +1572,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -1552,7 +1599,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -1599,7 +1647,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -1642,7 +1691,8 @@
             }
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -1659,7 +1709,8 @@
             "item": "morrowind anti-cheese.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -1702,7 +1753,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -1779,7 +1831,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -1847,7 +1900,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -1888,7 +1942,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -1939,7 +1994,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -1990,7 +2046,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -2007,7 +2064,8 @@
             "item": "avp btbgi-ne - creature buffs - ndl - merged.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -2033,7 +2091,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -2066,7 +2125,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -2092,7 +2152,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -2125,7 +2186,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -2142,7 +2204,8 @@
             "item": "avp btbgi-ne - ncgd - mbsp - merged.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -2159,7 +2222,8 @@
             "item": "fm - unique items v<ver>.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -2213,7 +2277,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -2267,7 +2332,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -2305,7 +2371,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -2363,7 +2430,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -2936,7 +3004,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -2953,7 +3022,8 @@
             "item": "btbgisation - primary - merged.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -3016,7 +3086,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -3033,7 +3104,8 @@
             "item": "morrowind anti-cheese.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -3050,7 +3122,8 @@
             "item": "beautiful cities of morrowind.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -3067,7 +3140,8 @@
             "item": "divayth fyr puzzle fixed.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -3093,7 +3167,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -3119,7 +3194,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -3150,7 +3226,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -3178,7 +3255,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -3216,7 +3294,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -3249,7 +3328,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -3292,7 +3372,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -3309,7 +3390,8 @@
             "item": "dagon fell additions- roht.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -3326,7 +3408,8 @@
             "item": "daedric shrine overhaul vaermina v2.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -3352,7 +3435,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -3369,7 +3453,8 @@
             "item": "devilish_vampire_overhaul.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -3386,7 +3471,8 @@
             "item": "quest tweaks and alternatives_<ver>.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -3401,7 +3487,8 @@
         "Atomic": {
           "item": "roht_2_0_8.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -3432,7 +3519,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -3458,7 +3546,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -3484,7 +3573,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -3511,7 +3601,8 @@
             "item": "bob's diverse dagoths.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -3528,7 +3619,8 @@
             "item": "the doors of oblivion 1.4.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -3545,7 +3637,8 @@
             "item": "rr_ghost_gate_fortress_eng.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -3562,7 +3655,8 @@
             "item": "beautiful cities of morrowind.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -3577,7 +3671,8 @@
         "Atomic": {
           "item": "entertainers expanded.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -3599,7 +3694,8 @@
             "item": "expansions integrated.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -3616,7 +3712,8 @@
             "item": "reputation_fixes_fighters_guild_.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -3658,7 +3755,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -3690,7 +3788,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -3722,7 +3821,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -3754,7 +3854,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -3797,7 +3898,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -3940,7 +4042,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -3983,7 +4086,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4000,7 +4104,8 @@
             "item": "frostmoth_repaired_v0_31.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4028,7 +4133,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4045,7 +4151,8 @@
             "item": "glass domes of vivec_atmospheric arena.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4071,7 +4178,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -4103,7 +4211,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4120,7 +4229,8 @@
             "item": "grandfather frost - totsp.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4137,7 +4247,8 @@
             "item": "correctuv ore replacer_respawning.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4154,7 +4265,8 @@
             "item": "morrowind swamp trees.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4169,7 +4281,8 @@
         "Atomic": {
           "item": "graht morrowind swamp trees.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -4195,7 +4308,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -4217,7 +4331,8 @@
             "item": "luceedit - guild of vampire hunters.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4250,7 +4365,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4267,7 +4383,8 @@
             "item": "holidays across tamriel - vvardenfell - rr holamayan mod.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4284,7 +4401,8 @@
             "item": "illuminated order improved.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4301,7 +4419,8 @@
             "item": "immersive mournhold.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4324,7 +4443,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4341,7 +4461,8 @@
             "item": "oaab - the ashen divide.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4358,7 +4479,8 @@
             "item": "imperial employment office (md edits).esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4384,7 +4506,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -4410,7 +4533,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -4448,7 +4572,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4465,7 +4590,8 @@
             "item": "imperial stables bcom.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4488,7 +4614,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4536,7 +4663,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4563,7 +4691,8 @@
             "item": "improved inns expanded.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4580,7 +4709,8 @@
             "item": "improved inns expanded - tr addon.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4597,7 +4727,8 @@
             "item": "ebony claymore.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4614,7 +4745,8 @@
             "item": "steel throwing knife_fix.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4629,7 +4761,8 @@
         "Atomic": {
           "item": "tr_mainland.esm"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -4646,7 +4779,8 @@
             "item": "indoril_armor - tr.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4672,7 +4806,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -4698,7 +4833,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -4724,7 +4860,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -4757,7 +4894,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4774,7 +4912,8 @@
             "item": "io - kinsmer.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4837,7 +4976,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4864,7 +5004,8 @@
             "item": "psy_ironmeshimprove_uniques_i.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -4890,7 +5031,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -4905,7 +5047,8 @@
         "Atomic": {
           "item": "riharradroon - path to kogoruhn v1.0.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -4968,7 +5111,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -5106,7 +5250,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -5123,7 +5268,8 @@
             "item": "legend of chemuam.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -5140,7 +5286,8 @@
             "item": "themanifoldspires.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -5193,7 +5340,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -5216,7 +5364,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -5265,7 +5414,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -5282,7 +5432,8 @@
             "item": "little landscapes - seyda neen swamp pools.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -5310,7 +5461,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -5356,7 +5508,8 @@
         "Atomic": {
           "item": "mage robes.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -5388,7 +5541,8 @@
             "item": "mages guild experience overhaul maxnoquotes.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -5431,7 +5585,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -5479,7 +5634,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -5494,7 +5650,8 @@
         "Atomic": {
           "item": "vivec - god the city.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -5527,7 +5684,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -5542,7 +5700,8 @@
         "Atomic": {
           "item": "compatible redesigned vivec.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -5575,7 +5734,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -5619,7 +5779,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -5697,7 +5858,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -5709,7 +5871,8 @@
             "item": "rr_melchior's_mudcrab_merchant_eng.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -5752,7 +5915,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -5795,7 +5959,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -5832,7 +5997,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -5858,7 +6024,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -5884,7 +6051,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -5915,7 +6083,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -5932,7 +6101,8 @@
             "item": "morag tong polished.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -5958,7 +6128,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -5975,7 +6146,8 @@
             "item": "mdmd - bosses only.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6007,7 +6179,8 @@
             }
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6024,7 +6197,8 @@
             "item": "patch for purists.esm"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6092,7 +6266,8 @@
             }
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6145,7 +6320,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6177,7 +6353,8 @@
             }
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6194,7 +6371,8 @@
             "item": "cyrodiil_main.esm"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6226,7 +6404,8 @@
             }
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6243,7 +6422,8 @@
             "item": "sky_main.esm"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6275,7 +6455,8 @@
             }
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6292,7 +6473,8 @@
             "item": "uvirith's legacy_3.53.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6324,7 +6506,8 @@
             }
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6341,7 +6524,8 @@
             "item": "main_quest_overhaul.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6384,7 +6568,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6412,7 +6597,8 @@
             "item": "julan ashlander companion <ver>*[for rebirth].esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6429,7 +6615,8 @@
             "item": "mysterious_affair_sara_shenk - bcom.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6455,7 +6642,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -6472,7 +6660,8 @@
             "item": "morrowindinteriorsproject.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6494,7 +6683,8 @@
             "item": "netch adamantium armor ii_rp.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6531,7 +6721,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -6604,7 +6795,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6621,7 +6813,8 @@
             "item": "beautiful cities of morrowind.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6638,7 +6831,8 @@
             "item": "beautiful cities of morrowind.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6653,7 +6847,8 @@
         "Atomic": {
           "item": "beautiful cities of morrowind.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -6670,7 +6865,8 @@
             "item": "nocturnal moths - tld.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6793,7 +6989,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6810,7 +7007,8 @@
             "item": "vanilla friendly wearables expansion.esm"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6825,7 +7023,8 @@
         "Atomic": {
           "item": "better?bodies*.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -6837,7 +7036,8 @@
             "item": "nod - equipment test addon.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6854,7 +7054,8 @@
             "item": "interiors_of_solstheim_v2.1.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6871,7 +7072,8 @@
             "item": "npc faction affiliation corrector (maximalistic).esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6908,7 +7110,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -6925,7 +7128,8 @@
             "item": "redoran war and sathil mercenary armor integrated.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6968,7 +7172,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -6991,7 +7196,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -7008,7 +7214,8 @@
             "item": "oaab - the ashen divide - vurt's trees.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -7041,7 +7248,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -7058,7 +7266,8 @@
             "item": "oaab_grazelands.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -7086,7 +7295,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -7103,7 +7313,8 @@
             "item": "ojai - framerate version.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -7120,7 +7331,8 @@
             "item": "onsr-bcom.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -7137,7 +7349,8 @@
             "item": "ownership overhaul.esm"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -7154,7 +7367,8 @@
             "item": "passage of prayers - no lore.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -7171,7 +7385,8 @@
             "item": "pcd_pfp_compat.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -7186,7 +7401,8 @@
         "Atomic": {
           "item": "the_royal_game_of_ur.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -7258,7 +7474,8 @@
             "item": "ports of vvardenfell v1.6 - npc only - hood and mask - tr_travels - totsp.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -7275,7 +7492,8 @@
             "item": "antares little mods.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -7292,7 +7510,8 @@
             "item": "the publicans (lgnpc compatible version).esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -7318,7 +7537,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -7356,7 +7576,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -7373,7 +7594,8 @@
             "item": "quarraclan.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -7410,7 +7632,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -7427,7 +7650,8 @@
             "item": "quests in balmora waterworks - no dura gra-bol.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -7455,7 +7679,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -7483,7 +7708,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -7500,7 +7726,8 @@
             "item": "library of vivec overhaul - lite.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -7533,7 +7760,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -7556,7 +7784,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -7571,7 +7800,8 @@
         "Atomic": {
           "item": "an issue of thrust - main.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -7608,7 +7838,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -7623,7 +7854,8 @@
         "Atomic": {
           "item": "cammona tong chitin armor.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -7638,7 +7870,8 @@
         "Atomic": {
           "item": "ceremonial adamantium armor.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -7653,7 +7886,8 @@
         "Atomic": {
           "item": "concept art dunmer helms.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -7668,7 +7902,8 @@
         "Atomic": {
           "item": "glass helms.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -7694,7 +7929,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -7725,7 +7961,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -7740,7 +7977,8 @@
         "Atomic": {
           "item": "mage robes.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -7755,7 +7993,8 @@
         "Atomic": {
           "item": "morag_tong_armor_revisited.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -7770,7 +8009,8 @@
         "Atomic": {
           "item": "morag tong equipment diversity.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -7785,7 +8025,8 @@
         "Atomic": {
           "item": "morag tong polished.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -7816,7 +8057,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -7831,7 +8073,8 @@
         "Atomic": {
           "item": "redaynia restored.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -7857,7 +8100,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -7883,7 +8127,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -7916,7 +8161,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -7931,7 +8177,8 @@
         "Atomic": {
           "item": "weapons expansion morrowind.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -7948,7 +8195,8 @@
             "item": "repopulatedmorrowind_moragtongarmorrevisited.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -7981,7 +8229,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -7998,7 +8247,8 @@
             "item": "rv - tr_travels_(p_m) patch.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8024,7 +8274,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -8050,7 +8301,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -8067,7 +8319,8 @@
             "item": "last wish 2.0.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8110,7 +8363,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8127,7 +8381,8 @@
             "item": "sloadic transport.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8153,7 +8408,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -8170,7 +8426,8 @@
             "item": "totsp td content integration.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8187,7 +8444,8 @@
             "item": "lake fjalding anti-suck.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8204,7 +8462,8 @@
             "item": "stone halls of solstheim - mortified.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8221,7 +8480,8 @@
             "item": "stone halls of solstheim*.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8243,7 +8503,8 @@
             "item": "better landscapes stonewood pass (rp edit).esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8260,7 +8521,8 @@
             "item": "vivec - god the city.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8277,7 +8539,8 @@
             "item": "strike at the camonna tong.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8292,7 +8555,8 @@
         "Atomic": {
           "item": "bm_catcompanions1_0.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -8309,7 +8573,8 @@
             "item": "taddeus foods of tamriel light.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8354,7 +8619,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8383,7 +8649,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8398,7 +8665,8 @@
         "Atomic": {
           "item": "ashfall.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -8440,7 +8708,8 @@
             "item": "telvanni cephalopod armor (robed guard edit).esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8466,7 +8735,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -8508,7 +8778,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -8525,7 +8796,8 @@
             "item": "temple master_bell towers_ws2 patch.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8542,7 +8814,8 @@
             "item": "bcom_white_suran.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8586,7 +8859,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8608,7 +8882,8 @@
             "item": "there can be only one (alt fyr 2).esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8666,7 +8941,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8698,7 +8974,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8715,7 +8992,8 @@
             "item": "thirsk expanded for totsp.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8803,7 +9081,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8841,7 +9120,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8869,7 +9149,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8895,7 +9176,8 @@
         "Atomic": {
           "item": "beautiful cities of morrowind.esp"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -8928,7 +9210,8 @@
             "item": "thirteen telvanni - balmora, south wall cornerclub.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -8959,7 +9242,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -8976,7 +9260,8 @@
             "item": "tirram terala's treasure trove of trinkets - no pillows.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -9002,7 +9287,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -9028,7 +9314,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -9054,7 +9341,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -9071,7 +9359,8 @@
             "item": "ttooth's missing npcs - no nolus.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -9133,7 +9422,8 @@
             "item": "tlad still necro colors - nocturnal moths.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -9161,7 +9451,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -9178,7 +9469,8 @@
             "item": "beautiful cities of morrowind.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -9401,7 +9693,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -9418,7 +9711,8 @@
             "item": "cozy khuul&ald velothi ver.<ver>.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -9440,7 +9734,8 @@
             "item": "gmst vality's bitter coast addon.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -9457,7 +9752,8 @@
             "item": "creatures_rp_purist.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -9620,7 +9916,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -9898,7 +10195,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10011,7 +10309,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10079,7 +10378,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10122,7 +10422,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10154,7 +10455,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10186,7 +10488,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10218,7 +10521,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10250,7 +10554,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10282,7 +10587,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10294,7 +10600,8 @@
             "item": "f&f_companions.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10316,7 +10623,8 @@
             "item": "st_books_wares_rotate.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10333,7 +10641,8 @@
             "item": "f&f_moar.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10350,7 +10659,8 @@
             "item": "wares-even-moar.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10398,7 +10708,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10426,7 +10737,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10443,7 +10755,8 @@
             "item": "wares_tr_npcs_purist.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10460,7 +10773,8 @@
             "item": "wares_vv_npcs_purist.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10477,7 +10791,8 @@
             "item": "wares_pc_npcs_purist.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10494,7 +10809,8 @@
             "item": "wares_shotn_npcs_purist.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10511,7 +10827,8 @@
             "item": "wares_lists_oaab.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10528,7 +10845,8 @@
             "item": "friends and frens.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10545,7 +10863,8 @@
             "item": "wares_lists_hold.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10582,7 +10901,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -10605,7 +10925,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10628,7 +10949,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10651,7 +10973,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10668,7 +10991,8 @@
             "item": "wealthwithinmeasure_tr_v1.25.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10699,7 +11023,8 @@
             }
           ]
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -10716,7 +11041,8 @@
             "item": "rc_vivecsmuatra.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10733,7 +11059,8 @@
             "item": "floating vivec.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10761,7 +11088,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10778,7 +11106,8 @@
             "item": "fnk_sv shevivec.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10793,7 +11122,8 @@
         "Atomic": {
           "item": "patch for purists.esm"
         }
-      }
+      },
+      "plugins": []
     }
   },
   {
@@ -10846,7 +11176,8 @@
             ]
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10873,7 +11204,8 @@
             "item": "veg-totw-books-msrestored.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   },
   {
@@ -10890,7 +11222,8 @@
             "item": "talos cult revised.esp"
           }
         }
-      ]
+      ],
+      "plugins": []
     }
   }
 ]

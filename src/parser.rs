@@ -71,30 +71,27 @@ impl Parser {
     where
         P: AsRef<Path>,
     {
-        self.rules.clear();
-        self.order_rules.clear();
+        if !path.as_ref().exists() {
+            warn!("Could not find rules file {}", path.as_ref().display());
+            return Ok(());
+        }
 
-        if path.as_ref().exists() {
-            let rules = self.parse_rules_from_path(&path)?;
-            info!(
-                "Parsed file {} with {} rules",
-                path.as_ref().display(),
-                rules.len()
-            );
+        let rules = self.parse_rules_from_path(&path)?;
+        info!(
+            "Parsed file {} with {} rules",
+            path.as_ref().display(),
+            rules.len()
+        );
 
-            for r in rules {
-                match r {
-                    ERule::EOrderRule(o) => {
-                        self.order_rules.push(o);
-                    }
-                    ERule::EWarningRule(w) => {
-                        self.rules.push(w);
-                    }
+        for r in rules {
+            match r {
+                ERule::EOrderRule(o) => {
+                    self.order_rules.push(o);
+                }
+                ERule::EWarningRule(w) => {
+                    self.rules.push(w);
                 }
             }
-        } else {
-            warn!("Could not find rules file {}", path.as_ref().display());
-            return Err(Error::new(ErrorKind::Other, "Could not find rules file"));
         }
 
         Ok(())
@@ -124,7 +121,11 @@ impl Parser {
             self.init_from_file(path)?;
         }
 
-        info!("Parser initialized with {} rules", self.rules.len());
+        info!(
+            "Parser initialized with {} order rules",
+            self.order_rules.len()
+        );
+        info!("Parser initialized with {} warning rules", self.rules.len());
         Ok(())
     }
 
