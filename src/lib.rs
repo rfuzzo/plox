@@ -15,6 +15,7 @@ pub mod rules;
 pub mod sorter;
 
 use log::{error, info, warn};
+use openmw_cfg::config_path;
 use reqwest::header::LAST_MODIFIED;
 use rules::*;
 
@@ -138,19 +139,28 @@ pub fn sort(
                 if dry_run {
                     info!("Dry run...");
                     info!("New:\n{:?}", result);
+                    ExitCode::SUCCESS
                 } else {
                     info!("Current:\n{:?}", &mods);
 
                     if mods.eq(&result) {
                         info!("Mods are in correct order, no sorting needed.");
+                        ExitCode::SUCCESS
                     } else {
                         info!("New:\n{:?}", result);
 
-                        update_new_load_order(game, result);
+                        match update_new_load_order(game, &result) {
+                            Ok(_) => {
+                                info!("Update successful");
+                                ExitCode::SUCCESS
+                            }
+                            Err(e) => {
+                                error!("Could not updae load order: {}", e);
+                                ExitCode::FAILURE
+                            }
+                        }
                     }
                 }
-
-                ExitCode::SUCCESS
             }
             Err(e) => {
                 error!("error sorting: {e:?}");
@@ -347,8 +357,7 @@ fn download_mlox_rules(rules_dir: &PathBuf) {
 fn download_plox_rules(rules_dir: &PathBuf) {
     match fs::create_dir_all(rules_dir) {
         Ok(_) => {
-            // download
-            todo!()
+            // TODO CP77 download plox rules
         }
         Err(e) => {
             error!(
@@ -495,6 +504,8 @@ where
                 .collect::<Vec<_>>();
             return names;
         }
+    } else {
+        error!("No openmw.cfg found");
     }
 
     vec![]
@@ -538,7 +549,7 @@ where
 }
 
 /// Update on disk
-pub fn update_new_load_order(game: ESupportedGame, result: Vec<String>) {
+pub fn update_new_load_order(game: ESupportedGame, result: &[String]) -> std::io::Result<()> {
     match game {
         ESupportedGame::Morrowind => update_tes3(result),
         ESupportedGame::OpenMorrowind => update_openmw(result),
@@ -546,15 +557,51 @@ pub fn update_new_load_order(game: ESupportedGame, result: Vec<String>) {
     }
 }
 
-fn update_cp77(_result: Vec<String>) {
+fn update_cp77(_result: &[String]) -> std::io::Result<()> {
     todo!()
 }
 
-fn update_openmw(_result: Vec<String>) {
-    todo!()
+fn update_openmw(result: &[String]) -> std::io::Result<()> {
+    // in openMW we just update the cfg with the new order
+    if let Ok(mut cfg) = openmw_cfg::get_config() {
+        let general = cfg.general_section_mut();
+        // remove
+        let _ = general.remove_all("content");
+
+        // add back
+        for name in result {
+            general.append("content", name);
+        }
+
+        // save
+        cfg.write_to_file(config_path())?;
+    } else {
+        error!("No openmw.cfg found");
+    }
+
+    Ok(())
 }
 
-fn update_tes3(_result: Vec<String>) {
+fn update_tes3(_result: &[String]) -> std::io::Result<()> {
+    // in tes3 we first update the ini with the new order (this is technically not important but we might as well)
+    // check against mw ini
+    let morrowind_ini_path = PathBuf::from("Morrowind.ini");
+    if morrowind_ini_path.exists() {
+        // parse ini
+        let path = morrowind_ini_path.to_str().expect("Invalid path string");
+        let map = ini!(path);
+        let mut final_files: Vec<String> = vec![];
+        if let Some(section) = map.get("game files") {
+
+            // TODO
+        }
+        warn!("Morrowind.ini found but no [Game Files] section, using all plugins in Data Files");
+    } else {
+        warn!("No Morrowind.ini found, using all plugins in Data Files");
+    }
+
+    // then actually reset the filetimes on all plugins hooray
+
     todo!()
 }
 
