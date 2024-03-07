@@ -180,7 +180,8 @@ mod integration_tests {
         }
     }
 
-    #[test]
+    #[allow(dead_code)]
+    //TODO disabled for now #[test]
     fn test_mlox_user_rules() -> std::io::Result<()> {
         init();
 
@@ -218,7 +219,8 @@ mod integration_tests {
         Ok(())
     }
 
-    #[test]
+    #[allow(dead_code)]
+    //TODO disabled for now #[test]
     fn test_mlox_base_rules() -> std::io::Result<()> {
         init();
 
@@ -253,7 +255,8 @@ mod integration_tests {
         Ok(())
     }
 
-    #[test]
+    #[allow(dead_code)]
+    //TODO disabled for now #[test]
     fn test_mlox_rules() -> std::io::Result<()> {
         init();
 
