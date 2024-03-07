@@ -2,6 +2,7 @@ use std::env;
 use std::fs::{self, File};
 use std::io;
 use std::io::BufRead;
+use std::ops::ControlFlow;
 use std::path::{Path, PathBuf};
 
 use clap::ValueEnum;
@@ -61,7 +62,7 @@ pub fn debug_get_mods_from_rules(order: &[(String, String)]) -> Vec<String> {
 
         for a in [a, b] {
             if a.contains('*') || a.contains('?') {
-                let name1 = a.replace(['*', '?'], "");
+                let name1 = a.replace(['*'], "").replace('?', "x");
                 if !result.contains(&name1) {
                     result.push(name1.to_owned());
                 }
@@ -393,27 +394,34 @@ fn update_tes3(_result: Vec<String>) {
 /// HELPERS
 ////////////////////////////////////////////////////////////////////////
 
+fn generate_pair_permutations(input: &[String]) -> Vec<(String, String)> {
+    let mut permutations = Vec::new();
+    for i in 0..input.len() - 1 {
+        for j in i + 1..input.len() {
+            permutations.push((input[i].to_owned(), input[j].to_owned()));
+        }
+    }
+    permutations
+}
+
+fn get_permutations(o: &Order, orders: &mut Vec<(String, String)>) -> ControlFlow<()> {
+    // process order rules
+    if let std::cmp::Ordering::Less = o.names.len().cmp(&2) {
+        // Rule with only one element is an error
+        return ControlFlow::Break(());
+    }
+    orders.extend(generate_pair_permutations(&o.names));
+    ControlFlow::Continue(())
+}
+
 /// Extracts a list of ordering-pairs from the order rules
 pub fn get_ordering(rules: &Vec<ERule>) -> Vec<(String, String)> {
     let mut orders: Vec<(String, String)> = vec![];
 
     for r in rules {
         if let ERule::EOrderRule(EOrderRule::Order(o)) = r {
-            // process order rules
-            match o.names.len().cmp(&2) {
-                std::cmp::Ordering::Less => {
-                    // Rule with only one element is an error
-                    continue;
-                }
-                std::cmp::Ordering::Equal => {
-                    orders.push((o.names[0].to_owned(), o.names[1].to_owned()))
-                }
-                std::cmp::Ordering::Greater => {
-                    // add all pairs
-                    for i in 0..o.names.len() - 1 {
-                        orders.push((o.names[i].to_owned(), o.names[i + 1].to_owned()));
-                    }
-                }
+            if let ControlFlow::Break(_) = get_permutations(o, &mut orders) {
+                continue;
             }
         }
     }
@@ -427,21 +435,8 @@ pub fn get_ordering_from_order_rules(rules: &Vec<EOrderRule>) -> Vec<(String, St
 
     for r in rules {
         if let EOrderRule::Order(o) = r {
-            // process order rules
-            match o.names.len().cmp(&2) {
-                std::cmp::Ordering::Less => {
-                    // Rule with only one element is an error
-                    continue;
-                }
-                std::cmp::Ordering::Equal => {
-                    orders.push((o.names[0].to_owned(), o.names[1].to_owned()))
-                }
-                std::cmp::Ordering::Greater => {
-                    // add all pairs
-                    for i in 0..o.names.len() - 1 {
-                        orders.push((o.names[i].to_owned(), o.names[i + 1].to_owned()));
-                    }
-                }
+            if let ControlFlow::Break(_) = get_permutations(o, &mut orders) {
+                continue;
             }
         }
     }
@@ -455,20 +450,8 @@ pub fn get_ordering_from_orders(rules: &Vec<Order>) -> Vec<(String, String)> {
 
     for o in rules {
         // process order rules
-        match o.names.len().cmp(&2) {
-            std::cmp::Ordering::Less => {
-                // Rule with only one element is an error
-                continue;
-            }
-            std::cmp::Ordering::Equal => {
-                orders.push((o.names[0].to_owned(), o.names[1].to_owned()))
-            }
-            std::cmp::Ordering::Greater => {
-                // add all pairs
-                for i in 0..o.names.len() - 1 {
-                    orders.push((o.names[i].to_owned(), o.names[i + 1].to_owned()));
-                }
-            }
+        if let ControlFlow::Break(_) = get_permutations(o, &mut orders) {
+            continue;
         }
     }
 
@@ -597,5 +580,32 @@ pub fn nearend(f: ERule) -> Option<NearEnd> {
     match f {
         ERule::EOrderRule(EOrderRule::NearEnd(o)) => Some(o),
         _ => None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    use super::*;
+
+    #[test]
+    fn test_generate_pair_permutations() {
+        {
+            let input = ["a".to_owned(), "b".to_owned(), "c".to_owned()];
+            let got = generate_pair_permutations(&input);
+            let expected = [
+                ("a".to_owned(), "b".to_owned()),
+                ("a".to_owned(), "c".to_owned()),
+                ("b".to_owned(), "c".to_owned()),
+            ];
+            assert_eq!(got, expected);
+        }
+
+        {
+            let input = ["a".to_owned(), "b".to_owned()];
+            let got = generate_pair_permutations(&input);
+            let expected = [("a".to_owned(), "b".to_owned())];
+            assert_eq!(got, expected);
+        }
     }
 }

@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, fs};
 
 use log::{error, warn};
 use toposort_scc::IndexGraph;
@@ -185,6 +185,16 @@ impl Sorter {
                 continue;
             }
 
+            // do not check for wildcards
+            // if mods.contains(a) && mods.contains(b) {
+            //     let idx_a = index_dict[a.as_str()];
+            //     let idx_b = index_dict[b.as_str()];
+            //     if !edges.contains(&(idx_a, idx_b)) {
+            //         edges.push((idx_a, idx_b));
+            //         g.add_edge(idx_a, idx_b);
+            //     }
+            // }
+
             if let Some(results_for_a) = wild_contains(mods, a) {
                 if let Some(results_for_b) = wild_contains(mods, b) {
                     // foreach esm i, add an edge to all esps j
@@ -216,12 +226,18 @@ impl Sorter {
                 error!("Graph contains a cycle");
                 let err = g.scc();
                 error!("SCC: {}", err.len());
-                for er in err {
+                let mut res = vec![];
+                for er in &err {
                     error!("cycles:");
                     for e in er {
                         error!("\t{}: {}", e, index_dict_rev[&e]);
+                        res.push(index_dict_rev[&e]);
                     }
                 }
+
+                let _ = fs::create_dir_all("tmp");
+                let file = std::fs::File::create("tmp/scc.json").expect("file create failed");
+                serde_json::to_writer_pretty(file, &res).expect("serialize failed");
 
                 return Err("Graph contains a cycle");
             }

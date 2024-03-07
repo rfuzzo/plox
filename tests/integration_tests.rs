@@ -158,7 +158,7 @@ mod integration_tests {
         // let mut rng = thread_rng();
         // mods.shuffle(&mut rng);
 
-        // let file = std::fs::File::create("mods.json").expect("file create failed");
+        // let file = std::fs::File::create("tmp/mods.json").expect("file create failed");
         // serde_json::to_writer_pretty(file, &mods).expect("serialize failed");
 
         match new_unstable_sorter().topo_sort(&mods, &ordering) {

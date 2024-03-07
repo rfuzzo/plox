@@ -25594,8 +25594,19 @@
         "comment": "version 1.01 and above of grumpy and emma's \"companion beryl\" are fully compatible with cdcooley's \"improved teleportation\", there is no need for cdcooley's \"it beryl and constance fix.esp\" ( ref: readme-beryl.txt )",
         "expressions": [
           {
+            "VER": {
+              "expression": {
+                "Atomic": {
+                  "item": "1gr_comp_beryl.esp"
+                }
+              },
+              "operator": "Greater",
+              "version": "1.0"
+            }
+          },
+          {
             "Atomic": {
-              "item": "[ver>1.0 1gr_comp_beryl.esp]\nit beryl and constance fix.esp"
+              "item": "it beryl and constance fix.esp"
             }
           }
         ]
@@ -30590,6 +30601,81 @@
         "names": [
           "vampire_embrace.esp",
           "vampire embrace mca patch.esp"
+        ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Requires": {
+        "comment": "\"diablerie\" requires cortex's \"vampire embrace\" version 2.4 and zennorious' \"vampiric hunger iii\" 1.1 or 1.2 ( ref: diablerie_readme.txt )",
+        "expression_a": {
+          "Atomic": {
+            "item": "diablerie.esp"
+          }
+        },
+        "expression_b": {
+          "ALL": {
+            "expressions": [
+              {
+                "DESC": {
+                  "expression": {
+                    "Atomic": {
+                      "item": "vampire_embrace.esp"
+                    }
+                  },
+                  "description": "vampire embrace 2.4",
+                  "is_negated": false
+                }
+              },
+              {
+                "VER": {
+                  "expression": {
+                    "Atomic": {
+                      "item": "vampiric hunger base.esp"
+                    }
+                  },
+                  "operator": "Greater",
+                  "version": "1.0"
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Note": {
+        "comment": "some features of \"diablerie\" have been added into alienslof & peter's \"scent of blood\" version 1.2, ensure you have the correct version. ( ref: diablerie_readme.txt )",
+        "expressions": [
+          {
+            "ALL": {
+              "expressions": [
+                {
+                  "Atomic": {
+                    "item": "diablerie.esp"
+                  }
+                },
+                {
+                  "NOT": {
+                    "expression": {
+                      "VER": {
+                        "expression": {
+                          "Atomic": {
+                            "item": "scentofblood_vr.esp"
+                          }
+                        },
+                        "operator": "Less",
+                        "version": "1.2"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
         ]
       }
     }
@@ -38064,6 +38150,26 @@
           {
             "Atomic": {
               "item": "magical missions.esp"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Note": {
+        "comment": "! version 2.0 of the fletcher mod is available from morrowind modding history\t! http://mw.modhistory.com/download--5560",
+        "expressions": [
+          {
+            "VER": {
+              "expression": {
+                "Atomic": {
+                  "item": "fletcher.esp"
+                }
+              },
+              "operator": "Less",
+              "version": "2.0"
             }
           }
         ]
@@ -51691,6 +51797,57 @@
     }
   },
   {
+    "EWarningRule": {
+      "Patch": {
+        "comment": "the fix ('it beryl and constance fix.esp') included with cdcooley's \"improved teleportation\" is only for v1.0 of grumpy and emma's \"companion beryl\" and \"thief companion constance\" mods, later versions of these companion mods do not need the fix.",
+        "expression_a": {
+          "Atomic": {
+            "item": "it beryl and constance fix.esp"
+          }
+        },
+        "expression_b": {
+          "ALL": {
+            "expressions": [
+              {
+                "Atomic": {
+                  "item": "improvedteleportation2.0.esp"
+                }
+              },
+              {
+                "ANY": {
+                  "expressions": [
+                    {
+                      "VER": {
+                        "expression": {
+                          "Atomic": {
+                            "item": "1gr_comp_beryl.esp"
+                          }
+                        },
+                        "operator": "Less",
+                        "version": "1.1"
+                      }
+                    },
+                    {
+                      "VER": {
+                        "expression": {
+                          "Atomic": {
+                            "item": "constance1_0.esp"
+                          }
+                        },
+                        "operator": "Less",
+                        "version": "1.1"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
     "EOrderRule": {
       "Order": {
         "names": [
@@ -59631,8 +59788,19 @@
           "ANY": {
             "expressions": [
               {
+                "VER": {
+                  "expression": {
+                    "Atomic": {
+                      "item": "npc lcv schedules 03.esp"
+                    }
+                  },
+                  "operator": "Greater",
+                  "version": "03-12"
+                }
+              },
+              {
                 "Atomic": {
-                  "item": "[ver>03-12 npc lcv schedules 03.esp]\n\t npc lcv schedules 04 voc.esp"
+                  "item": "npc lcv schedules 04 voc.esp"
                 }
               }
             ]
@@ -90047,6 +90215,31 @@
   },
   {
     "EWarningRule": {
+      "Conflict": {
+        "comment": "!! with version 1.2.4 of \"pursuit enhanced\" the go to jail patch is no longer required.\t!! (ref. readme - pursuit enhanced.htm)",
+        "expressions": [
+          {
+            "Atomic": {
+              "item": "pursuit enhanced -go to jail patch.esp"
+            }
+          },
+          {
+            "VER": {
+              "expression": {
+                "Atomic": {
+                  "item": "pursuit enhanced.esp"
+                }
+              },
+              "operator": "Equal",
+              "version": "1.2.4"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
       "Note": {
         "comment": "pseron wyrd has released a plugin combining piratelord's \"redesigned vivec\" with hoghead the horrible's \"vivec expansion\" ( http://www.morrowind4kids.com/pseronwyrd/pw_redesigned_vivec-vivec_expansion.zip )",
         "expressions": [
@@ -90793,6 +90986,31 @@
             "item": "mwe_combat.esp"
           }
         }
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Conflict": {
+        "comment": "you should use v0.3 or better of yacoby's \"encumbrance bar\" with \"rage indicator\", otherwise the bars will conflict. ( ref: readme - rage indicator.esp)",
+        "expressions": [
+          {
+            "Atomic": {
+              "item": "rage indicator.esp"
+            }
+          },
+          {
+            "VER": {
+              "expression": {
+                "Atomic": {
+                  "item": "encumbrance bar.esp"
+                }
+              },
+              "operator": "Less",
+              "version": "0.3"
+            }
+          }
+        ]
       }
     }
   },
@@ -94003,6 +94221,51 @@
     }
   },
   {
+    "EWarningRule": {
+      "Patch": {
+        "comment": "malik's \"rohtvsriptidenpcfixes\" fixes changes made by riptides' \"face, armor, & clothing replace\" to npcs from \"rise of house telvanni\" 1.3 by bhl et al. download malik's \"rohtvsriptidenpcfixes\" from morrowind modding history - http://mw.modhistory.com/download-64-13704 ( ref: readme rohtvsriptidenpcfixes.txt )",
+        "expression_a": {
+          "Atomic": {
+            "item": "rohtvsriptide_npcfixes.esp"
+          }
+        },
+        "expression_b": {
+          "ALL": {
+            "expressions": [
+              {
+                "VER": {
+                  "expression": {
+                    "Atomic": {
+                      "item": "rise of house telvanni.esm"
+                    }
+                  },
+                  "operator": "Equal",
+                  "version": "1.3"
+                }
+              },
+              {
+                "ANY": {
+                  "expressions": [
+                    {
+                      "Atomic": {
+                        "item": "riptides face & clothing replace + x-jiits.esp"
+                      }
+                    },
+                    {
+                      "Atomic": {
+                        "item": "riptides face & clothing replace final.esp"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
     "EOrderRule": {
       "Order": {
         "names": [
@@ -95664,8 +95927,63 @@
             "ANY": {
               "expressions": [
                 {
+                  "VER": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "scentofblood.esp"
+                      }
+                    },
+                    "operator": "Less",
+                    "version": "1.2"
+                  }
+                },
+                {
+                  "VER": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "scentofblood_mca.esp"
+                      }
+                    },
+                    "operator": "Less",
+                    "version": "1.2"
+                  }
+                },
+                {
+                  "VER": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "scentofblood_mca_vr.esp"
+                      }
+                    },
+                    "operator": "Less",
+                    "version": "1.2"
+                  }
+                },
+                {
+                  "VER": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "scentofblood_mwse_addon.esp"
+                      }
+                    },
+                    "operator": "Less",
+                    "version": "1.2"
+                  }
+                },
+                {
+                  "VER": {
+                    "expression": {
+                      "Atomic": {
+                        "item": "scentofblood_vr.esp"
+                      }
+                    },
+                    "operator": "Less",
+                    "version": "1.2"
+                  }
+                },
+                {
                   "Atomic": {
-                    "item": "[ver<1.2 scentofblood.esp]\n\t [ver<1.2 scentofblood_mca.esp]\n\t [ver<1.2 scentofblood_mca_vr.esp]\n\t [ver<1.2 scentofblood_mwse_addon.esp]\n\t [ver<1.2 scentofblood_vr.esp]\n\t scentofblood_mca_vr_nostake.esp"
+                    "item": "scentofblood_mca_vr_nostake.esp"
                   }
                 }
               ]
@@ -108855,8 +109173,19 @@
         "comment": "version 1.1 and above of grumpy and emma's \"thief companion constance\" are fully compatible with cdcooley's \"improved teleportation\", there is no need for cdcooley's \"it beryl and constance fix.esp\" ( ref: constance_ver1_2_readme.txt )",
         "expressions": [
           {
+            "VER": {
+              "expression": {
+                "Atomic": {
+                  "item": "constance1_0.esp"
+                }
+              },
+              "operator": "Less",
+              "version": "1.1"
+            }
+          },
+          {
             "Atomic": {
-              "item": "[ver<1.1 constance1_0.esp]\nit beryl and constance fix.esp"
+              "item": "it beryl and constance fix.esp"
             }
           }
         ]
@@ -115076,6 +115405,40 @@
     }
   },
   {
+    "EWarningRule": {
+      "Requires": {
+        "comment": "\"adds roht books to the library book sorter.[...] adds teleport platforms to all towers added by roht.[...] adds levitation to the telvanni travel slippers within the roht towers.\" ( ref: \"uvirith's legacy_readme.txt\" )",
+        "expression_a": {
+          "Atomic": {
+            "item": "ul_<ver>_roht_1.52_compatibility.esp"
+          }
+        },
+        "expression_b": {
+          "ALL": {
+            "expressions": [
+              {
+                "Atomic": {
+                  "item": "uvirith's legacy_<ver>.esp"
+                }
+              },
+              {
+                "VER": {
+                  "expression": {
+                    "Atomic": {
+                      "item": "rise of house telvanni.esm"
+                    }
+                  },
+                  "operator": "Equal",
+                  "version": "1.52"
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
     "EOrderRule": {
       "Order": {
         "names": [
@@ -117326,8 +117689,19 @@
         "comment": "do not enable the separately released 'vampiric hunger bloodlust effect.esp', there is a newer, updated version in the version 1.2 \"vampiric hunger\" package ( ref: readme_vh.htm)",
         "expressions": [
           {
+            "VER": {
+              "expression": {
+                "Atomic": {
+                  "item": "vampiric hunger base.esp"
+                }
+              },
+              "operator": "Equal",
+              "version": "1.2"
+            }
+          },
+          {
             "Atomic": {
-              "item": "[ver=1.2 vampiric hunger base.esp]\nvampiric hunger bloodlust effect.esp"
+              "item": "vampiric hunger bloodlust effect.esp"
             }
           }
         ]
@@ -117636,6 +118010,57 @@
             }
           }
         ]
+      }
+    }
+  },
+  {
+    "EWarningRule": {
+      "Requires": {
+        "comment": "\"vampiric illusion\" requires zennorious' \"vampiric hunger iii\" v1.1 or v1.2 ( ref: vampiricillusion_readme.txt )",
+        "expression_a": {
+          "Atomic": {
+            "item": "vampiricillusion.esp"
+          }
+        },
+        "expression_b": {
+          "ALL": {
+            "expressions": [
+              {
+                "VER": {
+                  "expression": {
+                    "Atomic": {
+                      "item": "vampiric hunger base.esp"
+                    }
+                  },
+                  "operator": "Greater",
+                  "version": "1.0"
+                }
+              },
+              {
+                "VER": {
+                  "expression": {
+                    "Atomic": {
+                      "item": "scripted_spells.esp"
+                    }
+                  },
+                  "operator": "Greater",
+                  "version": "1.4"
+                }
+              },
+              {
+                "DESC": {
+                  "expression": {
+                    "Atomic": {
+                      "item": "vampire_embrace.esp"
+                    }
+                  },
+                  "description": "vampire embrace 2.4",
+                  "is_negated": false
+                }
+              }
+            ]
+          }
+        }
       }
     }
   },
