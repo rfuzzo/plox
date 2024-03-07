@@ -1,8 +1,6 @@
 #[cfg(test)]
 mod integration_tests {
-    use std::fs::create_dir_all;
-
-    use plox::{parser::*, sorter::*, *};
+    use plox::{parser::*, rules::EOrderRule, sorter::*, *};
     //use rand::{seq::SliceRandom, thread_rng};
 
     fn init() {
@@ -33,25 +31,33 @@ mod integration_tests {
     fn test_parse_order() {
         init();
 
-        let rules = new_tes3_parser()
-            .parse_rules_from_path("./tests/plox/rules_order.txt")
-            .expect("rule parse failed");
+        let mut parser = new_tes3_parser();
+        parser
+            .init_from_file("./tests/plox/rules_order.txt")
+            .expect("failed rule parsing");
 
-        assert_eq!(5, rules.len());
-        let order = get_ordering(&rules);
+        assert_eq!(5, parser.order_rules.len());
 
-        let mods = debug_get_mods_from_rules(&order);
+        let mods = debug_get_mods_from_order_rules(&parser.order_rules);
 
-        if let Ok(result) = new_unstable_sorter().topo_sort(&mods, &order) {
-            assert!(checkresult(&result, &order), "stable(true) order is wrong");
-        } else {
-            panic!("rules contain a cycle")
+        match new_unstable_sorter().topo_sort(&mods, &parser.order_rules) {
+            Ok(result) => {
+                assert!(
+                    checkresult(&result, &parser.order_rules),
+                    "stable(true) order is wrong"
+                );
+            }
+            Err(e) => panic!("Error: {}", e),
         }
 
-        if let Ok(result) = new_stable_sorter().topo_sort(&mods, &order) {
-            assert!(checkresult(&result, &order), "stable(true) order is wrong");
-        } else {
-            panic!("rules contain a cycle")
+        match new_stable_sorter().topo_sort(&mods, &parser.order_rules) {
+            Ok(result) => {
+                assert!(
+                    checkresult(&result, &parser.order_rules),
+                    "stable(true) order is wrong"
+                );
+            }
+            Err(e) => panic!("Error: {}", e),
         }
     }
 
@@ -60,19 +66,19 @@ mod integration_tests {
         init();
 
         {
-            let rules = new_cyberpunk_parser()
-                .parse_rules_from_path("./tests/plox/rules_note_passing.txt")
-                .expect("rule parse failed");
-
-            assert_eq!(10, rules.len());
+            let mut parser = new_cyberpunk_parser();
+            parser
+                .init_from_file("./tests/plox/rules_note_passing.txt")
+                .expect("failed rule parsing");
+            assert_eq!(10, parser.rules.len());
         }
 
         {
-            let rules = new_cyberpunk_parser()
-                .parse_rules_from_path("./tests/plox/rules_note_failing.txt")
-                .expect("rule parse failed");
-
-            assert_eq!(0, rules.len());
+            let mut parser = new_tes3_parser();
+            parser
+                .init_from_file("./tests/plox/rules_note_failing.txt")
+                .expect("failed rule parsing");
+            assert_eq!(0, parser.rules.len());
         }
     }
 
@@ -80,80 +86,71 @@ mod integration_tests {
     fn test_parse_conflicts() {
         init();
 
-        let rules = new_tes3_parser()
-            .parse_rules_from_path("./tests/plox/rules_conflict.txt")
-            .expect("rule parse failed");
-
-        assert_eq!(5, rules.len());
+        let mut parser = new_tes3_parser();
+        parser
+            .init_from_file("./tests/plox/rules_conflict.txt")
+            .expect("failed rule parsing");
+        assert_eq!(5, parser.rules.len());
     }
 
     #[test]
     fn test_parse_requires() {
         init();
 
-        let rules = new_tes3_parser()
-            .parse_rules_from_path("./tests/plox/rules_requires.txt")
-            .expect("rule parse failed");
-
-        assert_eq!(1, rules.len());
+        let mut parser = new_tes3_parser();
+        parser
+            .init_from_file("./tests/plox/rules_requires.txt")
+            .expect("failed rule parsing");
+        assert_eq!(1, parser.rules.len());
     }
 
     #[test]
-    fn test_dump_rules() {
+    fn test_dump_rules() -> std::io::Result<()> {
         init();
 
         {
-            let parser = new_tes3_parser();
-            let rules = parser
-                .parse_rules_from_path("./tests/mlox/mlox_base.txt")
-                .expect("rule parse failed");
+            let mut parser = new_tes3_parser();
+            parser.init_from_file("./tests/mlox/mlox_base.txt")?;
 
-            let file = std::fs::File::create("base_rules.json").expect("file create failed");
-            serde_json::to_writer_pretty(file, &rules).expect("serialize failed");
             {
-                create_dir_all("tmp").expect("dir create failed");
+                let file = std::fs::File::create("base_rules.json").expect("file create failed");
+                serde_json::to_writer_pretty(file, &parser.rules).expect("serialize failed");
+            }
+
+            {
                 let file =
-                    std::fs::File::create("tmp/base_rules_order.json").expect("file create failed");
-                serde_json::to_writer_pretty(
-                    file,
-                    &rules.into_iter().filter_map(order).collect::<Vec<_>>(),
-                )
-                .expect("serialize failed");
+                    std::fs::File::create("base_rules_order.json").expect("file create failed");
+                serde_json::to_writer_pretty(file, &parser.order_rules).expect("serialize failed");
             }
         }
 
         {
-            let parser = new_tes3_parser();
-            let rules = parser
-                .parse_rules_from_path("./tests/mlox/mlox_user.txt")
-                .expect("rule parse failed");
+            let mut parser = new_tes3_parser();
+            parser.init_from_file("./tests/mlox/mlox_user.txt")?;
 
-            let file = std::fs::File::create("user_rules.json").expect("file create failed");
-            serde_json::to_writer_pretty(file, &rules).expect("serialize failed");
             {
-                create_dir_all("tmp").expect("dir create failed");
-                let file =
-                    std::fs::File::create("tmp/user_rules_order.json").expect("file create failed");
-                serde_json::to_writer_pretty(
-                    file,
-                    &rules.into_iter().filter_map(order).collect::<Vec<_>>(),
-                )
-                .expect("serialize failed");
+                let file = std::fs::File::create("user_rules.json").expect("file create failed");
+                serde_json::to_writer_pretty(file, &parser.rules).expect("serialize failed");
             }
+
+            {
+                let file =
+                    std::fs::File::create("user_rules_order.json").expect("file create failed");
+                serde_json::to_writer_pretty(file, &parser.order_rules).expect("serialize failed");
+            }
+
+            Ok(())
         }
     }
 
     #[test]
-    fn test_mlox_user_rules() {
+    fn test_mlox_user_rules() -> std::io::Result<()> {
         init();
 
-        let parser = new_tes3_parser();
-        let rules = parser
-            .parse_rules_from_path("./tests/mlox/mlox_user.txt")
-            .expect("rule parse failed");
-        let order = rules.into_iter().filter_map(order).collect::<Vec<_>>();
-        let ordering = get_ordering_from_orders(&order);
-        let mods = debug_get_mods_from_rules(&ordering);
+        let mut parser = new_tes3_parser();
+        parser.init_from_file("./tests/mlox/mlox_user.txt")?;
+
+        let mods = debug_get_mods_from_order_rules(&parser.order_rules);
 
         // let mut rng = thread_rng();
         // mods.shuffle(&mut rng);
@@ -161,96 +158,97 @@ mod integration_tests {
         // let file = std::fs::File::create("tmp/mods.json").expect("file create failed");
         // serde_json::to_writer_pretty(file, &mods).expect("serialize failed");
 
-        match new_unstable_sorter().topo_sort(&mods, &ordering) {
+        match new_unstable_sorter().topo_sort(&mods, &parser.order_rules) {
             Ok(result) => {
                 assert!(
-                    checkresult(&result, &ordering),
+                    checkresult(&result, &parser.order_rules),
                     "stable(true) order is wrong"
                 );
             }
-            Err(e) => panic!("rules contain a cycle {}", e),
+            Err(e) => panic!("Error: {}", e),
         }
 
-        match new_stable_sorter().topo_sort(&mods, &ordering) {
+        match new_stable_sorter().topo_sort(&mods, &parser.order_rules) {
             Ok(result) => {
                 assert!(
-                    checkresult(&result, &ordering),
+                    checkresult(&result, &parser.order_rules),
                     "stable(true) order is wrong"
                 );
             }
-            Err(e) => panic!("rules contain a cycle {}", e),
+            Err(e) => panic!("Error: {}", e),
         }
+
+        Ok(())
     }
 
     #[test]
-    fn test_mlox_base_rules() {
-        init();
-
-        let parser = new_tes3_parser();
-        let rules = parser
-            .parse_rules_from_path("./tests/mlox/mlox_base.txt")
-            .expect("rule parse failed");
-        let order = rules.into_iter().filter_map(order).collect::<Vec<_>>();
-        let ordering = get_ordering_from_orders(&order);
-        let mods = debug_get_mods_from_rules(&ordering);
-
-        // let mut rng = thread_rng();
-        // mods.shuffle(&mut rng);
-
-        match new_unstable_sorter().topo_sort(&mods, &ordering) {
-            Ok(result) => {
-                assert!(
-                    checkresult(&result, &ordering),
-                    "stable(true) order is wrong"
-                );
-            }
-            Err(e) => panic!("rules contain a cycle {}", e),
-        }
-
-        match new_stable_sorter().topo_sort(&mods, &ordering) {
-            Ok(result) => {
-                assert!(
-                    checkresult(&result, &ordering),
-                    "stable(true) order is wrong"
-                );
-            }
-            Err(e) => panic!("rules contain a cycle {}", e),
-        }
-    }
-
-    #[test]
-    fn test_mlox_rules() {
+    fn test_mlox_base_rules() -> std::io::Result<()> {
         init();
 
         let mut parser = new_tes3_parser();
-        parser.init("./tests/mlox");
-        let rules = parser.order_rules;
-        let order = rules.into_iter().filter_map(order2).collect::<Vec<_>>();
-        let ordering = get_ordering_from_orders(&order);
-        let mods = debug_get_mods_from_rules(&ordering);
+        parser.init_from_file("./tests/mlox/mlox_base.txt")?;
+
+        let mods = debug_get_mods_from_order_rules(&parser.order_rules);
 
         // let mut rng = thread_rng();
         // mods.shuffle(&mut rng);
 
-        match new_unstable_sorter().topo_sort(&mods, &ordering) {
+        match new_unstable_sorter().topo_sort(&mods, &parser.order_rules) {
             Ok(result) => {
                 assert!(
-                    checkresult(&result, &ordering),
+                    checkresult(&result, &parser.order_rules),
                     "stable(true) order is wrong"
                 );
             }
-            Err(e) => panic!("rules contain a cycle {}", e),
+            Err(e) => panic!("Error: {}", e),
         }
 
-        match new_stable_sorter().topo_sort(&mods, &ordering) {
+        match new_stable_sorter().topo_sort(&mods, &parser.order_rules) {
             Ok(result) => {
                 assert!(
-                    checkresult(&result, &ordering),
+                    checkresult(&result, &parser.order_rules),
                     "stable(true) order is wrong"
                 );
             }
-            Err(e) => panic!("rules contain a cycle {}", e),
+            Err(e) => panic!("Error: {}", e),
         }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_mlox_rules() -> std::io::Result<()> {
+        init();
+
+        let mut parser = new_tes3_parser();
+        parser.init("./tests/mlox")?;
+
+        let mods = debug_get_mods_from_order_rules(&parser.order_rules);
+
+        // let mut rng = thread_rng();
+        // mods.shuffle(&mut rng);
+
+        match new_unstable_sorter().topo_sort(&mods, &parser.order_rules) {
+            Ok(result) => {
+                assert!(
+                    checkresult(&result, &parser.order_rules),
+                    "stable(true) order is wrong"
+                );
+            }
+            Err(e) => panic!("Error: {}", e),
+        }
+
+        match new_stable_sorter().topo_sort(&mods, &parser.order_rules) {
+            Ok(result) => {
+                assert!(
+                    checkresult(&result, &parser.order_rules),
+                    "stable(true) order is wrong"
+                );
+            }
+            Err(e) => panic!("Error: {}", e),
+        }
+
+        Ok(())
     }
 
     #[test]
@@ -270,11 +268,12 @@ mod integration_tests {
         )
     }
 
-    fn checkresult(result: &[String], order: &Vec<(String, String)>) -> bool {
+    fn checkresult(result: &[String], order_rules: &[EOrderRule]) -> bool {
+        let order = get_ordering_from_order_rules(order_rules);
         let pairs = order;
         for (a, b) in pairs {
-            if let Some(results_for_a) = wild_contains(result, a) {
-                if let Some(results_for_b) = wild_contains(result, b) {
+            if let Some(results_for_a) = wild_contains(result, &a) {
+                if let Some(results_for_b) = wild_contains(result, &b) {
                     for i in &results_for_a {
                         for j in &results_for_b {
                             let pos_a = result.iter().position(|x| x == i).unwrap();

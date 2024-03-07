@@ -67,12 +67,45 @@ impl Parser {
         }
     }
 
+    pub fn init_from_file<P>(&mut self, path: P) -> Result<()>
+    where
+        P: AsRef<Path>,
+    {
+        self.rules.clear();
+        self.order_rules.clear();
+
+        if path.as_ref().exists() {
+            let rules = self.parse_rules_from_path(&path)?;
+            info!(
+                "Parsed file {} with {} rules",
+                path.as_ref().display(),
+                rules.len()
+            );
+
+            for r in rules {
+                match r {
+                    ERule::EOrderRule(o) => {
+                        self.order_rules.push(o);
+                    }
+                    ERule::EWarningRule(w) => {
+                        self.rules.push(w);
+                    }
+                }
+            }
+        } else {
+            warn!("Could not find rules file {}", path.as_ref().display());
+            return Err(Error::new(ErrorKind::Other, "Could not find rules file"));
+        }
+
+        Ok(())
+    }
+
     /// Parse rules for a specific game, expects the path to be the rules directory
     ///
     /// # Errors
     ///
     /// This function will return an error if file io or parsing fails
-    pub fn init<P>(&mut self, path: P)
+    pub fn init<P>(&mut self, path: P) -> Result<()>
     where
         P: AsRef<Path>,
     {
@@ -88,27 +121,11 @@ impl Parser {
 
         for file in rules_files {
             let path = path.as_ref().join(file);
-            if path.exists() {
-                if let Ok(rules) = self.parse_rules_from_path(&path) {
-                    info!("Parsed file {} with {} rules", path.display(), rules.len());
-
-                    for r in rules {
-                        match r {
-                            ERule::EOrderRule(o) => {
-                                self.order_rules.push(o);
-                            }
-                            ERule::EWarningRule(w) => {
-                                self.rules.push(w);
-                            }
-                        }
-                    }
-                }
-            } else {
-                warn!("Could not find rules file {}", path.display());
-            }
+            self.init_from_file(path)?;
         }
 
         info!("Parser initialized with {} rules", self.rules.len());
+        Ok(())
     }
 
     /// Parse rules from a rules file
@@ -116,7 +133,7 @@ impl Parser {
     /// # Errors
     ///
     /// This function will return an error if file io or parsing fails
-    pub fn parse_rules_from_path<P>(&self, path: P) -> Result<Vec<ERule>>
+    fn parse_rules_from_path<P>(&self, path: P) -> Result<Vec<ERule>>
     where
         P: AsRef<Path>,
     {
@@ -788,10 +805,7 @@ mod tests {
         }
 
         {
-            let inputs = [
-                ("NOTE comment[]"),
-                ("NOTE comment[with] [[[[[broken scope]"),
-            ];
+            let inputs = ["NOTE comment[]", "NOTE comment[with] [[[[[broken scope]"];
 
             for input in inputs {
                 assert!(parse_rule_expression(input.as_bytes()).is_err())

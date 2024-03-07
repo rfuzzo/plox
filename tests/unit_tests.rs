@@ -4,9 +4,9 @@ mod unit_tests {
     use rand::{seq::SliceRandom, thread_rng};
 
     use plox::{
-        debug_get_mods_from_rules, get_ordering, parser,
+        rules::{EOrderRule, Order},
         sorter::{self, Sorter},
-        wild_contains,
+        wild_contains, *,
     };
 
     fn init() {
@@ -21,10 +21,12 @@ mod unit_tests {
     fn test_cycle() {
         init();
 
-        let order = [("a", "b"), ("b", "c"), ("d", "e"), ("b", "a")]
-            .iter()
-            .map(|e| (e.0.to_owned(), e.1.to_owned()))
-            .collect();
+        let order = [
+            Order::from("a", "b").into(),
+            Order::from("b", "c").into(),
+            Order::from("d", "e").into(),
+            Order::from("b", "a").into(),
+        ];
 
         let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
             .iter()
@@ -56,72 +58,73 @@ mod unit_tests {
         init();
 
         let order = [
-            ("b", "a"),
-            ("b", "c"),
-            ("d", "e"),
-            ("e", "c"),
-            ("test.archive", "test2.archive"),
-        ]
-        .iter()
-        .map(|e| (e.0.to_owned(), e.1.to_owned()))
-        .collect();
+            Order::from("b", "a").into(),
+            Order::from("b", "c").into(),
+            Order::from("d", "e").into(),
+            Order::from("e", "c").into(),
+            Order::from("test.archive", "test2.archive").into(),
+        ];
 
         let mods = ["d", "e", "f", "g", "a", "b", "c"]
             .iter()
             .map(|e| (*e).into())
             .collect::<Vec<_>>();
 
-        let result = sorter::new_unstable_sorter()
-            .topo_sort(&mods, &order)
-            .expect("rules contain a cycle");
-        assert!(checkresult(&result, &order), "unstable order is wrong");
+        match sorter::new_unstable_sorter().topo_sort(&mods, &order) {
+            Ok(result) => {
+                assert!(checkresult(&result, &order), "stable(true) order is wrong");
+            }
+            Err(e) => panic!("Error: {}", e),
+        }
 
-        let result = new_stable_full_sorter()
-            .topo_sort(&mods, &order)
-            .expect("rules contain a cycle");
-        assert!(checkresult(&result, &order), "stable(false) order is wrong");
+        match new_stable_full_sorter().topo_sort(&mods, &order) {
+            Ok(result) => {
+                assert!(checkresult(&result, &order), "stable(true) order is wrong");
+            }
+            Err(e) => panic!("Error: {}", e),
+        }
 
-        let result = sorter::new_stable_sorter()
-            .topo_sort(&mods, &order)
-            .expect("rules contain a cycle");
-        assert!(checkresult(&result, &order), "stable(true) order is wrong");
+        match sorter::new_stable_sorter().topo_sort(&mods, &order) {
+            Ok(result) => {
+                assert!(checkresult(&result, &order), "stable(true) order is wrong");
+            }
+            Err(e) => panic!("Error: {}", e),
+        }
     }
 
     #[test]
-    fn test_optimized_sort() {
+    fn test_optimized_sort() -> std::io::Result<()> {
         init();
 
-        let rules = parser::new_tes3_parser()
-            .parse_rules_from_path("./tests/mlox/mlox_base.txt")
-            .expect("rule parse failed");
-        let order = get_ordering(&rules);
+        let mut parser = parser::new_tes3_parser();
+        parser.init_from_file("./tests/mlox/mlox_base.txt")?;
+        let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
 
         let mut rng = thread_rng();
-        let mut mods = debug_get_mods_from_rules(&order);
         mods.shuffle(&mut rng);
         let mods = mods.into_iter().take(100).collect::<Vec<_>>();
 
         let full_result = new_stable_full_sorter()
-            .topo_sort(&mods, &order)
+            .topo_sort(&mods, &parser.order_rules)
             .expect("rules contain a cycle");
         let opt_result = sorter::new_stable_sorter()
-            .topo_sort(&mods, &order)
+            .topo_sort(&mods, &parser.order_rules)
             .expect("opt rules contain a cycle");
 
         assert_eq!(full_result, opt_result);
+
+        Ok(())
     }
 
     #[test]
-    fn test_optimized_sort_time() {
+    fn test_optimized_sort_time() -> std::io::Result<()> {
         init();
 
-        let rules = parser::new_tes3_parser()
-            .parse_rules_from_path("./tests/mlox/mlox_base.txt")
-            .expect("rule parse failed");
-        let order = get_ordering(&rules);
+        let mut parser = parser::new_tes3_parser();
+        parser.init_from_file("./tests/mlox/mlox_base.txt")?;
+        let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
 
         let mut rng = thread_rng();
-        let mut mods = debug_get_mods_from_rules(&order);
         let mut times = vec![];
         for n in [64, 128, 256, 512, 1024, 2048, 4096] {
             mods.shuffle(&mut rng);
@@ -130,7 +133,7 @@ mod unit_tests {
 
             let now = std::time::Instant::now();
             sorter::new_stable_sorter()
-                .topo_sort(&mods_rnd, &order)
+                .topo_sort(&mods_rnd, &parser.order_rules)
                 .expect("opt rules contain a cycle");
             let elapsed = now.elapsed().as_secs();
 
@@ -150,13 +153,16 @@ mod unit_tests {
         for (_n, t) in times {
             assert!(t < 4);
         }
+
+        Ok(())
     }
 
-    fn checkresult(result: &[String], order: &Vec<(String, String)>) -> bool {
+    fn checkresult(result: &[String], order_rules: &[EOrderRule]) -> bool {
+        let order = plox::get_ordering_from_order_rules(order_rules);
         let pairs = order;
         for (a, b) in pairs {
-            if let Some(results_for_a) = wild_contains(result, a) {
-                if let Some(results_for_b) = wild_contains(result, b) {
+            if let Some(results_for_a) = wild_contains(result, &a) {
+                if let Some(results_for_b) = wild_contains(result, &b) {
                     for i in &results_for_a {
                         for j in &results_for_b {
                             let pos_a = result.iter().position(|x| x == i).unwrap();

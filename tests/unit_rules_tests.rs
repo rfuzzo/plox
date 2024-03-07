@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod unit_tests {
-    use plox::{expressions::*, rules::*};
+    use plox::{expressions::*, rules::*, sorter::new_stable_sorter};
 
     fn init() {
         let _ = env_logger::builder().is_test(true).try_init();
@@ -148,6 +148,162 @@ mod unit_tests {
         {
             let rule = Patch::new("".into(), e(A), e(B));
             assert!(!rule.eval(&get_mods()));
+        }
+    }
+
+    #[test]
+    fn test_nearstart() {
+        // check one gets sorted at the start
+        {
+            let nearstart = NearStart::new(vec![D.to_string()]);
+            let mods = get_mods();
+            let order_rules: Vec<EOrderRule> = vec![EOrderRule::NearStart(nearstart)];
+
+            match new_stable_sorter().topo_sort(&mods, &order_rules) {
+                Ok(result) => {
+                    // check for A,B,C,D,E,F -> D,A,B,C,E,F
+                    assert_eq!(
+                        vec![
+                            D.to_string(),
+                            A.to_string(),
+                            B.to_string(),
+                            C.to_string(),
+                            E.to_string(),
+                            F.to_string()
+                        ],
+                        result
+                    );
+                }
+                Err(e) => panic!("Error: {}", e),
+            }
+        }
+
+        // check that two get sorted at the start
+        {
+            let nearstart = NearStart::new(vec![B.to_string(), D.to_string()]);
+            let mods = get_mods();
+            let order_rules: Vec<EOrderRule> = vec![EOrderRule::NearStart(nearstart)];
+
+            match new_stable_sorter().topo_sort(&mods, &order_rules) {
+                Ok(result) => {
+                    // check for A,B,C,D,E,F -> B,D,A,C,E,F
+                    assert_eq!(
+                        vec![
+                            B.to_string(),
+                            D.to_string(),
+                            A.to_string(),
+                            C.to_string(),
+                            E.to_string(),
+                            F.to_string()
+                        ],
+                        result
+                    );
+                }
+                Err(e) => panic!("Error: {}", e),
+            }
+        }
+
+        // check that two get sorted at the start
+        {
+            let nearstart = NearStart::new(vec![D.to_string(), B.to_string()]);
+            let mods = get_mods();
+            let order_rules: Vec<EOrderRule> = vec![EOrderRule::NearStart(nearstart)];
+
+            match new_stable_sorter().topo_sort(&mods, &order_rules) {
+                Ok(result) => {
+                    // check for A,B,C,D,E,F -> D,B,A,C,E,F
+                    assert_eq!(
+                        vec![
+                            D.to_string(),
+                            B.to_string(),
+                            A.to_string(),
+                            C.to_string(),
+                            E.to_string(),
+                            F.to_string()
+                        ],
+                        result
+                    );
+                }
+                Err(e) => panic!("Error: {}", e),
+            }
+        }
+    }
+
+    #[test]
+    fn test_nearend() {
+        // check one gets sorted at the start
+        {
+            let nearend = NearEnd::new(vec![D.to_string()]);
+            let mods = get_mods();
+            let order_rules: Vec<EOrderRule> = vec![EOrderRule::NearEnd(nearend)];
+
+            match new_stable_sorter().topo_sort(&mods, &order_rules) {
+                Ok(result) => {
+                    // check for A,B,C,D,E,F -> A,B,C,E,F,D
+                    assert_eq!(
+                        vec![
+                            A.to_string(),
+                            B.to_string(),
+                            C.to_string(),
+                            E.to_string(),
+                            F.to_string(),
+                            D.to_string(),
+                        ],
+                        result
+                    );
+                }
+                Err(e) => panic!("Error: {}", e),
+            }
+        }
+
+        // check that two get sorted at the start
+        {
+            let nearend = NearEnd::new(vec![B.to_string(), D.to_string()]);
+            let mods = get_mods();
+            let order_rules: Vec<EOrderRule> = vec![EOrderRule::NearEnd(nearend)];
+
+            match new_stable_sorter().topo_sort(&mods, &order_rules) {
+                Ok(result) => {
+                    // check for A,B,C,D,E,F -> A,C,E,F,D,B
+                    assert_eq!(
+                        vec![
+                            A.to_string(),
+                            C.to_string(),
+                            E.to_string(),
+                            F.to_string(),
+                            D.to_string(),
+                            B.to_string(),
+                        ],
+                        result
+                    );
+                }
+                Err(e) => panic!("Error: {}", e),
+            }
+        }
+
+        // check that two get sorted at the start
+        {
+            let nearend = NearEnd::new(vec![D.to_string(), B.to_string()]);
+            let mods = get_mods();
+            let order_rules: Vec<EOrderRule> = vec![EOrderRule::NearEnd(nearend)];
+
+            match new_stable_sorter().topo_sort(&mods, &order_rules) {
+                Ok(result) => {
+                    // check for A,B,C,D,E,F -> A,C,E,F,B,D
+                    assert_eq!(
+                        vec![
+                            A.to_string(),
+                            C.to_string(),
+                            E.to_string(),
+                            F.to_string(),
+                            B.to_string(),
+                            D.to_string(),
+                        ],
+                        result
+                    );
+                }
+                Err(e) => panic!("Error: {}", e),
+            }
         }
     }
 

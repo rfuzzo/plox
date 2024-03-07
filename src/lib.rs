@@ -1,9 +1,11 @@
 use std::env;
+use std::error::Error;
 use std::fs::{self, File};
 use std::io;
 use std::io::BufRead;
 use std::ops::ControlFlow;
 use std::path::{Path, PathBuf};
+use std::process::ExitCode;
 
 use clap::ValueEnum;
 
@@ -44,12 +46,175 @@ pub enum ESupportedGame {
 }
 pub const PLOX_RULES_BASE: &str = "plox_base.txt";
 
+/// Sorts the current mod load order according to specified rules
+pub fn sort(
+    game: ESupportedGame,
+    root: &Option<PathBuf>,
+    rules_path: &Option<String>,
+    mod_list: &Option<PathBuf>,
+    dry_run: bool,
+    unstable: bool,
+    no_download: bool,
+) -> ExitCode {
+    info!("Sorting mods...");
+
+    // get game root
+    let root = match root {
+        Some(path) => path.clone(),
+        None => env::current_dir().expect("No current working dir"),
+    };
+
+    // get default rules dir
+    let rules_dir = if let Some(path) = rules_path {
+        PathBuf::from(path)
+    } else {
+        get_default_rules_dir(game)
+    };
+
+    // gather mods (optionally from a list)
+    let mods: Vec<String>;
+    if let Some(modlist_path) = mod_list {
+        mods = read_file_as_list(modlist_path);
+    } else {
+        mods = gather_mods(&root, game);
+        if mods.is_empty() {
+            info!("No mods found");
+            return ExitCode::FAILURE;
+        }
+    }
+
+    if !no_download {
+        download_latest_rules(game, &rules_dir);
+    }
+
+    let mut parser = parser::get_parser(game);
+    if let Err(e) = parser.init(rules_dir) {
+        error!("Parser init failed: {}", e);
+        return ExitCode::FAILURE;
+    }
+
+    if parser.rules.is_empty() {
+        warn!("No rules found to evaluate");
+        return ExitCode::FAILURE;
+    }
+
+    // Print Warnings and Notes
+    info!("Evaluating mod list...");
+    for rule in &parser.rules {
+        if rule.eval(&mods) {
+            match rule {
+                EWarningRule::Note(n) => {
+                    info!("[NOTE]\n{}\n", n.get_comment());
+                }
+                EWarningRule::Conflict(c) => {
+                    warn!("[CONFLICT]\n{}\n", c.get_comment());
+                }
+                EWarningRule::Requires(r) => {
+                    warn!("[REQUIRES]\n{}\n", r.get_comment());
+                }
+                EWarningRule::Patch(p) => {
+                    warn!("[Patch]\n{}\n", p.get_comment());
+                }
+            }
+        }
+    }
+
+    // Sort
+
+    info!("Sorting mods...");
+    let mut sorter = if unstable {
+        sorter::new_unstable_sorter()
+    } else {
+        sorter::new_stable_sorter()
+    };
+    match sorter.topo_sort(&mods, &parser.order_rules) {
+        Ok(result) => {
+            if dry_run {
+                info!("Dry run...");
+                info!("New:\n{:?}", result);
+            } else {
+                info!("Current:\n{:?}", &mods);
+
+                if mods.eq(&result) {
+                    info!("Mods are in correct order, no sorting needed.");
+                } else {
+                    info!("New:\n{:?}", result);
+
+                    update_new_load_order(game, result);
+                }
+            }
+
+            ExitCode::SUCCESS
+        }
+        Err(e) => {
+            error!("error sorting: {e:?}");
+            ExitCode::FAILURE
+        }
+    }
+}
+
+/// Verifies integrity of the specified rules
+pub fn verify(game: ESupportedGame, rules_path: &Option<String>) -> ExitCode {
+    let rules_dir = if let Some(path) = rules_path {
+        PathBuf::from(path)
+    } else {
+        get_default_rules_dir(game)
+    };
+
+    info!("Verifying rules from {} ...", rules_dir.display());
+
+    let mut parser = parser::get_parser(game);
+    if let Err(e) = parser.init(rules_dir) {
+        error!("Parser init failed: {}", e);
+        return ExitCode::FAILURE;
+    }
+
+    if parser.rules.is_empty() {
+        warn!("No rules found to evaluate");
+        return ExitCode::FAILURE;
+    }
+
+    let mods = debug_get_mods_from_order_rules(&parser.order_rules);
+    match sorter::new_unstable_sorter().topo_sort(&mods, &parser.order_rules) {
+        Ok(_) => {
+            info!("Verify SUCCESS");
+            ExitCode::SUCCESS
+        }
+        Err(_) => {
+            error!("Verify FAILURE");
+            ExitCode::FAILURE
+        }
+    }
+}
+
+/// Lists the current mod load order
+pub fn list_mods(root: &Option<PathBuf>, game: ESupportedGame) -> ExitCode {
+    info!("Printing active mods...");
+
+    let root = match root {
+        Some(path) => path.clone(),
+        None => env::current_dir().expect("No current working dir"),
+    };
+
+    for m in gather_mods(&root, game) {
+        println!("{}", m);
+        //info!("{}", m);
+    }
+
+    ExitCode::SUCCESS
+}
+
 ////////////////////////////////////////////////////////////////////////
 /// GAMES
 ////////////////////////////////////////////////////////////////////////
 
 /// flattens a list of ordered mod pairs into a list of mod names
-pub fn debug_get_mods_from_rules(order: &[(String, String)]) -> Vec<String> {
+pub fn debug_get_mods_from_order_rules(order_rules: &[EOrderRule]) -> Vec<String> {
+    debug_get_mods_from_ordering(&get_ordering_from_order_rules(order_rules))
+}
+
+/// flattens a list of ordered mod pairs into a list of mod names
+pub fn debug_get_mods_from_ordering(order: &[(String, String)]) -> Vec<String> {
     let mut result: Vec<String> = vec![];
     for (a, b) in order.iter() {
         //TODO wildcards <VER>
@@ -97,7 +262,7 @@ pub fn download_latest_rules(game: ESupportedGame, rules_dir: &PathBuf) {
     }
 }
 
-fn download_file<P>(url: &str, output_path: &P) -> Result<(), Box<dyn std::error::Error>>
+fn download_file<P>(url: &str, output_path: &P) -> Result<(), Box<dyn Error>>
 where
     P: AsRef<Path>,
 {
@@ -117,10 +282,10 @@ pub fn download_file_if_different_version(
     url: &str,
     output_path: &str,
     local_version: Option<&str>,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn Error>> {
     // Create the output directory if it doesn't exist
     if let Some(parent_dir) = Path::new(output_path).parent() {
-        std::fs::create_dir_all(parent_dir)?;
+        fs::create_dir_all(parent_dir)?;
     }
 
     // Send a HEAD request to check if the file has been modified
@@ -215,7 +380,7 @@ where
 {
     // get all plugins
     let mut results: Vec<PathBuf> = vec![];
-    if let Ok(plugins) = std::fs::read_dir(path) {
+    if let Ok(plugins) = fs::read_dir(path) {
         plugins.for_each(|p| {
             if let Ok(file) = p {
                 let file_path = file.path();
@@ -430,7 +595,7 @@ pub fn get_ordering(rules: &Vec<ERule>) -> Vec<(String, String)> {
 }
 
 /// Extracts a list of ordering-pairs from the order rules
-pub fn get_ordering_from_order_rules(rules: &Vec<EOrderRule>) -> Vec<(String, String)> {
+pub fn get_ordering_from_order_rules(rules: &[EOrderRule]) -> Vec<(String, String)> {
     let mut orders: Vec<(String, String)> = vec![];
 
     for r in rules {
@@ -576,9 +741,21 @@ pub fn nearstart(f: ERule) -> Option<NearStart> {
         _ => None,
     }
 }
+pub fn nearstart2(f: &EOrderRule) -> Option<NearStart> {
+    match f {
+        EOrderRule::NearStart(o) => Some(o.clone()),
+        _ => None,
+    }
+}
 pub fn nearend(f: ERule) -> Option<NearEnd> {
     match f {
         ERule::EOrderRule(EOrderRule::NearEnd(o)) => Some(o),
+        _ => None,
+    }
+}
+pub fn nearend2(f: &EOrderRule) -> Option<NearEnd> {
+    match f {
+        EOrderRule::NearEnd(o) => Some(o.clone()),
         _ => None,
     }
 }

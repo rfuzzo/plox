@@ -384,10 +384,10 @@ mod unit_tests {
         init();
 
         let inputs = [
-            ("[]Siege at Firemoth.esp"),
-            ("[Official]Siege at Firemoth.esp"),
-            ("a.esp"),
-            ("a name.esp"),
+            "[]Siege at Firemoth.esp",
+            "[Official]Siege at Firemoth.esp",
+            "a.esp",
+            "a name.esp",
         ];
 
         for a in inputs {

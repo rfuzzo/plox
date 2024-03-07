@@ -231,6 +231,12 @@ impl Order {
     pub fn new(names: Vec<String>) -> Self {
         Self { names }
     }
+
+    pub fn from(name_a: &str, name_b: &str) -> Self {
+        Self {
+            names: [name_a.to_owned(), name_b.to_owned()].to_vec(),
+        }
+    }
 }
 impl TParser<Order> for Order {
     fn parse<R: Read + BufRead + Seek>(
