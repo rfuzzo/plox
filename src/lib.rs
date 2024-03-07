@@ -217,22 +217,18 @@ pub fn debug_get_mods_from_order_rules(order_rules: &[EOrderRule]) -> Vec<String
 pub fn debug_get_mods_from_ordering(order: &[(String, String)]) -> Vec<String> {
     let mut result: Vec<String> = vec![];
     for (a, b) in order.iter() {
-        //TODO wildcards <VER>
-        if a.contains("<ver>") {
-            continue;
-        }
-        if b.contains("<ver>") {
-            continue;
-        }
-
         for a in [a, b] {
-            if a.contains('*') || a.contains('?') {
-                let name1 = a.replace(['*'], "").replace('?', "x");
-                if !result.contains(&name1) {
-                    result.push(name1.to_owned());
-                }
-            } else if !result.contains(a) {
-                result.push(a.to_owned());
+            let name = if a.contains('*') || a.contains('?') || a.contains("<ver>") {
+                // Wildcards
+                a.replace('?', "x")
+                    .replace(['*'], "")
+                    .replace("<ver>", "1.0")
+            } else {
+                a.to_owned()
+            };
+
+            if !result.contains(&name) {
+                result.push(name);
             }
         }
     }
@@ -666,11 +662,15 @@ where
 }
 
 pub fn wild_contains(list: &[String], str: &String) -> Option<Vec<String>> {
-    if str.contains('*') || str.contains('?') {
+    if str.contains('*') || str.contains('?') || str.contains("<ver>") {
         let mut results = vec![];
         // Replace * with .* to match any sequence of characters
-        let mut regex_pattern = str.replace('*', ".*");
-        regex_pattern = regex_pattern.replace('?', ".");
+        let mut regex_pattern = str.replace('*', r".*");
+        // Replace ? with . to match any single character
+        regex_pattern = regex_pattern.replace('?', r".");
+        // Replace <ver> with (\d+(?:[_.-]?\d+)*[a-z]?) to match a version number :hidethepain:
+        // the following are valid version numbers: 1.2.3a, 1.0, 1, 1a, 1_3a, 77g
+        regex_pattern = regex_pattern.replace("<ver>", r"(\d+(?:[_.-]?\d+)*[a-z]?)");
 
         regex_pattern = format!("^{}$", regex_pattern);
         if let Ok(regex) = regex::Regex::new(&regex_pattern) {
@@ -683,6 +683,10 @@ pub fn wild_contains(list: &[String], str: &String) -> Option<Vec<String>> {
             }
         } else {
             log::error!("Could not construct wildcard pattern for {}", str);
+            return None;
+        }
+
+        if results.is_empty() {
             return None;
         }
 
@@ -783,6 +787,113 @@ mod tests {
             let got = generate_pair_permutations(&input);
             let expected = [("a".to_owned(), "b".to_owned())];
             assert_eq!(got, expected);
+        }
+    }
+
+    #[test]
+    fn test_wildcard_matches_star() {
+        let pattern = "Hold it - replacer*.esp".to_lowercase().to_owned();
+
+        {
+            let input = "Hold it - replacer.esp".to_lowercase().to_owned();
+            assert!(wild_contains(&[input], &pattern).is_some());
+        }
+
+        {
+            let input = "Hold it - replacerA.esp".to_lowercase().to_owned();
+            assert!(wild_contains(&[input], &pattern).is_some());
+        }
+
+        {
+            let input = "Hold it - replacerAA.esp".to_lowercase().to_owned();
+            assert!(wild_contains(&[input], &pattern).is_some());
+        }
+
+        // Fails
+
+        {
+            let input = "Hold it - replace.esp".to_lowercase().to_owned();
+            assert!(wild_contains(&[input], &pattern).is_none());
+        }
+    }
+
+    #[test]
+    fn test_wildcard_matches_questionmark() {
+        let pattern = "Rem_LoC?.esp".to_lowercase().to_owned();
+
+        {
+            let input = "Rem_LoCA.esp".to_lowercase().to_owned();
+            assert!(wild_contains(&[input], &pattern).is_some());
+        }
+
+        {
+            let input = "Rem_LoC1.esp".to_lowercase().to_owned();
+            assert!(wild_contains(&[input], &pattern).is_some());
+        }
+
+        // Fails
+
+        {
+            let input = "Rem_LoCAA.esp".to_lowercase().to_owned();
+            assert!(wild_contains(&[input], &pattern).is_none());
+        }
+
+        {
+            let input = "Rem_LoC.esp".to_lowercase().to_owned();
+            assert!(wild_contains(&[input], &pattern).is_none());
+        }
+    }
+
+    #[test]
+    fn test_wildcard_matches_ver() {
+        // the following are valid version numbers: 1.0, 1.2.3a, 1, 1a, 1_3a, 77g
+        let pattern = "ADN-GDRv<VER>.esp".to_lowercase().to_owned();
+
+        {
+            let input = "ADN-GDRv1.0.esp".to_lowercase().to_owned();
+            assert!(wild_contains(&[input], &pattern).is_some());
+        }
+
+        {
+            let input = "ADN-GDRv1.2.3a.esp".to_lowercase().to_owned();
+            assert!(wild_contains(&[input], &pattern).is_some());
+        }
+
+        {
+            let input = "ADN-GDRv1.esp".to_lowercase().to_owned();
+            assert!(wild_contains(&[input], &pattern).is_some());
+        }
+
+        {
+            let input = "ADN-GDRv1a.esp".to_lowercase().to_owned();
+            assert!(wild_contains(&[input], &pattern).is_some());
+        }
+
+        {
+            let input = "ADN-GDRv1_3a.esp".to_lowercase().to_owned();
+            assert!(wild_contains(&[input], &pattern).is_some());
+        }
+
+        {
+            let input = "ADN-GDRv77g.esp".to_lowercase().to_owned();
+            assert!(wild_contains(&[input], &pattern).is_some());
+        }
+
+        // Fails
+
+        {
+            let input = "ADN-GDRv1.0_comment.esp".to_lowercase().to_owned();
+            assert!(wild_contains(&[input], &pattern).is_none());
+        }
+
+        {
+            let input = "ADN-GDRv.esp".to_lowercase().to_owned();
+            assert!(wild_contains(&[input], &pattern).is_none());
+        }
+
+        {
+            let input = "ADN-GDRvMyE3.esp".to_lowercase().to_owned();
+            assert!(wild_contains(&[input], &pattern).is_none());
         }
     }
 }

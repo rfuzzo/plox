@@ -182,16 +182,6 @@ impl Sorter {
         // add edges
         let mut edges: Vec<(usize, usize)> = vec![];
         for (a, b) in order {
-            //TODO wildcards <VER>
-            if a.contains("<ver>") {
-                warn!("skipping {}", a);
-                continue;
-            }
-            if b.contains("<ver>") {
-                warn!("skipping {}", b);
-                continue;
-            }
-
             // do not check for wildcards
             // if mods.contains(a) && mods.contains(b) {
             //     let idx_a = index_dict[a.as_str()];
