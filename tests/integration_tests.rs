@@ -72,7 +72,7 @@ mod integration_tests {
             parser
                 .init_from_file("./tests/plox/rules_note_passing.txt")
                 .expect("failed rule parsing");
-            assert_eq!(10, parser.rules.len());
+            assert_eq!(11, parser.rules.len());
         }
 
         {

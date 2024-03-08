@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     expressions::*,
-    parser::{self, read_comment},
+    parser::{self},
 };
 
 ///////////////////////////////////////////////////
@@ -431,12 +431,12 @@ impl TWarningRule for Note {
 impl TParser<Note> for Note {
     fn parse<R: Read + BufRead + Seek>(
         this: &mut Note,
-        mut reader: R,
+        reader: R,
         parser: &parser::Parser,
     ) -> Result<()> {
-        if let Ok(Some(comment)) = read_comment(&mut reader) {
-            this.set_comment(comment);
-        }
+        // if let Ok(Some(comment)) = read_comment(&mut reader) {
+        //     this.set_comment(comment);
+        // }
 
         // add all parsed expressions
         this.expressions = parser.parse_expressions(reader)?;
@@ -507,12 +507,12 @@ impl TWarningRule for Conflict {
 impl TParser<Conflict> for Conflict {
     fn parse<R: Read + BufRead + Seek>(
         this: &mut Conflict,
-        mut reader: R,
+        reader: R,
         parser: &parser::Parser,
     ) -> Result<()> {
-        if let Ok(Some(comment)) = read_comment(&mut reader) {
-            this.set_comment(comment);
-        }
+        // if let Ok(Some(comment)) = read_comment(&mut reader) {
+        //     this.set_comment(comment);
+        // }
 
         // add all parsed expressions
         this.expressions = parser.parse_expressions(reader)?;
@@ -589,12 +589,12 @@ impl TWarningRule for Requires {
 impl TParser<Requires> for Requires {
     fn parse<R: Read + BufRead + Seek>(
         this: &mut Requires,
-        mut reader: R,
+        reader: R,
         parser: &parser::Parser,
     ) -> Result<()> {
-        if let Ok(Some(comment)) = read_comment(&mut reader) {
-            this.set_comment(comment);
-        }
+        // if let Ok(Some(comment)) = read_comment(&mut reader) {
+        //     this.set_comment(comment);
+        // }
 
         // add all parsed expressions
         let expressions = parser.parse_expressions(reader)?;
@@ -684,12 +684,12 @@ impl TWarningRule for Patch {
 impl TParser<Patch> for Patch {
     fn parse<R: Read + BufRead + Seek>(
         this: &mut Patch,
-        mut reader: R,
+        reader: R,
         parser: &parser::Parser,
     ) -> Result<()> {
-        if let Ok(Some(comment)) = read_comment(&mut reader) {
-            this.set_comment(comment);
-        }
+        // if let Ok(Some(comment)) = read_comment(&mut reader) {
+        //     this.set_comment(comment);
+        // }
 
         // add all parsed expressions
         let expressions = parser.parse_expressions(reader)?;

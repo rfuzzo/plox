@@ -6,7 +6,10 @@ mod unit_tests {
     use plox::{expressions::Expression, rules::TWarningRule, *};
 
     fn init() {
-        let _ = env_logger::builder().is_test(true).try_init();
+        let env = env_logger::Env::default()
+            .default_filter_or(log_level_to_str(ELogLevel::Debug))
+            .default_write_style_or("always");
+        let _ = env_logger::Builder::from_env(env).is_test(true).try_init();
     }
 
     ////////////////////////////////////////////////////////////////////////
@@ -34,9 +37,6 @@ mod unit_tests {
                 format!("[Order]{a} {b} {c} ; with a comment"),
                 format!("[Order]{a}; with a comment\n{b}\n{c}"),
                 format!("[Order]; with a comment\n{a}\n{b}\n{c}"),
-                // format!("[Order]{a} \"{b}\" {c}"),
-                // format!("[Order]{a}\n\"{b}\"\n{c}"),
-                // format!("[Order]\n\"{a}\"\n{b}\n\"{c}\""),
             ];
 
             for input in inputs {
@@ -49,15 +49,12 @@ mod unit_tests {
                     .into_iter()
                     .filter_map(order)
                     .collect::<Vec<_>>();
-                assert_eq!(2, rules.len());
+                assert_eq!(1, rules.len());
 
-                let mut n = rules.first().expect("No rules found");
+                let n = rules.first().expect("No rules found");
                 assert_eq!(a, n.names[0]);
                 assert_eq!(b, n.names[1]);
-
-                n = rules.get(1).expect("No rules found");
-                assert_eq!(b, n.names[0]);
-                assert_eq!(c, n.names[1]);
+                assert_eq!(c, n.names[2]);
             }
         }
     }
@@ -104,8 +101,8 @@ mod unit_tests {
 
         let inputs = [
             "[Nearend message] a.esp b.esp",
-            // "[Nearend message] a.esp\nb.esp",
-            // "[Nearend]; with a comment\na.esp\nb.esp",
+            "[Nearend message] a.esp\nb.esp",
+            "[Nearend]; with a comment\na.esp\nb.esp",
         ];
 
         for input in inputs {

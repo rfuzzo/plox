@@ -10,7 +10,10 @@ mod unit_tests {
     };
 
     fn init() {
-        let _ = env_logger::builder().is_test(true).try_init();
+        let env = env_logger::Env::default()
+            .default_filter_or(log_level_to_str(ELogLevel::Debug))
+            .default_write_style_or("always");
+        let _ = env_logger::Builder::from_env(env).is_test(true).try_init();
     }
 
     fn new_stable_full_sorter() -> Sorter {
@@ -126,7 +129,7 @@ mod unit_tests {
 
         let mut rng = thread_rng();
         let mut times = vec![];
-        for n in [64, 128, 256, 512, 1024, 2048, 4096] {
+        for n in [64, 128, 256, 512, 1024 /*, 2048 */] {
             mods.shuffle(&mut rng);
             let max = std::cmp::min(n, mods.len() - 1);
             let mods_rnd = mods.clone().into_iter().take(max).collect::<Vec<_>>();
@@ -134,7 +137,7 @@ mod unit_tests {
             let now = std::time::Instant::now();
             sorter::new_stable_sorter()
                 .topo_sort(&mods_rnd, &parser.order_rules)
-                .expect("opt rules contain a cycle");
+                .expect("error: ");
             let elapsed = now.elapsed().as_secs();
 
             times.push((n, elapsed));

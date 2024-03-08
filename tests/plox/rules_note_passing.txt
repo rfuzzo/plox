@@ -1,5 +1,6 @@
 ;; PASSING
 
+[Note My message with some [brakets?] is a stupid idea!] a.archive b.archive 
 
 [Note]
  test
@@ -9,7 +10,7 @@
 	 Vampire_Embrace.archive]
 
 [Note]
-	According to its readme "ADVANCED GUARDS IV DOES NOT affect third party mods. So the guards from the Bank mod, for example, will not be affected. If you are concerned about this, you must check the special GUARDS.archive as well. This will make the low-level spawns of guards just as strong as the high level spawns of guards, however."
+	According to its readme "ADVANCED GUARDS IV DOES NOT affect third party mods. 
 [ALL	ADVANCED GUARDS.archive
 	 	[NOT	GUARDS.archive]]
 

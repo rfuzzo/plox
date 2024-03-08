@@ -154,6 +154,7 @@ impl Parser {
         R: Read + BufRead + Seek,
     {
         // pre-parse into rule blocks
+        // TODO, do it properly and stop on new rule start, not newline
         let mut chunks: Vec<ChunkWrapper> = vec![];
         let mut chunk: Option<ChunkWrapper> = None;
         for (idx, line) in reader.lines().map_while(Result::ok).enumerate() {
@@ -233,7 +234,7 @@ impl Parser {
             '[' => {
                 // start parsing
                 // read until the end of the rule expression: e.g. [NOTE comment] body
-                if let Ok(mut rule_expression) = parse_rule_expression(&mut reader) {
+                if let Ok((mut rule_expression, ruletype)) = parse_rule_expression(&mut reader) {
                     rule_expression.pop();
                     let mut rule: ERule;
                     // parse rule name
@@ -270,57 +271,59 @@ impl Parser {
                     }
 
                     // parse body
-
-                    // construct the body out of each line with comments trimmed
-                    let mut is_first_line = false;
-                    let mut comment = String::new();
-                    let mut body = String::new();
-                    for (idx, line) in reader
-                        .lines()
-                        .map_while(Result::ok)
-                        .map(|f| {
-                            if let Some(index) = f.find(';') {
-                                f[..index].to_owned()
-                            } else {
-                                f.to_owned() // Return the entire string if ';' is not found
-                            }
-                        })
-                        .filter(|p| !p.trim().is_empty())
-                        .enumerate()
-                    {
-                        if idx == 0 {
-                            is_first_line = true;
+                    match ruletype {
+                        ERuleType::Inline => {
+                            // inline rules don't have comments, we just parse the resst of the chunk
+                            // now parse rule body
+                            ERule::parse(&mut rule, reader, self)?;
+                            Ok(rule)
                         }
-
-                        // check for those darned comments
-                        if is_first_line {
-                            if let Some(first_char) = line.chars().next() {
-                                if first_char.is_ascii_whitespace() {
-                                    comment += line.as_str();
-                                    continue;
+                        ERuleType::Multiline => {
+                            // construct the body out of each line with comments trimmed
+                            let mut is_first_line = false;
+                            let mut comment = String::new();
+                            let mut body = String::new();
+                            for (idx, line) in reader
+                                .lines()
+                                .map_while(Result::ok)
+                                .map(|f| f.to_owned())
+                                .filter(|p| !p.trim().is_empty())
+                                .enumerate()
+                            {
+                                if idx == 0 {
+                                    is_first_line = true;
                                 }
+
+                                // check for those darned comments
+                                if is_first_line {
+                                    if let Some(first_char) = line.chars().next() {
+                                        if first_char.is_ascii_whitespace() {
+                                            comment += line.as_str();
+                                            continue;
+                                        }
+                                    }
+
+                                    if !comment.is_empty() {
+                                        if let ERule::EWarningRule(w) = &mut rule {
+                                            w.set_comment(comment.clone().trim().into());
+                                        }
+                                        comment.clear();
+                                    }
+
+                                    is_first_line = false;
+                                }
+
+                                // this is a proper line
+                                body += format!("{}\n", line).as_str();
                             }
 
-                            if !comment.is_empty() {
-                                if let ERule::EWarningRule(w) = &mut rule {
-                                    w.set_comment(comment.clone().trim().into());
-                                }
-                                comment.clear();
-                            }
-
-                            is_first_line = false;
+                            // now parse rule body
+                            let body = body.trim();
+                            let body_cursor = Cursor::new(body);
+                            ERule::parse(&mut rule, body_cursor, self)?;
+                            Ok(rule)
                         }
-
-                        // this is a proper line
-                        body += format!("{}\n", line).as_str();
                     }
-
-                    let body = body.trim();
-                    let body_cursor = Cursor::new(body);
-
-                    // now parse rule body
-                    ERule::parse(&mut rule, body_cursor, self)?;
-                    Ok(rule)
                 } else {
                     Err(Error::new(ErrorKind::Other, "Parsing error: unknown rule"))
                 }
@@ -633,25 +636,25 @@ fn starts_with_whitespace(current_buffer: &str, arg: &str) -> bool {
 /// # Errors
 ///
 /// This function will return an error if stream reading or seeking fails
-pub fn read_comment<R: Read + BufRead + Seek>(reader: &mut R) -> Result<Option<String>> {
-    // a line starting with a whitespace may be a comment
-    let first_char = reader.read_u8()? as char;
-    if first_char == ' ' || first_char == '\t' {
-        // this is a comment
-        let mut line = String::new();
-        reader.read_line(&mut line)?;
-        let mut comment = line.trim().to_owned();
+// pub fn read_comment<R: Read + BufRead + Seek>(reader: &mut R) -> Result<Option<String>> {
+//     // a line starting with a whitespace may be a comment
+//     let first_char = reader.read_u8()? as char;
+//     if first_char == ' ' || first_char == '\t' {
+//         // this is a comment
+//         let mut line = String::new();
+//         reader.read_line(&mut line)?;
+//         let mut comment = line.trim().to_owned();
 
-        if let Ok(Some(c)) = read_comment(reader) {
-            comment += c.as_str();
-        }
+//         if let Ok(Some(c)) = read_comment(reader) {
+//             comment += c.as_str();
+//         }
 
-        Ok(Some(comment))
-    } else {
-        reader.seek(SeekFrom::Current(-1))?;
-        Ok(None)
-    }
-}
+//         Ok(Some(comment))
+//     } else {
+//         reader.seek(SeekFrom::Current(-1))?;
+//         Ok(None)
+//     }
+// }
 
 fn parse_desc(input: &str) -> Option<(String, String, bool)> {
     //  !/Bite works only with Vampire Embrace/ DW_assassination.esp]
@@ -744,9 +747,14 @@ fn parse_ver(input: &str) -> Option<(String, EVerOperator, String)> {
     None
 }
 
-fn parse_rule_expression<R>(mut reader: R) -> Result<String>
+pub enum ERuleType {
+    Inline,
+    Multiline,
+}
+
+fn parse_rule_expression<R>(mut reader: R) -> Result<(String, ERuleType)>
 where
-    R: Read,
+    R: Read + BufRead + Seek,
 {
     let mut scope = 1;
     let mut buffer = Vec::new();
@@ -757,6 +765,7 @@ where
         match reader.read_exact(&mut byte) {
             Ok(_) => {
                 buffer.push(byte[0]);
+
                 if byte[0] == b'[' {
                     scope += 1;
                 } else if byte[0] == b']' {
@@ -773,9 +782,57 @@ where
             }
         }
     }
-
     buffer.truncate(end_index);
-    Ok(String::from_utf8_lossy(&buffer).into_owned())
+
+    // There are only two types of rules allowed
+    //
+    // Type 1
+    // [Rule comment] plugin1.esp plugin2.esp
+    // [Rule] plugin1.esp plugin2.esp
+    //
+    // Type 2
+    // [Rule]
+    //  comment
+    // plugin1.esp
+    // plugin2.esp
+    // [Rule]
+    // plugin1.esp
+    // plugin2.esp
+
+    // we don't allow
+    // [Rule comment]
+    // plugin1.esp
+    // plugin2.esp
+
+    // we don't allow
+    // [Rule] plugin1.esp
+    // plugin2.esp
+
+    // first check if there is a coment inside the rule expression
+    let rule_expression = String::from_utf8_lossy(&buffer).trim().to_owned();
+    let split = rule_expression.split_whitespace().collect::<Vec<_>>();
+    if split.len() > 1 {
+        // must be inline
+        Ok((rule_expression, ERuleType::Inline))
+    } else {
+        // Undefined, can still be inline but with no comment
+
+        // now read until the next newline
+        let idx = reader.stream_position()?;
+        buffer.clear();
+        reader.read_until(b'\n', &mut buffer)?;
+        let rest = String::from_utf8_lossy(&buffer).trim().to_owned();
+
+        if rest.is_empty() {
+            // if rest of the line is only whitespace then it's Type 2
+            Ok((rule_expression, ERuleType::Multiline))
+        } else {
+            // if there is any content in the same line as the rule then it's Type 1
+            // but we need to seek back
+            reader.seek(SeekFrom::Start(idx))?;
+            Ok((rule_expression, ERuleType::Inline))
+        }
+    }
 }
 
 #[cfg(test)]
@@ -798,10 +855,8 @@ mod tests {
             ];
 
             for (input, expected) in inputs {
-                assert_eq!(
-                    expected.to_owned(),
-                    parse_rule_expression(input.as_bytes())?
-                );
+                let reader = Cursor::new(input.as_bytes());
+                assert_eq!(expected.to_owned(), parse_rule_expression(reader)?.0);
             }
         }
 
@@ -809,7 +864,8 @@ mod tests {
             let inputs = ["NOTE comment[]", "NOTE comment[with] [[[[[broken scope]"];
 
             for input in inputs {
-                assert!(parse_rule_expression(input.as_bytes()).is_err())
+                let reader = Cursor::new(input.as_bytes());
+                assert!(parse_rule_expression(reader).is_err())
             }
         }
 
