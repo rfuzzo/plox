@@ -1,8 +1,6 @@
 #[cfg(test)]
 mod unit_tests {
 
-    use rand::{seq::SliceRandom, thread_rng};
-
     use plox::{
         rules::{EOrderRule, Order},
         sorter::{self, Sorter},
@@ -93,73 +91,6 @@ mod unit_tests {
             }
             Err(e) => panic!("Error: {}", e),
         }
-    }
-
-    #[allow(dead_code)]
-    //#[test]
-    fn test_optimized_sort() -> std::io::Result<()> {
-        init();
-
-        let mut parser = parser::new_tes3_parser();
-        parser.init_from_file("./tests/mlox/mlox_base.txt")?;
-        let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
-
-        let mut rng = thread_rng();
-        mods.shuffle(&mut rng);
-        let mods = mods.into_iter().take(100).collect::<Vec<_>>();
-
-        let full_result = new_stable_full_sorter()
-            .topo_sort(&mods, &parser.order_rules)
-            .expect("rules contain a cycle");
-        let opt_result = sorter::new_stable_sorter()
-            .topo_sort(&mods, &parser.order_rules)
-            .expect("opt rules contain a cycle");
-
-        assert_eq!(full_result, opt_result);
-
-        Ok(())
-    }
-    #[warn(dead_code)]
-
-    #[test]
-    fn test_optimized_sort_time() -> std::io::Result<()> {
-        init();
-
-        let mut parser = parser::new_tes3_parser();
-        parser.init_from_file("./tests/mlox/mlox_base.txt")?;
-        let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
-
-        let mut rng = thread_rng();
-        let mut times = vec![];
-        for n in [64, 128, 256, 512 /* 1024 , 2048 */] {
-            mods.shuffle(&mut rng);
-            let max = std::cmp::min(n, mods.len() - 1);
-            let mods_rnd = mods.clone().into_iter().take(max).collect::<Vec<_>>();
-
-            let now = std::time::Instant::now();
-            sorter::new_stable_sorter()
-                .topo_sort(&mods_rnd, &parser.order_rules)
-                .expect("error: ");
-            let elapsed = now.elapsed().as_secs();
-
-            times.push((n, elapsed));
-        }
-
-        let mut msg = String::new();
-        for (n, t) in &times {
-            msg += format!("{},{}\n", n, t).as_str();
-        }
-
-        // log to file
-        // let mut file = File::create("unit_log.txt").expect("could not create log file");
-        // file.write_all(msg.as_bytes()).expect("write error");
-
-        // assert
-        for (_n, t) in times {
-            assert!(t < 4);
-        }
-
-        Ok(())
     }
 
     fn checkresult(result: &[String], order_rules: &[EOrderRule]) -> bool {
