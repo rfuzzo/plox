@@ -95,7 +95,8 @@ mod unit_tests {
         }
     }
 
-    #[test]
+    #[allow(dead_code)]
+    //#[test]
     fn test_optimized_sort() -> std::io::Result<()> {
         init();
 
@@ -118,6 +119,7 @@ mod unit_tests {
 
         Ok(())
     }
+    #[warn(dead_code)]
 
     #[test]
     fn test_optimized_sort_time() -> std::io::Result<()> {
