@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod unit_tests {
-    use plox::expressions::*;
+    use plox_lib::expressions::*;
 
     fn init() {
         let _ = env_logger::builder().is_test(true).try_init();

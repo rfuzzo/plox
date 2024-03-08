@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod unit_tests {
 
-    use plox::{
+    use plox_lib::{
         rules::{EOrderRule, Order},
         sorter::{self, Sorter},
         wild_contains, *,
@@ -94,7 +94,7 @@ mod unit_tests {
     }
 
     fn checkresult(result: &[String], order_rules: &[EOrderRule]) -> bool {
-        let order = plox::get_ordering_from_order_rules(order_rules);
+        let order = get_ordering_from_order_rules(order_rules);
         let pairs = order;
         for (a, b) in pairs {
             if let Some(results_for_a) = wild_contains(result, &a) {

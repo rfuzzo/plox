@@ -2,7 +2,7 @@
 mod integration_tests {
     use std::{fs::create_dir_all, io::Write};
 
-    use plox::{parser::*, rules::EOrderRule, sorter::*, *};
+    use plox_lib::{parser::*, rules::EOrderRule, sorter::*, *};
     use rand::seq::SliceRandom;
     use rand::thread_rng;
 

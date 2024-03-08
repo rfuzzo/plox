@@ -1,0 +1,2482 @@
+[CONFLICT]
+	use only one of these plugins.
+nv_thegoat.esp
+nv_thegoat_tr.esp
+
+[CONFLICT]
+	use either only the merged plugin 'alchemical_hustle.esp' or a combination of the modular plugins.
+alchemical_hustle.esp
+[ANY ah_gmsts.esp
+	ah_ingredients.esp
+	ah_magic.esp
+	ah_potions.esp
+	ah_toxicity_default.esp
+	ah_toxicity_hard.esp
+	ah_toxicity_spell_effect.esp]
+
+[CONFLICT]
+	use only one of these plugins. for more information see the included readme:	'ah_toxicity_default.esp' - default toxic effect	'ah_toxicity_hard.esp' 	- potion abuse will result in certain death
+ah_toxicity_default.esp
+ah_toxicity_hard.esp
+
+[CONFLICT]
+	use only one of these plugins:		'aldruhn_seat_of_power.esp' - the base plugin.		'aldruhn_seat_of_power_no_underskar.esp' - version with no edits to the interior of skar.		'aldruhn_seat_of_power_rr_skar.esp' - version for users of "rr better skar".		'aldruhn_seat_of_power_rmr.esp' - version for users of "red mountain reborn".		'aldruhn_seat_of_power_rr_skar_rmr.esp' - version for users of both "rr better skar" and "red mountain reborn".
+aldruhn_seat_of_power.esp
+aldruhn_seat_of_power_no_underskar.esp
+aldruhn_seat_of_power_rr_skar.esp
+aldruhn_seat_of_power_rmr.esp
+aldruhn_seat_of_power_rr_skar_rmr.esp
+
+[CONFLICT]
+	already merged into or otherwise replicated by "ald'ruhn - seat of power of house redoran".
+[ANY aldruhn_seat_of_power.esp
+	aldruhn_seat_of_power_no_underskar.esp
+	aldruhn_seat_of_power_rr_skar.esp
+	aldruhn_seat_of_power_rmr.esp
+	aldruhn_seat_of_power_rr_skar_rmr.esp]
+ald-ruhn temple expansion 1.5.esp
+
+[CONFLICT]
+	'andranotomb+retribution.esp' includes 'andranotombremastered.esp'.
+andranotombremastered.esp
+andranotomb+retribution.esp
+
+[CONFLICT]
+	'animated morrowind - danae's edits' includes fixes for 'animated morrowind - merged' but removes a few npcs that conflict with other mods (including bcom). pick one.
+animated_morrowind - merged*.esp
+animated_morrowind - danaes edits.esp
+
+[CONFLICT]
+	animated morrowind - danae's edits is compatible with even seedier eight plates, you don't need esep - animated_morrowind - merged.esp.
+esep - animated_morrowind - merged.esp
+animated_morrowind - danaes edits.esp
+
+[CONFLICT]
+	use only one of these plugins.
+area effect arrows integrated.esp
+area effect projectiles integrated.esp
+area effect projectiles integrated (par edit).esp
+
+[CONFLICT]
+	regardless of load order the door to arvs-spelun will be buried and unreachable without tcl if these plugins are used together.
+arvs-spelun.esp
+sheogorad - groves of the north.esp
+
+[CONFLICT]
+	landscape conflicts.
+ashfall survival start.esp
+invasion of stormwatch.esp
+
+[CONFLICT]
+	these plugins all overhaul, move, or otherwise alter baar dau, use only one of them.
+baar dau.esp
+baar dau - ministry of truth.esp
+meteorite ministry palace*.esp
+meteorite ministry temple*.esp
+higher ministry of truth.esp
+
+[CONFLICT]
+	use only one of these plugins:		'balmoragravemarket.esp' - if you are not using "beautiful cities of morrowind", nwahs and mushrooms' "balmora", or "izi cities - balmora".		'balmoragravemarketbcom.esp' - if you are using "beautiful cities of morrowind", nwahs and mushrooms' "balmora", or "izi cities - balmora".
+balmoragravemarket.esp
+balmoragravemarketbcom.esp
+
+[REQUIRES]
+	
+balmoragravemarketbcom.esp
+[ANY beautiful cities of morrowind.esp
+	balmora.esp
+	izi cities - balmora.esp]
+
+[CONFLICT]
+	use only one of these plugins
+balmora syndrayn manor.esp
+balmora_empty_house.esp
+balmora wall house.esp
+balmorasouthgatehouse.esp
+
+[CONFLICT]
+	an esp replacer for "ports of vvardenfell" that is compatible with "balmora waterworks" is available. (choose either the aggressively compatible or ultra aggressively compatible version)	[replacer download]( https://www.nexusmods.com/morrowind/mods/48955 )
+balmora waterworks.esp
+[ALL [ANY ports of vvardenfell v1.6.esp
+	ports of vvardenfell lite.esp
+	ports of vvardenfell v1.6 - clean.esp
+	ports of vvardenfell v1.6 - compatible.esp]]
+
+[CONFLICT]
+	an esp replacer for "the beacon of st rilms" that is compatible with "beautiful cities of morrowind" is provided on the "the beacon of st rilms" mod page.	[replacer download]( https://www.nexusmods.com/morrowind/mods/49515 )
+[ALL beautiful cities of morrowind.esp
+	beaconofstrilmsredmtnreborn.esp
+	[NOT beaconofstrilmsbcomreborn.esp]]
+
+[CONFLICT]
+	an esp replacer for "the beacon of st rilms" that is compatible with "mountainous red mountain" is provided on the "the beacon of st rilms" mod page.	[replacer download]( https://www.nexusmods.com/morrowind/mods/49515 )
+[ANY beaconofstrilms.esp
+	beaconofstrilmsnoanim.esp
+	beaconofstrilmsredmtnreborn.esp
+	beaconofstrilmsbcomreborn.esp]
+[ALL [ANY mrm-non pointy.esm
+	mrm.esm]
+	[NOT beaconofstrilmsmrm.esp]]
+
+[CONFLICT]
+	use only one of these plugins:		'beaconofstrilms.esp' - the original mod.		'beaconofstrilmsnoanim.esp' - version without animated npcs.		'beaconofstrilmsredmtnreborn.esp' - version that is compatible with "red mountain reborn".		'beaconofstrilmsbcomreborn.esp' - version that is compatible with the esp replacer for "red mountain reborn" packaged with "beautiful cities of morrowind".		'beaconofstrilmsmrm.esp' - version compatible with "mountainous red mountain".
+beaconofstrilms.esp
+beaconofstrilmsnoanim.esp
+beaconofstrilmsredmtnreborn.esp
+beaconofstrilmsbcomreborn.esp
+beaconofstrilmsmrm.esp
+
+[CONFLICT]
+	already merged into bcom.
+beautiful cities of morrowind.esp
+rp_arena_backstage.esp
+
+[CONFLICT]
+	'bcom rocky west gash.esp' is an esp replacer, do not use it alongside the original plugin.
+rocky_wg_base_1.1.esp
+bcom rocky west gash.esp
+
+[CONFLICT]
+	if using "bcom", then disable 'far from home v1.4.esp'.
+far from home v1.4.esp
+far_from_home.esp
+
+[CONFLICT]
+	you need to disable 'balmora waterworks.esp'.
+beautiful cities of morrowind.esp
+balmora waterworks.esp
+
+[CONFLICT]
+	not compatible with "beautiful cities of morrowind".
+beautiful cities of morrowind.esp
+[ANY mdp*.esp
+	duke's throne room overhaul.esp
+	imperiumcastleebonheart.esp
+	accessible ebonheart imperial chapel v<ver>.esp
+	pelagiad interior overhaul.esp
+	bcom ahnassi's house.esp
+	oaab better caldera interiors.esp]
+
+[CONFLICT]
+	original mod is not compatible with "beautiful cities of morrowind". use replacer made by actuallyulysses	[replacer download]( https://www.nexusmods.com/morrowind/mods/52726 )
+beautiful cities of morrowind.esp
+balmoradocks.esp
+
+[CONFLICT]
+	already merged into or otherwise replicated by "beautiful cities of morrowind".
+beautiful cities of morrowind.esp
+[ANY graffiti of morrowind.esp
+	oaab huleen's hut overhaul.esp
+	atmospheric delights.esp
+	even seedier eight plates.esp
+	balmora_seat of power.esm
+	aldruhn_seat_of_power.esp
+	sadrith mora - seat of power.esm
+	suran_the_pearl_vanilla_style.esp
+	seyda_neen_gateway.esp
+	izi cities -  ebonheart*.esp
+	hotv - gnisis.esp
+	properly cluttered ald velothi.esp
+	hla oad.esp
+	moonmoth legion fort overhaul.esp
+	the ashlanders.esp
+	tel_aruhn_chronicles.esp
+	caldera mages guild expanded.esp
+	guilds.esp
+	wl_dockclutter.esp
+	bw_striderports.esp
+	well addon for ashfall.esp
+	rr_holamayan_eng.esp
+	mixed cantons of vivec.esp
+	mixed cantons of vivec.esm
+	no-frills closed molag mar.esp
+	aldruhnmagesguildexpansion.esp
+	wwgtma.esp
+	exterior guild lighting.esp
+	ql_sevengracesshrines.esp
+	velothi strider port lights.esp
+	clean dr115_thedropoff.esp
+	dirtiercoziermuriels.esp
+	dirtymurielsexpansion.esp
+	vivec_mages_guild_expanded.esp
+	inscribed maar gan rock.esp
+	dramatic vivec - temple only.esp
+	improved temple experience.esp
+	rr_ghost_gate_fortress_eng.esp
+	ruined molag mar.esp
+	intothefyr.esp
+	whitney_edwinnastudy.esp
+	tel naga treasury.esp
+	the grand pharos lighthouse*.esp
+	wolverine hall interior expanded.esp
+	wolverine hall overhaul.esp
+	jobashabookshop.esp
+	balmora redecorated.esp
+	balmora_rooftop_apartments_1-0.esp
+	concept art hlaalu balconies*.esp
+	immersive seyda neen.esp
+	ald-ruhn temple expansion*.esp
+	the merchants of sadrith mora.esp
+	barabus' fireplaces*.esp
+	urh_khuul.esp
+	urh_ald_velothi.esp]
+
+[CONFLICT]
+	use only one of these plugins.
+balmorahightownbell.esp
+balmorahightownbellbcom.esp
+
+[CONFLICT]
+	use only one of these plugins:
+suranbell.esp
+suranbellwhite.esp
+
+[REQUIRES]
+	
+siege at firemoth naturalized - script fix.esp
+siege at firemoth naturalized.esp
+
+[REQUIRES]
+	this plugin requires "better dwemer interiors".
+bdi - nchuleft.esp
+betterdwemerinteriors.esp
+
+[CONFLICT]
+	there is no reason to use new beast bodies with improved argonians as they both replace argonian bodies.
+new argonian bodies - *.esp
+improved argonians.esp
+
+[CONFLICT]
+	an esp replacer for "poison crafting" that is compatible with "btb's game improvements (necro edit) tweaked" is provided in the "btb's game improvements (necro edit) tweaked" archive.
+btb's game improvements (necro edit) tweaked.esp
+[DESC !/patches poison crafting/ mwse_poisoncrafting.esp]
+
+[PATCH]
+	a patch for "btb's game improvements (necro edit) tweaked" and "bloodmoon rebalance" is provided in the "btb's game improvements (necro edit) tweaked" archive.
+btbgi bloodmoon rebalance patch.esp
+[ALL btb's game improvements (necro edit) tweaked.esp
+	bloodmoon rebalance.esp]
+
+[PATCH]
+	a patch for "btb's game improvements (necro edit) tweaked" and "tribunal rebalance" is provided in the "btb's game improvements (necro edit) tweaked" archive.
+btbgi tribunal rebalance patch.esp
+[ALL btb's game improvements (necro edit) tweaked.esp
+	tribunal rebalance.esp]
+
+[PATCH]
+	a patch for "btb's game improvements (necro edit) tweaked" and "beware the sixth house" is provided in the "btb's game improvements (necro edit) tweaked" archive.
+btbgi beware the sixth house patch.esp
+[ALL btb's game improvements (necro edit) tweaked.esp
+	beware the sixth house.esp]
+
+[PATCH]
+	a patch for "btb's game improvements (necro edit) tweaked" and "there can be only one" is provided in the "btb's game improvements (necro edit) tweaked" archive.
+btbgi there can be only one patch.esp
+[ALL btb's game improvements (necro edit) tweaked.esp
+	[ANY there can be only one.esp
+	there can be only one (alt fyr).esp
+	there can be only one (alt fyr 2).esp]]
+
+[PATCH]
+	a patch for "btb's game improvements (necro edit) tweaked" and "realistic repair - add-on" is provided in the "btb's game improvements (necro edit) tweaked" archive.
+btbgi realistic repair add-on patch.esp
+[ALL btb's game improvements (necro edit) tweaked.esp
+	realistic_repair_add-on.esp]
+
+[PATCH]
+	a patch for "btb's game improvements (necro edit) tweaked" and "ruffinvangarr armors integrated" is provided in the "btb's game improvements (necro edit) tweaked" archive.
+btbgi rv armors integrated patch.esp
+[ALL btb's game improvements (necro edit) tweaked.esp
+	rv armors integrated.esp]
+
+[PATCH]
+	a patch for "btb's game improvements (necro edit) tweaked" and "oriental ebony weapons" is provided in the "btb's game improvements (necro edit) tweaked" archive.
+btbgi oriental ebony weapons integrated patch.esp
+[ALL btb's game improvements (necro edit) tweaked.esp
+	oriental ebony weapon.esp]
+
+[PATCH]
+	a patch for "btb's game improvements (necro edit) tweaked" and "oaab weapons integrated" is provided in the "btb's game improvements (necro edit) tweaked" archive.
+btbgi oaab weapons integrated patch.esp
+[ALL btb's game improvements (necro edit) tweaked.esp
+	[ANY oaab weapons integrated.esp
+	oaab weapons integrated tcboo.esp]]
+
+[PATCH]
+	a patch for "btb's game improvements (necro edit) tweaked" and "antares' mages robes" is provided in the "btb's game improvements (necro edit) tweaked" archive.
+btbgi antares' mages robes patch.esp
+[ALL btb's game improvements (necro edit) tweaked.esp
+	antares' mages robes.esp]
+
+[CONFLICT]
+	the rebalance plugins included with "oaab_data and community equipment integration" are made redundant by the patches provided in the "btb's game improvements (necro edit) tweaked" archive.
+[ANY btbgi oaab weapons integrated patch.esp
+	btbgi oriental ebony weapons integrated patch.esp]
+[ANY oaab weapons rebalanced.esp
+	oriental ebony weapons rebalanced.esp]
+
+[PATCH]
+	a patch for "btb's game improvements (necro edit) tweaked" and "yet another guard diversity" is provided in the "btb's game improvements (necro edit) tweaked" archive.
+btbgi yet another guard diversity patch.esp
+[ALL btb's game improvements (necro edit) tweaked.esp
+	yet another guard diversity - regular.esp]
+
+[PATCH]
+	a patch for "btb's game improvements (necro edit) tweaked" and "antares' mages robes" is provided in the "btb's game improvements (necro edit) tweaked" archive.
+btbgi antares' mages robes patch.esp
+[ALL btb's game improvements (necro edit) tweaked.esp
+	antares' mages robes.esp]
+
+[PATCH]
+	a patch for "btb's game improvements (necro edit) tweaked" and "andrano ancestral tomb remastered" is provided in the "btb's game improvements (necro edit) tweaked" archive.
+btbgi andranotombremastered patch.esp
+[ALL btb's game improvements (necro edit) tweaked.esp
+	[ANY andranotombremastered.esp
+	andranotomb+retribution.esp]]
+
+[CONFLICT]
+	use only one of these plugins:		'btbgi loot patch.esp' - if you are not using "there can be only one", "oaab weapons integrated", or "oriental ebony weapons integrated".		'btbgi loot patch tcboo.esp' - if you are using only "there can be only one".		'btbgi loot patch weapons integrated.esp' - if you are using only "oaab weapons integrated" and "oriental ebony weapons integrated".		'btbgi loot patch tcboo weapons integrated.esp' - if you are using "oaab weapons integrated", "oriental ebony weapons integrated", and "there can be only one".
+btbgi loot patch.esp
+btbgi loot patch tcboo.esp
+btbgi loot patch weapons integrated.esp
+btbgi loot patch tcboo weapons integrated.esp
+
+[REQUIRES]
+	
+btbgi loot patch tcboo.esp
+[ANY there can be only one.esp
+	there can be only one (alt fyr).esp
+	there can be only one (alt fyr 2).esp]
+
+[REQUIRES]
+	
+btbgi loot patch weapons integrated.esp
+[ALL oaab weapons integrated.esp
+	oriental ebony weapons integrated.esp]
+
+[REQUIRES]
+	
+btbgi loot patch tcboo weapons integrated.esp
+[ALL [ANY there can be only one.esp
+	there can be only one (alt fyr).esp
+	there can be only one (alt fyr 2).esp]
+	oaab weapons integrated tcboo.esp
+	oriental ebony weapons integrated tcboo.esp]
+
+[CONFLICT]
+	use the tweaked "morrowind anti-cheese" plugin provided in the "btb's game improvements (necro edit) tweaked" archive.
+[ALL btb's game improvements (necro edit) tweaked.esp
+	morrowind anti-cheese.esp]
+[NOT [ANY morrowind anti-cheese tweaked.esp
+	beautiful cities of morrowind.esp]]
+
+[CONFLICT]
+	use only one of these plugins.
+morrowind anti-cheese tweaked.esp
+morrowind anti-cheese.esp
+
+[CONFLICT]
+	necrolesian recommends the tweaked "morrowind anti-cheese" plugin provided with "btb's game improvements (necro edit) tweaked" instead of the original "morrowind anti-cheese" plugin.	[replacer download]( https://www.nexusmods.com/morrowind/mods/50308 )
+btb's game improvements (necro edit).esp
+[ALL morrowind anti-cheese.esp
+	[NOT [ANY morrowind anti-cheese tweaked.esp
+	beautiful cities of morrowind.esp]]]
+
+[REQUIRES]
+	
+avp btbgi-ne - various - merged.esp
+[ALL better clothes complete.esp
+	better robes.esp
+	[ANY better sounds_fixed.esp
+	better_sounds.esp]
+	beware the sixth house.esp
+	bloodmoon rebalance.esp
+	imperial legion expansion.esp
+	oaab - tombs and towers.esp
+	remiros' uniques.esp
+	tribunal rebalance.esp
+	uvirith's legacy_3.53.esp]
+
+[CONFLICT]
+	use either only the merged plugin or any combination of the modular plugins.
+avp btbgi-ne - various - merged.esp
+[ANY avp btbgi-ne - better clothes complete.esp
+	avp btbgi-ne - better robes.esp
+	avp btbgi-ne - better sounds.esp
+	avp btbgi-ne - beware the sixth house.esp
+	avp btbgi-ne - bloodmoon rebalance.esp
+	avp btbgi-ne - imperial legion expansion.esp
+	avp btbgi-ne - oaab tombs and towers.esp
+	avp btbgi-ne - remiros' uniques.esp
+	avp btbgi-ne - tribunal rebalance.esp
+	avp btbgi-ne - uvirith's legacy.esp]
+
+[REQUIRES]
+	
+avp btbgi-ne - misc.esp
+[ANY morag tong polished.esp
+	religions elaborated.esp
+	sotha sil expanded.esp
+	the rise of house sadras.esp
+	wanderers of solstheim*.esp]
+
+[REQUIRES]
+	
+avp btbgi-ne - creature buffs - merged.esp
+[ALL beware the sixth house.esp
+	bloodmoon rebalance.esp
+	blightedanimalsretextured.esp
+	tribunal rebalance.esp
+	ttooth ecology.esp
+	ttooth ecology - tr patch.esp
+	ttooth ecology - bmr patch.esp]
+
+[REQUIRES]
+	
+avp btbgi-ne - creature buffs - ndl - merged.esp
+[ALL beware the sixth house.esp
+	bloodmoon rebalance.esp
+	blightedanimalsretextured.esp
+	tribunal rebalance.esp
+	ttooth ecology.esp
+	ttooth ecology - tr patch.esp
+	ttooth ecology - bmr patch.esp]
+
+[CONFLICT]
+	use only one of these plugins.
+avp btbgi-ne - creature buffs - merged.esp
+avp btbgi-ne - creature buffs - ndl - merged.esp
+
+[REQUIRES]
+	
+avp btbgi-ne - factions - merged.esp
+[ALL tr_factions.esp
+	vvardenfell brotherhood.esp]
+
+[CONFLICT]
+	use either only the merged plugin or any combination of the modular plugins.
+avp btbgi-ne - factions - merged.esp
+[ANY avp btbgi-ne - factions.esp
+	avp btbgi-ne - factions - tr_factions.esp
+	avp btbgi-ne - factions - vvardenfell brotherhood.esp]
+
+[REQUIRES]
+	
+avp btbgi-ne - ncgd - mbsp - merged.esp
+[ALL tr_factions.esp
+	vvardenfell brotherhood.esp]
+
+[CONFLICT]
+	use either only the merged plugin or any combination of the modular plugins.
+avp btbgi-ne - ncgd - mbsp - merged.esp
+[ANY avp btbgi-ne - ncgd - mbsp.esp
+	avp btbgi-ne - ncgd - mbsp - tr_factions.esp
+	avp btbgi-ne - ncgd - mbsp - vvardenfell brotherhood.esp]
+
+[CONFLICT]
+	use only one of these plugins:		'avp btbgi-ne - ncgd - mbsp - merged.esp' - if you are using ncgd.		'avp btbgi-ne - factions - merged.esp' - if you are not using ncgd.
+avp btbgi-ne - factions - merged.esp
+avp btbgi-ne - ncgd - mbsp - merged.esp
+
+[CONFLICT]
+	'avp btbgi-ne - fm unique items - replacement patch.esp' is an esp replacer, do not use it alongside the original plugin.
+avp btbgi-ne - fm unique items - replacement patch.esp
+fm - unique items v<ver>.esp
+
+[CONFLICT]
+	use either only the merged plugin or any combination of the modular plugins.
+btbgisation - tamriel_data - merged.esp
+[ALL [ANY btbgisation - tamriel_data.esp
+	btbgisation - td_hotfix.esp]
+	[NOT [ANY btbgisation - primary - merged.esp
+	btbgisation - merged.esp]]]
+
+[CONFLICT]
+	use either only the merged plugin or any combination of the modular plugins.
+btbgisation - tr_mainland - merged.esp
+[ALL [ANY btbgisation - tr_mainland.esp
+	btbgisation - tr_hotfix.esp]
+	[NOT [ANY btbgisation - primary - merged.esp
+	btbgisation - merged.esp]]]
+
+[CONFLICT]
+	use either only the merged plugin or any combination of the modular plugins.
+btbgisation - da_sobitur - merged.esp
+[ANY btbgisation - da_sobitur_facility_clean.esp
+	btbgisation - da_sobitur_quest_part_1 clean.esp
+	btbgisation - da_sobitur_quest_part_2 clean.esp
+	btbgisation - da_sobitur_repurposed_1.esp]
+
+[CONFLICT]
+	use either only the merged plugin or any combination of the modular plugins.
+btbgisation - lgnpc - merged.esp
+[ANY btbgisation - lgnpc_aldruhn.esp
+	btbgisation - lgnpc_aldruhn_suppl.esp
+	btbgisation - lgnpc_paxredoran.esp
+	btbgisation - lgnpc_secretmasters.esp
+	btbgisation - lgnpc_telmora.esp
+	btbgisation - lgnpc_teluvirith.esp
+	btbgisation - lgnpc_vivecfq.esp
+	btbgisation - lgnpc_vivecredoran.esp]
+
+[CONFLICT]
+	use either only the merged plugin or any combination of the modular plugins.
+btbgisation - merged.esp
+[ANY btbgisation - a hermit's request.esp
+	btbgisation - abotwaterlife.esp
+	btbgisation - after the blight.esp
+	btbgisation - ancient foes.esp
+	btbgisation - area effect projectiles integrated.esp
+	btbgisation - astrologians guild.esp
+	btbgisation - bt_whitewolf_2_0_hotv.esp
+	btbgisation - baan_binif.esp
+	btbgisation - balmora guilds expanded.esp
+	btbgisation - bigtooth.esp
+	btbgisation - blackthorn barrow.esp
+	btbgisation - blacktooth.esp
+	btbgisation - camonna tong.esp
+	btbgisation - clean_mines & caverns.esp
+	btbgisation - cultsheog.esp
+	btbgisation - cyr_main.esp
+	btbgisation - da_sobitur - merged.esp
+	btbgisation - da_sobitur_facility_clean.esp
+	btbgisation - da_sobitur_quest_part_1 clean.esp
+	btbgisation - da_sobitur_quest_part_2 clean.esp
+	btbgisation - da_sobitur_repurposed_1.esp
+	btbgisation - dd_caldera_expansion.esp
+	btbgisation - drpv1.9.esp
+	btbgisation - entertainers expanded.esp
+	btbgisation - face of the hortator.esp
+	btbgisation - fishing.esp
+	btbgisation - gdr_masterfile.esp
+	btbgisation - havish.esp
+	btbgisation - helm of tohan naturalized.esp
+	btbgisation - hunter's mark - a marksman mod.esp
+	btbgisation - imperial employment office (md edits).esp
+	btbgisation - lack_stridersnest.esp
+	btbgisation - lefemmarmor.esp
+	btbgisation - legacy of odiil.esp
+	btbgisation - legend of chemuam.esp
+	btbgisation - legendomnidex.esp
+	btbgisation - lgnpc - merged.esp
+	btbgisation - lgnpc_aldruhn.esp
+	btbgisation - lgnpc_aldruhn_suppl.esp
+	btbgisation - lgnpc_paxredoran.esp
+	btbgisation - lgnpc_secretmasters.esp
+	btbgisation - lgnpc_telmora.esp
+	btbgisation - lgnpc_teluvirith.esp
+	btbgisation - lgnpc_vivecfq.esp
+	btbgisation - lgnpc_vivecredoran.esp
+	btbgisation - library of vivec overhaul - full.esp
+	btbgisation - lost redoran relics.esp
+	btbgisation - magical missions.esp
+	btbgisation - main_quest_overhaul.esp
+	btbgisation - malham companion weapon.esp
+	btbgisation - mamaea awakened.esp
+	btbgisation - manyclothhelms.esp
+	btbgisation - memento mori.esp
+	btbgisation - missing snow armor.esp
+	btbgisation - moonlightontheodairiver.esp
+	btbgisation - morag tong polished.esp
+	btbgisation - mudcrab imports pirate adventures.esp
+	btbgisation - non1.loveinthetimeofdaedra.v1.03_abot.esp
+	btbgisation - new ilunibi.esp
+	btbgisation - oaab - shipwrecks.esp
+	btbgisation - oaab brother junipers twin lamps.esp
+	btbgisation - oaab_data.esp
+	btbgisation - oaab_tel mora.esp
+	btbgisation - ojai - framerate version.esp
+	btbgisation - of dungeons and abodes.esp
+	btbgisation - olafs cloaks and hoods.esp
+	btbgisation - plumed mountain.esp
+	btbgisation - quarraclan_refreshed.esp
+	btbgisation - quests for clans and vampire legends.esp
+	btbgisation - rv necrorobes.esp
+	btbgisation - racer dust arms and armor.esp
+	btbgisation - redoran exile armor.esp
+	btbgisation - shs - bloodskal barrow.esp
+	btbgisation - sv - terrors of the night normal.esp
+	btbgisation - sacred_necromancer.esp
+	btbgisation - secretsofthecrystalcity.esp
+	btbgisation - shipyards of vvardenfell.esp
+	btbgisation - siege at firemoth naturalized.esp
+	btbgisation - silent island.esp
+	btbgisation - sky_main.esp
+	btbgisation - sm_tr.esp
+	btbgisation - solstheim tomb of the snow prince.esp
+	btbgisation - sorcerer of alteration.esp
+	btbgisation - sotha sil expanded.esp
+	btbgisation - strider burial.esp
+	btbgisation - talos cult conspiracy.esp
+	btbgisation - tamriel_data - merged.esp
+	btbgisation - tamriel_data.esp
+	btbgisation - td_hotfix.esp
+	btbgisation - tel_aruhn_chronicles.esp
+	btbgisation - tel_eurus.esp
+	btbgisation - the hammer of orsinium.esp
+	btbgisation - the lamp.esp
+	btbgisation - the merchant fendus.esp
+	btbgisation - the rise of the tribe unmourned.esp
+	btbgisation - the vestige of bethaleft.esp
+	btbgisation - theredoranamulet.esp
+	btbgisation - thieves_guild_overhaul - purist ahnassi romance version.esp
+	btbgisation - thtwg - harder version.esp
+	btbgisation - tr_hotfix.esp
+	btbgisation - tr_mainland - merged.esp
+	btbgisation - tr_mainland.esp
+	btbgisation - umbra, blademaster.esp
+	btbgisation - uvirith's legacy_3.53.esp
+	btbgisation - vampire hunters, but they want to reintroduce you to death.esp
+	btbgisation - vivec waistworks expansion - govh comp.esp
+	btbgisation - wanderers of solstheim-totsp.esp
+	btbgisation - weapons expansion morrowind.esp
+	btbgisation - welcome to the arena! v6.7.esp
+	btbgisation - wyrmhaven.esp
+	btbgisation - yul marshee and the visage of mzund.esp]
+
+[CONFLICT]
+	use only one of these plugins.
+btbgisation - merged.esp
+btbgisation - primary - merged.esp
+
+[CONFLICT]
+	use either only the merged plugin or any combination of the modular plugins.
+btbgisation - primary - merged.esp
+[ANY btbgisation - cyr_main.esp
+	btbgisation - oaab_data.esp
+	btbgisation - sky_main.esp
+	btbgisation - tamriel_data - merged.esp
+	btbgisation - tamriel_data.esp
+	btbgisation - td_hotfix.esp
+	btbgisation - tr_hotfix.esp
+	btbgisation - tr_mainland - merged.esp
+	btbgisation - tr_mainland.esp]
+
+[CONFLICT]
+	"container ownership" by half11 is already incorporated into "morrowind anti-cheese" by remiros.
+container ownership.esp
+morrowind anti-cheese.esp
+
+[CONFLICT]
+	"container ownership" by half11 conflicts with "bcom" - consider using "ownership overhaul" by necrolesian instead.
+container ownership.esp
+beautiful cities of morrowind.esp
+
+[CONFLICT]
+	"the corprusarium experience" has the fixes from "divayth fyr puzzle fixed" integrated and also overhauls the puzzle, do not use them together.
+the_corprusarium_exp.esp
+divayth fyr puzzle fixed.esp
+
+[REQUIRES]
+	
+correspondances_of_morrowind - balmora waterworks.esp
+[ALL correspondances_of_morrowind.esp
+	balmora waterworks.esp]
+
+[REQUIRES]
+	
+correspondances_of_morrowind - balmora guilds expanded.esp
+[ALL correspondances_of_morrowind.esp
+	balmora guilds expanded.esp]
+
+[REQUIRES]
+	
+correspondances_of_morrowind - balmora guilds expanded - balmora waterworks.esp
+[ALL correspondances_of_morrowind.esp
+	balmora waterworks.esp
+	balmora guilds expanded.esp]
+
+[CONFLICT]
+	use either the merged plugin or one of the modular plugins, not both.
+correspondances_of_morrowind - balmora guilds expanded - balmora waterworks.esp
+[ANY correspondances_of_morrowind - balmora waterworks.esp
+	correspondances_of_morrowind - balmora guilds expanded.esp]
+
+[CONFLICT]
+	you are using the full "beware the sixth house" plugin alongside at least one of the modular plugins. use either only the full plugin or any combination of the modular plugins.
+beware the sixth house.esp
+[ANY sixth house rebalance.esp
+	ash vampire script fix.esp
+	keening belongs to odros.esp
+	sunder and keening hurt on pickup.esp]
+
+[CONFLICT]
+	you are using the full "tribunal rebalance" plugin alongside one or more of the modular plugins. use either only the full plugin or any combination of the modular plugins.
+tribunal rebalance.esp
+[ANY tribunal npc rebalance.esp
+	tribunal more goblins.esp
+	tribunal goblin rebalance.esp]
+
+[CONFLICT]
+	you are using the full "bloodmoon rebalance" plugin alongside one or more of the modular plugins. use either only the full plugin or any combination of the modular plugins.
+bloodmoon rebalance.esp
+[ANY bloodmoon boss rebalance.esp
+	bloodmoon creature rebalance.esp
+	bloodmoon npc rebalance.esp
+	bloodmoon undead rebalance.esp
+	bloodmoon werewolf rebalance.esp]
+
+[CONFLICT]
+	choose only one plugin:		'dagon fell additions.esp' - without "rise of house telvanni".		'dagon fell additions- roht.esp' - with "rise of house telvanni".
+dagon fell additions.esp
+dagon fell additions- roht.esp
+
+[CONFLICT]
+	use only one of these plugins.
+daedric shrine overhaul vaermina.esp
+daedric shrine overhaul vaermina v2.esp
+
+[PATCH]
+	"devilish vampire overhaul" has a patch for "tamriel rebuilt".	[patch download]( https://www.nexusmods.com/morrowind/mods/52969 )
+devilish_vampire_overhaul_tr_dialogue_patch.esp
+[ALL devilish_vampire_overhaul.esp
+	tr_mainland.esm]
+
+[CONFLICT]
+	'vampire player hit sounds' is already merged into 'devilish vampire overhaul'.
+vampireplayerhitsounds.esp
+devilish_vampire_overhaul.esp
+
+[CONFLICT]
+	these mods are incompatible as they both edit the duties given to the player by ajira.
+different types of local plants for ajira's reports.esp
+quest tweaks and alternatives_<ver>.esp
+
+[REQUIRES]
+	
+distantfixesriseofhousetelvanni.esp
+roht_2_0_8.esp
+
+[REQUIRES]
+	
+distantfixesriseofhousetelvanniul.esp
+[ALL ul_3.5_roht_1.52_add-on.esp
+	roht_2_0_8.esp
+	distantfixesriseofhousetelvanni.esp]
+
+[REQUIRES]
+	
+distantfixesuvirithsmanor.esp
+[ALL hm_ddd_strongholds_t_v1.0.esp
+	uvirith's manor.esp]
+
+[REQUIRES]
+	
+distantfixesuvirithslegacy.esp
+[ALL hm_ddd_strongholds_t_v1.0.esp
+	uvirith's legacy_3.53.esp]
+
+[CONFLICT]
+	use only one of these plugins.
+bob's diverse dagoths - dngdr - hostile gilvoth.esp
+bob's diverse dagoths - dngdr.esp
+bob's diverse dagoths - hostile gilvoth.esp
+bob's diverse dagoths.esp
+
+[CONFLICT]
+	use only one of these plugins.
+the doors of oblivion 1.0.esp
+the doors of oblivion 1.4.esp
+
+[CONFLICT]
+	incompatible, will cause double ghostfence and clipping with ghostgate fortress if used together.
+hm_ddd_ghostfence_v1.0.esp
+rr_ghost_gate_fortress_eng.esp
+
+[CONFLICT]
+	an esp replacer for "dynamic distant buildings for openmw - ghostfence plugin" that is compatible with "bcom" is provided in "total overhaul patches".	[replacer download]( https://www.nexusmods.com/morrowind/mods/52989 )
+hm_ddd_ghostfence_v1.0.esp
+beautiful cities of morrowind.esp
+
+[REQUIRES]
+	
+entertainers expanded again.esp
+entertainers expanded.esp
+
+[CONFLICT]
+	use only one of these plugins.
+expansions integrated - fewer bm creatures.esp
+tribunal integrated.esp
+expansions integrated.esp
+
+[CONFLICT]
+	"fighters guild improved" is incompatible with the "reputation fixes" modular fighters guild only plugin
+fighters guild improved.esp
+reputation_fixes_fighters_guild_.esp
+
+[PATCH]
+	a patch for "fighters guild improved" and either "thieves' guild overhaul" or "bal molagmer add-on" is provided in the "fighters guild improved" archive.
+fgi_balmolagmeraddon_thievesguildoverhaul_patch.esp
+[ALL fighters guild improved.esp
+	[ANY thieves_guild_overhaul.esp
+	thieves_guild_overhaul - purist ahnassi romance version.esp
+	bal molagmer add-on.esp]]
+
+[PATCH]
+	a patch for "fighters guild improved" and "camonna tong" is provided in the "fighters guild improved" archive.
+fgi_caeriscamonnatong_patch.esp
+[ALL fighters guild improved.esp
+	[DESC /enjoy!/ camonna tong.esp]]
+
+[PATCH]
+	a patch for "fighters guild improved" and "join the camonna tong" is provided in the "fighters guild improved" archive.
+fgi_jointhecamonnatong_patch.esp
+[ALL fighters guild improved.esp
+	[DESC !/enjoy!/ camonna tong.esp]]
+
+[CONFLICT]
+	an esp replacer for "quest tweaks and alternatives" that is compatible with "fighters guild improved" is provided in the "fighters guild improved" archive.
+fighters guild improved.esp
+[ALL quest tweaks and alternatives_<ver>.esp
+	[NOT quest tweaks and alternatives_1.19 - no fg version.esp]]
+
+[CONFLICT]
+	incompatible with "fighters guild improved".
+fighters guild improved.esp
+[ANY freelancer v1.1.esp
+	fighters_guild_questline_overhaul.esp
+	fg_vivecrefusekills.esp
+	desele's debt money tweaked 500.esp
+	desele's debt money tweaked 1000.esp]
+
+[CONFLICT]
+	you are using the full "fighters guild improved" plugin alongside at least one of the modular plugins. use either only the full plugin or any combination of the modular plugins.
+fighters guild improved.esp
+[ANY fgi_aldruhn_beneranbounty.esp
+	fgi_aldruhn_flinelithpal.esp
+	fgi_aldruhn_suranbandits.esp
+	fgi_aldruhn_vas.esp
+	fgi_balmora_aloforcs.esp
+	fgi_balmora_caverats.esp
+	fgi_balmora_codebook.esp
+	fgi_balmora_deseledebt.esp
+	fgi_balmora_duragrabol.esp
+	fgi_balmora_eggpoachers.esp
+	fgi_balmora_hunger.esp
+	fgi_balmora_telvanniagents.esp
+	fgi_balmora_verethigang.esp
+	fgi_finalquests.esp
+	fgi_sadrithmora_corprusstalker.esp
+	fgi_sadrithmora_engaerbounty.esp
+	fgi_sadrithmora_nchurdamz.esp
+	fgi_sadrithmora_pudai.esp
+	fgi_sadrithmora_sondaale.esp
+	fgi_sadrithmora_sujammadunirai.esp
+	fgi_sadrithmora_tenimbounty.esp
+	fgi_vivec_drosakhar.esp
+	fgi_vivec_juicedawring.esp
+	fgi_vivec_lirielledebt.esp
+	fgi_vivec_tonguetoad.esp]
+
+[CONFLICT]
+	"fort frostmoth renovated" was made for the original solstheim location and is therefore incompatible with any mod that moves it to its anthology map location.
+fort frostmoth renovated.esp
+[ANY solstheim tomb of the snow prince.esm
+	anthology tomb of the snow prince.esm
+	anthology tomb of the snow prince.esp
+	anthology solstheim.esm
+	anthology solstheim.esp]
+
+[CONFLICT]
+	these mods both edit fort frostmoth and repair the walls as the bloodmoon questline progresses, use only one of them.
+fort frostmoth renovated.esp
+frostmoth_repaired_v0_31.esp
+
+[CONFLICT]
+	"ghostgate travel" places new npcs and statics at ghostgate that will clip with "rr ghostgate fortress" and "beautiful cities of morrowind".
+ghostgatetravel.esp
+[ANY beautiful cities of morrowind.esp
+	rr_ghost_gate_fortress_eng.esp]
+
+[CONFLICT]
+	do not load both 'glass domes of vivec.esp' and 'glass domes of vivec_atmospheric arena.esp'.
+glass domes of vivec.esp
+glass domes of vivec_atmospheric arena.esp
+
+[PATCH]
+	a patch for "god of worms" and "mines & caverns" is provided on the "god of worms" mod page.	[patch download]( https://www.nexusmods.com/morrowind/mods/48028 )
+gow-mac patch.esp
+[ALL clean_mines & caverns.esp
+	god of worms.esp]
+
+[CONFLICT]
+	an esp replacer for "grandfather frost" that is compatible with "solstheim - tomb of the snow prince" is available.	[replacer download]( https://www.nexusmods.com/morrowind/mods/48422 )
+grandfather frost.esp
+[ALL solstheim tomb of the snow prince.esm
+	[NOT grandfather frost - totsp.esp]]
+
+[CONFLICT]
+	'grandfather frost - totsp.esp' is an esp replacer, do not use it alongside the original plugin.
+grandfather frost.esp
+grandfather frost - totsp.esp
+
+[CONFLICT]
+	use only one of these plugins:		'correctuv ore replacer_fixed.esp' - ore will not respawn.		'correctuv ore replacer_respawning.esp' - ore will respawn.
+correctuv ore replacer_fixed.esp
+correctuv ore replacer_respawning.esp
+
+[CONFLICT]
+	choose only one plugin:		'graht morrowind swamp trees.esp' - melchior dahrk's original mod.		'morrowind swamp trees.esp' - replacer by vegetto.
+graht morrowind swamp trees.esp
+morrowind swamp trees.esp
+
+[REQUIRES]
+	
+grahtwoodroost.esp
+graht morrowind swamp trees.esp
+
+[PATCH]
+	a patch for "greetings for no lore" and "lgnpc_nolore" is provided on the "greetings for no lore" mod page.	[patch download]( https://www.nexusmods.com/morrowind/mods/46063 )
+gfnl-lgnpc patch.esp
+[ALL greetings for no lore.esp
+	lgnpc_nolore.esp]
+
+[CONFLICT]
+	each of these plugins is a different version of "guild of vampire hunters", use only one of them.
+vivec - guild of vampire hunters [replacer].esp
+guild of vampire hunters.esp
+luceedit - guild of vampire hunters.esp
+
+[CONFLICT]
+	incompatible with "hla odai".
+mad_hlaodai_v1.2.esp
+[ANY oaab brother junipers twin lamps.esp
+	swampfever.esp
+	the sable dragon <ver>.esp]
+
+[CONFLICT]
+	use only one of these plugins.
+holidays across tamriel - vvardenfell.esp
+holidays across tamriel - vvardenfell - rr holamayan mod.esp
+
+[CONFLICT]
+	"illuminated order improved" is v3+ and replaces v2.0.
+illuminated order v2.0 - lore friendly.esp
+illuminated order improved.esp
+
+[CONFLICT]
+	"immersive mournhold" already deals with adding distant statics so "distant mornhold" is not needed.
+mournhold lod.esp
+immersive mournhold.esp
+
+[NOTE]
+	a patch for "karethys in morrowind" and "immersive mournhold" is available.	[patch download]( https://www.nexusmods.com/morrowind/mods/52601 )
+[ALL karethys consort wizard.esp
+	immersive mournhold.esp]
+
+[CONFLICT]
+	these mods are incompatible.
+the imperial dwemer society.esp
+oaab - the ashen divide.esp
+
+[CONFLICT]
+	each of these plugins is a different version of "imperial employment office", use only one of them.
+imperial employment office.esp
+imperial employment office (md edits).esp
+
+[PATCH]
+	a patch for "imperial knights faction" and "hlormaren reclaimed - slightly improved" is available.	[patch download]( https://www.nexusmods.com/morrowind/mods/52503 )
+ik_furtherchivalricdeeds_hr.esp
+[ALL imperial knights faction.esp
+	hlormaren reclaimed.esp]
+
+[PATCH]
+	a patch for "imperial knights faction" and "-order of sanctity-" is available.	[patch download]( https://www.nexusmods.com/morrowind/mods/52503 )
+ik_furtherchivalricdeeds_oos.esp
+[ALL imperial knights faction.esp
+	order_of_sanctity.esp]
+
+[CONFLICT]
+	already merged into or otherwise replicated by "imperial legion expansion".
+imperial legion expansion.esp
+[ANY dukesarmor.esp
+	legionpapers.esp
+	imperial legion goods.esp
+	publius_claudius_follower.esp]
+
+[CONFLICT]
+	use either the bcom plugin or the the vanilla plugin, not both.
+imperial stables.esp
+imperial stables bcom.esp
+
+[CONFLICT]
+	an esp replacer for "complete duke's guard silver" that is compatible with "imperium - imperial armour expanded" is provided on the "imperium - imperial armour expanded" mod page.	[replacer download]( https://www.nexusmods.com/morrowind/mods/51408?tab=description )
+[ALL imperialarmorexpanded.esp
+	rv dukes guard.esp]
+
+[CONFLICT]
+	already merged into or otherwise replicated by "improved inns expanded".
+improved inns expanded*.esp
+[ANY the publicans.esp
+	the publicans (lgnpc compatible version).esp
+	improved inns.esp
+	improved inns tb.esp
+	improved inns mw.esp
+	improved inns bm.esp]
+
+[CONFLICT]
+	use only one of these plugins.
+improved inns expanded - entertainers.esp
+improved inns expanded - lgnpc seyda neen - entertainers.esp
+improved inns expanded - lgnpc seyda neen.esp
+improved inns expanded.esp
+
+[CONFLICT]
+	use only one of these plugins.
+improved inns expanded - tr addon - entertainers.esp
+improved inns expanded - tr addon.esp
+
+[CONFLICT]
+	use only one of these plugins:		'ebenerz-claymore.esp' - german version.		'ebony claymore.esp' - english version.
+ebenerz-claymore.esp
+ebony claymore.esp
+
+[CONFLICT]
+	use only one of these plugins:		'stahlwurfmesser-fix.esp' - german version.		'steel throwing knife_fix.esp' - english version.
+stahlwurfmesser-fix.esp
+steel throwing knife_fix.esp
+
+[REQUIRES]
+	
+indoril_armor - tr.esp
+tr_mainland.esm
+
+[CONFLICT]
+	use only one of these plugins:		'indoril_armor.esp' - if you are using "tamriel rebuilt".		'indoril_armor - tr.esp' - if you are not using "tamriel rebuilt".
+indoril_armor.esp
+indoril_armor - tr.esp
+
+[PATCH]
+	a patch for "interesting outfits - cultists" and "the fires of orc" is provided on the "interesting outfits - cultists" mod page.	[patch download]( https://www.nexusmods.com/morrowind/mods/51922 )
+io - fires of orc patch.esp
+[ALL the_fires_of_orc.esp
+	io - cultists.esp]
+
+[PATCH]
+	a patch for "interesting outfits - kinsmer" and "library of vivec enhanced" is provided in the "interesting outfits - kinsmer" archive.	[patch download]( https://www.nexusmods.com/morrowind/mods/52167 )
+io - ordinators patch for rpnr_library.esp
+[ALL rpnr_library.esp
+	io - kinsmer.esp]
+
+[REQUIRES]
+	
+io - ordinators patch for rpnr_library.esp
+[ALL rpnr_library.esp
+	io - kinsmer.esp]
+
+[CONFLICT]
+	"armored robes compilation and npc changes" is already merged into "interesting outfits - kinsmer" - do not use both.
+io - kinsmer.esp
+[ANY armoredrobes_npc_compilation.esp
+	armoredrobes_v1.3.esp
+	mabrigasharmoredrobes_npc.esp]
+
+[CONFLICT]
+	"fmi - athyn and shardie" is incompatible with "interesting outfits - kinsmer" as io - kinsmer also makes changes to athyn and shardie.
+fmi_athyn_and_shardie.esp
+io - kinsmer.esp
+
+[CONFLICT]
+	"yet another guard diversity" is already merged into and expanded upon in "interesting outfits - kinsmer".
+io - kinsmer.esp
+[ANY yet another guard diversity - regular.esp
+	yet another guard diversity - full cephalopod.esp
+	yet another guard diversity - hlaalu.esp
+	yet another guard diversity - imperial.esp
+	yet another guard diversity - ordinator.esp
+	yet another guard diversity - redoran.esp
+	yet another guard diversity - telvanni (full cephalopod).esp
+	yet another guard diversity - telvanni (purist).esp
+	yet another guard diversity - telvanni (regular).esp]
+
+[CONFLICT]
+	use only one of these plugins:		'psy_ironmeshimprove_uniques_bme.esp' - ebony light of day, bloodmoon.		'psy_ironmeshimprove_uniques_bmi.esp' - iron light of day, bloodmoon.		'psy_ironmeshimprove_uniques_e.esp' - ebony light of day, no bloodmoon.		'psy_ironmeshimprove_uniques_i.esp' - iron light of day, no bloodmoon.
+psy_ironmeshimprove_uniques_bme.esp
+psy_ironmeshimprove_uniques_bmi.esp
+psy_ironmeshimprove_uniques_e.esp
+psy_ironmeshimprove_uniques_i.esp
+
+[PATCH]
+	a patch for "know thy ancestors" and "valley of the wind overhaul" is provided on the "know thy ancestors" mod page.	[patch download]( https://www.nexusmods.com/morrowind/mods/49678 )
+know thy ancestors - valley of the wind overhaul patch.esp
+[ALL know thy ancestors.esp
+	valley of the wind overhaul.esp]
+
+[REQUIRES]
+	
+kogoruhn - extinct city of ash and sulfur.esp
+riharradroon - path to kogoruhn v1.0.esp
+
+[CONFLICT]
+	already merged into or otherwise replicated by "ldm - context matters".
+ldm - context matters <ver>.esp
+[ANY a cure for vampirism - skink's solution.esp
+	caius directions anti-journal.esp
+	fmi_disease_descriptions.esp
+	fmi_ingredient_locations <ver>.esp
+	fmi_misc.esp
+	ldm - abolitionists.esp
+	ldm - ashlanders v<ver>.esp
+	ldm - vampire talk.esp
+	ooh you're naked.esp]
+
+[CONFLICT]
+	already merged into or otherwise replicated by "ldm - choices and consequences".
+ldm - choices and consequences v<ver>.esp
+[ANY ajira deflowered.esp
+	balmora rumours fix*.esp
+	blight at the hairat-vassamsi egg mine.esp
+	duel of honor - improve the chances.esp
+	expansion delay.esp
+	fargoth in distress.esp
+	fmi - alice's package.esp
+	fmi_athyn_and_shardie.esp
+	fmi_current_councilors.esp
+	fmi_hulstop <ver>.esp
+	fmi_legion_dialogue.esp
+	gama.esp
+	hentus needs pants overhaul.esp
+	libertarian magical services.esp
+	note from the archcanon fix.esp
+	npc faction affiliation corrector (maximalistic).esp
+	npc faction affiliation corrector (minimalistic).esp
+	oath to saint roris instead.esp
+	pacifist options - when it makes sense.esp
+	quarantined vvardenfell.esp
+	redoran freeloaders.esp
+	strange man at gindrala hleran's house overhaul.esp
+	teach nels llendo a lesson.esp
+	the_vanilla_quest_tweaks_rp_choices_consequences_super_mega_package_-_ultimate_edition.esp]
+
+[CONFLICT]
+	use only one of these plugins:		'legend of chemua.esp' - the original mod, conflicts with "tamriel rebuilt".		'legend of chemuam.esp' - moved version by abot, does not conflict with "tamriel rebuilt".
+legend of chemua.esp
+legend of chemuam.esp
+
+[CONFLICT]
+	landscape conflict.
+legend of chemuam.esp
+themanifoldspires.esp
+
+[CONFLICT]
+	not compatible with "legion at the siege of firemoth".
+legionatfiremoth.esp
+[ANY better siege at firemoth followers.esp
+	firemothreclaimed.esp
+	siegeatfiremoth.esp
+	siege at firemoth.esp
+	siege at firemoth naturalized.esp
+	siege at firemoth naturalized - script fix.esp
+	triumph at firemoth - siege at firemoth.esp]
+
+[NOTE]
+	a patch for "legion at the siege of firemoth" and "bcom" is available.	[patch download]( https://www.nexusmods.com/morrowind/mods/52601 )
+[ALL legionatfiremoth.esp
+	beautiful cities of morrowind.esp]
+
+[CONFLICT]
+	each of these plugins alters the library of vivec, use only one of them.
+rpnr_library.esp
+[ANY mixed cantons of vivec.esm
+	mixed cantons of vivec.esp]
+rethinking vivec.esp
+[ANY library of vivec overhaul - full.esp
+	library of vivec overhaul - lite.esp]
+
+[CONFLICT]
+	"seyda neen wetlands" is supposed to be an alternative to "seyda neen swamp pools". use only one esp.
+little landscapes - seyda neen wetlands.esp
+little landscapes - seyda neen swamp pools.esp
+
+[CONFLICT]
+	
+little landscapes - seyda neen wetlands.esp
+[ANY beautiful cities of morrowind.esp
+	shipyards of vvardenfell.esp]
+
+[REQUIRES]
+	
+[ANY mage robes - caldera mg expanded.esp
+	mage robes - dagon fel mages guild.esp
+	mage robes - scrolls of the nine barriers.esp
+	mage robes - starfires npc additions.esp
+	mage robes - the hostiles.esp
+	mage robes - vivec guild of mages expansion.esp]
+mage robes.esp
+
+[CONFLICT]
+	use only one of these plugins:		'mages guild experience overhaul full.esp' - full version. not compatible with any mod that modifies the balmora/ald'ruhn/vivec mages guild.		'mages guild experience overhaul gtc.esp' - version that is compatible with "god the city".		'mages guild experience overhaul redvivec.esp' - version that is compatible with "redesigned vivec".		'mages guild experience overhaul max.esp' - should be compatible with any mod that modifies the (mages) guild halls including "bcom".		'mages guild experience overhaul maxnoquotes.esp' - max compatibility version with removed quotes in dialogue. if you get errors like "cannot find "bk_itmerelsnotes'", try this one.
+mages guild experience overhaul full.esp
+mages guild experience overhaul gtc.esp
+mages guild experience overhaul redvivec.esp
+mages guild experience overhaul max.esp
+mages guild experience overhaul maxnoquotes.esp
+
+[CONFLICT]
+	incompatible with "mages guild overhauls and stronghold".
+mages guild experience overhaul*.esp
+[ANY different types of local plants for ajira's reports.esp
+	sei-mg_potion.esp
+	sei-mg_stealbook.esp
+	onsr.esp
+	onsr-bcom.esp]
+
+[CONFLICT]
+	the mod archive of "mages guild overhaul and stronghold" provides several versions compatible with popular city mods. choose the right version for your setup.
+mages guild experience overhaul full.esp
+[ANY vivec - god the city.esp
+	redesigned vivec.esp
+	compatible redesigned vivec.esp
+	beautiful cities of morrowind.esp
+	morrowind rebirth [main].esp
+	vivec_mages_guild_expanded.esp]
+
+[REQUIRES]
+	this plugin requires "vivec - god the city".
+mages guild experience overhaul gtc.esp
+vivec - god the city.esp
+
+[CONFLICT]
+	use 'mages guild experience overhaul gtc.esp', which is compatible with "vivec - god of the city".
+vivec - god the city.esp
+[ANY mages guild experience overhaul full.esp
+	mages guild experience overhaul redvivec.esp
+	mages guild experience overhaul max.esp]
+
+[REQUIRES]
+	
+mages guild experience overhaul redvivec.esp
+compatible redesigned vivec.esp
+
+[CONFLICT]
+	use 'mages guild experience overhaul redvivec.esp', which is compatible with "compatible redesigned vivec".
+compatible redesigned vivec.esp
+[ANY mages guild experience overhaul full.esp
+	mages guild experience overhaul gtc.esp
+	mages guild experience overhaul max.esp]
+
+[CONFLICT]
+	incompatible. choose the maximum compatibility version that is provided in the "magic guild overhaul and stronghold" archive.
+[ANY mages guild experience overhaul redvivec.esp
+	mages guild experience overhaul gtc.esp]
+[ANY beautiful cities of morrowind.esp
+	morrowind rebirth [main].esp
+	vivec_mages_guild_expanded.esp]
+
+[CONFLICT]
+	already merged into or otherwise replicated by "main quest overhaul".
+main_quest_overhaul.esp
+[ANY ashlander quests.esp
+	consequences for looting the andrano tomb.esp
+	exterminate all the brutes.esp
+	hortator.esp
+	imperialist nerevarine.esp
+	joinable sixth house - so to speak.esp
+	living with caius.esp
+	nationalist nerevarine.esp
+	past life regressions.esp
+	refuse the main quest.esp
+	sixth house smugglers.esp
+	vampire_nerevarine.esp]
+
+[NOTE]
+	! this mod has a bsa, be sure to register it.
+rr_melchior's_mudcrab_merchant_eng.esp
+
+[NOTE]
+	!! a patch for "morag tong polished" and "tr factions" is available.	!! [patch download]( https://www.nexusmods.com/morrowind/mods/48955 )
+[ALL morag tong polished.esp
+	tr_factions.esp
+	[NOT [ANY morag tong polished - tr_factions.esp
+	ecoadjcrime (necro edit).esp]]]
+
+[NOTE]
+	!! a patch for "morag tong polished" and "economy adjuster adjustments crime" is available.	!! [patch download]( https://www.nexusmods.com/morrowind/mods/48955 )
+[ALL morag tong polished.esp
+	ecoadjcrime (necro edit).esp
+	[NOT [ANY morag tong polished - ecoadjcrime_ne.esp
+	tr_factions.esp]]]
+
+[NOTE]
+	!! a patch for "morag tong polished", "tr factions", and "economy adjuster adjustments crime" is available.	!! [patch download]( https://www.nexusmods.com/morrowind/mods/48955 )
+[ALL tr_factions.esp
+	morag tong polished.esp
+	ecoadjcrime (necro edit).esp
+	[NOT morag tong polished - tr_factions - ecoadjcrime_ne.esp]]
+
+[REQUIRES]
+	
+morag tong polished - tr_factions.esp
+[ALL morag tong polished.esp
+	tr_factions.esp]
+
+[REQUIRES]
+	
+morag tong polished - ecoadjcrime_ne.esp
+[ALL morag tong polished.esp
+	ecoadjcrime (necro edit).esp]
+
+[REQUIRES]
+	
+morag tong polished - tr_factions - ecoadjcrime_ne.esp
+[ALL morag tong polished.esp
+	ecoadjcrime (necro edit).esp
+	tr_factions.esp]
+
+[CONFLICT]
+	hein's morag tong armor sets are already included in, and integrated by, "morag tong polished".
+heins morag tong armor.esp
+morag tong polished.esp
+
+[PATCH]
+	a patch for "morag tong polished" and "bcom" is available from "beyond's various patches" and also works with the "vfwe" version of "morag tong polished".	[patch download]( https://www.nexusmods.com/morrowind/mods/51194 )
+morag tong polished - bcom patch.esp
+[ALL morag tong polished.esp
+	beautiful cities of morrowind.esp]
+
+[CONFLICT]
+	use only one of these plugins:  		'mdmd - more deadly morrowind denizens.esp' - full "mdmd" experience.  		'mdmd - bosses only.esp - only change bosses of faction questlines and artifact owners.
+mdmd - more deadly morrowind denizens.esp
+mdmd - bosses only.esp
+
+[CONFLICT]
+	use the edited version of the "morrowind patch project" provided with "morrowind rebirth" instead of "patch for purists".
+[ALL morrowind rebirth [main].esp
+	patch for purists.esm]
+[NOT morrowind patch project v1.6.6 [for rebirth].esm]
+
+[CONFLICT]
+	use only one of these plugins:		'morrowind patch project v1.6.6 [for rebirth].esm' - if you are using "morrowind rebirth".		'patch for purists.esm' - if you are not using "morrowind rebirth".
+morrowind patch project v1.6.6 [for rebirth].esm
+patch for purists.esm
+
+[CONFLICT]
+	use the edited version of "siege at firemoth" provided with "morrowind rebirth".
+[ALL morrowind rebirth [main].esp
+	[ANY siege at firemoth.esp
+	siege at firemoth naturalized.esp
+	legionatfiremoth.esp
+	triumph at firemoth - siege at firemoth.esp
+	firemothreclaimed.esp
+	siegeatfiremoth.esp
+	[official]siege at firemoth.esp]]
+[NOT siege at firemoth [for rebirth].esp]
+
+[CONFLICT]
+	use only one of these plugins:		'siege at firemoth [for rebirth].esp' - if you are using "morrowind rebirth".		'insert any other version here' - if you are not using "morrowind rebirth".
+siege at firemoth [for rebirth].esp
+[ANY siege at firemoth.esp
+	siege at firemoth naturalized.esp
+	legionatfiremoth.esp
+	triumph at firemoth - siege at firemoth.esp
+	firemothreclaimed.esp
+	siegeatfiremoth.esp
+	[official]siege at firemoth.esp]
+
+[CONFLICT]
+	use the edited version of "province cyrodiil" provided with "morrowind rebirth".
+[ALL morrowind rebirth [main].esp
+	cyrodiil_main.esm]
+[NOT province cyrodiil [for rebirth].esm]
+
+[CONFLICT]
+	use only one of these plugins:		'province cyrodiil [for rebirth].esm' - if you are using "morrowind rebirth".		'cyrodiil_main.esm' - if you are not using "morrowind rebirth".
+province cyrodiil [for rebirth].esm
+cyrodiil_main.esm
+
+[CONFLICT]
+	use the edited version of "skyrim home of the nords" provided with "morrowind rebirth".
+[ALL morrowind rebirth [main].esp
+	sky_main.esm]
+[NOT skyrim home of the nords [for rebirth].esm]
+
+[CONFLICT]
+	use only one of these plugins:		'skyrim home of the nords [for rebirth].esm' - if you are using "morrowind rebirth".		'sky_main.esm' - if you are not using "morrowind rebirth".
+skyrim home of the nords [for rebirth].esm
+sky_main.esm
+
+[CONFLICT]
+	use the edited version of "uvirith's legacy" provided with "morrowind rebirth".
+[ALL morrowind rebirth [main].esp
+	uvirith's legacy_3.53.esp]
+[NOT uvirith's legacy 3.53 [for rebirth].esp]
+
+[CONFLICT]
+	use only one of these plugins:		'uvirith's legacy 3.53 [for rebirth].esp' - if you are using "morrowind rebirth".		'uvirith's legacy_3.53.esp' - if you are not using "morrowind rebirth".
+uvirith's legacy 3.53 [for rebirth].esp
+uvirith's legacy_3.53.esp
+
+[CONFLICT]
+	use the edited version of "main quest overhaul" provided with "morrowind rebirth".
+[ALL morrowind rebirth [main].esp
+	main_quest_overhaul.esp]
+[NOT clean main quest overhaul 1.3 [for rebirth].esp]
+
+[CONFLICT]
+	use only one of these plugins:		'clean main quest overhaul 1.3 [for rebirth].esp' - if you are using "morrowind rebirth".		'main_quest_overhaul.esp' - if you are not using "morrowind rebirth".
+clean main quest overhaul 1.3 [for rebirth].esp
+main_quest_overhaul.esp
+
+[CONFLICT]
+	an esp replacer for "julan, ashlander companion" that is compatible with "morrowind rebirth" is provided in the "morrowind rebirth" archive.
+[ALL morrowind rebirth [main].esp
+	[ANY ks_julan_ashlander companion_<ver>.esp
+	ks_julan_ashlander companion_3.0_beta.esp]
+	[NOT julan ashlander companion <ver>*[for rebirth].esp]]
+
+[CONFLICT]
+	use only one of these plugins.
+[ANY ks_julan_ashlander companion_<ver>.esp
+	ks_julan_ashlander companion_3.0_beta.esp]
+julan ashlander companion <ver>*[for rebirth].esp
+
+[CONFLICT]
+	use only one of these plugins:	'mysterious_affair_sara_shenk.esp' - if you are not using beautiful cities of morrowind.	'mysterious_affair_sara_shenk - bcom.esp' - if you are using beautiful cities of morrowind.
+mysterious_affair_sara_shenk.esp
+mysterious_affair_sara_shenk - bcom.esp
+
+[PATCH]
+	a patch for "the mysterious affair of sara shenk" and "morrowind interiors project" is available in the "the mysterious affair of sara shenk" archive.	[patch download]( https://www.nexusmods.com/morrowind/mods/52968 )
+mysterious_affair_sara_shenk mip.esp
+[ALL mysterious_affair_sara_shenk.esp
+	morrowindinteriorsproject.esp]
+
+[CONFLICT]
+	"beautiful cities of morrowind" and "morrowind interiors project" are not yet compatible.
+beautiful cities of morrowind.esp
+morrowindinteriorsproject.esp
+
+[CONFLICT]
+	each of these plugins is a different version of "netch adamantium armor", use only one of them.
+netch adamantium armor ii.esp
+netch adamantium armor ii - fixed.esp
+netch adamantium armor ii_rp.esp
+
+[PATCH]
+	a patch for "new ilunibi" and either "sixth house smugglers" or "main quest overhaul" is provided on the "new ilunibi" mod page.	[patch download]( https://www.nexusmods.com/morrowind/mods/50393 )
+newilunibi_mainquestoverhaul_patch.esp
+[ALL new ilunibi.esp
+	[ANY main_quest_overhaul.esp
+	sixth house smugglers.esp]]
+
+[CONFLICT]
+	use either only the merged plugin or any combination of the modular plugins.
+nine-holes.esp
+[ANY nine-holes - ald-ruhn, the rat in the pot.esp
+	nine-holes - caldera, ghorak manor.esp
+	nine-holes - dagon fel, the end of the world.esp
+	nine-holes - ebonheart, six fishes.esp
+	nine-holes - moonmoth legion fort.esp
+	nine-holes - pelagiad, halfway tavern.esp
+	nine-holes - sadrith mora, dirty muriel's cornerclub.esp
+	nine-holes - seyda neen, arrille's tradehouse.esp
+	nine-holes - suran, goldyn belaram (bcom).esp
+	nine-holes - suran, goldyn belaram.esp
+	nine-holes - vivec, elven nations cornerclub.esp]
+
+[CONFLICT]
+	the modular version of "nine holes" is required for compatibility with this plugin.
+nine-holes.esp
+beautiful cities of morrowind.esp
+
+[CONFLICT]
+	use only the "bcom" version of this plugin with "beautiful cities of morrowind".
+nine-holes - suran, goldyn belaram.esp
+beautiful cities of morrowind.esp
+
+[REQUIRES]
+	this plugin requires "beautiful cities of morrowind".
+nine-holes - suran, goldyn belaram (bcom).esp
+beautiful cities of morrowind.esp
+
+[CONFLICT]
+	use only one of these plugins:		'nocturnal moths - vanilla.esp' - if you are not using "true lights and darkness".		'nocturnal moths - tld.esp' - if you are using "true lights and darkness".
+nocturnal moths - vanilla.esp
+nocturnal moths - tld.esp
+
+[CONFLICT]
+	already merged into or otherwise replicated by "nod - npc outfit diversity".
+nod - core.esm
+[ANY properly clothed npcs.esp
+	sacred_necromancer.esp
+	sacred necromancer no npcs.esp
+	rv necrorobes.esp
+	ceremonial adamantium armor.esp
+	more argonian hair.esp
+	more argonian hair_plus npcs.esp
+	hlaalu nobles facial overhaul.esp
+	rogues gallery.esp
+	rv armors integrated.esp
+	buyoantarmigersarmor_npc.esp
+	armoredrobes_npc_compilation.esp
+	dimkhajiithh.esp
+	rv dukes guard.esp
+	complete nordic iron.esp
+	concept art daedric helms.esp
+	dwemer scrap armor v2.esp
+	heavy chitin.esp
+	complete dreugh armor.esp
+	complete and revised studded leather v 1.5.esp
+	concept art dunmer helms.esp]
+
+[CONFLICT]
+	incompatible with "nod - npc outfit diversity".
+nod - core.esm
+vanilla friendly wearables expansion.esm
+
+[REQUIRES]
+	"nod - npc outfit diversity" requires "better bodies", the pluginless version also works but mlox cannot detect if you have it installed. if you already have the pluginless version ignore this message.
+nod - core.esm
+better?bodies*.esp
+
+[NOTE]
+	!! this plugin is for testing only and is not intended for normal gameplay.
+nod - equipment test addon.esp
+
+[CONFLICT]
+	use only one of these plugins.
+solstheim interior overhaul project.esp
+interiors_of_solstheim_v2.1.esp
+
+[CONFLICT]
+	use only one of these plugins.
+npc faction affiliation corrector (minimalistic).esp
+npc faction affiliation corrector (maximalistic).esp
+
+[REQUIRES]
+	the "oriental ebony weapons" integration plugins contain no weapon records so they require either the plugin from the original "oriental ebony weapons" mod or the included rebalance plugin.	[oriental ebony weapons download](https://www.nexusmods.com/morrowind/mods/47173)
+[ANY oriental ebony weapons integrated.esp
+	oriental ebony weapons integrated tcboo.esp]
+[ANY oriental ebony weapon.esp
+	oriental ebony weapons rebalanced.esp]
+
+[CONFLICT]
+	'redoran war and sathil mercenary armor.esp' should be disabled.
+redoran war and sathil mercenary armor.esp
+redoran war and sathil mercenary armor integrated.esp
+
+[CONFLICT]
+	already merged into or otherwise replicated by "rv armors integrated".
+rv armors integrated.esp
+[ANY concept art daedric helms.esp
+	complete dreugh armor.esp
+	complete nordic iron.esp
+	complete and revised studded leather v 1.5.esp
+	rv dukes guard.esp]
+
+[NOTE]
+	as of update 1.7.8, "oaab - shipwrecks" and "justice for karthag" are compatible without using a patch.
+[ANY kfg_shipwrecks_patch.esp
+	justice4khartag+oaab_shipwreck - merged.esp]
+
+[CONFLICT]
+	'oaab - the ashen divide - vurt's trees.esp' is an esp replacer, do not use it alongside the original plugin.
+oaab - the ashen divide.esp
+oaab - the ashen divide - vurt's trees.esp
+
+[CONFLICT]
+	included in and improved upon by "oaab - tombs and towers".
+oaab - tombs and towers.esp
+[ANY urshilaku burial caverns overhaul.esp
+	mawia overhaul.esp
+	remiros' tombs expansion.esp]
+
+[CONFLICT]
+	"oaab golden reeds" is already incorporated into "oaab grazelands".
+oaab_goldenreeds.esp
+oaab_grazelands.esp
+
+[CONFLICT]
+	each of these plugins overhaul the samarys ancestral tomb. use only one of them.
+greater samarys.esp
+[ANY tombs expanded.esp
+	samarys ancestral tomb expanded.esp]
+
+[CONFLICT]
+	use only one of these plugins:		'of justice and innocence.esp' - divides the dungeon up into 4 cells and uses many lights.  		'ojai - framerate version.esp' - divides the dungeon up into 6 cells and removes some lights to help increase framerate. this is the recommended version for most users.
+of justice and innocence.esp
+ojai - framerate version.esp
+
+[CONFLICT]
+	use only one of these plugins.
+onsr.esp
+onsr-bcom.esp
+
+[CONFLICT]
+	use only one of these plugins. if you are not sure which version to use, the esm version is safer in terms of compatibility.
+ownership overhaul.esp
+ownership overhaul.esm
+
+[CONFLICT]
+	use only one of these plugins.
+passage of prayers - full.esp
+passage of prayers - no lore.esp
+
+[CONFLICT]
+	'pcd_pfp_compat.esp' is an esp replacer, do not use it alongside the original plugin.
+persistent_corpse_disposal.esp
+pcd_pfp_compat.esp
+
+[REQUIRES]
+	
+playable game of ur.esp
+the_royal_game_of_ur.esp
+
+[CONFLICT]
+	each of these plugins is a different version of "ports of vvardenfell", use only one of them.
+ports of vvardenfell v1.6.esp
+ports of vvardenfell lite.esp
+ports of vvardenfell v1.6 - clean.esp
+ports of vvardenfell v1.6 - compatible.esp
+ports of vvardenfell v1.6 - aggressively compatible.esp
+ports of vvardenfell v1.6 - ultra aggressively compatible.esp
+ports of vvardenfell v1.6 - npc only - tr_travels.esp
+ports of vvardenfell v1.6 - npc only - totsp.esp
+ports of vvardenfell v1.6 - npc only - tr_travels - totsp.esp
+ports of vvardenfell v1.6 - npc only - hood and mask.esp
+ports of vvardenfell v1.6 - npc only - hood and mask - tr_travels.esp
+ports of vvardenfell v1.6 - npc only - hood and mask - totsp.esp
+ports of vvardenfell v1.6 - npc only - hood and mask - tr_travels - totsp.esp
+
+[CONFLICT]
+	these plugins have a script conflict as they both use the same script id.
+privileges&services <ver>.esp
+antares little mods.esp
+
+[CONFLICT]
+	use only one of these plugins.
+the publicans.esp
+the publicans (lgnpc compatible version).esp
+
+[REQUIRES]
+	
+quarraclan_refreshed - merged patches.esp
+[ALL raym's vampire rumors.esp
+	quarraclan_refreshed.esp]
+
+[CONFLICT]
+	use either only the merged plugin or any combination of the modular plugins.
+quarraclan_refreshed - merged patches.esp
+[ANY quarraclan_refreshed - faction stats override.esp
+	quarraclan_refreshed - morrowind anti-cheese.esp
+	quarraclan_refreshed - raym's vampire rumors.esp
+	quarraclan_refreshed - vampire clans - clutter monkey overhaul.esp]
+
+[CONFLICT]
+	'quarraclan_refreshed.esp' is an esp replacer, do not use it alongside the original plugin.
+quarraclan_refreshed.esp
+quarraclan.esp
+
+[PATCH]
+	a patch for "quests for clans and vampire legends" and "morrowind anti-cheese" is available.	[patch download]( https://www.nexusmods.com/morrowind/mods/48955 )
+quests for clans and vampire legends - morrowind anti-cheese.esp
+[ALL quests for clans and vampire legends.esp
+	[ANY morrowind anti-cheese.esp
+	morrowind anti-cheese tweaked.esp]]
+
+[CONFLICT]
+	use only one of these plugins.
+quests in balmora waterworks.esp
+quests in balmora waterworks - no dura gra-bol.esp
+
+[CONFLICT]
+	an esp replacer for "quests in balmora waterworks" that is compatible with "dura gra-bol's house reclaimed - and the grab-all gang" and "fighters guild improved" provided on the "quests in balmora waterworks" mod page.	[replacer download]( https://www.nexusmods.com/morrowind/mods/52758 )
+quests in balmora waterworks.esp
+[ANY dura gra-bol's house reclaimed.esp
+	fighters guild improved.esp]
+
+[CONFLICT]
+	incompatible with "quests in balmora waterworks".
+quests in balmora waterworks.esp
+[ANY balmora city of contrasts.esp
+	sleep with the fishes.esp]
+
+[CONFLICT]
+	use only one of these plugins.
+library of vivec overhaul - full.esp
+library of vivec overhaul - lite.esp
+
+[CONFLICT]
+	randompal provides a "red mountain reborn" compatible version of "ald'ruhn - seat of power of house redoran" in the bain installer, use that version instead.
+redmountainreborn.esp
+[ANY aldruhn_seat_of_power.esp
+	aldruhn_seat_of_power_no_underskar.esp
+	aldruhn_seat_of_power_rr_skar.esp]
+
+[NOTE]
+	"red mountain reborn" includes an esp replacer for "illuminated order v2.0". however, v3.0 already removed the red mountain edits (tower of semuta is renamed and moved south of tel branora).
+[ALL redmountainreborn.esp
+	illuminated order v2.0 - lore friendly.esp]
+
+[REQUIRES]
+	
+repopulatedmorrowind_anissueofthrust.esp
+an issue of thrust - main.esp
+
+[PATCH]
+	a patch for "repopulated morrowind" and "animated morrowind" is provided in the "repopulated morrowind" archive, compatible with either the vanilla or bcom version of animated morrowind
+repopulatedmorrowind_animatedmorrowind.esp
+[ALL repopulatedmorrowind.esm
+	[ANY animated_morrowind - merged.esp
+	animated_morrowind - merged - openmw.esp]]
+
+[REQUIRES]
+	
+repopulatedmorrowind_camonnatongchitin.esp
+cammona tong chitin armor.esp
+
+[REQUIRES]
+	
+repopulatedmorrowind_ceremonialadamantiumarmor.esp
+ceremonial adamantium armor.esp
+
+[REQUIRES]
+	
+repopulatedmorrowind_conceptartdunmerhelmets.esp
+concept art dunmer helms.esp
+
+[REQUIRES]
+	
+repopulatedmorrowind_glasshelmcompilation.esp
+glass helms.esp
+
+[PATCH]
+	a patch for "repopulated morrowind" and "immersive mournhold" is provided in the "repopulated morrowind" archive.
+repopulatedmorrowind_immersivemournhold.esp
+[ALL repopulatedmorrowind.esm
+	immersive mournhold.esp]
+
+[REQUIRES]
+	
+repopulatedmorrowind_indorilroninarmor.esp
+[ANY indoril ronin armor.esp
+	the ronin.esp
+	the ronin - light armor.esp]
+
+[REQUIRES]
+	
+repopulatedmorrowind_magerobes.esp
+mage robes.esp
+
+[REQUIRES]
+	
+repopulatedmorrowind_moragtongarmorrevisited.esp
+morag_tong_armor_revisited.esp
+
+[REQUIRES]
+	
+repopulatedmorrowind_moragtongequipmentdiversity.esp
+morag tong equipment diversity.esp
+
+[REQUIRES]
+	
+repopulatedmorrowind_moragtongpolished.esp
+morag tong polished.esp
+
+[REQUIRES]
+	
+repopulatedmorrowind_netchadamantiumarmor.esp
+[ANY netch adamantium armor ii.esp
+	netch adamantium armor ii_rp.esp
+	netch adamantium armor ii - fixed.esp]
+
+[REQUIRES]
+	
+repopulatedmorrowind_redayniarestored.esp
+redaynia restored.esp
+
+[REQUIRES]
+	
+repopulatedmorrowind_sacrednecromancerarmor.esp
+[ANY sacred_necromancer.esp
+	sacred necromancer no npcs.esp]
+
+[REQUIRES]
+	
+repopulatedmorrowind_6thhouseobsidweps.esp
+[ANY sixth house obisidian weapon.esp
+	creatures_rp_purist.esp]
+
+[CONFLICT]
+	already merged into the "repopulated morrowind" patch for "vanilla friendly wearables expansion".
+repopulatedmorrowind_vanillafriendlywearablesexpansion.esp
+[ANY repopulatedmorrowind_ceremonialadamantiumarmor.esp
+	repopulatedmorrowind_conceptartdunmerhelmets.esp
+	repopulatedmorrowind_redoranwarsathilmerc.esp]
+
+[REQUIRES]
+	
+repopulatedmorrowind_morrowindweaponsexpansion.esp
+weapons expansion morrowind.esp
+
+[CONFLICT]
+	use only one of these plugins.
+repopulatedmorrowind_moragtongpolished.esp
+repopulatedmorrowind_moragtongarmorrevisited.esp
+
+[CONFLICT]
+	use either only the merged plugin or any combination of the modular plugins.
+reputation_fixes_all.esp
+[ANY reputation_fixes_fighters_guild_.esp
+	reputation_fixes_imperial_legion.esp
+	reputation_fixes_thieves_guild.esp]
+
+[CONFLICT]
+	use only one of these plugins:		'rv - tr_travels patch.esp' - if you are using "tr_travels" for mainland only.		'rv - tr_travels_(p_m) patch.esp' - if your are using "tr_travels" for both preview and mainland.
+rv - tr_travels patch.esp
+rv - tr_travels_(p_m) patch.esp
+
+[REQUIRES]
+	
+rv - tr_travels patch.esp
+[ALL rethinking vivec.esp
+	tr_travels.esp]
+
+[REQUIRES]
+	
+rv - tr_travels_(p_m) patch.esp
+[ALL rethinking vivec.esp
+	tr_travels_(preview_and_mainland).esp]
+
+[CONFLICT]
+	'last wish' by tel shadow conflicts with sov as the landmasses overlap
+secretofvilmuhn.esm
+last wish 2.0.esp
+
+[CONFLICT]
+	use only the esp replacer for "ald'ruhn - seat of power of house redoran" provided in the "skar face" bain installer.
+skar_face.esp
+[ANY aldruhn_seat_of_power.esp
+	aldruhn_seat_of_power_no_underskar.esp
+	aldruhn_seat_of_power_rr_skar.esp
+	aldruhn_seat_of_power_rmr.esp
+	aldruhn_seat_of_power_rr_skar_rmr.esp]
+
+[CONFLICT]
+	use only one of these plugins:        'sloadic transport necro.esp' - sloadic transport necro version        'sloadic transport.esp' - sloadic transport regular version
+sloadic transport necro.esp
+sloadic transport.esp
+
+[REQUIRES]
+	
+da_sobitur_ya_compatibility.esp
+[ALL da_sobitur_facility_clean.esp
+	yagrum advanced 2.0.esp]
+
+[CONFLICT]
+	use only one of these plugins:		'totsp td content integration - spiders.esp' - spiders.		'totsp td content integration.esp' - no spiders.
+totsp td content integration - spiders.esp
+totsp td content integration.esp
+
+[CONFLICT]
+	already merged into or otherwise replicated by "solstheim - tomb of the snow prince".
+solstheim tomb of the snow prince.esm
+lake fjalding anti-suck.esp
+
+[CONFLICT]
+	use the mortified plugin with mort's "bloodmoon rebalance".
+stone halls of solstheim.esp
+stone halls of solstheim - mortified.esp
+
+[CONFLICT]
+	'shs - bloodskal barrow.esp' is outdated.
+shs - bloodskal barrow.esp
+stone halls of solstheim*.esp
+
+[CONFLICT]
+	each of these plugins is a different version of "the stonewood pass", use only one of them.
+better landscapes stonewood pass (md edit).esp
+better landscapes stonewood pass.esp
+better landscapes stonewood pass (rp edit).esp
+
+[CONFLICT]
+	extensive changes to vivec prevent one quest in "the strider's nest" from being completed.
+lack_stridersnest.esp
+vivec - god the city.esp
+
+[CONFLICT]
+	use only one of these plugins.
+strike at the camonna tong-fast.esp
+strike at the camonna tong.esp
+
+[REQUIRES]
+	
+stripes.esp
+bm_catcompanions1_0.esp
+
+[CONFLICT]
+	use only one of these plugins.
+taddeus_foods_of_tamriel.esp
+taddeus foods of tamriel light.esp
+
+[NOTE]
+	! tr_travels is now part of the main "tamriel rebuilt" plugin, the tr_travels plugins included in the 22.11 release are dummy plugins and add nothing to the game.
+[ALL [DESC /main file v. 22.11/ tr_mainland.esm]
+	[ANY tr_travels.esp
+	tr_travels_preview_and_mainland.esp
+	tr_oldtravels.esp]]
+
+[NOTE]
+	! tr_preview is now deprecated, the tr_preview plugin included in the 22.11 release is a dummy plugin and adds nothing to the game.
+[ALL [DESC /main file v. 22.11/ tr_mainland.esm]
+	tr_preview.esp]
+
+[REQUIRES]
+	
+tea merchants.esp
+ashfall.esp
+
+[CONFLICT]
+	use only one of these plugins.
+telvanni cephalopod armor.esp
+telvanni cephalopod armor exclusive to gothren (no helmet).esp
+telvanni cephalopod armor exclusive to gothren (with helmet).esp
+telvanni cephalopod armor plus gothren (no helmet).esp
+telvanni cephalopod armor plus gothren (with helmet).esp
+telvanni cephalopod armor (guard edit).esp
+telvanni cephalopod armor (robed guard edit).esp
+
+[PATCH]
+	a patch for "temple master" and "bell towers of vvardenfell" is part of the newest "temple master" release.	[patch download]( https://www.nexusmods.com/morrowind/mods/52749 )
+temple master_bell towers patch.esp
+[ALL temple master.esp
+	suranbell.esp]
+
+[PATCH]
+	a patch for "temple master", a version of "white suran" and "bell towers of vvardenfell" is part of the newest "temple master" release.	[patch download]( https://www.nexusmods.com/morrowind/mods/52749 )
+temple master_bell towers_ws2 patch.esp
+[ALL temple master.esp
+	suranbellwhite.esp
+	[ANY whitesuran2_md_edition.esp
+	bcom_white_suran.esp]]
+
+[CONFLICT]
+	use only one of these plugins:	'temple master_bell towers patch.esp' - patch for vanilla suran	'temple master_bell towers_ws2 patch.esp' - patch for white suran
+temple master_bell towers patch.esp
+temple master_bell towers_ws2 patch.esp
+
+[CONFLICT]
+	use only one of these plugins:	'whitesuran2_md_edition.esp' - standalone white suran	'bcom_white_suran.esp' - white suran merged into bcom
+whitesuran2_md_edition.esp
+bcom_white_suran.esp
+
+[CONFLICT]
+	use either only the merged plugin or any combination of the modular plugins.
+[ANY avp there can be only one - merged.esp
+	avp there can be only one - merged - cell changes.esp]
+[ANY avp there can be only one - oldmournholdoverhaul.esp
+	avp there can be only one - strike at the camonna tong-fast.esp
+	avp there can be only one - tribunal rebalance.esp]
+
+[CONFLICT]
+	use only one of these plugins.
+there can be only one.esp
+there can be only one (alt fyr).esp
+there can be only one (alt fyr 2).esp
+
+[CONFLICT]
+	already merged into or otherwise replicated by "thieves guild overhaul".
+thieves_guild_overhaul.esp
+thieves_guild_overhaul - purist ahnassi romance version.esp
+[ANY bal molagmer add-on.esp
+	lore-friendly bal molagmer gloves.esp
+	more redoran master helms.esp
+	plunder the dungeon.esp
+	smooth moves - romancing ahnassi.esp
+	thieves guild in gnaar mok.esp
+	wanted posters.esp]
+
+[CONFLICT]
+	an esp replacer for "thirsk expanded" that is compatible with "solstheim - tomb of the snow prince" is available.	[replacer download]( https://www.nexusmods.com/morrowind/mods/48422 )
+[ALL thirsk expanded.esp
+	solstheim tomb of the snow prince.esm
+	[NOT thirsk expanded for totsp.esp]]
+
+[CONFLICT]
+	'thirsk expanded for totsp.esp' is an esp replacer, do not use it alongside the original plugin.
+thirsk expanded.esp
+thirsk expanded for totsp.esp
+
+[CONFLICT]
+	use either only the merged plugin or any combination of the modular plugins.
+thirteen telvanni.esp
+[ANY thirteen telvanni - ald-ruhn, ald skar inn.esp
+	thirteen telvanni - balmora, south wall cornerclub (atmospheric).esp
+	thirteen telvanni - balmora, south wall cornerclub.esp
+	thirteen telvanni - buckmoth legion fort, interior.esp
+	thirteen telvanni - gateway inn.esp
+	thirteen telvanni - gnisis, madach tradehouse (bcom).esp
+	thirteen telvanni - gnisis, madach tradehouse.esp
+	thirteen telvanni - molag mar, st. veloth's hostel.esp
+	thirteen telvanni - sadrith mora, fara's hole in the wall.esp
+	thirteen telvanni - seyda neen, arrille's tradehouse.esp
+	thirteen telvanni - suran, suran tradehouse.esp
+	thirteen telvanni - vivec, black shalk cornerclub (bcom).esp
+	thirteen telvanni - vivec, black shalk cornerclub.esp
+	thirteen telvanni - vos, varo tradehouse.esp]
+
+[CONFLICT]
+	the modular version of "thirteen telvanni" is required for compatibility with these plugins.
+thirteen telvanni.esp
+[ANY beautiful cities of morrowind.esp
+	southwalldenofiniquity2.0.1.esp
+	southwalldoi2.0.1-openmw.esp
+	south wall_rp.esp]
+
+[CONFLICT]
+	use only the "bcom" version of these plugins with "beautiful cities of morrowind".
+beautiful cities of morrowind.esp
+[ANY thirteen telvanni - vivec, black shalk cornerclub.esp
+	thirteen telvanni - gnisis, madach tradehouse.esp]
+
+[REQUIRES]
+	these plugins require "beautiful cities of morrowind".
+[ANY thirteen telvanni - vivec, black shalk cornerclub (bcom).esp
+	thirteen telvanni - gnisis, madach tradehouse (bcom).esp]
+beautiful cities of morrowind.esp
+
+[CONFLICT]
+	use only the "atmospheric" version of this plugin with "atmospheric south wall cornerclub" or "south wall den of iniquity".
+[ANY southwalldenofiniquity2.0.1.esp
+	southwalldoi2.0.1-openmw.esp
+	south wall_rp.esp]
+thirteen telvanni - balmora, south wall cornerclub.esp
+
+[REQUIRES]
+	this plugin requires "atmospheric south wall cornerclub" or "south wall den of iniquity".
+thirteen telvanni - balmora, south wall cornerclub (atmospheric).esp
+[ANY southwalldenofiniquity2.0.1.esp
+	southwalldoi2.0.1-openmw.esp
+	south wall_rp.esp]
+
+[CONFLICT]
+	use only one of these plugins, depending on the desired level of degeneracy.
+tirram terala's treasure trove of trinkets.esp
+tirram terala's treasure trove of trinkets - no pillows.esp
+
+[REQUIRES]
+	
+uvirithslegacy+tr patch.esp
+[ALL uvirith's legacy_3.53.esp
+	ul_3.5_tr_21.01_add-on.esp]
+
+[REQUIRES]
+	
+bcom+ghastlygg+dynamicdistantbuildingspatch.esp
+[ALL beautiful cities of morrowind.esp
+	ghastly gg.esp]
+
+[REQUIRES]
+	
+nordicdagonfel+rrbettershipsnboatspatch.esp
+[ALL rr_better_ships_n_boats_eng.esp
+	nordic dagon fel.esp]
+
+[CONFLICT]
+	use only one of these plugins.
+ttooth's missing npcs - nolus.esp
+ttooth's missing npcs - no nolus.esp
+
+[CONFLICT]
+	use only one of these plugins.
+tlad - mat.esp
+tlad - new ilunibi - mat.esp
+tlad - new ilunibi.esp
+tlad logfl necro colors - nocturnal moths - mat.esp
+tlad logfl necro colors - nocturnal moths - new ilunibi - mat.esp
+tlad logfl necro colors - nocturnal moths - new ilunibi.esp
+tlad logfl necro colors - nocturnal moths.esp
+tlad still necro colors - nocturnal moths - mat.esp
+tlad still necro colors - nocturnal moths - new ilunibi - mat.esp
+tlad still necro colors - nocturnal moths - new ilunibi.esp
+tlad still necro colors - nocturnal moths.esp
+
+[CONFLICT]
+	incompatible according to "ultra violent camonna tong" description.
+ultra violent camonna tong.esp
+[ANY nasty camonna tong.esp
+	ldm - racist service refusal.esp]
+
+[CONFLICT]
+	use the individual official plugins instead of the merged one with "beautiful cities of morrowind", as "beautiful cities of morrowind" has esp replacers for both "siege at firemoth" and "area effect arrows".
+unofficial morrowind official plugins patched.esp
+beautiful cities of morrowind.esp
+
+[CONFLICT]
+	you are using the merged "umopp" plugin alongside at least one of the separate official plugins. use either only the merged plugin, any combination of the modular "umopp" plugins, or a combination of modular "umopp" plugins and alternate versions ( such as pikachunotm's "naturalized" versions ).
+unofficial morrowind official plugins patched.esp
+[ANY adamantiumarmor.esp
+	adamantium armor naturalized.esp
+	vivec - adamantium armor (umopp) [replacer].esp
+	vivec - adamantium armor (naturalized) [replacer].esp
+	improvedadamantiumarmor.esp
+	[official]adamantium armor.esp
+	areaeffectarrows.esp
+	area effect arrows integrated.esp
+	area effect arrows naturalized.esp
+	vivec - area of effect (remiros) [replacer].esp
+	vivec - area of effect (remiros + naturalized) [replacer].esp
+	area effect arrows.esp
+	areaeffectarrows xb edition.esp
+	area effect projectiles.esp
+	area effect projectiles (par edit).esp
+	cleanareaeffectarrows.esp
+	[official]area effect arrows.esp
+	entertainers.esp
+	entertainers expanded.esp
+	cleanentertainers.esp
+	[official]entertainers.esp
+	ebq_artifact.esp
+	helm of tohan naturalized.esp
+	cleanhelmoftohan.esp
+	helmoftohan.esp
+	[official]helm of tohan.esp
+	lefemmarmor.esp
+	[official]lefemm armor.esp
+	master_index.esp
+	master index naturalized.esp
+	masterindexredux.esp
+	cleanmasterindex.esp
+	masterindex.esp
+	[official]master index.esp
+	siege at firemoth.esp
+	siege at firemoth naturalized.esp
+	legionatfiremoth.esp
+	triumph at firemoth - siege at firemoth.esp
+	firemothreclaimed.esp
+	siegeatfiremoth.esp
+	[official]siege at firemoth.esp]
+
+[CONFLICT]
+	incompatible according to the "urh - khuul" readme.
+urh_khuul.esp
+cozy khuul&ald velothi ver.<ver>.esp
+
+[CONFLICT]
+	each of these plugins is a different version of "vality's bitter coast", use only one of them.
+vality's bitter coast addon.esp
+valitys_bitter_coast_addon.esp
+gmst vality's bitter coast addon.esp
+
+[CONFLICT]
+	use only one of these plugins.
+creatures_rp_standard.esp
+creatures_rp_purist.esp
+
+[CONFLICT]
+	already merged into or otherwise replicated by "vanilla friendly creatures and undead expansion".
+creatures_rp_purist.esp
+[ANY bloodmoon_creatures.esp
+	centurion bombers - ruins and tel uvirith.esp
+	centurion bombers - tel uvirith add-on.esp
+	creatures.esp
+	creatures great house dagoth patch.esp
+	creatures merged objects fix.esp
+	creatures 6th house patch.esp
+	creatures (lore).esp
+	creatures (semi).esp
+	d.o. - generic dremora replacer.esp
+	d.o. - playable dremora race.esp
+	d.o. - summonable dremora type 1.esp
+	d.o. - summonable dremora type 2.esp
+	d.o. - summonable dremora type 3.esp
+	d.o. - summonable dremora type 4.esp
+	d.o. - summonable dremora type 5.esp
+	d.o. - summonable dremora type 6.esp
+	d.o. - summonable dremora type 7.esp
+	d.o. - unique dremora replacer.esp
+	gr_draugrdiversity.esp
+	gr_draugrdiversityunarmed.esp
+	gr_draugrdiversitylite.esp
+	gr_draugrdiversityliteunarmed.esp
+	neo's unique creatures.esp
+	passive_healthy_wildlife ps edit.esp
+	sixth house obisidian weapon.esp
+	the undead.esm
+	the undead - tr addon.esp
+	undead arise from death 3.5.esp]
+
+[CONFLICT]
+	already merged into or otherwise replicated by "vanilla friendly wearables expansion".
+vanilla friendly wearables expansion.esm
+[ANY indoril spear.esp
+	properly clothed npcs.esp
+	sm_mt_armor_eng.esp
+	sm_m_blade.esp
+	ufr_v3dot2_norobe.esp
+	unique snowy crown.esp
+	psy_ironmeshimprove_uniques_*.esp
+	pherim_unique_necro_staff.esp
+	pherim_unique_hellfire_staff.esp
+	hunter's mark - a marksman mod.esp
+	rv dukes guard.esp
+	sload and slavers.esp
+	telvanni armors - slavers and wizards.esp
+	redoran war and sathil mercenary armor.esp
+	racer dust arms and armor.esp
+	telvanni dust adept.esp
+	redoran patrols - gnisis.esp
+	complete nordic iron.esp
+	heavy chitin.esp
+	dwemer scrap armor.esp
+	complete and revised studded leather v <ver>.esp
+	ceremonial adamantium armor.esp
+	concept art daedric helms.esp
+	rubbersweaponspack.esp
+	uar_ebonyhelms_v2.esp
+	uar_ebonysarano_v2.esp
+	guarskin_drum_replacer.esp
+	soldierbeltsfix.esp
+	unique rammekald.esp
+	unique black hand's dagger.esp
+	the bloodskal blade.esp
+	unique daedric sanctuary amulet.esp
+	danke_armors.esp
+	armoredrobes_v1.3.esp
+	unique jewelry redone.esp
+	robe of the drake's pride.esp
+	gndagger_replacer.esp
+	dagger of symmachus.esp
+	new bow of shadows*.esp
+	new veloth's judgement*.esp
+	new randagulf's fists.esp
+	rings_tweaked.esp
+	grendel oathblade of imago storm.esp
+	hircine's artifacts.esp
+	vanilla style unique eltonbrand.esp
+	unique dreugh cuirass - better morrowind armor.esp
+	unique dagoth dagger.esp
+	opussmaragd.esp
+	daedric bastard sword.esp
+	io - cultists.esp
+	crossbowsenhanced.esp
+	crossbowsenhanced+bolts.esp]
+
+[CONFLICT]
+	already merged into or otherwise replicated by "the vanilla quest tweaks rp choices consequences super mega package - ultimate edition".
+the_vanilla_quest_tweaks_rp_choices_consequences_super_mega_package_-_ultimate_edition.esp
+[ANY a cure for vampirism - skink's solution.esp
+	champion of clutter.esp
+	duel of honor - improve the chances.esp
+	fargoth in distress.esp
+	fort moonmoth fundraiser dinner.esp
+	harvest's end festival.esp
+	hentus needs pants overhaul.esp
+	hiring guards for the redoran stronghold - honorable solution.esp
+	immersive neloth reward.esp
+	libertarian magical services.esp
+	morrowind - immanuel kant edition.esp
+	oath to saint roris instead.esp
+	pacifist options - when it makes sense.esp
+	redoran founder's helm add-on - honor the ancestors.esp
+	teach nels llendo a lesson.esp
+	the corpse and the skooma pipe overhaul.esp
+	the frostmoth smugglers - properly rewarded.esp
+	thelas' pillows overhaul.esp
+	therana vs. trerayna.esp]
+
+[CONFLICT]
+	already merged into or otherwise replicated by "vivec - god the city".
+vivec - god the city.esp
+[ANY jobashabookshop.esp
+	vivec waistworks expansion.esp
+	rpnr_decorated_cantons.esp
+	rpnr_vivec_arena_planters.esp
+	rpnr_vivec_street_vendors.esp
+	rpnr_decorated_cantons.esp
+	rethinking vivec.esp
+	vivec_foreign_quarter_bridge_1.0 .esp
+	rpnr_library.esp
+	altar of the high fane.esp]
+
+[CONFLICT]
+	an esp replacer for "guild of vampire hunters" that is compatible with "vivec - god the city" is provided in the "vivec - god the city" archive.
+vivec - god the city.esp
+[ALL [ANY guild of vampire hunters.esp
+	luceedit - guild of vampire hunters.esp]
+	[NOT vivec - guild of vampire hunters [replacer].esp]]
+
+[CONFLICT]
+	an esp replacer for "racer dust arms and armor" that is compatible with "vivec - god the city" is provided in the "vivec - god the city" archive.
+vivec - god the city.esp
+[ALL racer dust arms and armor.esp
+	[NOT vivec - racer dust arms and armor [replacer].esp]]
+
+[CONFLICT]
+	an esp replacer for "adamantium armor naturalized" that is compatible with "vivec - god the city" is provided in the "vivec - god the city" archive.
+vivec - god the city.esp
+[ALL adamantium armor naturalized.esp
+	[NOT vivec - adamantium armor (naturalized) [replacer].esp]]
+
+[CONFLICT]
+	an esp replacer for "area effect arrows naturalized" that is compatible with "vivec - god the city" is provided in the "vivec - god the city" archive.
+vivec - god the city.esp
+[ALL adamantium armor naturalized.esp
+	[NOT vivec - area of effect (remiros + naturalized) [replacer].esp]]
+
+[CONFLICT]
+	an esp replacer for the "adamantium armor" official plugin that is compatible with "vivec - god the city" is provided in the "vivec - god the city" archive. (if using the merged version of "unofficial morrowind official plugins patched" switch to the modular version and use the compatible replacer)
+vivec - god the city.esp
+[ALL adamantium armor.esp
+	[NOT vivec - adamantium armor (umopp) [replacer].esp]]
+
+[CONFLICT]
+	an esp replacer for the "area effect arrows" official plugin that is compatible with "vivec - god the city" is provided in the "vivec - god the city" archive. (if using the merged version of "unofficial morrowind official plugins patched" switch to the modular version and use the compatible replacer)
+vivec - god the city.esp
+[ALL area effect arrows.esp
+	[NOT vivec - area of effect (remiros) [replacer].esp]]
+
+[NOTE]
+	f&f - companion is obsolete, use friends & frens instead	[new version]( https://www.nexusmods.com/morrowind/mods/52763 )
+f&f_companions.esp
+
+[CONFLICT]
+	use only one of these plugins.
+st_books_wares.esp
+st_books_wares oaab.esp
+st_books_wares_rotate.esp
+
+[CONFLICT]
+	use only one of these plugins:		'f&f_scarce.esp'- less friends and foes.		'f&f_moar.esp' - moar friends and foes.
+f&f_scarce.esp
+f&f_moar.esp
+
+[CONFLICT]
+	choose only one plugin:		'wares-moar.esp' - traders have double the amount of "wares" items.		'wares-even-moar.esp' - traders have triple the amount of "wares" items.
+wares-moar.esp
+wares-even-moar.esp
+
+[CONFLICT]
+	"friends and foes" includes and expands on "cm_partners", "outlaws", "starfire's npcs" and "mca". f&f_base.esm is an older version of friends and foes
+friends_and_foes_base.esm
+[ANY cm_partners_*.esp
+	outlaws.esp
+	outlawstr.esp
+	starfires*.esp
+	f&f_base.esm
+	mca*.esp]
+
+[CONFLICT]
+	"friends and frens" includes and expands on companions from "cm_partners""mca".
+friends & frens - base.esm
+[ANY cm_partners_*.esp
+	mca*.esp]
+
+[CONFLICT]
+	use only one of these plugins:		'wares_tr_npcs.esp'- npc use wares lists including wares-aware mods.		'wares_tr_npcs_purist.esp' - npc use wares lists but only td/oaab, respecting value and style.
+wares_tr_npcs.esp
+wares_tr_npcs_purist.esp
+
+[CONFLICT]
+	use only one of these plugins:		'wares_vv_npcs.esp'- npc use wares lists including wares-aware mods.		'wares_vv_npcs_purist.esp' - npc use wares lists but only td/oaab, respecting value and style.
+wares_vv_npcs.esp
+wares_vv_npcs_purist.esp
+
+[CONFLICT]
+	use only one of these plugins:		'wares_pc_npcs.esp'- npc use wares lists including wares-aware mods.		'wares_pc_npcs_purist.esp' - npc use wares lists but only td/oaab, respecting value and style.
+wares_pc_npcs.esp
+wares_pc_npcs_purist.esp
+
+[CONFLICT]
+	use only one of these plugins:		'wares_shotn_npcs.esp'- npc use wares lists including wares-aware mods.		'wares_shotn_npcs_purist.esp' - npc use wares lists but only td/oaab, respecting value and style.
+wares_shotn_npcs.esp
+wares_shotn_npcs_purist.esp
+
+[CONFLICT]
+	use only one of these plugins:		'oaab for wares.esp'- old, use wares_lists_oaab.esp.		'wares_lists_oaab.esp' - latest version.
+oaab for wares.esp
+wares_lists_oaab.esp
+
+[CONFLICT]
+	use only one of these plugins:		'f&f_companions.esp'- old and unsupported, use friends and frens.esp.		'friends & frens - base.esm' - latest version.
+f&f_companions.esp
+friends and frens.esp
+
+[CONFLICT]
+	use only one of these plugins:		'hold_it*.esp'- old and unsupported, use wares_lists_hold.esp.		'wares_lists_hold.esp' - latest version.
+hold_it*.esp
+wares_lists_hold.esp
+
+[PATCH]
+	a patch for "wares ultimate" and "nod - npc outfit diversity" is provided in the "wares ultimate" archive.
+nod - wares.esp
+[ALL [ANY wares_vv_npcs.esp
+	wares_vv_npcs_purist.esp]
+	nod - core.esm]
+
+[CONFLICT]
+	"wares-base - expansion - cyr_main.esp" is outdated. use pc addons from "wares ultimate" instead.
+wares-base - expansion - cyr_main.esp
+[ANY wares_pc_*.esp]
+
+[CONFLICT]
+	"wares-base - expansion - sky_main.esp" is outdated. use shotn addons from "wares ultimate" instead.
+wares-base - expansion - sky_main.esp
+[ANY wares_shotn_*.esp]
+
+[CONFLICT]
+	"wares-base - expansion - tr_mainland.esp" is outdated. use tr addons from "wares ultimate" instead.
+wares-base - expansion - tr_mainland.esp
+[ANY wares_tr_*.esp]
+
+[CONFLICT]
+	use only one of these plugins.
+wealthwithinmeasure_v1.25.esp
+wealthwithinmeasure_tr_v1.25.esp
+
+[PATCH]
+	a patch for "the wrath of god - vivec boss fight overhaul" and "concept art palace" is provided on the "the wrath of god - vivec boss fight overhaul" mod page.	[patch download]( https://www.nexusmods.com/morrowind/mods/53079 )
+the wrath of god - cap patch.esp
+[ALL the wrath of god.esp
+	concept art palace.esp
+	cap dome.esp]
+
+[CONFLICT]
+	"vivec's muatra" by randolph carter is already incorporated into "the wrath of god - vivec boss fight overhaul" by ffann1998.
+the wrath of god.esp
+rc_vivecsmuatra.esp
+
+[CONFLICT]
+	"divine vivec - floating vivec" by offworlddevil is already incorporated into "the wrath of god - vivec boss fight overhaul" by ffann1998.
+the wrath of god.esp
+floating vivec.esp
+
+[CONFLICT]
+	these plugins overhaul the fight against vivec. use only one of them.
+the wrath of god.esp
+[ANY versusvivec.esp
+	tougher vivec.esp]
+
+[CONFLICT]
+	incompatible. use only one of these plugins.
+the wrath of god.esp
+fnk_sv shevivec.esp
+
+[REQUIRES]
+	
+yandl - base.esp
+patch for purists.esm
+
+[CONFLICT]
+	use either only the merged plugin or any combination of the modular plugins.
+yandl - merged.esp
+[ANY yandl - base.esp
+	yandl - blightedanimalsretextured.esp
+	yandl - bloodmoon rebalance.esp
+	yandl - tribunal rebalance.esp
+	yandl - ttooth ecology.esp
+	yandl - ttooth ecology - tr patch.esp
+	yandl - ttooth ecology - bmr patch.esp]
+
+[CONFLICT]
+	use only one of these plugins:  		'veg-totw.esp' - core mode. 		'veg-totw-books.esp' - adds additional books, journals, and notes.  		'veg-totw-msrestored.esp' - restores mephala's skill with its fortify attack effect.  		'veg-totw-books-msrestored.esp' - adds additional books, and restores mephala's skill.
+veg-totw.esp
+veg-totw-books.esp
+veg-totw-msrestored.esp
+veg-totw-books-msrestored.esp
+
+[CONFLICT]
+	use only one of these plugins.
+the talos cult conspiracy.esp
+talos cult revised.esp
+
