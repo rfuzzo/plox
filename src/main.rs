@@ -5,7 +5,7 @@ use clap::{Parser, Subcommand};
 use env_logger::Env;
 use log::{error, info};
 
-use plox_lib::*;
+use plox::*;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]

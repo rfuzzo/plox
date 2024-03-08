@@ -3,7 +3,7 @@ mod unit_tests {
     use core::panic;
     use std::io::Cursor;
 
-    use plox_lib::{expressions::Expression, rules::TWarningRule, *};
+    use plox::{expressions::Expression, rules::TWarningRule, *};
 
     fn init() {
         let env = env_logger::Env::default()

@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod unit_tests {
 
-    use plox_lib::{
+    use plox::{
         rules::{EOrderRule, Order},
         sorter::{self, Sorter},
         wild_contains, *,

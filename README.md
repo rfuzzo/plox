@@ -1,4 +1,4 @@
-# PLOX - Plugin Load Order eXpert (PL0X)
+# PLOX - Plugin Load Order eXpert
 
 > 🚧 Work in progress
 
@@ -37,7 +37,7 @@ The rules are hosted in their own repository:
 2. Place `plox.exe` next to the game's exe
 3. Open a terminal window and run `plox.exe` with a command
 
-```cmd
+```txt
 Usage: plox.exe [OPTIONS] <COMMAND>
 
 Commands:
@@ -58,7 +58,7 @@ Options:
 
 Lists the current mod load order.
 
-```cmd
+```txt
 Usage: plox.exe list [OPTIONS]
 
 Options:
@@ -70,7 +70,7 @@ Options:
 
 Sorts the current mod load order according to specified rules
 
-```cmd
+```txt
 Usage: plox.exe sort [OPTIONS]
 
 Options:
