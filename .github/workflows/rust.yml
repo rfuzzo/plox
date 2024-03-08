@@ -8,14 +8,8 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  ci:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
-      fail-fast: true
-      matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+  ci-win:
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v3
@@ -28,7 +22,41 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: plox-${{ matrix.os }}
+          name: plox-win
           path: target/release/plox.exe
+
+  ci-macos:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build
+        run: cargo build --release --verbose
+      - name: Run tests
+        run: cargo test --release --verbose
+
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: plox-macos
+          path: target/release/plox
+
+  ci-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build
+        run: cargo build --release --verbose
+      - name: Run tests
+        run: cargo test --release --verbose
+
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: plox-linux
+          path: target/release/plox
 
       
