@@ -3,6 +3,7 @@ members = ["cli", "gui", "lib"]
 resolver = "2"
 
 [workspace.dependencies]
+clap = { version = "4.1", features = ["derive"] }
 toposort-scc = "0.5"
 byteorder = "1.5"
 rust-ini = "0.20"

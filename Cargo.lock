@@ -1753,20 +1753,12 @@ checksum = "d231b230927b5e4ad203db57bbcbee2802f6bce620b1e4a9024a07d94e2907ec"
 name = "plox"
 version = "0.1.0"
 dependencies = [
- "byteorder",
  "clap",
  "env_logger",
  "log",
- "openmw-cfg",
  "plox_lib",
  "pretty_assertions",
  "rand",
- "regex",
- "reqwest",
- "rust-ini 0.20.0",
- "serde",
- "serde_json",
- "toposort-scc",
 ]
 
 [[package]]
@@ -1777,6 +1769,7 @@ dependencies = [
  "egui",
  "env_logger",
  "log",
+ "plox_lib",
  "serde",
  "wasm-bindgen-futures",
 ]

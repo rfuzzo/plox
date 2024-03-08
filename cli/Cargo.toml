@@ -10,19 +10,9 @@ edition = "2021"
 [dependencies]
 plox_lib = { path = "../lib" }
 
-
-clap = { version = "4.1", features = ["derive"] }
-
-reqwest = { workspace = true }
-serde = { workspace = true }
-serde_json = { workspace = true }
-toposort-scc = { workspace = true }
-byteorder = { workspace = true }
-rust-ini = { workspace = true }
 log = { workspace = true }
 env_logger = { workspace = true }
-regex = { workspace = true }
-openmw-cfg = { workspace = true }   # move to feature flag
+clap = { workspace = true }
 
 
 # standard crate data is left out
