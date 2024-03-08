@@ -1,3 +1,8 @@
+[Conflict] ; ( https://www.nexusmods.com/morrowind/mods/49075 ) (yohannes)
+	"OAAB Golden Reeds" is already incorporated into "OAAB Grazelands".
+OAAB_GoldenReeds.esp
+OAAB_Grazelands.esp
+
 [conflict]
 	you should use v0.3 or better of yacoby's "encumbrance bar" with "rage indicator", otherwise the bars will conflict.
 	( ref: readme - rage indicator.esp)

@@ -230,11 +230,90 @@ mod unit_tests {
     }
 
     #[test]
+    fn test_order_case() {
+        {
+            let mods = vec![
+                "a.esp".to_string(),
+                "b.ESP".to_string(),
+                "c.esp".to_string(),
+            ];
+            let order: Order = Order::new(vec!["b.esp".to_string(), "a.esp".to_string()]);
+            let order_rules: Vec<EOrderRule> = vec![order.into()];
+
+            match new_stable_sorter().topo_sort(&mods, &order_rules) {
+                Ok(result) => {
+                    // check for A,B,C -> B,A,C
+                    assert_eq!(
+                        vec![
+                            "b.ESP".to_string(),
+                            "a.esp".to_string(),
+                            "c.esp".to_string()
+                        ],
+                        result
+                    );
+                }
+                Err(e) => panic!("Error: {}", e),
+            }
+        }
+    }
+
+    #[test]
+    fn test_order() {
+        {
+            let mods = get_mods();
+            let order: Order = Order::new(vec![D.to_string(), A.to_string()]);
+            let order_rules: Vec<EOrderRule> = vec![order.into()];
+
+            match new_stable_sorter().topo_sort(&mods, &order_rules) {
+                Ok(result) => {
+                    // check for A,B,C,D,E,F -> D,A,B,C,E,F
+                    assert_eq!(
+                        vec![
+                            D.to_string(),
+                            A.to_string(),
+                            B.to_string(),
+                            C.to_string(),
+                            E.to_string(),
+                            F.to_string(),
+                        ],
+                        result
+                    );
+                }
+                Err(e) => panic!("Error: {}", e),
+            }
+        }
+
+        {
+            let mods = get_mods();
+            let order: Order = Order::new(vec![D.to_string(), A.to_string()]);
+            let order_rules: Vec<EOrderRule> = vec![order.into()];
+
+            match new_stable_sorter().topo_sort(&mods, &order_rules) {
+                Ok(result) => {
+                    // check for A,B,C,D,E,F -> A,B,C,E,F,D
+                    assert_ne!(
+                        vec![
+                            A.to_string(),
+                            D.to_string(),
+                            B.to_string(),
+                            C.to_string(),
+                            E.to_string(),
+                            F.to_string(),
+                        ],
+                        result
+                    );
+                }
+                Err(e) => panic!("Error: {}", e),
+            }
+        }
+    }
+
+    #[test]
     fn test_nearend() {
         // check one gets sorted at the start
         {
-            let nearend = NearEnd::new(vec![D.to_string()]);
             let mods = get_mods();
+            let nearend = NearEnd::new(vec![D.to_string()]);
             let order_rules: Vec<EOrderRule> = vec![EOrderRule::NearEnd(nearend)];
 
             match new_stable_sorter().topo_sort(&mods, &order_rules) {

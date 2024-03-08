@@ -92,7 +92,7 @@ mod integration_tests {
         parser
             .init_from_file("./tests/plox/rules_conflict.txt")
             .expect("failed rule parsing");
-        assert_eq!(5, parser.rules.len());
+        assert_eq!(6, parser.rules.len());
     }
 
     #[test]

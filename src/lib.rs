@@ -14,7 +14,7 @@ pub mod rules;
 pub mod sorter;
 
 use ini::Ini;
-use log::{error, info, warn};
+use log::{debug, error, info, warn};
 use openmw_cfg::config_path;
 use reqwest::header::LAST_MODIFIED;
 use rules::*;
@@ -99,26 +99,30 @@ pub fn sort(
         warn!("No rules found to evaluate");
     } else {
         info!("Evaluating mod list...\n");
+        debug!("{:?}", &mods);
+
+        let mods_cpy: Vec<_> = mods.iter().map(|f| f.to_lowercase()).collect();
         for rule in &mut parser.rules {
-            if rule.eval(&mods) {
+            if rule.eval(&mods_cpy) {
                 match rule {
                     EWarningRule::Note(n) => {
                         info!("[NOTE]\n{}", n.get_comment());
-                        info!("[{}]\n", n.plugins.join(";"));
+                        debug!("Reference: [{}]", n.plugins.join(";"));
                     }
                     EWarningRule::Conflict(c) => {
                         warn!("[CONFLICT]\n{}", c.get_comment());
-                        info!("[{}]\n", c.plugins.join(";"));
+                        debug!("Reference: [{}]", c.plugins.join(";"));
                     }
                     EWarningRule::Requires(r) => {
-                        warn!("[REQUIRES]\n{}", r.get_comment());
-                        info!("[{}]\n", r.plugins.join(";"));
+                        error!("[REQUIRES]\n{}", r.get_comment());
+                        debug!("Reference: [{}]", r.plugins.join(";"));
                     }
                     EWarningRule::Patch(p) => {
                         warn!("[Patch]\n{}", p.get_comment());
-                        info!("[{}]\n", p.plugins.join(";"));
+                        debug!("Reference: [{}]", p.plugins.join(";"));
                     }
                 }
+                println!();
             }
         }
     }
@@ -138,7 +142,16 @@ pub fn sort(
             Ok(result) => {
                 if dry_run {
                     info!("Dry run...");
-                    info!("New:\n{:?}", result);
+
+                    debug!("Old:\n{:?}", &mods);
+                    debug!("New:\n{:?}", result);
+
+                    if mods.eq(&result) {
+                        info!("Mods are in correct order, no sorting needed.");
+                    } else {
+                        info!("New order:\n{:?}", result);
+                    }
+
                     ExitCode::SUCCESS
                 } else {
                     info!("Current:\n{:?}", &mods);
@@ -733,6 +746,7 @@ where
     result
 }
 
+/// Checks if the list contains the str
 pub fn wild_contains(list: &[String], str: &String) -> Option<Vec<String>> {
     if str.contains('*') || str.contains('?') || str.contains("<ver>") {
         let mut results = vec![];

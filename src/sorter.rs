@@ -37,21 +37,16 @@ impl Sorter {
         &self,
         n: usize,
         edges: &[(usize, usize)],
-        index_dict: &HashMap<&str, usize>,
-        index_dict_rev: &HashMap<usize, &str>,
+        index_dict: &HashMap<String, usize>,
+        index_dict_rev: &HashMap<usize, String>,
         result: &mut Vec<String>,
         last_index: &mut usize,
     ) -> bool {
         match self.sort_type {
             ESortType::Unstable => panic!("not supported"),
-            ESortType::StableOpt => Self::stable_topo_sort_opt2(
-                n,
-                edges,
-                index_dict,
-                index_dict_rev,
-                result,
-                last_index,
-            ),
+            ESortType::StableOpt => {
+                Self::stable_topo_sort_opt2(n, edges, index_dict_rev, result, last_index)
+            }
             ESortType::StableFull => {
                 Self::stable_topo_sort_full(n, edges, index_dict, result, last_index)
             }
@@ -61,7 +56,7 @@ impl Sorter {
     pub fn stable_topo_sort_full(
         n: usize,
         edges: &[(usize, usize)],
-        index_dict: &HashMap<&str, usize>,
+        index_dict: &HashMap<String, usize>,
         result: &mut Vec<String>,
         last_index: &mut usize,
     ) -> bool {
@@ -86,8 +81,7 @@ impl Sorter {
     pub fn stable_topo_sort_opt2(
         _n: usize,
         edges: &[(usize, usize)],
-        _index_dict: &HashMap<&str, usize>,
-        index_dict_rev: &HashMap<usize, &str>,
+        index_dict_rev: &HashMap<usize, String>,
         result: &mut Vec<String>,
         last_index: &mut usize,
     ) -> bool {
@@ -97,8 +91,8 @@ impl Sorter {
             let i = edge.0;
             let j = edge.1;
 
-            let x = index_dict_rev[&i];
-            let y = index_dict_rev[&j];
+            let x = &index_dict_rev[&i];
+            let y = &index_dict_rev[&j];
 
             let idx_of_x = result.iter().position(|f| f == x).unwrap();
             let idx_of_y = result.iter().position(|f| f == y).unwrap();
@@ -118,82 +112,50 @@ impl Sorter {
         b
     }
 
-    // pub fn stable_topo_sort_opt(
-    //     _n: usize,
-    //     edges: &[(usize, usize)],
-    //     _index_dict: &HashMap<&str, usize>,
-    //     index_dict_rev: &HashMap<usize, &str>,
-    //     result: &mut Vec<String>,
-    //     last_index: &mut usize,
-    // ) -> bool {
-    //     // optimize B: only check edges
-    //     //let mut b = false;
-    //     for (idx, edge) in edges.iter().enumerate() {
-    //         let i = edge.0;
-    //         let j = edge.1;
-
-    //         let x = index_dict_rev[&i];
-    //         let y = index_dict_rev[&j];
-
-    //         let idx_of_x = result.iter().position(|f| f == x).unwrap();
-    //         let idx_of_y = result.iter().position(|f| f == y).unwrap();
-
-    //         // if i not before j x should be before y
-    //         if idx_of_x > idx_of_y {
-    //             let t = result[idx_of_x].to_owned();
-    //             result.remove(idx_of_x);
-    //             result.insert(idx_of_y, t);
-
-    //             *last_index = idx;
-
-    //             //b = true;
-    //             return true;
-    //         }
-    //     }
-
-    //     //b
-    //     false
-    // }
-
+    /// Sorts the input mods topologically. Mods input is case sensitive!
+    ///
+    /// # Panics
+    ///
+    /// Panics if .
+    ///
+    /// # Errors
+    ///
+    /// This function will return an error if any parsing fails
     pub fn topo_sort(
         &mut self,
-        mods: &[String],
+        mods_cased: &[String],
         order_rules: &[EOrderRule],
     ) -> Result<Vec<String>, &'static str> {
-        let mut g = IndexGraph::with_vertices(mods.len());
-
-        let mut index_dict: HashMap<&str, usize> = HashMap::new();
-        for (i, m) in mods.iter().enumerate() {
-            index_dict.insert(m, i);
-        }
-        // reverse
-        let mut index_dict_rev: HashMap<usize, &str> = HashMap::default();
-        for (k, v) in &index_dict {
-            index_dict_rev.insert(*v, k);
-        }
-
+        // early out
         if order_rules.is_empty() {
             log::info!("No order rules found, nothing to sort");
             return Err("No order rules found");
         }
 
-        let order = get_ordering_from_order_rules(order_rules);
+        // build hashmaps for lookup
+        // first map lowercase to cased, this is kinda dumb, but our input is small enough that I don't care about the memory hit
+        let mut mods: Vec<String> = vec![];
+
+        let mut index_dict: HashMap<String, usize> = HashMap::new();
+        let mut index_dict_rev: HashMap<usize, String> = HashMap::default();
+        let mut mod_map: HashMap<usize, String> = HashMap::default();
+        for (i, m) in mods_cased.iter().enumerate() {
+            let lower_case = m.to_lowercase();
+
+            index_dict.insert(lower_case.clone(), i);
+            index_dict_rev.insert(i, lower_case.clone());
+
+            mod_map.insert(i, m.to_owned());
+            mods.push(lower_case.to_owned());
+        }
 
         // add edges
+        let mut g = IndexGraph::with_vertices(mods.len());
+        let order_pairs = get_ordering_from_order_rules(order_rules);
         let mut edges: Vec<(usize, usize)> = vec![];
-        for (a, b) in order {
-            // do not check for wildcards
-            // if mods.contains(a) && mods.contains(b) {
-            //     let idx_a = index_dict[a.as_str()];
-            //     let idx_b = index_dict[b.as_str()];
-            //     if !edges.contains(&(idx_a, idx_b)) {
-            //         edges.push((idx_a, idx_b));
-            //         g.add_edge(idx_a, idx_b);
-            //     }
-            // }
-
-            if let Some(results_for_a) = wild_contains(mods, &a) {
-                if let Some(results_for_b) = wild_contains(mods, &b) {
+        for (a, b) in order_pairs {
+            if let Some(results_for_a) = wild_contains(&mods, &a) {
+                if let Some(results_for_b) = wild_contains(&mods, &b) {
                     // foreach esm i, add an edge to all esps j
                     for i in &results_for_a {
                         for j in &results_for_b {
@@ -228,7 +190,7 @@ impl Sorter {
                     error!("cycles:");
                     for e in er {
                         error!("\t{}: {}", e, index_dict_rev[&e]);
-                        res.push(index_dict_rev[&e]);
+                        res.push(index_dict_rev[&e].clone());
                     }
                 }
 
@@ -239,7 +201,12 @@ impl Sorter {
                 return Err("Graph contains a cycle");
             }
 
-            return Ok(sort.iter().map(|f| mods[*f].to_owned()).collect::<Vec<_>>());
+            // map sorted index back to mods
+            let mut result = vec![];
+            for idx in sort {
+                result.push(mod_map[&idx].to_owned());
+            }
+            return Ok(result);
         }
 
         // sort
@@ -296,7 +263,13 @@ impl Sorter {
                 &mut index,
             ) {
                 // Return the sorted vector
-                return Ok(mods_copy);
+                // map sorted index back to mods
+                let mut result = vec![];
+                for lower_case_name in mods_copy {
+                    let idx = index_dict[&lower_case_name.clone()];
+                    result.push(mod_map[&idx].to_owned());
+                }
+                return Ok(result);
             }
             log::debug!("{}, index {}", i, index);
         }

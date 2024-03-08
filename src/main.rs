@@ -69,7 +69,18 @@ enum Command {
 }
 
 fn main() -> ExitCode {
-    let cli = Cli::parse();
+    let cli = match Cli::try_parse() {
+        Ok(cli) => cli,
+        Err(e) => {
+            eprintln!("{}", e);
+
+            println!("\nPress any button to continue");
+            let mut buffer = String::new();
+            let _ = std::io::stdin().read_line(&mut buffer);
+
+            return ExitCode::FAILURE;
+        }
+    };
 
     // logger
     let mut level = ELogLevel::Info;
@@ -85,17 +96,23 @@ fn main() -> ExitCode {
 
     // detect game
     let game = if let Some(game) = cli.game {
+        info!("Set game to: {:?}", game);
         game
     } else if is_current_directory_name("Cyberpunk 2077") {
+        info!("Detected game: {:?}", ESupportedGame::Cyberpunk);
         ESupportedGame::Cyberpunk
     } else if is_current_directory_name("Morrowind") {
+        info!("Detected game: {:?}", ESupportedGame::Morrowind);
         ESupportedGame::Morrowind
     } else {
         error!("No game specified or detected");
+        if !cli.non_interactive {
+            println!("Press any button to continue");
+            let mut buffer = String::new();
+            let _ = std::io::stdin().read_line(&mut buffer);
+        }
         return ExitCode::FAILURE;
     };
-
-    info!("Detected game: {:?}", game);
 
     let code = match &cli.command {
         Command::List { root } => list_mods(root, game),
@@ -119,7 +136,7 @@ fn main() -> ExitCode {
     };
 
     if !cli.non_interactive {
-        println!("Press any button to continue");
+        println!("\nPress any button to continue");
         let mut buffer = String::new();
         let _ = std::io::stdin().read_line(&mut buffer);
     }
