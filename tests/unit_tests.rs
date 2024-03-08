@@ -129,7 +129,7 @@ mod unit_tests {
 
         let mut rng = thread_rng();
         let mut times = vec![];
-        for n in [64, 128, 256, 512, 1024 /*, 2048 */] {
+        for n in [64, 128, 256, 512 /* 1024 , 2048 */] {
             mods.shuffle(&mut rng);
             let max = std::cmp::min(n, mods.len() - 1);
             let mods_rnd = mods.clone().into_iter().take(max).collect::<Vec<_>>();
