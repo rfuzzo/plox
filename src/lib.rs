@@ -95,35 +95,34 @@ pub fn sort(
     }
 
     // Print Warnings and Notes
-    if parser.rules.is_empty() {
+    if parser.warning_rules.is_empty() {
         warn!("No rules found to evaluate");
     } else {
         info!("Evaluating mod list...\n");
         debug!("{:?}", &mods);
 
-        let mods_cpy: Vec<_> = mods.iter().map(|f| f.to_lowercase()).collect();
-        for rule in &mut parser.rules {
-            if rule.eval(&mods_cpy) {
-                match rule {
-                    EWarningRule::Note(n) => {
-                        info!("[NOTE]\n{}", n.get_comment());
-                        debug!("Reference: [{}]", n.plugins.join(";"));
-                    }
-                    EWarningRule::Conflict(c) => {
-                        warn!("[CONFLICT]\n{}", c.get_comment());
-                        debug!("Reference: [{}]", c.plugins.join(";"));
-                    }
-                    EWarningRule::Requires(r) => {
-                        error!("[REQUIRES]\n{}", r.get_comment());
-                        debug!("Reference: [{}]", r.plugins.join(";"));
-                    }
-                    EWarningRule::Patch(p) => {
-                        warn!("[Patch]\n{}", p.get_comment());
-                        debug!("Reference: [{}]", p.plugins.join(";"));
-                    }
+        parser.evaluate_plugins(&mods);
+        for warning in parser.warnings {
+            let rule = warning.rule;
+            match rule {
+                EWarningRule::Note(n) => {
+                    info!("[NOTE]\n{}", n.get_comment());
+                    debug!("Reference: [{}]", n.plugins.join(";"));
                 }
-                println!();
+                EWarningRule::Conflict(c) => {
+                    warn!("[CONFLICT]\n{}", c.get_comment());
+                    debug!("Reference: [{}]", c.plugins.join(";"));
+                }
+                EWarningRule::Requires(r) => {
+                    error!("[REQUIRES]\n{}", r.get_comment());
+                    debug!("Reference: [{}]", r.plugins.join(";"));
+                }
+                EWarningRule::Patch(p) => {
+                    warn!("[Patch]\n{}", p.get_comment());
+                    debug!("Reference: [{}]", p.plugins.join(";"));
+                }
             }
+            println!();
         }
     }
 
@@ -199,7 +198,7 @@ pub fn verify(game: ESupportedGame, rules_path: &Option<String>) -> ExitCode {
         return ExitCode::FAILURE;
     }
 
-    if parser.rules.is_empty() {
+    if parser.warning_rules.is_empty() {
         warn!("No rules found to evaluate");
         return ExitCode::FAILURE;
     }

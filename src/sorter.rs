@@ -33,85 +33,6 @@ impl Sorter {
         }
     }
 
-    pub fn stable_topo_sort_inner(
-        &self,
-        n: usize,
-        edges: &[(usize, usize)],
-        index_dict: &HashMap<String, usize>,
-        index_dict_rev: &HashMap<usize, String>,
-        result: &mut Vec<String>,
-        last_index: &mut usize,
-    ) -> bool {
-        match self.sort_type {
-            ESortType::Unstable => panic!("not supported"),
-            ESortType::StableOpt => {
-                Self::stable_topo_sort_opt2(n, edges, index_dict_rev, result, last_index)
-            }
-            ESortType::StableFull => {
-                Self::stable_topo_sort_full(n, edges, index_dict, result, last_index)
-            }
-        }
-    }
-
-    pub fn stable_topo_sort_full(
-        n: usize,
-        edges: &[(usize, usize)],
-        index_dict: &HashMap<String, usize>,
-        result: &mut Vec<String>,
-        last_index: &mut usize,
-    ) -> bool {
-        for i in 0..n {
-            for j in 0..i {
-                let x = index_dict[result[i].as_str()];
-                let y = index_dict[result[j].as_str()];
-                if edges.contains(&(x, y)) {
-                    let t = result[i].to_owned();
-                    result.remove(i);
-                    result.insert(j, t);
-
-                    *last_index = j;
-
-                    return true;
-                }
-            }
-        }
-        false
-    }
-
-    pub fn stable_topo_sort_opt2(
-        _n: usize,
-        edges: &[(usize, usize)],
-        index_dict_rev: &HashMap<usize, String>,
-        result: &mut Vec<String>,
-        last_index: &mut usize,
-    ) -> bool {
-        // optimize B: only check edges
-        let mut b = false;
-        for (idx, edge) in edges.iter().enumerate() {
-            let i = edge.0;
-            let j = edge.1;
-
-            let x = &index_dict_rev[&i];
-            let y = &index_dict_rev[&j];
-
-            let idx_of_x = result.iter().position(|f| f == x).unwrap();
-            let idx_of_y = result.iter().position(|f| f == y).unwrap();
-
-            // if i not before j x should be before y
-            if idx_of_x > idx_of_y {
-                let t = result[idx_of_x].to_owned();
-                result.remove(idx_of_x);
-                result.insert(idx_of_y, t);
-
-                *last_index = idx;
-
-                b = true;
-            }
-        }
-
-        b
-    }
-
     /// Sorts the input mods topologically. Mods input is case sensitive!
     ///
     /// # Panics
@@ -276,5 +197,84 @@ impl Sorter {
 
         log::error!("Out of iterations");
         Err("Out of iterations")
+    }
+
+    pub fn stable_topo_sort_inner(
+        &self,
+        n: usize,
+        edges: &[(usize, usize)],
+        index_dict: &HashMap<String, usize>,
+        index_dict_rev: &HashMap<usize, String>,
+        result: &mut Vec<String>,
+        last_index: &mut usize,
+    ) -> bool {
+        match self.sort_type {
+            ESortType::Unstable => panic!("not supported"),
+            ESortType::StableOpt => {
+                Self::stable_topo_sort_opt2(n, edges, index_dict_rev, result, last_index)
+            }
+            ESortType::StableFull => {
+                Self::stable_topo_sort_full(n, edges, index_dict, result, last_index)
+            }
+        }
+    }
+
+    pub fn stable_topo_sort_full(
+        n: usize,
+        edges: &[(usize, usize)],
+        index_dict: &HashMap<String, usize>,
+        result: &mut Vec<String>,
+        last_index: &mut usize,
+    ) -> bool {
+        for i in 0..n {
+            for j in 0..i {
+                let x = index_dict[result[i].as_str()];
+                let y = index_dict[result[j].as_str()];
+                if edges.contains(&(x, y)) {
+                    let t = result[i].to_owned();
+                    result.remove(i);
+                    result.insert(j, t);
+
+                    *last_index = j;
+
+                    return true;
+                }
+            }
+        }
+        false
+    }
+
+    pub fn stable_topo_sort_opt2(
+        _n: usize,
+        edges: &[(usize, usize)],
+        index_dict_rev: &HashMap<usize, String>,
+        result: &mut Vec<String>,
+        last_index: &mut usize,
+    ) -> bool {
+        // optimize B: only check edges
+        let mut b = false;
+        for (idx, edge) in edges.iter().enumerate() {
+            let i = edge.0;
+            let j = edge.1;
+
+            let x = &index_dict_rev[&i];
+            let y = &index_dict_rev[&j];
+
+            let idx_of_x = result.iter().position(|f| f == x).unwrap();
+            let idx_of_y = result.iter().position(|f| f == y).unwrap();
+
+            // if i not before j x should be before y
+            if idx_of_x > idx_of_y {
+                let t = result[idx_of_x].to_owned();
+                result.remove(idx_of_x);
+                result.insert(idx_of_y, t);
+
+                *last_index = idx;
+
+                b = true;
+            }
+        }
+
+        b
     }
 }

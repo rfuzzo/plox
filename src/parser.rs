@@ -11,14 +11,6 @@ use log::*;
 use crate::{expressions::*, TParser};
 use crate::{rules::*, ESupportedGame};
 
-pub struct Parser {
-    pub game: ESupportedGame,
-    pub ext: Vec<String>,
-
-    pub order_rules: Vec<EOrderRule>,
-    pub rules: Vec<EWarningRule>,
-}
-
 pub fn get_parser(game: ESupportedGame) -> Parser {
     match game {
         ESupportedGame::Morrowind => new_tes3_parser(),
@@ -57,14 +49,42 @@ impl ChunkWrapper {
     }
 }
 
+#[derive(Debug)]
+pub struct Warning {
+    pub rule: EWarningRule, //TODO consider using a reference here
+}
+
+pub struct Parser {
+    pub game: ESupportedGame,
+    pub ext: Vec<String>,
+
+    pub order_rules: Vec<EOrderRule>,
+    pub warning_rules: Vec<EWarningRule>,
+    pub warnings: Vec<Warning>,
+}
+
 impl Parser {
     pub fn new(ext: Vec<String>, game: ESupportedGame) -> Self {
         Self {
             ext,
             game,
-            rules: vec![],
+            warning_rules: vec![],
             order_rules: vec![],
+            warnings: vec![],
         }
+    }
+
+    pub fn evaluate_plugins(&mut self, plugins: &[String]) {
+        let mods_cpy: Vec<_> = plugins.iter().map(|f| f.to_lowercase()).collect();
+
+        let mut result = vec![];
+        for rule in &mut self.warning_rules {
+            if rule.eval(&mods_cpy) {
+                result.push(Warning { rule: rule.clone() });
+            }
+        }
+
+        self.warnings = result;
     }
 
     pub fn init_from_file<P>(&mut self, path: P) -> Result<()>
@@ -89,7 +109,7 @@ impl Parser {
                     self.order_rules.push(o);
                 }
                 ERule::EWarningRule(w) => {
-                    self.rules.push(w);
+                    self.warning_rules.push(w);
                 }
             }
         }
@@ -106,7 +126,7 @@ impl Parser {
     where
         P: AsRef<Path>,
     {
-        self.rules.clear();
+        self.warning_rules.clear();
         self.order_rules.clear();
 
         let rules_files = match self.game {
@@ -125,7 +145,10 @@ impl Parser {
             "Parser initialized with {} order rules",
             self.order_rules.len()
         );
-        info!("Parser initialized with {} warning rules", self.rules.len());
+        info!(
+            "Parser initialized with {} warning rules",
+            self.warning_rules.len()
+        );
         Ok(())
     }
 
@@ -360,7 +383,7 @@ impl Parser {
 
         b
     }
-    fn ends_with_vec2_whitespace_or_newline(&self, current_buffer: &str) -> bool {
+    fn ends_with_vec_whitespace_or_newline(&self, current_buffer: &str) -> bool {
         let mut b = false;
         for ext in &self.ext {
             if current_buffer.ends_with(format!("{} ", ext).as_str())
@@ -481,7 +504,7 @@ impl Parser {
                 // if parsing tokens, check when ".archive" was parsed into the buffer and end
                 current_buffer += &(b as char).to_string();
 
-                if self.ends_with_vec2_whitespace_or_newline(&current_buffer) {
+                if self.ends_with_vec_whitespace_or_newline(&current_buffer) {
                     is_token = false;
                     chunks.push((current_buffer[..current_buffer.len() - 1].to_owned(), false));
                     current_buffer.clear();

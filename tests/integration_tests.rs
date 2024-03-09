@@ -73,7 +73,7 @@ mod integration_tests {
             parser
                 .init_from_file("./tests/plox/rules_note_passing.txt")
                 .expect("failed rule parsing");
-            assert_eq!(11, parser.rules.len());
+            assert_eq!(11, parser.warning_rules.len());
         }
 
         {
@@ -81,7 +81,7 @@ mod integration_tests {
             parser
                 .init_from_file("./tests/plox/rules_note_failing.txt")
                 .expect("failed rule parsing");
-            assert_eq!(0, parser.rules.len());
+            assert_eq!(0, parser.warning_rules.len());
         }
     }
 
@@ -93,7 +93,7 @@ mod integration_tests {
         parser
             .init_from_file("./tests/plox/rules_conflict.txt")
             .expect("failed rule parsing");
-        assert_eq!(6, parser.rules.len());
+        assert_eq!(6, parser.warning_rules.len());
     }
 
     #[test]
@@ -104,7 +104,7 @@ mod integration_tests {
         parser
             .init_from_file("./tests/plox/rules_requires.txt")
             .expect("failed rule parsing");
-        assert_eq!(1, parser.rules.len());
+        assert_eq!(1, parser.warning_rules.len());
     }
 
     #[test]
@@ -117,7 +117,8 @@ mod integration_tests {
 
             {
                 let file = std::fs::File::create("base_rules.json").expect("file create failed");
-                serde_json::to_writer_pretty(file, &parser.rules).expect("serialize failed");
+                serde_json::to_writer_pretty(file, &parser.warning_rules)
+                    .expect("serialize failed");
             }
 
             {
@@ -133,7 +134,8 @@ mod integration_tests {
 
             {
                 let file = std::fs::File::create("user_rules.json").expect("file create failed");
-                serde_json::to_writer_pretty(file, &parser.rules).expect("serialize failed");
+                serde_json::to_writer_pretty(file, &parser.warning_rules)
+                    .expect("serialize failed");
             }
 
             {
@@ -158,7 +160,7 @@ mod integration_tests {
                 create_dir_all("tmp").expect("could not create dir");
                 let mut file =
                     std::fs::File::create("tmp/base_rules.txt").expect("file create failed");
-                for rule in parser.rules {
+                for rule in parser.warning_rules {
                     writeln!(file, "{}", rule).expect("could not write to file");
                 }
             }
@@ -172,7 +174,7 @@ mod integration_tests {
                 create_dir_all("tmp").expect("could not create dir");
                 let mut file =
                     std::fs::File::create("tmp/user_rules.txt").expect("file create failed");
-                for rule in parser.rules {
+                for rule in parser.warning_rules {
                     writeln!(file, "{}", rule).expect("could not write to file");
                 }
             }

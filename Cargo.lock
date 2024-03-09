@@ -1760,6 +1760,7 @@ dependencies = [
  "egui",
  "env_logger",
  "log",
+ "plox",
  "serde",
  "wasm-bindgen-futures",
 ]
