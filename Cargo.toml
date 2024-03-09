@@ -22,7 +22,7 @@ openmw-cfg = "0.5"                                              # move to featur
 reqwest = { version = "0.11", features = ["blocking", "json"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-
+seahash = "4.1"
 
 [package]
 name = "plox"
@@ -43,6 +43,7 @@ rust-ini = { workspace = true }
 log = { workspace = true }
 env_logger = { workspace = true }
 regex = { workspace = true }
+seahash = { workspace = true }
 openmw-cfg = { workspace = true }   # move to feature flag
 
 [dev-dependencies]

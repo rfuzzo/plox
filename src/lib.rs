@@ -4,7 +4,6 @@ use std::fs::{self, File};
 use std::io::{self, BufRead, Write};
 use std::ops::ControlFlow;
 use std::path::{Path, PathBuf};
-use std::process::ExitCode;
 
 use clap::ValueEnum;
 
@@ -14,9 +13,8 @@ pub mod rules;
 pub mod sorter;
 
 use ini::Ini;
-use log::{debug, error, info, warn};
+use log::{error, info, warn};
 use openmw_cfg::config_path;
-use reqwest::header::LAST_MODIFIED;
 use rules::*;
 
 #[derive(Debug, Clone, Copy, ValueEnum, Default)]
@@ -47,195 +45,22 @@ pub enum ESupportedGame {
 }
 pub const PLOX_RULES_BASE: &str = "plox_base.txt";
 
-/// Sorts the current mod load order according to specified rules
-pub fn sort(
-    game: ESupportedGame,
-    root: &Option<PathBuf>,
-    rules_path: &Option<String>,
-    mod_list: &Option<PathBuf>,
-    dry_run: bool,
-    unstable: bool,
-    no_download: bool,
-) -> ExitCode {
-    // get game root
-    let root = match root {
-        Some(path) => path.clone(),
-        None => env::current_dir().expect("No current working dir"),
-    };
-
-    // get default rules dir
-    let rules_dir = if let Some(path) = rules_path {
-        PathBuf::from(path)
-    } else {
-        get_default_rules_dir(game)
-    };
-
-    // gather mods (optionally from a list)
-    let mods: Vec<String>;
-    if let Some(modlist_path) = mod_list {
-        mods = read_file_as_list(modlist_path);
-    } else {
-        mods = gather_mods(&root, game);
-        if mods.is_empty() {
-            info!("No mods found");
-            return ExitCode::FAILURE;
-        }
-    }
-
-    if !no_download {
-        download_latest_rules(game, &rules_dir);
-    } else {
-        info!("Skipping downloading latest rules")
-    }
-
-    let mut parser = parser::get_parser(game);
-    if let Err(e) = parser.init(rules_dir) {
-        error!("Parser init failed: {}", e);
-        return ExitCode::FAILURE;
-    }
-
-    // Print Warnings and Notes
-    if parser.warning_rules.is_empty() {
-        warn!("No rules found to evaluate");
-    } else {
-        info!("Evaluating mod list...\n");
-        debug!("{:?}", &mods);
-
-        parser.evaluate_plugins(&mods);
-        for warning in parser.warnings {
-            let rule = warning.rule;
-            match rule {
-                EWarningRule::Note(n) => {
-                    info!("[NOTE]\n{}", n.get_comment());
-                    debug!("Reference: [{}]", n.plugins.join(";"));
-                }
-                EWarningRule::Conflict(c) => {
-                    warn!("[CONFLICT]\n{}", c.get_comment());
-                    debug!("Reference: [{}]", c.plugins.join(";"));
-                }
-                EWarningRule::Requires(r) => {
-                    error!("[REQUIRES]\n{}", r.get_comment());
-                    debug!("Reference: [{}]", r.plugins.join(";"));
-                }
-                EWarningRule::Patch(p) => {
-                    warn!("[Patch]\n{}", p.get_comment());
-                    debug!("Reference: [{}]", p.plugins.join(";"));
-                }
-            }
-            println!();
-        }
-    }
-
-    // Sort
-    if parser.order_rules.is_empty() {
-        warn!("No rules found to sort");
-        ExitCode::SUCCESS
-    } else {
-        info!("Sorting mods...");
-        let mut sorter = if unstable {
-            sorter::new_unstable_sorter()
-        } else {
-            sorter::new_stable_sorter()
-        };
-        match sorter.topo_sort(&mods, &parser.order_rules) {
-            Ok(result) => {
-                if dry_run {
-                    info!("Dry run...");
-
-                    debug!("Old:\n{:?}", &mods);
-                    debug!("New:\n{:?}", result);
-
-                    if mods.eq(&result) {
-                        info!("Mods are in correct order, no sorting needed.");
-                    } else {
-                        info!("New order:\n{:?}", result);
-                    }
-
-                    ExitCode::SUCCESS
-                } else {
-                    info!("Current:\n{:?}", &mods);
-
-                    if mods.eq(&result) {
-                        info!("Mods are in correct order, no sorting needed.");
-                        ExitCode::SUCCESS
-                    } else {
-                        info!("New:\n{:?}", result);
-
-                        match update_new_load_order(game, &result) {
-                            Ok(_) => {
-                                info!("Update successful");
-                                ExitCode::SUCCESS
-                            }
-                            Err(e) => {
-                                error!("Could not updae load order: {}", e);
-                                ExitCode::FAILURE
-                            }
-                        }
-                    }
-                }
-            }
-            Err(e) => {
-                error!("error sorting: {e:?}");
-                ExitCode::FAILURE
-            }
-        }
-    }
-}
-
-/// Verifies integrity of the specified rules
-pub fn verify(game: ESupportedGame, rules_path: &Option<String>) -> ExitCode {
-    let rules_dir = if let Some(path) = rules_path {
-        PathBuf::from(path)
-    } else {
-        get_default_rules_dir(game)
-    };
-
-    info!("Verifying rules from {} ...", rules_dir.display());
-
-    let mut parser = parser::get_parser(game);
-    if let Err(e) = parser.init(rules_dir) {
-        error!("Parser init failed: {}", e);
-        return ExitCode::FAILURE;
-    }
-
-    if parser.warning_rules.is_empty() {
-        warn!("No rules found to evaluate");
-        return ExitCode::FAILURE;
-    }
-
-    let mods = debug_get_mods_from_order_rules(&parser.order_rules);
-    match sorter::new_unstable_sorter().topo_sort(&mods, &parser.order_rules) {
-        Ok(_) => {
-            info!("Verify SUCCESS");
-            ExitCode::SUCCESS
-        }
-        Err(_) => {
-            error!("Verify FAILURE");
-            ExitCode::FAILURE
-        }
-    }
-}
-
-/// Lists the current mod load order
-pub fn list_mods(root: &Option<PathBuf>, game: ESupportedGame) -> ExitCode {
-    info!("Printing active mods...");
-
-    let root = match root {
-        Some(path) => path.clone(),
-        None => env::current_dir().expect("No current working dir"),
-    };
-
-    for m in gather_mods(&root, game) {
-        println!("{}", m);
-        //info!("{}", m);
-    }
-
-    ExitCode::SUCCESS
-}
-
 ////////////////////////////////////////////////////////////////////////
 /// GAMES
 ////////////////////////////////////////////////////////////////////////
+
+/// Detect game from current working directory
+pub fn detect_game() -> Option<ESupportedGame> {
+    if PathBuf::from("Morrowind.exe").exists() {
+        Some(ESupportedGame::Morrowind)
+    } else if PathBuf::from("openmw.exe").exists() {
+        Some(ESupportedGame::OpenMorrowind)
+    } else if PathBuf::from("x64").join("Cyberpunk2077").exists() {
+        Some(ESupportedGame::Cyberpunk)
+    } else {
+        None
+    }
+}
 
 /// flattens a list of ordered mod pairs into a list of mod names
 pub fn debug_get_mods_from_order_rules(order_rules: &[EOrderRule]) -> Vec<String> {
@@ -294,50 +119,41 @@ where
     // Send an HTTP GET request to the URL
     let response = reqwest::blocking::get(url)?;
 
-    // Create a file at the specified output path
-    let mut file = File::create(output_path)?;
+    // get response body
+    let body = &mut response.bytes().unwrap();
 
-    // Write the response body to the file
-    io::copy(&mut response.bytes().unwrap().as_ref(), &mut file)?;
-
-    Ok(())
-}
-
-pub fn download_file_if_different_version(
-    url: &str,
-    output_path: &str,
-    local_version: Option<&str>,
-) -> Result<(), Box<dyn Error>> {
-    // Create the output directory if it doesn't exist
-    if let Some(parent_dir) = Path::new(output_path).parent() {
-        fs::create_dir_all(parent_dir)?;
-    }
-
-    // Send a HEAD request to check if the file has been modified
-    let client = reqwest::blocking::Client::new();
-    let response = client.head(url).send()?;
-
-    // Get the Last-Modified header from the response
-    if let Some(last_modified) = response.headers().get(LAST_MODIFIED) {
-        if let Ok(last_modified_str) = last_modified.to_str() {
-            // If the local version is different from the remote version, download the file
-            if local_version != Some(last_modified_str) {
-                // Send a GET request to download the file
-                let response = reqwest::blocking::get(url)?;
-
-                // Create a file at the specified output path
-                let mut file = File::create(output_path)?;
-
-                // Write the response body to the file
-                io::copy(&mut response.bytes().unwrap().as_ref(), &mut file)?;
-
-                println!("File downloaded successfully.");
+    // hash check
+    let hash_path = output_path.as_ref().with_extension("hash");
+    if hash_path.exists() {
+        // check against remote hash
+        let local_hash_bytes = fs::read(&hash_path)?;
+        let local_hash_str = String::from_utf8_lossy(&local_hash_bytes).to_string();
+        if let Ok(local_hash) = local_hash_str.parse::<u64>() {
+            let remote_hash = seahash::hash(body);
+            if local_hash == remote_hash {
+                // return
+                info!(
+                    "File already is latest version: {}",
+                    output_path.as_ref().display()
+                );
                 return Ok(());
             }
         }
     }
 
-    println!("Local file is up to date.");
+    // Create a file and write
+
+    let mut file = File::create(output_path)?;
+    io::copy(&mut body.as_ref(), &mut file)?;
+    info!(
+        "File downloaded successfully: {}",
+        output_path.as_ref().display()
+    );
+
+    // create hash
+    let remote_hash = seahash::hash(body);
+    fs::write(hash_path, remote_hash.to_string())?;
+
     Ok(())
 }
 
@@ -351,7 +167,7 @@ fn download_mlox_rules(rules_dir: &PathBuf) {
                 let output_path = rules_dir.join(file); // Specify the output path here
                 let url = repo.to_owned() + file;
                 match download_file(&url, &output_path) {
-                    Ok(()) => info!("File downloaded successfully: {}", file),
+                    Ok(()) => {}
                     Err(err) => error!("Error downloading file: {}", err),
                 }
             }

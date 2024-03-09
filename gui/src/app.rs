@@ -1,22 +1,36 @@
-use plox::parser::Parser;
+use std::env;
+
+use log::error;
+use plox::{
+    detect_game, download_latest_rules, gather_mods, get_default_rules_dir,
+    parser::{self, Parser},
+    sorter::{new_stable_sorter, Sorter},
+};
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct TemplateApp {
-    // Example stuff:
-    label: String,
-
-    #[serde(skip)] // This how you opt-out of serialization of a field
+    #[serde(skip)]
     parser: Option<Parser>,
+
+    #[serde(skip)]
+    sorter: Sorter,
+
+    #[serde(skip)]
+    mods: Vec<String>,
+
+    #[serde(skip)]
+    new_order: Vec<String>,
 }
 
 impl Default for TemplateApp {
     fn default() -> Self {
         Self {
-            // Example stuff:
-            label: "Hello World!".to_owned(),
             parser: None,
+            sorter: new_stable_sorter(),
+            mods: vec![],
+            new_order: vec![],
         }
     }
 }
@@ -49,6 +63,53 @@ impl eframe::App for TemplateApp {
         // Put your widgets into a `SidePanel`, `TopBottomPanel`, `CentralPanel`, `Window` or `Area`.
         // For inspiration and more examples, go to https://emilk.github.io/egui
 
+        // first setup
+        let mut render_warning_only = false;
+        if self.parser.is_none() {
+            // init parser
+            if let Some(game) = detect_game() {
+                // TODO this blocks UI and sorts everything
+                // TODO run a terminal?
+                let root = env::current_dir().expect("No current working dir");
+
+                // rules
+                let rules_dir = get_default_rules_dir(game);
+                download_latest_rules(game, &rules_dir);
+
+                // mods
+                self.mods = gather_mods(&root, game);
+
+                // parser
+                let mut parser = parser::get_parser(game);
+                if let Err(e) = parser.init(rules_dir) {
+                    error!("Parser init failed: {}", e);
+                    // TODO do something, render some warning only
+                    render_warning_only = true;
+                }
+
+                // evaluate
+                parser.evaluate_plugins(&self.mods);
+
+                // sort
+                match self.sorter.topo_sort(&self.mods, &parser.order_rules) {
+                    Ok(new) => {
+                        self.new_order = new;
+                    }
+                    Err(e) => {
+                        error!("error sorting: {e:?}");
+                        // TODO do something, render some warning only
+                        render_warning_only = true;
+                    }
+                }
+
+                self.parser = Some(parser);
+            } else {
+                error!("No game detected");
+                // TODO do something, render some warning only
+                render_warning_only = true;
+            }
+        }
+
         egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
             // The top panel is often a good place for a menu bar:
 
@@ -71,6 +132,20 @@ impl eframe::App for TemplateApp {
         egui::CentralPanel::default().show(ctx, |ui| {
             // The central panel the region left after adding TopPanel's and SidePanel's
             ui.heading("PLOX");
+
+            if render_warning_only {
+                // TODO some warning
+                ui.label("WARNING");
+
+                ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
+                    powered_by_egui_and_eframe(ui);
+                    egui::warn_if_debug_build(ui);
+                });
+
+                return;
+            }
+
+            // TODO main UI
 
             ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
                 powered_by_egui_and_eframe(ui);

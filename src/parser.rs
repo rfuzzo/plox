@@ -8,8 +8,7 @@ use std::usize;
 use byteorder::ReadBytesExt;
 use log::*;
 
-use crate::{expressions::*, TParser};
-use crate::{rules::*, ESupportedGame};
+use crate::{expressions::*, rules::*, ESupportedGame, TParser};
 
 pub fn get_parser(game: ESupportedGame) -> Parser {
     match game {
@@ -74,6 +73,8 @@ impl Parser {
         }
     }
 
+    /// Evaluates all warning rules and stores a copy of them in self
+    /// Retrieve them with self.warnings
     pub fn evaluate_plugins(&mut self, plugins: &[String]) {
         let mods_cpy: Vec<_> = plugins.iter().map(|f| f.to_lowercase()).collect();
 
@@ -87,6 +88,11 @@ impl Parser {
         self.warnings = result;
     }
 
+    /// Parse rules for a specific game from a file and stores them in self.
+    ///
+    /// # Errors
+    ///
+    /// This function will return an error if file io or parsing fails
     pub fn init_from_file<P>(&mut self, path: P) -> Result<()>
     where
         P: AsRef<Path>,
@@ -654,31 +660,7 @@ fn starts_with_whitespace(current_buffer: &str, arg: &str) -> bool {
         || current_buffer.starts_with(format!("{}\t", arg).as_str())
 }
 
-/// Reads the first comment lines of a rule chunk and returns the rest as byte buffer
-///
-/// # Errors
-///
-/// This function will return an error if stream reading or seeking fails
-// pub fn read_comment<R: Read + BufRead + Seek>(reader: &mut R) -> Result<Option<String>> {
-//     // a line starting with a whitespace may be a comment
-//     let first_char = reader.read_u8()? as char;
-//     if first_char == ' ' || first_char == '\t' {
-//         // this is a comment
-//         let mut line = String::new();
-//         reader.read_line(&mut line)?;
-//         let mut comment = line.trim().to_owned();
-
-//         if let Ok(Some(c)) = read_comment(reader) {
-//             comment += c.as_str();
-//         }
-
-//         Ok(Some(comment))
-//     } else {
-//         reader.seek(SeekFrom::Current(-1))?;
-//         Ok(None)
-//     }
-// }
-
+/// Parses the DESC predicate and returns its parts
 fn parse_desc(input: &str) -> Option<(String, String, bool)> {
     //  !/Bite works only with Vampire Embrace/ DW_assassination.esp]
     if let Some(input) = input.strip_prefix("!/") {
@@ -708,6 +690,7 @@ fn parse_desc(input: &str) -> Option<(String, String, bool)> {
     None
 }
 
+/// Parses the SIZE predicate and returns its parts
 fn parse_size(input: &str) -> Option<(String, usize, bool)> {
     // !4921700 Annastia V3.3.esp]
     if let Some(input) = input.strip_prefix('!') {
@@ -731,6 +714,7 @@ fn parse_size(input: &str) -> Option<(String, usize, bool)> {
     None
 }
 
+/// Parses the VER predicate and returns its parts
 fn parse_ver(input: &str) -> Option<(String, EVerOperator, String)> {
     // >1.51 Rise of House Telvanni.esm
     // = 2.14 Blood and Gore.esp
@@ -775,6 +759,11 @@ pub enum ERuleType {
     Multiline,
 }
 
+/// Parses a Rule and comment
+///
+/// # Errors
+///
+/// This function will return an error if stream IO fails
 fn parse_rule_expression<R>(mut reader: R) -> Result<(String, ERuleType)>
 where
     R: Read + BufRead + Seek,
