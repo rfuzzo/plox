@@ -194,28 +194,46 @@ impl Parser {
             // lowercase all
             let mut line = line.to_lowercase();
 
+            // trim inline comments
             line = if let Some(index) = line.find(';') {
                 line[..index].trim_end().to_owned()
             } else {
                 line.trim_end().to_owned()
             };
 
-            if chunk.is_some() && line.trim().is_empty() {
-                // end chunk
+            // we skip empty lines
+            if line.trim().is_empty() {
+                continue;
+            }
+
+            fn new_rule(line: &str) -> bool {
+                // check if a new rule has started by matching the first chars to the rules names
+                line.starts_with("[order")
+                    || line.starts_with("[nearstart")
+                    || line.starts_with("[nearend")
+                    || line.starts_with("[note")
+                    || line.starts_with("[conflict")
+                    || line.starts_with("[requires")
+                    || line.starts_with("[patch")
+            }
+
+            // we are inside a chunk
+            if chunk.is_some() && new_rule(&line) {
+                // end current chunk
                 if let Some(chunk) = chunk.take() {
                     chunks.push(chunk);
                 }
-            } else if !line.trim().is_empty() {
-                // read to chunk, preserving newline delimeters
-                let delimited_line = line + "\n";
-                if let Some(chunk) = &mut chunk {
-                    chunk.data.extend(delimited_line.as_bytes());
-                } else {
-                    chunk = Some(ChunkWrapper::new(
-                        delimited_line.as_bytes().to_vec(),
-                        (idx + 1).to_string(),
-                    ));
-                }
+            }
+
+            // read to current chunk, preserving newline delimeters
+            let delimited_line = line + "\n";
+            if let Some(chunk) = &mut chunk {
+                chunk.data.extend(delimited_line.as_bytes());
+            } else {
+                chunk = Some(ChunkWrapper::new(
+                    delimited_line.as_bytes().to_vec(),
+                    (idx + 1).to_string(),
+                ));
             }
         }
         // parse last chunk

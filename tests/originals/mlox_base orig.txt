@@ -34397,7 +34397,6 @@ Rose_Cottage_Bathing_Patch.esp
 [Order] ; ( Ref: "Stinkers_ReadMe_v1.71.txt" )
 Stinkers.esp
 BE_Bathing_Patch.esp
-
 [Order]
 Balmora Expansion v1.4.esp
 Balmora Expansion v1.4+(1.4).esp

@@ -2,6 +2,7 @@
 mod integration_tests {
     use std::{fs::create_dir_all, io::Write};
 
+    use log::warn;
     use plox::{parser::*, rules::EOrderRule, sorter::*, *};
     use rand::seq::SliceRandom;
     use rand::thread_rng;
@@ -39,7 +40,7 @@ mod integration_tests {
             .init_from_file("./tests/plox/rules_order.txt")
             .expect("failed rule parsing");
 
-        assert_eq!(5, parser.order_rules.len());
+        assert_eq!(8, parser.order_rules.len());
 
         let mods = debug_get_mods_from_order_rules(&parser.order_rules);
 
@@ -183,33 +184,31 @@ mod integration_tests {
         }
     }
 
-    #[allow(dead_code)]
-    //TODO disabled for now #[test]
+    #[test]
     fn test_mlox_user_rules() -> std::io::Result<()> {
         init();
 
         let mut parser = new_tes3_parser();
         parser.init_from_file("./tests/mlox/mlox_user.txt")?;
 
-        let mods = debug_get_mods_from_order_rules(&parser.order_rules);
+        let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
 
-        // let mut rng = thread_rng();
-        // mods.shuffle(&mut rng);
+        let mut rng = thread_rng();
+        mods.shuffle(&mut rng);
 
-        // let file = std::fs::File::create("tmp/mods.json").expect("file create failed");
-        // serde_json::to_writer_pretty(file, &mods).expect("serialize failed");
-
-        match new_unstable_sorter().topo_sort(&mods, &parser.order_rules) {
+        match new_stable_sorter().topo_sort(&mods, &parser.order_rules) {
             Ok(result) => {
                 assert!(
                     checkresult(&result, &parser.order_rules),
                     "stable(true) order is wrong"
                 );
             }
-            Err(e) => panic!("Error: {}", e),
+            Err(e) => {
+                panic!("Error: {}", e)
+            }
         }
 
-        match new_stable_sorter().topo_sort(&mods, &parser.order_rules) {
+        match new_unstable_sorter().topo_sort(&mods, &parser.order_rules) {
             Ok(result) => {
                 assert!(
                     checkresult(&result, &parser.order_rules),
@@ -222,30 +221,31 @@ mod integration_tests {
         Ok(())
     }
 
-    #[allow(dead_code)]
-    //TODO disabled for now #[test]
+    #[test]
     fn test_mlox_base_rules() -> std::io::Result<()> {
         init();
 
         let mut parser = new_tes3_parser();
         parser.init_from_file("./tests/mlox/mlox_base.txt")?;
 
-        let mods = debug_get_mods_from_order_rules(&parser.order_rules);
+        let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
 
-        // let mut rng = thread_rng();
-        // mods.shuffle(&mut rng);
+        let mut rng = thread_rng();
+        mods.shuffle(&mut rng);
 
-        match new_unstable_sorter().topo_sort(&mods, &parser.order_rules) {
+        match new_stable_sorter().topo_sort(&mods, &parser.order_rules) {
             Ok(result) => {
                 assert!(
                     checkresult(&result, &parser.order_rules),
                     "stable(true) order is wrong"
                 );
             }
-            Err(e) => panic!("Error: {}", e),
+            Err(e) => {
+                panic!("Error: {}", e)
+            }
         }
 
-        match new_stable_sorter().topo_sort(&mods, &parser.order_rules) {
+        match new_unstable_sorter().topo_sort(&mods, &parser.order_rules) {
             Ok(result) => {
                 assert!(
                     checkresult(&result, &parser.order_rules),
@@ -259,7 +259,7 @@ mod integration_tests {
     }
 
     #[allow(dead_code)]
-    //TODO disabled for now #[test]
+    //#[test]
     fn test_mlox_rules() -> std::io::Result<()> {
         init();
 
@@ -271,17 +271,30 @@ mod integration_tests {
         // let mut rng = thread_rng();
         // mods.shuffle(&mut rng);
 
-        match new_unstable_sorter().topo_sort(&mods, &parser.order_rules) {
+        warn!("MODS: {}", mods.len());
+
+        match new_stable_sorter().topo_sort(&mods, &parser.order_rules) {
             Ok(result) => {
                 assert!(
                     checkresult(&result, &parser.order_rules),
                     "stable(true) order is wrong"
                 );
             }
-            Err(e) => panic!("Error: {}", e),
+            Err(e) => {
+                match new_unstable_sorter().topo_sort(&mods, &parser.order_rules) {
+                    Ok(result) => {
+                        assert!(
+                            checkresult(&result, &parser.order_rules),
+                            "stable(true) order is wrong"
+                        );
+                    }
+                    Err(e) => panic!("Error: {}", e),
+                }
+                panic!("Error: {}", e)
+            }
         }
 
-        match new_stable_sorter().topo_sort(&mods, &parser.order_rules) {
+        match new_unstable_sorter().topo_sort(&mods, &parser.order_rules) {
             Ok(result) => {
                 assert!(
                     checkresult(&result, &parser.order_rules),
@@ -298,8 +311,7 @@ mod integration_tests {
         Sorter::new(sorter::ESortType::StableFull, 1000)
     }
 
-    #[allow(dead_code)]
-    //#[test]
+    #[test]
     fn test_optimized_sort() -> std::io::Result<()> {
         init();
 
@@ -323,8 +335,7 @@ mod integration_tests {
         Ok(())
     }
 
-    #[allow(dead_code)]
-    //#[test]
+    #[test]
     fn test_optimized_sort_time() -> std::io::Result<()> {
         init();
 

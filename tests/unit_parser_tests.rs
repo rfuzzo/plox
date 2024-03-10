@@ -33,6 +33,7 @@ mod unit_tests {
                 format!("[Order]{a} {b} {c}"),
                 format!("[Order]\n{a}\n{b}\n{c}"),
                 format!("[Order]{a}\n{b}\n{c}"),
+                format!("[Order]{a}\n{b}\n;\"ignored.esp\"\n{c}"),
                 format!("[Order]{a}; with a comment\n{b} {c}"),
                 format!("[Order]{a} {b} {c} ; with a comment"),
                 format!("[Order]{a}; with a comment\n{b}\n{c}"),

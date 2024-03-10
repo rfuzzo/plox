@@ -1,3 +1,16 @@
+[Order] ; comment
+e.esp
+c.esp
+[Order]
+a.esp
+d.esp
+
+[Order]
+Creatures.esp
+Creatures (*).esp
+;AC_Optimized_AA.esp
+abotGuards*.esp
+
 [order] ; container entry conflicts ( ref: https://www.nexusmods.com/morrowind/mods/50308 ) (pharis)
 btb's game improvements (necro edit) tweaked.esp
 [desc /patches poison crafting/ mwse_poisoncrafting.esp]

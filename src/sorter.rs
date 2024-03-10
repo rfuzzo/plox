@@ -192,7 +192,14 @@ impl Sorter {
                 }
                 return Ok(result);
             }
-            log::debug!("{}, index {}", i, index);
+
+            if let Some(edge) = edges.get(index) {
+                let resoved_0 = &index_dict_rev[&edge.0];
+                let resoved_1 = &index_dict_rev[&edge.1];
+                log::debug!("{}, index {} ({}, {})", i, index, resoved_0, resoved_1);
+            } else {
+                log::debug!("{}, index {}", i, index);
+            }
         }
 
         log::error!("Out of iterations");
