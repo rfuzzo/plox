@@ -1,6 +1,6 @@
 use std::env;
 
-use egui::{Color32, RichText};
+use egui::{Color32, Label, RichText, Sense};
 use log::error;
 use plox::{
     detect_game, download_latest_rules, gather_mods, get_default_rules_dir,
@@ -32,6 +32,14 @@ pub struct TemplateApp {
 
     #[serde(skip)]
     plugin_warning_map: Vec<(String, usize)>,
+
+    // filters
+    show_notes: bool,
+    show_conflicts: bool,
+    show_requires: bool,
+    show_patches: bool,
+    text_filter: String,
+    plugin_filter: String,
 }
 
 impl Default for TemplateApp {
@@ -43,6 +51,12 @@ impl Default for TemplateApp {
             new_order: vec![],
             warnings: vec![],
             plugin_warning_map: vec![],
+            show_notes: true,
+            show_conflicts: true,
+            show_requires: true,
+            show_patches: true,
+            text_filter: String::new(),
+            plugin_filter: String::new(),
         }
     }
 }
@@ -190,9 +204,9 @@ impl eframe::App for TemplateApp {
                     };
 
                     ui.horizontal(|ui| {
-                        ui.label(text);
-                        if ui.button("X").clicked() {
-                            // TODO filter all
+                        if ui.add(Label::new(text).sense(Sense::click())).clicked() {
+                            // add notes to filter
+                            self.plugin_filter = m.clone();
                         }
                     });
                 }
@@ -202,37 +216,90 @@ impl eframe::App for TemplateApp {
             // The central panel the region left after adding TopPanel's and SidePanel's
             ui.heading("PLOX");
 
+            // filters
+            ui.horizontal(|ui| {
+                ui.toggle_value(&mut self.show_notes, "Notes");
+                ui.toggle_value(&mut self.show_conflicts, "Conflicts");
+                ui.toggle_value(&mut self.show_requires, "Requires");
+                ui.toggle_value(&mut self.show_patches, "Patches");
+
+                ui.separator();
+                //filter text
+                ui.add(egui::TextEdit::singleline(&mut self.text_filter).hint_text("Filter"));
+            });
+
             // display warnings
-            if !self.warnings.is_empty() {
-                for (i, w) in self.warnings.iter().enumerate() {
-                    let mut frame = egui::Frame::default().inner_margin(4.0).begin(ui);
-                    {
-                        // create itemview
-                        let color = get_color_for_rule(&w.rule);
-                        frame.content_ui.colored_label(color, w.get_rule_name());
-
-                        frame.content_ui.label(w.get_comment());
-
-                        frame.content_ui.push_id(i, |ui| {
-                            ui.collapsing("Plugins Affected", |ui| {
-                                for plugin in &w.get_plugins() {
-                                    ui.label(plugin);
-                                }
-                            });
-                        });
-                    }
-                    let response = frame.allocate_space(ui);
-                    if response.hovered() {
-                        let mut bg_color = egui::Color32::LIGHT_GRAY;
-                        // if theme is dark, make it darker
-                        if ctx.style().visuals.dark_mode {
-                            bg_color = Color32::DARK_GRAY;
-                        }
-
-                        frame.frame.fill = bg_color;
-                    }
-                    frame.paint(ui);
+            for (i, w) in self.warnings.iter().enumerate() {
+                //filters
+                if !self.show_notes && matches!(w.rule, EWarningRule::Note(_)) {
+                    continue;
                 }
+                if !self.show_conflicts && matches!(w.rule, EWarningRule::Conflict(_)) {
+                    continue;
+                }
+                if !self.show_requires && matches!(w.rule, EWarningRule::Requires(_)) {
+                    continue;
+                }
+                if !self.show_patches && matches!(w.rule, EWarningRule::Patch(_)) {
+                    continue;
+                }
+
+                if !self.text_filter.is_empty()
+                    && !w
+                        .get_rule_name()
+                        .to_lowercase()
+                        .contains(&self.text_filter.to_lowercase())
+                    && !w
+                        .get_comment()
+                        .to_lowercase()
+                        .contains(&self.text_filter.to_lowercase())
+                {
+                    continue;
+                }
+
+                // plugin filter
+                if !self.plugin_filter.is_empty() {
+                    let mut found = false;
+                    for p in &w.get_plugins() {
+                        if p.to_lowercase() == self.plugin_filter.to_lowercase() {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if !found {
+                        continue;
+                    }
+                }
+
+                // item view
+                let mut frame = egui::Frame::default().inner_margin(4.0).begin(ui);
+                {
+                    // create itemview
+                    let color = get_color_for_rule(&w.rule);
+                    frame.content_ui.colored_label(color, w.get_rule_name());
+
+                    frame.content_ui.label(w.get_comment());
+
+                    frame.content_ui.push_id(i, |ui| {
+                        ui.collapsing("Plugins Affected", |ui| {
+                            for plugin in &w.get_plugins() {
+                                ui.label(plugin);
+                            }
+                        });
+                    });
+                }
+                let response = frame.allocate_space(ui);
+                if response.hovered() {
+                    let mut bg_color = egui::Color32::LIGHT_GRAY;
+                    // if theme is dark, make it darker
+                    if ctx.style().visuals.dark_mode {
+                        bg_color = Color32::DARK_GRAY;
+                    }
+
+                    frame.frame.fill = bg_color;
+                }
+                frame.paint(ui);
             }
 
             ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
