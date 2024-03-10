@@ -48,9 +48,26 @@ impl ChunkWrapper {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Warning {
     pub rule: EWarningRule, //TODO consider using a reference here
+}
+
+impl Warning {
+    pub fn get_comment(&self) -> String {
+        self.rule.get_comment().to_owned()
+    }
+    pub fn get_plugins(&self) -> Vec<String> {
+        self.rule.get_plugins()
+    }
+    pub fn get_rule_name(&self) -> String {
+        match self.rule {
+            EWarningRule::Conflict(_) => "Conflict".to_owned(),
+            EWarningRule::Note(_) => "Note".to_owned(),
+            EWarningRule::Patch(_) => "Patch".to_owned(),
+            EWarningRule::Requires(_) => "Requires".to_owned(),
+        }
+    }
 }
 
 pub struct Parser {
@@ -183,7 +200,6 @@ impl Parser {
         R: Read + BufRead + Seek,
     {
         // pre-parse into rule blocks
-        // TODO, do it properly and stop on new rule start, not newline
         let mut chunks: Vec<ChunkWrapper> = vec![];
         let mut chunk: Option<ChunkWrapper> = None;
         for (idx, line) in reader.lines().map_while(Result::ok).enumerate() {

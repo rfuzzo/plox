@@ -1,9 +1,11 @@
 use std::env;
 
+use egui::{Color32, RichText};
 use log::error;
 use plox::{
     detect_game, download_latest_rules, gather_mods, get_default_rules_dir,
-    parser::{self, Parser},
+    parser::{self, Parser, Warning},
+    rules::EWarningRule,
     sorter::{new_stable_sorter, Sorter},
 };
 
@@ -17,11 +19,19 @@ pub struct TemplateApp {
     #[serde(skip)]
     sorter: Sorter,
 
+    // plugins
     #[serde(skip)]
     mods: Vec<String>,
 
     #[serde(skip)]
     new_order: Vec<String>,
+
+    // notes
+    #[serde(skip)]
+    warnings: Vec<Warning>,
+
+    #[serde(skip)]
+    plugin_warning_map: Vec<(String, usize)>,
 }
 
 impl Default for TemplateApp {
@@ -31,6 +41,8 @@ impl Default for TemplateApp {
             sorter: new_stable_sorter(),
             mods: vec![],
             new_order: vec![],
+            warnings: vec![],
+            plugin_warning_map: vec![],
         }
     }
 }
@@ -64,6 +76,7 @@ impl eframe::App for TemplateApp {
         // For inspiration and more examples, go to https://emilk.github.io/egui
 
         // first setup
+        let mut warning = String::new();
         let mut render_warning_only = false;
         if self.parser.is_none() {
             // init parser
@@ -83,12 +96,20 @@ impl eframe::App for TemplateApp {
                 let mut parser = parser::get_parser(game);
                 if let Err(e) = parser.init(rules_dir) {
                     error!("Parser init failed: {}", e);
-                    // TODO do something, render some warning only
+
                     render_warning_only = true;
+                    warning = format!("Parser init failed: {}", e);
                 }
 
                 // evaluate
                 parser.evaluate_plugins(&self.mods);
+                self.warnings = parser.warnings.clone();
+
+                for (i, w) in self.warnings.iter().enumerate() {
+                    for p in &w.get_plugins() {
+                        self.plugin_warning_map.push((p.clone(), i));
+                    }
+                }
 
                 // sort
                 match self.sorter.topo_sort(&self.mods, &parser.order_rules) {
@@ -97,16 +118,18 @@ impl eframe::App for TemplateApp {
                     }
                     Err(e) => {
                         error!("error sorting: {e:?}");
-                        // TODO do something, render some warning only
+
                         render_warning_only = true;
+                        warning = format!("error sorting: {e:?}");
                     }
                 }
 
                 self.parser = Some(parser);
             } else {
                 error!("No game detected");
-                // TODO do something, render some warning only
+
                 render_warning_only = true;
+                warning = "No game detected".to_string();
             }
         }
 
@@ -129,29 +152,103 @@ impl eframe::App for TemplateApp {
             });
         });
 
-        egui::CentralPanel::default().show(ctx, |ui| {
-            // The central panel the region left after adding TopPanel's and SidePanel's
-            ui.heading("PLOX");
-
-            if render_warning_only {
-                // TODO some warning
+        // warning only UI
+        if render_warning_only {
+            egui::CentralPanel::default().show(ctx, |ui| {
                 ui.label("WARNING");
+                ui.label(warning);
 
                 ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
                     powered_by_egui_and_eframe(ui);
                     egui::warn_if_debug_build(ui);
                 });
+            });
 
-                return;
+            return;
+        }
+
+        // TODO main UI
+        egui::SidePanel::left("side_panel")
+            .min_width(200_f32)
+            .show(ctx, |ui| {
+                ui.heading("New Order");
+                for m in &self.new_order {
+                    let notes: Vec<_> = self
+                        .plugin_warning_map
+                        .iter()
+                        .filter(|(p, _)| p.to_lowercase() == *m.to_lowercase())
+                        .collect();
+
+                    let text = if !notes.is_empty() {
+                        let i = notes[0].1;
+                        let background_color = get_color_for_rule(&self.warnings[i].rule);
+                        // make it more transparent
+
+                        RichText::new(m).background_color(background_color.gamma_multiply(0.5))
+                    } else {
+                        RichText::new(m)
+                    };
+
+                    ui.horizontal(|ui| {
+                        ui.label(text);
+                        if ui.button("X").clicked() {
+                            // TODO filter all
+                        }
+                    });
+                }
+            });
+
+        egui::CentralPanel::default().show(ctx, |ui| {
+            // The central panel the region left after adding TopPanel's and SidePanel's
+            ui.heading("PLOX");
+
+            // display warnings
+            if !self.warnings.is_empty() {
+                for (i, w) in self.warnings.iter().enumerate() {
+                    let mut frame = egui::Frame::default().inner_margin(4.0).begin(ui);
+                    {
+                        // create itemview
+                        let color = get_color_for_rule(&w.rule);
+                        frame.content_ui.colored_label(color, w.get_rule_name());
+
+                        frame.content_ui.label(w.get_comment());
+
+                        frame.content_ui.push_id(i, |ui| {
+                            ui.collapsing("Plugins Affected", |ui| {
+                                for plugin in &w.get_plugins() {
+                                    ui.label(plugin);
+                                }
+                            });
+                        });
+                    }
+                    let response = frame.allocate_space(ui);
+                    if response.hovered() {
+                        let mut bg_color = egui::Color32::LIGHT_GRAY;
+                        // if theme is dark, make it darker
+                        if ctx.style().visuals.dark_mode {
+                            bg_color = Color32::DARK_GRAY;
+                        }
+
+                        frame.frame.fill = bg_color;
+                    }
+                    frame.paint(ui);
+                }
             }
-
-            // TODO main UI
 
             ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
                 powered_by_egui_and_eframe(ui);
                 egui::warn_if_debug_build(ui);
             });
         });
+    }
+}
+
+fn get_color_for_rule(rule: &EWarningRule) -> Color32 {
+    match rule {
+        EWarningRule::Note(_) => Color32::DARK_GREEN,
+        EWarningRule::Conflict(_) => Color32::RED,
+        EWarningRule::Requires(_) => Color32::YELLOW,
+        EWarningRule::Patch(_) => Color32::BLUE,
     }
 }
 

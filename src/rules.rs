@@ -45,6 +45,8 @@ pub enum EWarningRule {
 pub trait TWarningRule {
     /// every rule may have a comment describing why it failed
     fn get_comment(&self) -> &str;
+    fn get_plugins(&self) -> Vec<String>;
+
     fn set_comment(&mut self, comment: String);
     /// every rule may be evaluated
     fn eval(&mut self, items: &[String]) -> bool;
@@ -57,6 +59,15 @@ impl TWarningRule for EWarningRule {
             EWarningRule::Conflict(x) => x.get_comment(),
             EWarningRule::Requires(x) => x.get_comment(),
             EWarningRule::Patch(x) => x.get_comment(),
+        }
+    }
+
+    fn get_plugins(&self) -> Vec<String> {
+        match self {
+            EWarningRule::Note(x) => x.get_plugins(),
+            EWarningRule::Conflict(x) => x.get_plugins(),
+            EWarningRule::Requires(x) => x.get_plugins(),
+            EWarningRule::Patch(x) => x.get_plugins(),
         }
     }
 
@@ -412,6 +423,10 @@ impl TWarningRule for Note {
     fn get_comment(&self) -> &str {
         self.comment.as_str()
     }
+    fn get_plugins(&self) -> Vec<String> {
+        self.plugins.clone()
+    }
+
     fn set_comment(&mut self, comment: String) {
         self.comment = comment;
     }
@@ -487,6 +502,9 @@ impl Conflict {
 impl TWarningRule for Conflict {
     fn get_comment(&self) -> &str {
         self.comment.as_str()
+    }
+    fn get_plugins(&self) -> Vec<String> {
+        self.plugins.clone()
     }
     fn set_comment(&mut self, comment: String) {
         self.comment = comment;
@@ -566,6 +584,10 @@ impl TWarningRule for Requires {
     fn get_comment(&self) -> &str {
         self.comment.as_str()
     }
+    fn get_plugins(&self) -> Vec<String> {
+        self.plugins.clone()
+    }
+
     fn set_comment(&mut self, comment: String) {
         self.comment = comment;
     }
@@ -654,6 +676,10 @@ impl TWarningRule for Patch {
     fn get_comment(&self) -> &str {
         self.comment.as_str()
     }
+    fn get_plugins(&self) -> Vec<String> {
+        self.plugins.clone()
+    }
+
     fn set_comment(&mut self, comment: String) {
         self.comment = comment;
     }
