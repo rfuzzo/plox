@@ -2,7 +2,7 @@
 
 > 🚧 Work in progress
 
-A small rust utility to sort a modlist topologically according to ordering rules, as wall as output warnings and notes.
+A small rust utility to sort a modlist topologically according to ordering rules, as wall as output warnings and notes. Includes a GUI app and a commandline tool.
 
 Supported games:
 
@@ -36,6 +36,19 @@ The rules are hosted in their own repository:
 1. Download `plox.exe`from  the latest release from <https://github.com/rfuzzo/plox/releases>
 2. Place `plox.exe` next to the game's exe
 3. Open a terminal window and run `plox.exe` with a command
+
+## Screenshots
+
+![Screenshot](/assets/Screenshot_gui.png)
+![Screenshot](/assets/Screenshot_cli.png)
+
+## Credits
+
+- [MLOX](https://github.com/mlox/mlox)
+- [MLOX Rules](https://github.com/DanaePlays/mlox-rules)
+- [OpenMw Cfg Crate](https://gitlab.com/bmwinger/openmw-cfg)
+
+## CLI Commands
 
 ```txt
 Usage: plox.exe [OPTIONS] <COMMAND>

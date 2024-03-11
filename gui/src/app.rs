@@ -167,6 +167,9 @@ impl eframe::App for TemplateApp {
                 let is_web = cfg!(target_arch = "wasm32");
                 if !is_web {
                     ui.menu_button("File", |ui| {
+                        ui.hyperlink_to("PLOX on GitHub", "https://github.com/rfuzzo/plox");
+
+                        ui.separator();
                         if ui.button("Quit").clicked() {
                             ctx.send_viewport_cmd(egui::ViewportCommand::Close);
                         }
@@ -285,7 +288,11 @@ impl eframe::App for TemplateApp {
         // main panel
         egui::CentralPanel::default().show(ctx, |ui| {
             // The central panel the region left after adding TopPanel's and SidePanel's
-            ui.heading("PLOX");
+            ui.heading(format!(
+                "PLOX v{} - {:?}",
+                crate::CARGO_PKG_VERSION,
+                data.game
+            ));
 
             // filters
             ui.horizontal(|ui| {

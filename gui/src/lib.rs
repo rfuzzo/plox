@@ -12,6 +12,8 @@ use plox::{
     sorter::new_stable_sorter,
 };
 
+const CARGO_PKG_VERSION: &str = env!("CARGO_PKG_VERSION");
+
 #[derive(serde::Deserialize, serde::Serialize, Debug, PartialEq)]
 enum ETheme {
     Dark,
