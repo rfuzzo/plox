@@ -154,35 +154,6 @@ impl Sorter {
             }
         }
 
-        if game == ESupportedGame::Morrowind || game == ESupportedGame::OpenMorrowind {
-            // put all esms at the start
-            for (i, m) in mods.iter().enumerate() {
-                if m.ends_with(".esm") {
-                    let element = mods_copy.remove(i);
-                    mods_copy.insert(0, element);
-                }
-            }
-
-            // put standard tes3 esms at the start
-            if mods_copy.contains(&"bloodmoon.esm".into()) {
-                let index = mods_copy.iter().position(|f| f == "bloodmoon.esm").unwrap();
-                let element = mods_copy.remove(index);
-                mods_copy.insert(0, element);
-            }
-
-            if mods_copy.contains(&"tribunal.esm".into()) {
-                let index = mods_copy.iter().position(|f| f == "tribunal.esm").unwrap();
-                let element = mods_copy.remove(index);
-                mods_copy.insert(0, element);
-            }
-
-            if mods_copy.contains(&"morrowind.esm".into()) {
-                let index = mods_copy.iter().position(|f| f == "morrowind.esm").unwrap();
-                let element = mods_copy.remove(index);
-                mods_copy.insert(0, element);
-            }
-        }
-
         // nearend rules
         for nearend in order_rules
             .iter()
@@ -215,6 +186,41 @@ impl Sorter {
                 &mut mods_copy,
                 &mut index,
             ) {
+                // sort esms now?
+                if game == ESupportedGame::Morrowind || game == ESupportedGame::OpenMorrowind {
+                    // put all items in mods_copy ending with .esm at the start
+                    let mut esms = vec![];
+                    for (i, m) in mods_copy.iter().enumerate() {
+                        if m.ends_with(".esm") {
+                            esms.push(i);
+                        }
+                    }
+                    // now sort the mods_copy list
+                    for (last_i, i) in esms.iter().enumerate() {
+                        let element = mods_copy.remove(*i);
+                        mods_copy.insert(last_i, element);
+                    }
+
+                    // put standard tes3 esms at the start
+                    // if mods_copy.contains(&"bloodmoon.esm".into()) {
+                    //     let index = mods_copy.iter().position(|f| f == "bloodmoon.esm").unwrap();
+                    //     let element = mods_copy.remove(index);
+                    //     mods_copy.insert(0, element);
+                    // }
+
+                    // if mods_copy.contains(&"tribunal.esm".into()) {
+                    //     let index = mods_copy.iter().position(|f| f == "tribunal.esm").unwrap();
+                    //     let element = mods_copy.remove(index);
+                    //     mods_copy.insert(0, element);
+                    // }
+
+                    if mods_copy.contains(&"morrowind.esm".into()) {
+                        let index = mods_copy.iter().position(|f| f == "morrowind.esm").unwrap();
+                        let element = mods_copy.remove(index);
+                        mods_copy.insert(0, element);
+                    }
+                }
+
                 // Return the sorted vector
                 // map sorted index back to mods
                 let mut result = vec![];

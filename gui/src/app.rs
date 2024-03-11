@@ -7,6 +7,12 @@ use plox::{detect_game, rules::EWarningRule, update_new_load_order};
 
 use crate::{init_parser, AppData};
 
+#[derive(PartialEq)]
+pub enum EModListView {
+    NewOrder,
+    LoadOrder,
+}
+
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
@@ -19,6 +25,8 @@ pub struct TemplateApp {
     show_conflicts: bool,
     show_requires: bool,
     show_patches: bool,
+    #[serde(skip)]
+    mod_list_view: EModListView,
     #[serde(skip)]
     text_filter: String,
     #[serde(skip)]
@@ -52,6 +60,7 @@ impl Default for TemplateApp {
             show_conflicts: true,
             show_requires: true,
             show_patches: true,
+            mod_list_view: EModListView::NewOrder,
             text_filter: String::new(),
             plugin_filter: String::new(),
             plugin_hover_filter: vec![],
@@ -153,77 +162,94 @@ impl eframe::App for TemplateApp {
         egui::SidePanel::left("side_panel")
             .min_width(200_f32)
             .show(ctx, |ui| {
-                ui.heading("New Order");
-
-                // accept button
-                let r = ui.add_sized([ui.available_width(), 0_f32], egui::Button::new("Accept"));
-                if r.clicked() {
-                    // apply sorting
-                    match update_new_load_order(data.game, &data.new_order) {
-                        Ok(_) => {
-                            info!("Update successful");
-                        }
-                        Err(e) => {
-                            error!("Could not updae load order: {}", e);
-                        }
-                    }
-
-                    // exit the app
-                    ctx.send_viewport_cmd(egui::ViewportCommand::Close);
-                }
-
+                ui.heading("Load Order");
+                ui.horizontal(|ui| {
+                    ui.radio_value(&mut self.mod_list_view, EModListView::LoadOrder, "Old");
+                    ui.radio_value(&mut self.mod_list_view, EModListView::NewOrder, "New");
+                });
                 ui.separator();
 
                 // mod list
-                for mod_name in &data.new_order {
-                    let notes: Vec<_> = data
-                        .plugin_warning_map
-                        .iter()
-                        .filter(|(p, _)| p.to_lowercase() == *mod_name.to_lowercase())
-                        .collect();
+                let order = match self.mod_list_view {
+                    EModListView::NewOrder => &data.new_order,
+                    EModListView::LoadOrder => &data.old_order,
+                };
+                egui::ScrollArea::vertical().show(ui, |ui| {
+                    for mod_name in order {
+                        let notes: Vec<_> = data
+                            .plugin_warning_map
+                            .iter()
+                            .filter(|(p, _)| p.to_lowercase() == *mod_name.to_lowercase())
+                            .collect();
 
-                    // get color for background
-                    let mut bg_color = if !notes.is_empty() {
-                        let i = notes[0].1;
-                        let background_color = get_color_for_rule(&data.warnings[i].rule);
-                        // make it more transparent
-                        background_color.gamma_multiply(0.5)
-                    } else {
-                        Color32::TRANSPARENT
-                    };
-                    // override background color if mod is in plugin_filter with light blue
-                    if !self.plugin_filter.is_empty()
-                        && mod_name.to_lowercase() == self.plugin_filter.to_lowercase()
-                    {
-                        bg_color = Color32::LIGHT_BLUE;
-                        if ctx.style().visuals.dark_mode {
-                            bg_color = Color32::DARK_BLUE;
-                        }
-                    };
-                    // override the background color if mod is hovered
-                    if self.plugin_hover_filter.contains(&mod_name.to_lowercase()) {
-                        bg_color = Color32::LIGHT_BLUE;
-                        if ctx.style().visuals.dark_mode {
-                            bg_color = Color32::DARK_BLUE;
-                        }
-                    }
-
-                    // item view
-                    egui::Frame::none().fill(bg_color).show(ui, |ui| {
-                        let label = Label::new(mod_name).sense(Sense::click());
-                        // TODO UI Left align the text
-                        let r = ui.add_sized([ui.available_width(), 0_f32], label);
-                        if r.clicked() {
-                            // unselect if clicked again
-                            if self.plugin_filter == mod_name.clone() {
-                                self.plugin_filter = String::new();
-                            } else {
-                                // add notes to filter
-                                self.plugin_filter = mod_name.clone();
+                        // get color for background
+                        let mut bg_color = if !notes.is_empty() {
+                            let i = notes[0].1;
+                            let background_color = get_color_for_rule(&data.warnings[i].rule);
+                            // make it more transparent
+                            background_color.gamma_multiply(0.5)
+                        } else {
+                            Color32::TRANSPARENT
+                        };
+                        // override background color if mod is in plugin_filter with light blue
+                        if !self.plugin_filter.is_empty()
+                            && mod_name.to_lowercase() == self.plugin_filter.to_lowercase()
+                        {
+                            bg_color = Color32::LIGHT_BLUE;
+                            if ctx.style().visuals.dark_mode {
+                                bg_color = Color32::DARK_BLUE;
+                            }
+                        };
+                        // override the background color if mod is hovered
+                        if self.plugin_hover_filter.contains(&mod_name.to_lowercase()) {
+                            bg_color = Color32::LIGHT_BLUE;
+                            if ctx.style().visuals.dark_mode {
+                                bg_color = Color32::DARK_BLUE;
                             }
                         }
-                    });
-                }
+
+                        // item view
+                        egui::Frame::none().fill(bg_color).show(ui, |ui| {
+                            let label = Label::new(mod_name).sense(Sense::click());
+                            // TODO UI Left align the text
+                            let r = ui.add_sized([ui.available_width(), 0_f32], label);
+                            if r.clicked() {
+                                // unselect if clicked again
+                                if self.plugin_filter == mod_name.clone() {
+                                    self.plugin_filter = String::new();
+                                } else {
+                                    // add notes to filter
+                                    self.plugin_filter = mod_name.clone();
+                                }
+                            }
+                        });
+                    }
+                });
+
+                // add spacing until bottom
+                ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
+                    // accept button
+                    ui.add_space(4_f32);
+
+                    let r =
+                        ui.add_sized([ui.available_width(), 0_f32], egui::Button::new("Accept"));
+                    if r.clicked() {
+                        // apply sorting
+                        match update_new_load_order(data.game, &data.new_order) {
+                            Ok(_) => {
+                                info!("Update successful");
+                            }
+                            Err(e) => {
+                                error!("Could not updae load order: {}", e);
+                            }
+                        }
+
+                        // exit the app
+                        ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+                    }
+
+                    ui.separator();
+                });
             });
 
         // main panel
@@ -244,83 +270,84 @@ impl eframe::App for TemplateApp {
             });
 
             // display warnings
-            for (i, w) in data.warnings.iter().enumerate() {
-                //filters
-                if !self.show_notes && matches!(w.rule, EWarningRule::Note(_)) {
-                    continue;
-                }
-                if !self.show_conflicts && matches!(w.rule, EWarningRule::Conflict(_)) {
-                    continue;
-                }
-                if !self.show_requires && matches!(w.rule, EWarningRule::Requires(_)) {
-                    continue;
-                }
-                if !self.show_patches && matches!(w.rule, EWarningRule::Patch(_)) {
-                    continue;
-                }
+            egui::ScrollArea::vertical().show(ui, |ui| {
+                for (i, w) in data.warnings.iter().enumerate() {
+                    //filters
+                    if !self.show_notes && matches!(w.rule, EWarningRule::Note(_)) {
+                        continue;
+                    }
+                    if !self.show_conflicts && matches!(w.rule, EWarningRule::Conflict(_)) {
+                        continue;
+                    }
+                    if !self.show_requires && matches!(w.rule, EWarningRule::Requires(_)) {
+                        continue;
+                    }
+                    if !self.show_patches && matches!(w.rule, EWarningRule::Patch(_)) {
+                        continue;
+                    }
 
-                if !self.text_filter.is_empty()
-                    && !w
-                        .get_rule_name()
-                        .to_lowercase()
-                        .contains(&self.text_filter.to_lowercase())
-                    && !w
-                        .get_comment()
-                        .to_lowercase()
-                        .contains(&self.text_filter.to_lowercase())
-                {
-                    continue;
-                }
+                    if !self.text_filter.is_empty()
+                        && !w
+                            .get_rule_name()
+                            .to_lowercase()
+                            .contains(&self.text_filter.to_lowercase())
+                        && !w
+                            .get_comment()
+                            .to_lowercase()
+                            .contains(&self.text_filter.to_lowercase())
+                    {
+                        continue;
+                    }
 
-                // plugin filter
-                if !self.plugin_filter.is_empty() {
-                    let mut found = false;
-                    for p in &w.get_plugins() {
-                        if p.to_lowercase() == self.plugin_filter.to_lowercase() {
-                            found = true;
-                            break;
+                    // plugin filter
+                    if !self.plugin_filter.is_empty() {
+                        let mut found = false;
+                        for p in &w.get_plugins() {
+                            if p.to_lowercase() == self.plugin_filter.to_lowercase() {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if !found {
+                            continue;
                         }
                     }
 
-                    if !found {
-                        continue;
-                    }
-                }
+                    // item view
+                    let mut frame = egui::Frame::default().inner_margin(4.0).begin(ui);
+                    {
+                        // create itemview
+                        let color = get_color_for_rule(&w.rule);
+                        frame.content_ui.colored_label(color, w.get_rule_name());
 
-                // item view
-                let mut frame = egui::Frame::default().inner_margin(4.0).begin(ui);
-                {
-                    // create itemview
-                    let color = get_color_for_rule(&w.rule);
-                    frame.content_ui.colored_label(color, w.get_rule_name());
+                        frame.content_ui.label(w.get_comment());
 
-                    frame.content_ui.label(w.get_comment());
-
-                    frame.content_ui.push_id(i, |ui| {
-                        ui.collapsing("Plugins Affected", |ui| {
-                            for plugin in &w.get_plugins() {
-                                ui.label(plugin);
-                            }
+                        frame.content_ui.push_id(i, |ui| {
+                            ui.collapsing("Plugins Affected", |ui| {
+                                for plugin in &w.get_plugins() {
+                                    ui.label(plugin);
+                                }
+                            });
                         });
-                    });
-                }
-                let response = frame.allocate_space(ui);
-                if response.hovered() {
-                    let mut bg_color = egui::Color32::LIGHT_GRAY;
-                    // if theme is dark, make it darker
-                    if ctx.style().visuals.dark_mode {
-                        bg_color = Color32::DARK_GRAY;
                     }
-                    frame.frame.fill = bg_color;
+                    let response = frame.allocate_space(ui);
+                    if response.hovered() {
+                        let mut bg_color = egui::Color32::LIGHT_GRAY;
+                        // if theme is dark, make it darker
+                        if ctx.style().visuals.dark_mode {
+                            bg_color = Color32::DARK_GRAY;
+                        }
+                        frame.frame.fill = bg_color;
 
-                    // update hover filter
-                    self.plugin_hover_filter = w.get_plugins().clone();
-                } else {
-                    self.plugin_hover_filter = vec![];
+                        // update hover filter
+                        self.plugin_hover_filter = w.get_plugins().clone();
+                    } else {
+                        self.plugin_hover_filter = vec![];
+                    }
+                    frame.paint(ui);
                 }
-                frame.paint(ui);
-            }
-
+            });
             ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
                 powered_by_egui_and_eframe(ui);
                 egui::warn_if_debug_build(ui);
