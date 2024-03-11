@@ -14,6 +14,7 @@ use plox::{
 
 #[derive(Debug, Clone)]
 struct AppData {
+    game: plox::ESupportedGame,
     new_order: Vec<String>,
     warnings: Vec<Warning>,
     plugin_warning_map: Vec<(String, usize)>,
@@ -64,6 +65,7 @@ fn init_parser(game: plox::ESupportedGame, tx: Sender<String>) -> Option<AppData
     };
 
     let r = AppData {
+        game,
         new_order,
         warnings,
         plugin_warning_map,

@@ -2,7 +2,8 @@ use std::sync::mpsc::{Receiver, Sender};
 
 use egui::{Color32, Label, Sense};
 
-use plox::{detect_game, rules::EWarningRule};
+use log::{error, info};
+use plox::{detect_game, rules::EWarningRule, update_new_load_order};
 
 use crate::{init_parser, AppData};
 
@@ -18,8 +19,12 @@ pub struct TemplateApp {
     show_conflicts: bool,
     show_requires: bool,
     show_patches: bool,
+    #[serde(skip)]
     text_filter: String,
+    #[serde(skip)]
     plugin_filter: String,
+    #[serde(skip)]
+    plugin_hover_filter: Vec<String>,
 
     // ui
     #[serde(skip)]
@@ -29,7 +34,7 @@ pub struct TemplateApp {
     tx: Sender<String>,
     #[serde(skip)]
     rx: Receiver<String>,
-    // TODO refactor to use one channel
+    // TODO UI refactor to use one channel
     #[serde(skip)]
     tx2: Sender<Option<AppData>>,
     #[serde(skip)]
@@ -49,6 +54,7 @@ impl Default for TemplateApp {
             show_patches: true,
             text_filter: String::new(),
             plugin_filter: String::new(),
+            plugin_hover_filter: vec![],
             async_log: String::new(),
             rx,
             tx,
@@ -116,6 +122,9 @@ impl eframe::App for TemplateApp {
                 self.app_data = result;
             }
 
+            // pump ui events while in thread
+            ctx.request_repaint();
+
             return;
         }
 
@@ -138,151 +147,187 @@ impl eframe::App for TemplateApp {
             });
         });
 
-        if let Some(data) = self.app_data.as_ref() {
-            // main UI
-            egui::SidePanel::left("side_panel")
-                .min_width(200_f32)
-                .show(ctx, |ui| {
-                    ui.heading("New Order");
-                    for m in &data.new_order {
-                        let notes: Vec<_> = data
-                            .plugin_warning_map
-                            .iter()
-                            .filter(|(p, _)| p.to_lowercase() == *m.to_lowercase())
-                            .collect();
+        let Some(data) = self.app_data.as_ref() else {
+            return;
+        };
 
-                        // get color for background
-                        let mut bg_color = if !notes.is_empty() {
-                            let i = notes[0].1;
-                            let background_color = get_color_for_rule(&data.warnings[i].rule);
-                            // make it more transparent
-                            background_color.gamma_multiply(0.5)
-                        } else {
-                            Color32::TRANSPARENT
-                        };
-                        // override background color if mod is in plugin_filter with light blue
-                        if !self.plugin_filter.is_empty()
-                            && m.to_lowercase() == self.plugin_filter.to_lowercase()
-                        {
-                            bg_color = Color32::LIGHT_BLUE;
-                            if ctx.style().visuals.dark_mode {
-                                bg_color = Color32::DARK_BLUE;
-                            }
-                        };
+        // side panel
+        egui::SidePanel::left("side_panel")
+            .min_width(200_f32)
+            .show(ctx, |ui| {
+                ui.heading("New Order");
 
-                        // item view
-                        egui::Frame::none().fill(bg_color).show(ui, |ui| {
-                            let label = Label::new(m).sense(Sense::click());
-                            let r = ui.add_sized([ui.available_width(), 0_f32], label);
-                            if r.clicked() {
-                                // unselect if clicked again
-                                if self.plugin_filter == m.clone() {
-                                    self.plugin_filter = String::new();
-                                } else {
-                                    // add notes to filter
-                                    self.plugin_filter = m.clone();
-                                }
-                            }
-                        });
-                    }
-                });
-
-            egui::CentralPanel::default().show(ctx, |ui| {
-                // The central panel the region left after adding TopPanel's and SidePanel's
-                ui.heading("PLOX");
-
-                // filters
-                ui.horizontal(|ui| {
-                    ui.toggle_value(&mut self.show_notes, "Notes");
-                    ui.toggle_value(&mut self.show_conflicts, "Conflicts");
-                    ui.toggle_value(&mut self.show_requires, "Requires");
-                    ui.toggle_value(&mut self.show_patches, "Patches");
-
-                    ui.separator();
-                    //filter text
-                    ui.add(egui::TextEdit::singleline(&mut self.text_filter).hint_text("Filter"));
-                });
-
-                // display warnings
-                for (i, w) in data.warnings.iter().enumerate() {
-                    //filters
-                    if !self.show_notes && matches!(w.rule, EWarningRule::Note(_)) {
-                        continue;
-                    }
-                    if !self.show_conflicts && matches!(w.rule, EWarningRule::Conflict(_)) {
-                        continue;
-                    }
-                    if !self.show_requires && matches!(w.rule, EWarningRule::Requires(_)) {
-                        continue;
-                    }
-                    if !self.show_patches && matches!(w.rule, EWarningRule::Patch(_)) {
-                        continue;
-                    }
-
-                    if !self.text_filter.is_empty()
-                        && !w
-                            .get_rule_name()
-                            .to_lowercase()
-                            .contains(&self.text_filter.to_lowercase())
-                        && !w
-                            .get_comment()
-                            .to_lowercase()
-                            .contains(&self.text_filter.to_lowercase())
-                    {
-                        continue;
-                    }
-
-                    // plugin filter
-                    if !self.plugin_filter.is_empty() {
-                        let mut found = false;
-                        for p in &w.get_plugins() {
-                            if p.to_lowercase() == self.plugin_filter.to_lowercase() {
-                                found = true;
-                                break;
-                            }
+                // accept button
+                let r = ui.add_sized([ui.available_width(), 0_f32], egui::Button::new("Accept"));
+                if r.clicked() {
+                    // apply sorting
+                    match update_new_load_order(data.game, &data.new_order) {
+                        Ok(_) => {
+                            info!("Update successful");
                         }
+                        Err(e) => {
+                            error!("Could not updae load order: {}", e);
+                        }
+                    }
 
-                        if !found {
-                            continue;
+                    // exit the app
+                    ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+                }
+
+                ui.separator();
+
+                // mod list
+                for mod_name in &data.new_order {
+                    let notes: Vec<_> = data
+                        .plugin_warning_map
+                        .iter()
+                        .filter(|(p, _)| p.to_lowercase() == *mod_name.to_lowercase())
+                        .collect();
+
+                    // get color for background
+                    let mut bg_color = if !notes.is_empty() {
+                        let i = notes[0].1;
+                        let background_color = get_color_for_rule(&data.warnings[i].rule);
+                        // make it more transparent
+                        background_color.gamma_multiply(0.5)
+                    } else {
+                        Color32::TRANSPARENT
+                    };
+                    // override background color if mod is in plugin_filter with light blue
+                    if !self.plugin_filter.is_empty()
+                        && mod_name.to_lowercase() == self.plugin_filter.to_lowercase()
+                    {
+                        bg_color = Color32::LIGHT_BLUE;
+                        if ctx.style().visuals.dark_mode {
+                            bg_color = Color32::DARK_BLUE;
+                        }
+                    };
+                    // override the background color if mod is hovered
+                    if self.plugin_hover_filter.contains(&mod_name.to_lowercase()) {
+                        bg_color = Color32::LIGHT_BLUE;
+                        if ctx.style().visuals.dark_mode {
+                            bg_color = Color32::DARK_BLUE;
                         }
                     }
 
                     // item view
-                    let mut frame = egui::Frame::default().inner_margin(4.0).begin(ui);
-                    {
-                        // create itemview
-                        let color = get_color_for_rule(&w.rule);
-                        frame.content_ui.colored_label(color, w.get_rule_name());
-
-                        frame.content_ui.label(w.get_comment());
-
-                        frame.content_ui.push_id(i, |ui| {
-                            ui.collapsing("Plugins Affected", |ui| {
-                                for plugin in &w.get_plugins() {
-                                    ui.label(plugin);
-                                }
-                            });
-                        });
-                    }
-                    let response = frame.allocate_space(ui);
-                    if response.hovered() {
-                        let mut bg_color = egui::Color32::LIGHT_GRAY;
-                        // if theme is dark, make it darker
-                        if ctx.style().visuals.dark_mode {
-                            bg_color = Color32::DARK_GRAY;
+                    egui::Frame::none().fill(bg_color).show(ui, |ui| {
+                        let label = Label::new(mod_name).sense(Sense::click());
+                        // TODO UI Left align the text
+                        let r = ui.add_sized([ui.available_width(), 0_f32], label);
+                        if r.clicked() {
+                            // unselect if clicked again
+                            if self.plugin_filter == mod_name.clone() {
+                                self.plugin_filter = String::new();
+                            } else {
+                                // add notes to filter
+                                self.plugin_filter = mod_name.clone();
+                            }
                         }
+                    });
+                }
+            });
 
-                        frame.frame.fill = bg_color;
-                    }
-                    frame.paint(ui);
+        // main panel
+        egui::CentralPanel::default().show(ctx, |ui| {
+            // The central panel the region left after adding TopPanel's and SidePanel's
+            ui.heading("PLOX");
+
+            // filters
+            ui.horizontal(|ui| {
+                ui.toggle_value(&mut self.show_notes, "Notes");
+                ui.toggle_value(&mut self.show_conflicts, "Conflicts");
+                ui.toggle_value(&mut self.show_requires, "Requires");
+                ui.toggle_value(&mut self.show_patches, "Patches");
+
+                ui.separator();
+                //filter text
+                ui.add(egui::TextEdit::singleline(&mut self.text_filter).hint_text("Filter"));
+            });
+
+            // display warnings
+            for (i, w) in data.warnings.iter().enumerate() {
+                //filters
+                if !self.show_notes && matches!(w.rule, EWarningRule::Note(_)) {
+                    continue;
+                }
+                if !self.show_conflicts && matches!(w.rule, EWarningRule::Conflict(_)) {
+                    continue;
+                }
+                if !self.show_requires && matches!(w.rule, EWarningRule::Requires(_)) {
+                    continue;
+                }
+                if !self.show_patches && matches!(w.rule, EWarningRule::Patch(_)) {
+                    continue;
                 }
 
-                ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
-                    powered_by_egui_and_eframe(ui);
-                    egui::warn_if_debug_build(ui);
-                });
+                if !self.text_filter.is_empty()
+                    && !w
+                        .get_rule_name()
+                        .to_lowercase()
+                        .contains(&self.text_filter.to_lowercase())
+                    && !w
+                        .get_comment()
+                        .to_lowercase()
+                        .contains(&self.text_filter.to_lowercase())
+                {
+                    continue;
+                }
+
+                // plugin filter
+                if !self.plugin_filter.is_empty() {
+                    let mut found = false;
+                    for p in &w.get_plugins() {
+                        if p.to_lowercase() == self.plugin_filter.to_lowercase() {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if !found {
+                        continue;
+                    }
+                }
+
+                // item view
+                let mut frame = egui::Frame::default().inner_margin(4.0).begin(ui);
+                {
+                    // create itemview
+                    let color = get_color_for_rule(&w.rule);
+                    frame.content_ui.colored_label(color, w.get_rule_name());
+
+                    frame.content_ui.label(w.get_comment());
+
+                    frame.content_ui.push_id(i, |ui| {
+                        ui.collapsing("Plugins Affected", |ui| {
+                            for plugin in &w.get_plugins() {
+                                ui.label(plugin);
+                            }
+                        });
+                    });
+                }
+                let response = frame.allocate_space(ui);
+                if response.hovered() {
+                    let mut bg_color = egui::Color32::LIGHT_GRAY;
+                    // if theme is dark, make it darker
+                    if ctx.style().visuals.dark_mode {
+                        bg_color = Color32::DARK_GRAY;
+                    }
+                    frame.frame.fill = bg_color;
+
+                    // update hover filter
+                    self.plugin_hover_filter = w.get_plugins().clone();
+                } else {
+                    self.plugin_hover_filter = vec![];
+                }
+                frame.paint(ui);
+            }
+
+            ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
+                powered_by_egui_and_eframe(ui);
+                egui::warn_if_debug_build(ui);
             });
-        }
+        });
     }
 }
 
@@ -298,13 +343,9 @@ fn get_color_for_rule(rule: &EWarningRule) -> Color32 {
 fn powered_by_egui_and_eframe(ui: &mut egui::Ui) {
     ui.horizontal(|ui| {
         ui.spacing_mut().item_spacing.x = 0.0;
-        ui.label("Powered by ");
+        ui.hyperlink_to("plox", "https://github.com/rfuzzo/plox");
+        ui.label(" powered by ");
         ui.hyperlink_to("egui", "https://github.com/emilk/egui");
-        ui.label(" and ");
-        ui.hyperlink_to(
-            "eframe",
-            "https://github.com/emilk/egui/tree/master/crates/eframe",
-        );
         ui.label(".");
     });
 }

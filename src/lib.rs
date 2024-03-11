@@ -446,7 +446,7 @@ fn update_tes3(result: &[String]) -> std::io::Result<()> {
         warn!("No Morrowind.ini found, using all plugins in Data Files");
     }
 
-    // then actually reset the filetimes on all plugins hooray
+    // TODO TES3 then actually reset the filetimes on all plugins hooray
 
     Ok(())
 }

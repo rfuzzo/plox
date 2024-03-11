@@ -50,7 +50,7 @@ impl ChunkWrapper {
 
 #[derive(Debug, Clone)]
 pub struct Warning {
-    pub rule: EWarningRule, //TODO consider using a reference here
+    pub rule: EWarningRule,
 }
 
 impl Warning {
