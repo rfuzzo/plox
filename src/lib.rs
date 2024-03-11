@@ -702,6 +702,8 @@ pub fn nearend2(f: &EOrderRule) -> Option<NearEnd> {
 
 #[cfg(test)]
 mod tests {
+    use std::fs::create_dir_all;
+
     // Note this useful idiom: importing names from outer (for mod tests) scope.
     use super::*;
 
@@ -876,6 +878,7 @@ mod tests {
         ];
 
         // create the files in /tmp
+        create_dir_all("tmp").expect("copuld not create dir");
         let mut files = vec![];
         for r in &result {
             let mod_path = PathBuf::from("tmp").join(r);
