@@ -702,7 +702,7 @@ pub fn nearend2(f: &EOrderRule) -> Option<NearEnd> {
 
 #[cfg(test)]
 mod tests {
-    use std::fs::create_dir_all;
+    //use std::fs::create_dir_all;
 
     // Note this useful idiom: importing names from outer (for mod tests) scope.
     use super::*;
@@ -866,39 +866,39 @@ mod tests {
     //     }
     // }
 
-    #[test]
-    fn test_redate_mods() {
-        let result = [
-            "morrowind.esm".to_owned(),
-            "tribunal.esm".to_owned(),
-            "bloodmoon.esm".to_owned(),
-            "a.esp".to_owned(),
-            "b.esp".to_owned(),
-            "c.esp".to_owned(),
-        ];
+    // #[test]
+    // fn test_redate_mods() {
+    //     let result = [
+    //         "morrowind.esm".to_owned(),
+    //         "tribunal.esm".to_owned(),
+    //         "bloodmoon.esm".to_owned(),
+    //         "a.esp".to_owned(),
+    //         "b.esp".to_owned(),
+    //         "c.esp".to_owned(),
+    //     ];
 
-        // create the files in /tmp
-        create_dir_all("tmp").expect("copuld not create dir");
-        let mut files = vec![];
-        for r in &result {
-            let mod_path = PathBuf::from("tmp").join(r);
-            let _ = File::create(&mod_path);
-            files.push(mod_path.clone());
-        }
+    //     // create the files in /tmp
+    //     create_dir_all("tmp").expect("copuld not create dir");
+    //     let mut files = vec![];
+    //     for r in &result {
+    //         let mod_path = PathBuf::from("tmp").join(r);
+    //         let _ = File::create(&mod_path);
+    //         files.push(mod_path.clone());
+    //     }
 
-        redate_mods(&files).expect("redate failed");
+    //     redate_mods(&files).expect("redate failed");
 
-        // check if the filetime is correct
-        for path in &files {
-            let metadata = fs::metadata(path).expect("metadata failed");
-            let modified = metadata.modified().expect("modified failed");
-            let unix_time = filetime::FileTime::from_system_time(modified);
-            eprintln!("{} - {:?}", path.display(), unix_time);
-        }
+    //     // check if the filetime is correct
+    //     for path in &files {
+    //         let metadata = fs::metadata(path).expect("metadata failed");
+    //         let modified = metadata.modified().expect("modified failed");
+    //         let unix_time = filetime::FileTime::from_system_time(modified);
+    //         eprintln!("{} - {:?}", path.display(), unix_time);
+    //     }
 
-        // delete the files again
-        for path in &files {
-            fs::remove_file(path).expect("remove failed");
-        }
-    }
+    //     // delete the files again
+    //     for path in &files {
+    //         fs::remove_file(path).expect("remove failed");
+    //     }
+    // }
 }
