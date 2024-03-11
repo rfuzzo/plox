@@ -2,44 +2,49 @@
 
 mod app;
 
-use std::env;
+use std::{env, sync::mpsc::Sender};
 
 pub use app::TemplateApp;
 use log::error;
 use plox::{
     download_latest_rules, gather_mods, get_default_rules_dir,
-    parser::{self, Parser},
+    parser::{self, Warning},
     sorter::new_stable_sorter,
 };
 
-type ParserResult = (Parser, Vec<String>, Vec<(String, usize)>);
+#[derive(Debug, Clone)]
+struct AppData {
+    new_order: Vec<String>,
+    warnings: Vec<Warning>,
+    plugin_warning_map: Vec<(String, usize)>,
+}
 
-fn init_parser(game: plox::ESupportedGame, tx: std::sync::mpsc::Sender<Option<ParserResult>>) {
-    // TODO this blocks UI and sorts everything
-    // TODO run a terminal?
+fn init_parser(game: plox::ESupportedGame, tx: Sender<String>) -> Option<AppData> {
     let root = env::current_dir().expect("No current working dir");
 
     // rules
+    let _ = tx.send("Downloading rules".to_string());
     let rules_dir = get_default_rules_dir(game);
     download_latest_rules(game, &rules_dir);
 
     // mods
+    let _ = tx.send("Gathering mods".to_string());
     let mods = gather_mods(&root, game);
 
     // parser
     let mut parser = parser::get_parser(game);
+    let _ = tx.send("Initializing parser".to_string());
     if let Err(e) = parser.init(rules_dir) {
         error!("Parser init failed: {}", e);
-        todo!("Handle error");
-        //self.warning = format!("Parser init failed: {}", e);
+        let _ = tx.send(format!("Parser init failed: {}", e));
+        return None;
     }
 
     // evaluate
+    let _ = tx.send("Evaluating plugins".to_string());
     parser.evaluate_plugins(&mods);
     let warnings = parser.warnings.clone();
-    let new_order;
     let mut plugin_warning_map = vec![];
-
     for (i, w) in warnings.iter().enumerate() {
         for p in &w.get_plugins() {
             plugin_warning_map.push((p.clone(), i));
@@ -48,19 +53,21 @@ fn init_parser(game: plox::ESupportedGame, tx: std::sync::mpsc::Sender<Option<Pa
 
     // sort
     let mut sorter = new_stable_sorter();
-    match sorter.topo_sort(&mods, &parser.order_rules) {
-        Ok(new) => {
-            new_order = new;
-        }
+    let _ = tx.send("Sorting mods".to_string());
+    let new_order = match sorter.topo_sort(&mods, &parser.order_rules) {
+        Ok(new) => new,
         Err(e) => {
             error!("error sorting: {e:?}");
-            //return None;
-            //self.warning = format!("error sorting: {e:?}");
-            todo!("Handle error");
+            let _ = tx.send(format!("error sorting: {e:?}"));
+            return None;
         }
-    }
+    };
 
-    //self.parser = Some(parser);
-    let r: Option<ParserResult> = Some((parser, new_order, plugin_warning_map));
-    let _ = tx.send(r);
+    let r = AppData {
+        new_order,
+        warnings,
+        plugin_warning_map,
+    };
+
+    Some(r)
 }

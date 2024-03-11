@@ -70,6 +70,7 @@ impl Warning {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct Parser {
     pub game: ESupportedGame,
     pub ext: Vec<String>,
