@@ -6610,15 +6610,6 @@
   {
     "Order": {
       "names": [
-        "nom3*.esp",
-        "nom_creatures loot standard.esp",
-        "building up uvirith*.esp"
-      ]
-    }
-  },
-  {
-    "Order": {
-      "names": [
         "st practice dummies*.esp",
         "nom3*.esp"
       ]

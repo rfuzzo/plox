@@ -9,20 +9,10 @@ authors = ["Moritz Baron"]
 description = "PLOX - Plugin Load Order eXpert. PLOX is a tool for analyzing and sorting your plugin load order. Supports Morrowind, OpenMorrowind and Cyberpunk"
 documentation = ""
 
-
 [workspace.dependencies]
-clap = { version = "4.1", features = ["derive"] }
-toposort-scc = "0.5"
-byteorder = "1.5"
-rust-ini = "0.20"
 log = "0.4"
 env_logger = "0.11"
-regex = "1.10"
-openmw-cfg = "0.5"                                              # move to feature flag
-reqwest = { version = "0.11", features = ["blocking", "json"] }
 serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-seahash = "4.1"
 
 [package]
 name = "plox"
@@ -33,18 +23,20 @@ description.workspace = true
 documentation.workspace = true
 
 [dependencies]
-clap = { workspace = true }
-reqwest = { workspace = true }
-serde = { workspace = true }
-serde_json = { workspace = true }
-toposort-scc = { workspace = true }
-byteorder = { workspace = true }
-rust-ini = { workspace = true }
+clap = { version = "4.1", features = ["derive"] }
+toposort-scc = "0.5"
+byteorder = "1.5"
+rust-ini = "0.20"
+regex = "1.10"
+reqwest = { version = "0.11", features = ["blocking", "json"] }
+serde_json = "1.0"
+seahash = "4.1"
+filetime = "0.2"
+openmw-cfg = "0.5"
+
 log = { workspace = true }
 env_logger = { workspace = true }
-regex = { workspace = true }
-seahash = { workspace = true }
-openmw-cfg = { workspace = true }   # move to feature flag
+serde = { workspace = true }      # move to feature flag
 
 [dev-dependencies]
 pretty_assertions = "1.3"

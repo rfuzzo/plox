@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::env;
 use std::error::Error;
 use std::fs::{self, File};
@@ -12,6 +13,7 @@ pub mod parser;
 pub mod rules;
 pub mod sorter;
 
+use filetime::set_file_mtime;
 use ini::Ini;
 use log::{error, info, warn};
 use openmw_cfg::config_path;
@@ -446,7 +448,40 @@ fn update_tes3(result: &[String]) -> std::io::Result<()> {
         warn!("No Morrowind.ini found, using all plugins in Data Files");
     }
 
-    // TODO TES3 then actually reset the filetimes on all plugins hooray
+    // redate files
+    let files = result
+        .iter()
+        .map(|f| PathBuf::from("Data Files").join(f))
+        .collect::<Vec<_>>();
+    redate_mods(&files)?;
+
+    Ok(())
+}
+
+fn redate_mods(files: &[PathBuf]) -> Result<(), io::Error> {
+    let fixed_file_times: HashMap<String, usize> = HashMap::from([
+        ("morrowind.esm".into(), 1024695106),
+        ("tribunal.esm".into(), 1035940926),
+        ("bloodmoon.esm".into(), 1051807050),
+    ]);
+    let start_time = 1024695106;
+    let mut current_time = start_time;
+    for mod_path in files {
+        // Change the modification times of plugin files to be in order of file list, oldest to newest
+        // check if is a fixed file time file
+        let filename = mod_path.file_name().unwrap().to_str().unwrap();
+        if let Some(time) = fixed_file_times.get(&filename.to_lowercase()) {
+            let time = *time as i64;
+            set_file_mtime(mod_path, filetime::FileTime::from_unix_time(time, 0))?;
+        } else {
+            // set the time to start time + 60
+            current_time += 60;
+            set_file_mtime(
+                mod_path,
+                filetime::FileTime::from_unix_time(current_time, 0),
+            )?;
+        }
+    }
 
     Ok(())
 }
@@ -828,4 +863,39 @@ mod tests {
     //         warn!("No Morrowind.ini found, using all plugins in Data Files");
     //     }
     // }
+
+    #[test]
+    fn test_redate_mods() {
+        let result = [
+            "morrowind.esm".to_owned(),
+            "tribunal.esm".to_owned(),
+            "bloodmoon.esm".to_owned(),
+            "a.esp".to_owned(),
+            "b.esp".to_owned(),
+            "c.esp".to_owned(),
+        ];
+
+        // create the files in /tmp
+        let mut files = vec![];
+        for r in &result {
+            let mod_path = PathBuf::from("tmp").join(r);
+            let _ = File::create(&mod_path);
+            files.push(mod_path.clone());
+        }
+
+        redate_mods(&files).expect("redate failed");
+
+        // check if the filetime is correct
+        for path in &files {
+            let metadata = fs::metadata(path).expect("metadata failed");
+            let modified = metadata.modified().expect("modified failed");
+            let unix_time = filetime::FileTime::from_system_time(modified);
+            eprintln!("{} - {:?}", path.display(), unix_time);
+        }
+
+        // delete the files again
+        for path in &files {
+            fs::remove_file(path).expect("remove failed");
+        }
+    }
 }
