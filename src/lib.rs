@@ -39,7 +39,7 @@ pub fn log_level_to_str(level: ELogLevel) -> String {
     }
 }
 
-#[derive(Debug, Clone, Copy, ValueEnum)]
+#[derive(Debug, Clone, Copy, ValueEnum, PartialEq, Eq)]
 pub enum ESupportedGame {
     Morrowind,
     OpenMorrowind,

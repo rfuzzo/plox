@@ -232,7 +232,7 @@ pub fn sort(
         } else {
             sorter::new_stable_sorter()
         };
-        match sorter.topo_sort(&mods, &parser.order_rules) {
+        match sorter.topo_sort(game, &mods, &parser.order_rules) {
             Ok(result) => {
                 if dry_run {
                     info!("Dry run...");
@@ -299,7 +299,7 @@ pub fn verify(game: ESupportedGame, rules_path: &Option<String>) -> ExitCode {
     }
 
     let mods = debug_get_mods_from_order_rules(&parser.order_rules);
-    match sorter::new_unstable_sorter().topo_sort(&mods, &parser.order_rules) {
+    match sorter::new_unstable_sorter().topo_sort(game, &mods, &parser.order_rules) {
         Ok(_) => {
             info!("Verify SUCCESS");
             ExitCode::SUCCESS

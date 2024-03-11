@@ -55,7 +55,7 @@ fn init_parser(game: plox::ESupportedGame, tx: Sender<String>) -> Option<AppData
     // sort
     let mut sorter = new_stable_sorter();
     let _ = tx.send("Sorting mods".to_string());
-    let new_order = match sorter.topo_sort(&mods, &parser.order_rules) {
+    let new_order = match sorter.topo_sort(game, &mods, &parser.order_rules) {
         Ok(new) => new,
         Err(e) => {
             error!("error sorting: {e:?}");

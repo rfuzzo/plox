@@ -36,19 +36,21 @@ mod unit_tests {
 
         assert!(
             sorter::new_unstable_sorter()
-                .topo_sort(&mods, &order)
+                .topo_sort(ESupportedGame::Morrowind, &mods, &order)
                 .is_err(),
             "unstable rules do not contain a cycle"
         );
 
         assert!(
-            new_stable_full_sorter().topo_sort(&mods, &order).is_err(),
+            new_stable_full_sorter()
+                .topo_sort(ESupportedGame::Morrowind, &mods, &order)
+                .is_err(),
             "stable(false) rules do not contain a cycle"
         );
 
         assert!(
             sorter::new_stable_sorter()
-                .topo_sort(&mods, &order)
+                .topo_sort(ESupportedGame::Morrowind, &mods, &order)
                 .is_err(),
             "stable(true) rules do not contain a cycle"
         );
@@ -71,21 +73,21 @@ mod unit_tests {
             .map(|e| (*e).into())
             .collect::<Vec<_>>();
 
-        match sorter::new_unstable_sorter().topo_sort(&mods, &order) {
+        match sorter::new_unstable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &order) {
             Ok(result) => {
                 assert!(checkresult(&result, &order), "stable(true) order is wrong");
             }
             Err(e) => panic!("Error: {}", e),
         }
 
-        match new_stable_full_sorter().topo_sort(&mods, &order) {
+        match new_stable_full_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &order) {
             Ok(result) => {
                 assert!(checkresult(&result, &order), "stable(true) order is wrong");
             }
             Err(e) => panic!("Error: {}", e),
         }
 
-        match sorter::new_stable_sorter().topo_sort(&mods, &order) {
+        match sorter::new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &order) {
             Ok(result) => {
                 assert!(checkresult(&result, &order), "stable(true) order is wrong");
             }

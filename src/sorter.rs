@@ -3,7 +3,9 @@ use std::{collections::HashMap, fs};
 use log::{error, warn};
 use toposort_scc::IndexGraph;
 
-use crate::{get_ordering_from_order_rules, nearend2, nearstart2, wild_contains, EOrderRule};
+use crate::{
+    get_ordering_from_order_rules, nearend2, nearstart2, wild_contains, EOrderRule, ESupportedGame,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ESortType {
@@ -44,6 +46,7 @@ impl Sorter {
     /// This function will return an error if any parsing fails
     pub fn topo_sort(
         &mut self,
+        game: ESupportedGame,
         mods_cased: &[String],
         order_rules: &[EOrderRule],
     ) -> Result<Vec<String>, &'static str> {
@@ -148,6 +151,35 @@ impl Sorter {
                     let element = mods_copy.remove(index);
                     mods_copy.insert(0, element);
                 }
+            }
+        }
+
+        if game == ESupportedGame::Morrowind || game == ESupportedGame::OpenMorrowind {
+            // put all esms at the start
+            for (i, m) in mods.iter().enumerate() {
+                if m.ends_with(".esm") {
+                    let element = mods_copy.remove(i);
+                    mods_copy.insert(0, element);
+                }
+            }
+
+            // put standard tes3 esms at the start
+            if mods_copy.contains(&"bloodmoon.esm".into()) {
+                let index = mods_copy.iter().position(|f| f == "bloodmoon.esm").unwrap();
+                let element = mods_copy.remove(index);
+                mods_copy.insert(0, element);
+            }
+
+            if mods_copy.contains(&"tribunal.esm".into()) {
+                let index = mods_copy.iter().position(|f| f == "tribunal.esm").unwrap();
+                let element = mods_copy.remove(index);
+                mods_copy.insert(0, element);
+            }
+
+            if mods_copy.contains(&"morrowind.esm".into()) {
+                let index = mods_copy.iter().position(|f| f == "morrowind.esm").unwrap();
+                let element = mods_copy.remove(index);
+                mods_copy.insert(0, element);
             }
         }
 
