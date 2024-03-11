@@ -60,6 +60,15 @@ fn init_parser(game: plox::ESupportedGame, tx: Sender<String>) -> Option<AppData
     }
 
     // sort
+    //let mut new_order = mods.clone();
+    // check order first
+    //match check_order(&mods, &parser.order_rules) {
+    //    true => {
+    //        // exit
+    //        info!("Mods are in correct order, no sorting needed.");
+    //        let _ = tx.send("Mods are in correct order, no sorting needed.".to_string());
+    //     }
+    //    false => {
     let mut sorter = new_stable_sorter();
     let _ = tx.send("Sorting mods".to_string());
     let new_order = match sorter.topo_sort(game, &mods, &parser.order_rules) {
@@ -70,6 +79,8 @@ fn init_parser(game: plox::ESupportedGame, tx: Sender<String>) -> Option<AppData
             return None;
         }
     };
+    //}
+    //}
 
     let r = AppData {
         game,

@@ -472,6 +472,7 @@ fn redate_mods(files: &[PathBuf]) -> Result<(), io::Error> {
         let filename = mod_path.file_name().unwrap().to_str().unwrap();
         if let Some(time) = fixed_file_times.get(&filename.to_lowercase()) {
             let time = *time as i64;
+            current_time = time;
             set_file_mtime(mod_path, filetime::FileTime::from_unix_time(time, 0))?;
         } else {
             // set the time to start time + 60
@@ -484,6 +485,29 @@ fn redate_mods(files: &[PathBuf]) -> Result<(), io::Error> {
     }
 
     Ok(())
+}
+
+/// Checks if the list of mods is in the correct order
+pub fn check_order(result: &[String], order_rules: &[EOrderRule]) -> bool {
+    let order = get_ordering_from_order_rules(order_rules);
+    let pairs = order;
+    for (a, b) in pairs {
+        if let Some(results_for_a) = wild_contains(result, &a) {
+            if let Some(results_for_b) = wild_contains(result, &b) {
+                for i in &results_for_a {
+                    for j in &results_for_b {
+                        let pos_a = result.iter().position(|x| x == i).unwrap();
+                        let pos_b = result.iter().position(|x| x == j).unwrap();
+                        if pos_a > pos_b {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    true
 }
 
 ////////////////////////////////////////////////////////////////////////

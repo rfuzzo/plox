@@ -2,9 +2,9 @@
 mod unit_tests {
 
     use plox::{
-        rules::{EOrderRule, Order},
+        rules::Order,
         sorter::{self, Sorter},
-        wild_contains, *,
+        *,
     };
 
     fn init() {
@@ -75,45 +75,23 @@ mod unit_tests {
 
         match sorter::new_unstable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &order) {
             Ok(result) => {
-                assert!(checkresult(&result, &order), "stable(true) order is wrong");
+                assert!(check_order(&result, &order), "stable(true) order is wrong");
             }
             Err(e) => panic!("Error: {}", e),
         }
 
         match new_stable_full_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &order) {
             Ok(result) => {
-                assert!(checkresult(&result, &order), "stable(true) order is wrong");
+                assert!(check_order(&result, &order), "stable(true) order is wrong");
             }
             Err(e) => panic!("Error: {}", e),
         }
 
         match sorter::new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &order) {
             Ok(result) => {
-                assert!(checkresult(&result, &order), "stable(true) order is wrong");
+                assert!(check_order(&result, &order), "stable(true) order is wrong");
             }
             Err(e) => panic!("Error: {}", e),
         }
-    }
-
-    fn checkresult(result: &[String], order_rules: &[EOrderRule]) -> bool {
-        let order = get_ordering_from_order_rules(order_rules);
-        let pairs = order;
-        for (a, b) in pairs {
-            if let Some(results_for_a) = wild_contains(result, &a) {
-                if let Some(results_for_b) = wild_contains(result, &b) {
-                    for i in &results_for_a {
-                        for j in &results_for_b {
-                            let pos_a = result.iter().position(|x| x == i).unwrap();
-                            let pos_b = result.iter().position(|x| x == j).unwrap();
-                            if pos_a > pos_b {
-                                return false;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        true
     }
 }

@@ -232,6 +232,17 @@ pub fn sort(
         } else {
             sorter::new_stable_sorter()
         };
+
+        // check order first
+        // match check_order(&mods, &parser.order_rules) {
+        //     true => {
+        //         // exit
+        //         info!("Mods are in correct order, no sorting needed.");
+        //         return ExitCode::SUCCESS;
+        //     }
+        //     false => {}
+        // }
+
         match sorter.topo_sort(game, &mods, &parser.order_rules) {
             Ok(result) => {
                 if dry_run {

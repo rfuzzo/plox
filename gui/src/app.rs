@@ -193,6 +193,37 @@ impl eframe::App for TemplateApp {
                 });
                 ui.separator();
 
+                // accept button
+                ui.add_space(4_f32);
+
+                let button = egui::Button::new("Accept");
+                // disable button if new order is the same as old
+                let enabled = !data.old_order.eq(&data.new_order);
+                ui.add_enabled_ui(enabled, |ui| {
+                    let r = ui.add_sized([ui.available_width(), 0_f32], button);
+
+                    if r.clicked() {
+                        // apply sorting
+                        match update_new_load_order(data.game, &data.new_order) {
+                            Ok(_) => {
+                                info!("Update successful");
+                            }
+                            Err(e) => {
+                                error!("Could not updae load order: {}", e);
+                            }
+                        }
+
+                        // exit the app
+                        ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+                    }
+
+                    r.on_disabled_hover_text("Mods are in correct order. No need to apply.");
+                });
+
+                ui.separator();
+
+                ui.add_space(4_f32);
+
                 // mod list
                 let order = match self.mod_list_view {
                     EModListView::NewOrder => &data.new_order,
@@ -248,31 +279,6 @@ impl eframe::App for TemplateApp {
                             }
                         });
                     }
-                });
-
-                // add spacing until bottom
-                ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
-                    // accept button
-                    ui.add_space(4_f32);
-
-                    let r =
-                        ui.add_sized([ui.available_width(), 0_f32], egui::Button::new("Accept"));
-                    if r.clicked() {
-                        // apply sorting
-                        match update_new_load_order(data.game, &data.new_order) {
-                            Ok(_) => {
-                                info!("Update successful");
-                            }
-                            Err(e) => {
-                                error!("Could not updae load order: {}", e);
-                            }
-                        }
-
-                        // exit the app
-                        ctx.send_viewport_cmd(egui::ViewportCommand::Close);
-                    }
-
-                    ui.separator();
                 });
             });
 
@@ -372,10 +378,6 @@ impl eframe::App for TemplateApp {
                     frame.paint(ui);
                 }
             });
-            ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
-                powered_by_egui_and_eframe(ui);
-                egui::warn_if_debug_build(ui);
-            });
         });
     }
 }
@@ -387,14 +389,4 @@ fn get_color_for_rule(rule: &EWarningRule) -> Color32 {
         EWarningRule::Requires(_) => Color32::YELLOW,
         EWarningRule::Patch(_) => Color32::BLUE,
     }
-}
-
-fn powered_by_egui_and_eframe(ui: &mut egui::Ui) {
-    ui.horizontal(|ui| {
-        ui.spacing_mut().item_spacing.x = 0.0;
-        ui.hyperlink_to("plox", "https://github.com/rfuzzo/plox");
-        ui.label(" powered by ");
-        ui.hyperlink_to("egui", "https://github.com/emilk/egui");
-        ui.label(".");
-    });
 }

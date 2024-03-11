@@ -3,7 +3,7 @@ mod integration_tests {
     use std::{fs::create_dir_all, io::Write};
 
     use log::warn;
-    use plox::{parser::*, rules::EOrderRule, sorter::*, *};
+    use plox::{parser::*, sorter::*, *};
     use rand::seq::SliceRandom;
     use rand::thread_rng;
 
@@ -48,7 +48,7 @@ mod integration_tests {
         {
             Ok(result) => {
                 assert!(
-                    checkresult(&result, &parser.order_rules),
+                    check_order(&result, &parser.order_rules),
                     "stable(true) order is wrong"
                 );
             }
@@ -58,7 +58,7 @@ mod integration_tests {
         match new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules) {
             Ok(result) => {
                 assert!(
-                    checkresult(&result, &parser.order_rules),
+                    check_order(&result, &parser.order_rules),
                     "stable(true) order is wrong"
                 );
             }
@@ -200,7 +200,7 @@ mod integration_tests {
         match new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules) {
             Ok(result) => {
                 assert!(
-                    checkresult(&result, &parser.order_rules),
+                    check_order(&result, &parser.order_rules),
                     "stable(true) order is wrong"
                 );
             }
@@ -213,7 +213,7 @@ mod integration_tests {
         {
             Ok(result) => {
                 assert!(
-                    checkresult(&result, &parser.order_rules),
+                    check_order(&result, &parser.order_rules),
                     "stable(true) order is wrong"
                 );
             }
@@ -238,7 +238,7 @@ mod integration_tests {
         match new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules) {
             Ok(result) => {
                 assert!(
-                    checkresult(&result, &parser.order_rules),
+                    check_order(&result, &parser.order_rules),
                     "stable(true) order is wrong"
                 );
             }
@@ -251,7 +251,7 @@ mod integration_tests {
         {
             Ok(result) => {
                 assert!(
-                    checkresult(&result, &parser.order_rules),
+                    check_order(&result, &parser.order_rules),
                     "stable(true) order is wrong"
                 );
             }
@@ -279,7 +279,7 @@ mod integration_tests {
         match new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules) {
             Ok(result) => {
                 assert!(
-                    checkresult(&result, &parser.order_rules),
+                    check_order(&result, &parser.order_rules),
                     "stable(true) order is wrong"
                 );
             }
@@ -291,7 +291,7 @@ mod integration_tests {
                 ) {
                     Ok(result) => {
                         assert!(
-                            checkresult(&result, &parser.order_rules),
+                            check_order(&result, &parser.order_rules),
                             "stable(true) order is wrong"
                         );
                     }
@@ -305,7 +305,7 @@ mod integration_tests {
         {
             Ok(result) => {
                 assert!(
-                    checkresult(&result, &parser.order_rules),
+                    check_order(&result, &parser.order_rules),
                     "stable(true) order is wrong"
                 );
             }
@@ -399,27 +399,5 @@ mod integration_tests {
                 "c.archive".into()
             ]
         )
-    }
-
-    fn checkresult(result: &[String], order_rules: &[EOrderRule]) -> bool {
-        let order = get_ordering_from_order_rules(order_rules);
-        let pairs = order;
-        for (a, b) in pairs {
-            if let Some(results_for_a) = wild_contains(result, &a) {
-                if let Some(results_for_b) = wild_contains(result, &b) {
-                    for i in &results_for_a {
-                        for j in &results_for_b {
-                            let pos_a = result.iter().position(|x| x == i).unwrap();
-                            let pos_b = result.iter().position(|x| x == j).unwrap();
-                            if pos_a > pos_b {
-                                return false;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        true
     }
 }
