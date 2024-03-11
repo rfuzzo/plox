@@ -39,8 +39,8 @@ The rules are hosted in their own repository:
 
 ## Screenshots
 
-![Screenshot](/assets/Screenshot_gui.png)
-![Screenshot](/assets/Screenshot_cli.png)
+![Screenshot](/assets/screenshot_gui1.png)
+![Screenshot](/assets/screenshot_cli1.png)
 
 ## Credits
 
