@@ -390,7 +390,7 @@ mod integration_tests {
 
         let root_path = "./tests";
 
-        let mods = gather_mods(&root_path, ESupportedGame::Cyberpunk);
+        let mods = gather_mods(&root_path, ESupportedGame::Cyberpunk, None);
         assert_eq!(
             mods,
             vec![

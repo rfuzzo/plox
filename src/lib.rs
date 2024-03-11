@@ -18,6 +18,7 @@ use ini::Ini;
 use log::{error, info, warn};
 use openmw_cfg::config_path;
 use rules::*;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, ValueEnum, Default)]
 pub enum ELogLevel {
@@ -39,7 +40,7 @@ pub fn log_level_to_str(level: ELogLevel) -> String {
     }
 }
 
-#[derive(Debug, Clone, Copy, ValueEnum, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, ValueEnum, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ESupportedGame {
     Morrowind,
     OpenMW,
@@ -53,6 +54,8 @@ pub const PLOX_RULES_BASE: &str = "plox_base.txt";
 
 /// Detect game from current working directory
 pub fn detect_game() -> Option<ESupportedGame> {
+    // TODO fix that for non-windows
+
     if PathBuf::from("Morrowind.exe").exists() {
         Some(ESupportedGame::Morrowind)
     } else if PathBuf::from("openmw.exe").exists() {
@@ -204,14 +207,14 @@ fn download_plox_rules(rules_dir: &PathBuf) {
 /// # Errors
 ///
 /// This function will return an error if IO operations fail
-pub fn gather_mods<P>(root: &P, game: ESupportedGame) -> Vec<String>
+pub fn gather_mods<P>(root: &P, game: ESupportedGame, config: Option<P>) -> Vec<String>
 where
     P: AsRef<Path>,
 {
     match game {
         ESupportedGame::Morrowind => gather_tes3_mods(root),
         ESupportedGame::Cyberpunk => gather_cp77_mods(root),
-        ESupportedGame::OpenMW => gather_openmw_mods(root),
+        ESupportedGame::OpenMW => gather_openmw_mods(config),
     }
 }
 
@@ -312,12 +315,21 @@ where
     names
 }
 
-pub fn gather_openmw_mods<P>(_path: &P) -> Vec<String>
+pub fn gather_openmw_mods<P>(config: Option<P>) -> Vec<String>
 where
     P: AsRef<Path>,
 {
     // parse cfg
-    if let Ok(cfg) = openmw_cfg::get_config() {
+    let mut path = config_path();
+    if let Some(config_path) = config {
+        if config_path.as_ref().exists() {
+            path = config_path.as_ref().to_path_buf();
+        } else {
+            error!("openmw.cfg not found at {}", config_path.as_ref().display());
+        }
+    }
+
+    if let Ok(cfg) = openmw_cfg::Ini::load_from_file_noescape(path) {
         if let Ok(files) = openmw_cfg::get_plugins(&cfg) {
             let names = files
                 .iter()

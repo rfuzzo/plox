@@ -2,12 +2,12 @@
 
 mod app;
 
-use std::{env, sync::mpsc::Sender};
+use std::{env, path::PathBuf, sync::mpsc::Sender};
 
 pub use app::TemplateApp;
 use log::error;
 use plox::{
-    download_latest_rules, gather_mods, get_default_rules_dir,
+    detect_game, download_latest_rules, gather_mods, get_default_rules_dir,
     parser::{self, Warning},
     sorter::new_stable_sorter,
 };
@@ -20,6 +20,36 @@ enum ETheme {
     Light,
 }
 
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize, Default)]
+struct AppSettings {
+    /// Specifies an openmw config file to use
+    config: Option<PathBuf>,
+
+    /// Specifies the game to use
+    game: Option<plox::ESupportedGame>,
+
+    /// set to not download rules
+    no_rules_download: bool,
+}
+impl AppSettings {
+    fn from_file(arg: &str) -> Self {
+        // deserialize from toml file
+        match std::fs::read_to_string(arg) {
+            Ok(s) => match toml::from_str(&s) {
+                Ok(s) => s,
+                Err(e) => {
+                    error!("Error deserializing settings: {}", e);
+                    AppSettings::default()
+                }
+            },
+            Err(e) => {
+                error!("Error reading settings file: {}", e);
+                AppSettings::default()
+            }
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 struct AppData {
     game: plox::ESupportedGame,
@@ -29,17 +59,38 @@ struct AppData {
     plugin_warning_map: Vec<(String, usize)>,
 }
 
-fn init_parser(game: plox::ESupportedGame, tx: Sender<String>) -> Option<AppData> {
+fn init_parser(settings: AppSettings, tx: Sender<String>) -> Option<AppData> {
+    // game
+    let game = if let Some(game) = settings.game {
+        let _ = tx.send(format!("Using game: {:?}", game));
+        game
+    } else {
+        match detect_game() {
+            Some(g) => {
+                let _ = tx.send(format!("Detected game: {:?}", g));
+                g
+            }
+            None => {
+                let _ = tx.send("No game detected".to_string());
+                return None;
+            }
+        }
+    };
+
     let root = env::current_dir().expect("No current working dir");
 
     // rules
-    let _ = tx.send("Downloading rules".to_string());
     let rules_dir = get_default_rules_dir(game);
-    download_latest_rules(game, &rules_dir);
+    if !settings.no_rules_download {
+        let _ = tx.send("Downloading rules".to_string());
+        download_latest_rules(game, &rules_dir);
+    } else {
+        let _ = tx.send("Skipping rules download".to_string());
+    }
 
     // mods
     let _ = tx.send("Gathering mods".to_string());
-    let mods = gather_mods(&root, game);
+    let mods = gather_mods(&root, game, settings.config);
 
     // parser
     let mut parser = parser::get_parser(game);

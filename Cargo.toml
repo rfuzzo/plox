@@ -32,11 +32,11 @@ reqwest = { version = "0.11", features = ["blocking", "json"] }
 serde_json = "1.0"
 seahash = "4.1"
 filetime = "0.2"
-openmw-cfg = "0.5"
+openmw-cfg = "0.5"                                              # move to feature flag
 
 log = { workspace = true }
 env_logger = { workspace = true }
-serde = { workspace = true }      # move to feature flag
+serde = { workspace = true }
 
 [dev-dependencies]
 pretty_assertions = "1.3"

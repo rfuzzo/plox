@@ -31,11 +31,11 @@ struct Cli {
 enum Command {
     /// Sorts the current mod load order according to specified rules
     Sort {
-        /// Root game folder (e.g. "Cyberpunk 2077" or "Data Files"). Default is current working directory
+        /// Root game folder (e.g. "Cyberpunk 2077" or "Morrowind"). Default is current working directory
         #[arg(short, long)]
         game_folder: Option<PathBuf>,
 
-        /// Folder to read sorting rules from. Default is ./plox or ./mlox for TES3
+        /// Folder to read sorting rules from. Default is ./mlox for TES3
         #[arg(short, long)]
         rules_dir: Option<String>,
 
@@ -54,12 +54,20 @@ enum Command {
         /// Read the input mods from a file instead of checking the root folder
         #[arg(short, long)]
         mod_list: Option<PathBuf>,
+
+        /// (OpenMW only) Path to the openmw.cfg file
+        #[arg(short, long)]
+        config: Option<PathBuf>,
     },
     /// Lists the current mod load order
     List {
-        /// Root game folder (e.g. "Cyberpunk 2077" or "Data Files"). Default is current working directory
+        /// Root game folder (e.g. "Cyberpunk 2077" or "Morrowind"). Default is current working directory
         #[arg(short, long)]
         root: Option<PathBuf>,
+
+        /// (OpenMW only) Path to the openmw.cfg file
+        #[arg(short, long)]
+        config: Option<PathBuf>,
     },
     /// Verifies integrity of the specified rules
     Verify {
@@ -113,7 +121,7 @@ fn main() -> ExitCode {
     };
 
     let code = match &cli.command {
-        Command::List { root } => list_mods(root, game),
+        Command::List { root, config } => list_mods(root, game, config.clone()),
         Command::Verify { rules_dir } => verify(game, rules_dir),
         Command::Sort {
             game_folder: root,
@@ -122,15 +130,17 @@ fn main() -> ExitCode {
             dry_run,
             unstable,
             no_download,
-        } => sort(
+            config,
+        } => sort(CliSortOptions {
             game,
-            root,
-            rules_dir,
-            mod_list,
-            *dry_run,
-            *unstable,
-            *no_download,
-        ),
+            game_folder: root.clone(),
+            rules_dir: rules_dir.clone(),
+            mod_list: mod_list.clone(),
+            dry_run: *dry_run,
+            unstable: *unstable,
+            no_download: *no_download,
+            config: config.clone(),
+        }),
     };
 
     if !cli.non_interactive {
@@ -142,16 +152,28 @@ fn main() -> ExitCode {
     code
 }
 
+pub struct CliSortOptions {
+    pub game: ESupportedGame,
+    pub game_folder: Option<PathBuf>,
+    pub rules_dir: Option<String>,
+    pub mod_list: Option<PathBuf>,
+    pub dry_run: bool,
+    pub unstable: bool,
+    pub no_download: bool,
+    pub config: Option<PathBuf>,
+}
+
 /// Sorts the current mod load order according to specified rules
-pub fn sort(
-    game: ESupportedGame,
-    root: &Option<PathBuf>,
-    rules_path: &Option<String>,
-    mod_list: &Option<PathBuf>,
-    dry_run: bool,
-    unstable: bool,
-    no_download: bool,
-) -> ExitCode {
+pub fn sort(options: CliSortOptions) -> ExitCode {
+    let game = options.game;
+    let root = options.game_folder;
+    let rules_path = options.rules_dir;
+    let mod_list = options.mod_list;
+    let dry_run = options.dry_run;
+    let unstable = options.unstable;
+    let no_download = options.no_download;
+    let config = options.config;
+
     // get game root
     let root = match root {
         Some(path) => path.clone(),
@@ -176,7 +198,11 @@ pub fn sort(
     if let Some(modlist_path) = mod_list {
         mods = read_file_as_list(modlist_path);
     } else {
-        mods = gather_mods(&root, game);
+        mods = match game {
+            ESupportedGame::Morrowind => gather_tes3_mods(&root),
+            ESupportedGame::Cyberpunk => gather_cp77_mods(&root),
+            ESupportedGame::OpenMW => gather_openmw_mods(config),
+        };
         if mods.is_empty() {
             info!("No mods found");
             return ExitCode::FAILURE;
@@ -323,7 +349,11 @@ pub fn verify(game: ESupportedGame, rules_path: &Option<String>) -> ExitCode {
 }
 
 /// Lists the current mod load order
-pub fn list_mods(root: &Option<PathBuf>, game: ESupportedGame) -> ExitCode {
+pub fn list_mods(
+    root: &Option<PathBuf>,
+    game: ESupportedGame,
+    config: Option<PathBuf>,
+) -> ExitCode {
     info!("Printing active mods...");
 
     let root = match root {
@@ -331,7 +361,7 @@ pub fn list_mods(root: &Option<PathBuf>, game: ESupportedGame) -> ExitCode {
         None => env::current_dir().expect("No current working dir"),
     };
 
-    for m in gather_mods(&root, game) {
+    for m in gather_mods(&root, game, config) {
         println!("{}", m);
         //info!("{}", m);
     }

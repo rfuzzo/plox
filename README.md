@@ -12,6 +12,14 @@ Supported games:
 - ✅OpenMW
 - 🚧Cyberpunk 2077
 
+The PLOX GUI supports a configuration file called `plox.toml` (place next to `plox_gui`) that allows you to customize its behavior. Here's an example of how to use the `plox.toml` file:
+
+```toml
+config = "openmw.cfg"
+game = "OpenMW"
+no_rules_download = true
+```
+
 ## Rules
 
 > Rules spec taken from [mlox - the elder scrolls Mod Load Order eXpert](https://github.com/mlox/mlox).

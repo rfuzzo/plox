@@ -19,6 +19,7 @@ eframe = { version = "0.26.0", default-features = false, features = [
 
 log = { workspace = true }
 serde = { workspace = true }
+toml = "0.8"
 
 # native:
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]

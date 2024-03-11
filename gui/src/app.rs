@@ -3,9 +3,9 @@ use std::sync::mpsc::{Receiver, Sender};
 use egui::{Color32, Label, Sense};
 
 use log::{error, info};
-use plox::{detect_game, rules::EWarningRule, update_new_load_order};
+use plox::{rules::EWarningRule, update_new_load_order};
 
-use crate::{init_parser, AppData, ETheme};
+use crate::{init_parser, AppData, AppSettings, ETheme};
 
 #[derive(PartialEq)]
 pub enum EModListView {
@@ -91,6 +91,22 @@ impl TemplateApp {
             Default::default()
         };
 
+        // deserialize settings from plox.toml
+        let settings = AppSettings::from_file("plox.toml");
+
+        // debug save settings to plox.toml
+        let settings_example = AppSettings {
+            game: Some(plox::ESupportedGame::OpenMW),
+            no_rules_download: true,
+            config: Some(std::path::PathBuf::from("openmw.cfg")),
+        };
+
+        if let Ok(s) = toml::to_string_pretty(&settings_example) {
+            if let Err(e) = std::fs::write("plox.toml", s) {
+                error!("Error writing settings to file: {}", e);
+            }
+        }
+
         // do all the logic here
         // init parser
         // Execute the runtime in its own thread.
@@ -99,9 +115,7 @@ impl TemplateApp {
         let tx2 = app.tx2.clone();
 
         std::thread::spawn(move || {
-            let result = pollster::block_on(async {
-                init_parser(detect_game().expect("no game"), tx.clone())
-            });
+            let result = pollster::block_on(async { init_parser(settings, tx.clone()) });
             // send result to app
             let _ = tx.send("App initialized".to_string());
             let _ = tx2.send(result);
