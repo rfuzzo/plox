@@ -2,7 +2,9 @@
 
 > 🚧 Work in progress
 
-A small rust utility to sort a modlist topologically according to ordering rules, as wall as output warnings and notes. Includes a GUI app and a commandline tool.
+PLOX is a rust re-write of MLOX, a utility tool to sort a modlist topologically according to ordering rules. PLOX also outputs warnings and notes dependent on the mods in your load order. You can use it as a GUI app or as a commandline tool.
+
+Rules are automatically downloaded from the respective Rules repository (see below for details).
 
 Supported games:
 
@@ -25,7 +27,7 @@ The rules are hosted in their own repository:
 
 ## Usage
 
-### 🚧 GUI
+### GUI
 
 1. Download `plox_gui.exe`from  the latest release from <https://github.com/rfuzzo/plox/releases>
 2. Place `plox_gui.exe` next to the game's exe
