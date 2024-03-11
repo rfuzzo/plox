@@ -1,13 +1,15 @@
-use std::env;
+use std::sync::mpsc::{Receiver, Sender};
 
 use egui::{Color32, Label, RichText, Sense};
-use log::error;
+
+use log::{debug, error};
 use plox::{
-    detect_game, download_latest_rules, gather_mods, get_default_rules_dir,
-    parser::{self, Parser, Warning},
+    detect_game,
+    parser::{Parser, Warning},
     rules::EWarningRule,
-    sorter::{new_stable_sorter, Sorter},
 };
+
+use crate::{init_parser, ParserResult};
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -16,13 +18,12 @@ pub struct TemplateApp {
     #[serde(skip)]
     parser: Option<Parser>,
 
-    #[serde(skip)]
-    sorter: Sorter,
+    //#[serde(skip)]
+    //sorter: Sorter,
 
     // plugins
-    #[serde(skip)]
-    mods: Vec<String>,
-
+    //#[serde(skip)]
+    //mods: Vec<String>,
     #[serde(skip)]
     new_order: Vec<String>,
 
@@ -40,14 +41,25 @@ pub struct TemplateApp {
     show_patches: bool,
     text_filter: String,
     plugin_filter: String,
+
+    // ui
+    #[serde(skip)]
+    warning: String,
+    // Sender/Receiver for async notifications.
+    #[serde(skip)]
+    tx: Sender<Option<ParserResult>>,
+    #[serde(skip)]
+    rx: Receiver<Option<ParserResult>>,
 }
 
 impl Default for TemplateApp {
     fn default() -> Self {
+        let (tx, rx) = std::sync::mpsc::channel();
+
         Self {
             parser: None,
-            sorter: new_stable_sorter(),
-            mods: vec![],
+            //sorter: new_stable_sorter(),
+            //mods: vec![],
             new_order: vec![],
             warnings: vec![],
             plugin_warning_map: vec![],
@@ -57,94 +69,69 @@ impl Default for TemplateApp {
             show_patches: true,
             text_filter: String::new(),
             plugin_filter: String::new(),
+            warning: String::new(),
+            tx,
+            rx,
         }
     }
 }
 
 impl TemplateApp {
     /// Called once before the first frame.
-    pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
+    pub fn new(_cc: &eframe::CreationContext<'_>) -> Self {
         // This is also where you can customize the look and feel of egui using
         // `cc.egui_ctx.set_visuals` and `cc.egui_ctx.set_fonts`.
 
         // Load previous app state (if any).
         // Note that you must enable the `persistence` feature for this to work.
-        if let Some(storage) = cc.storage {
-            return eframe::get_value(storage, eframe::APP_KEY).unwrap_or_default();
-        }
+        // if let Some(storage) = cc.storage {
+        //     return eframe::get_value(storage, eframe::APP_KEY).unwrap_or_default();
+        // }
 
         // TODO do all the logic here
-        Default::default()
+        let app: TemplateApp = Default::default();
+
+        // init parser
+        // Execute the runtime in its own thread.
+        // The future doesn't have to do anything. In this example, it just sleeps forever.
+        let tx = app.tx.clone();
+        std::thread::spawn(move || {
+            pollster::block_on(async {
+                init_parser(detect_game().expect("no game"), tx.clone());
+                debug!("Parser init done");
+            });
+        });
+
+        app
     }
 }
 
 impl eframe::App for TemplateApp {
     /// Called by the frame work to save state before shutdown.
-    fn save(&mut self, storage: &mut dyn eframe::Storage) {
-        eframe::set_value(storage, eframe::APP_KEY, self);
-    }
+    // fn save(&mut self, storage: &mut dyn eframe::Storage) {
+    //     eframe::set_value(storage, eframe::APP_KEY, self);
+    // }
 
     /// Called each time the UI needs repainting, which may be many times per second.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         // Put your widgets into a `SidePanel`, `TopBottomPanel`, `CentralPanel`, `Window` or `Area`.
         // For inspiration and more examples, go to https://emilk.github.io/egui
 
-        // first setup
-        let mut warning = String::new();
-        let mut render_warning_only = false;
-        if self.parser.is_none() {
-            // init parser
-            if let Some(game) = detect_game() {
-                // TODO this blocks UI and sorts everything
-                // TODO run a terminal?
-                let root = env::current_dir().expect("No current working dir");
-
-                // rules
-                let rules_dir = get_default_rules_dir(game);
-                download_latest_rules(game, &rules_dir);
-
-                // mods
-                self.mods = gather_mods(&root, game);
-
-                // parser
-                let mut parser = parser::get_parser(game);
-                if let Err(e) = parser.init(rules_dir) {
-                    error!("Parser init failed: {}", e);
-
-                    render_warning_only = true;
-                    warning = format!("Parser init failed: {}", e);
-                }
-
-                // evaluate
-                parser.evaluate_plugins(&self.mods);
-                self.warnings = parser.warnings.clone();
-
-                for (i, w) in self.warnings.iter().enumerate() {
-                    for p in &w.get_plugins() {
-                        self.plugin_warning_map.push((p.clone(), i));
-                    }
-                }
-
-                // sort
-                match self.sorter.topo_sort(&self.mods, &parser.order_rules) {
-                    Ok(new) => {
-                        self.new_order = new;
-                    }
-                    Err(e) => {
-                        error!("error sorting: {e:?}");
-
-                        render_warning_only = true;
-                        warning = format!("error sorting: {e:?}");
-                    }
-                }
-
+        // TODO make this async in the backgorund
+        // Update the counter with the async response.
+        if let Ok(result) = self.rx.try_recv() {
+            // todo
+            if let Some((parser, new_order, plugin_warning_map)) = result {
                 self.parser = Some(parser);
-            } else {
-                error!("No game detected");
-
-                render_warning_only = true;
-                warning = "No game detected".to_string();
+                self.new_order = new_order;
+                self.plugin_warning_map = plugin_warning_map;
+                self.warnings = self.parser.as_ref().unwrap().warnings.clone();
             }
+        } else if self.parser.is_none() {
+            egui::CentralPanel::default().show(ctx, |ui| {
+                ui.label("Loading...");
+            });
+            return;
         }
 
         egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
@@ -167,10 +154,10 @@ impl eframe::App for TemplateApp {
         });
 
         // warning only UI
-        if render_warning_only {
+        if !self.warning.is_empty() {
             egui::CentralPanel::default().show(ctx, |ui| {
                 ui.label("WARNING");
-                ui.label(warning);
+                ui.label(self.warning.clone());
 
                 ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
                     powered_by_egui_and_eframe(ui);
@@ -193,7 +180,7 @@ impl eframe::App for TemplateApp {
                         .filter(|(p, _)| p.to_lowercase() == *m.to_lowercase())
                         .collect();
 
-                    let text = if !notes.is_empty() {
+                    let mut text = if !notes.is_empty() {
                         let i = notes[0].1;
                         let background_color = get_color_for_rule(&self.warnings[i].rule);
                         // make it more transparent
@@ -201,6 +188,13 @@ impl eframe::App for TemplateApp {
                         RichText::new(m).background_color(background_color.gamma_multiply(0.5))
                     } else {
                         RichText::new(m)
+                    };
+
+                    // override background color if mod is in plugin_filter with light blue
+                    if !self.plugin_filter.is_empty()
+                        && m.to_lowercase() == self.plugin_filter.to_lowercase()
+                    {
+                        text = text.background_color(Color32::LIGHT_BLUE);
                     };
 
                     ui.horizontal(|ui| {
