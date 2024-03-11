@@ -5,7 +5,7 @@ use egui::{Color32, Label, Sense};
 use log::{error, info};
 use plox::{detect_game, rules::EWarningRule, update_new_load_order};
 
-use crate::{init_parser, AppData};
+use crate::{init_parser, AppData, ETheme};
 
 #[derive(PartialEq)]
 pub enum EModListView {
@@ -35,6 +35,7 @@ pub struct TemplateApp {
     plugin_hover_filter: Vec<String>,
 
     // ui
+    theme: Option<ETheme>,
     #[serde(skip)]
     async_log: String,
     // Sender/Receiver for async notifications.
@@ -60,6 +61,7 @@ impl Default for TemplateApp {
             show_conflicts: true,
             show_requires: true,
             show_patches: true,
+            theme: None,
             mod_list_view: EModListView::NewOrder,
             text_filter: String::new(),
             plugin_filter: String::new(),
@@ -78,6 +80,7 @@ impl TemplateApp {
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
         // This is also where you can customize the look and feel of egui using
         // `cc.egui_ctx.set_visuals` and `cc.egui_ctx.set_fonts`.
+        cc.egui_ctx.set_zoom_factor(1.3);
 
         // Load previous app state (if any).
         // Note that you must enable the `persistence` feature for this to work.
@@ -105,6 +108,17 @@ impl TemplateApp {
 
         app
     }
+
+    /// Dark/light mode switch
+    fn global_dark_light_mode_buttons(&mut self, ui: &mut egui::Ui) {
+        let mut visuals = ui.ctx().style().visuals.clone();
+        visuals.light_dark_radio_buttons(ui);
+        ui.ctx().set_visuals(visuals);
+        match ui.ctx().style().visuals.clone().dark_mode {
+            true => self.theme = Some(ETheme::Dark),
+            false => self.theme = Some(ETheme::Light),
+        }
+    }
 }
 
 impl eframe::App for TemplateApp {
@@ -115,6 +129,16 @@ impl eframe::App for TemplateApp {
 
     /// Called each time the UI needs repainting, which may be many times per second.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        // set dark mode by default
+        if self.theme.is_none() {
+            ctx.set_visuals(egui::Visuals::light())
+        } else if let Some(theme) = &self.theme {
+            match theme {
+                crate::ETheme::Dark => ctx.set_visuals(egui::Visuals::dark()),
+                crate::ETheme::Light => ctx.set_visuals(egui::Visuals::light()),
+            }
+        }
+
         // Update the counter with the async response.
         if self.app_data.is_none() {
             if let Ok(result) = self.rx.try_recv() {
@@ -150,7 +174,7 @@ impl eframe::App for TemplateApp {
                     ui.add_space(16.0);
                 }
 
-                egui::widgets::global_dark_light_mode_buttons(ui);
+                self.global_dark_light_mode_buttons(ui);
             });
         });
 

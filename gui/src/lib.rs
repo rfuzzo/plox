@@ -12,6 +12,12 @@ use plox::{
     sorter::new_stable_sorter,
 };
 
+#[derive(serde::Deserialize, serde::Serialize, Debug, PartialEq)]
+enum ETheme {
+    Dark,
+    Light,
+}
+
 #[derive(Debug, Clone)]
 struct AppData {
     game: plox::ESupportedGame,
