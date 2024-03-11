@@ -23,7 +23,9 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: plox-win
-          path: target/release/plox.exe
+          path: |
+            target/release/plox.exe
+            target/release/plox_gui.exe
 
   ci-macos:
     runs-on: macos-latest
@@ -40,7 +42,9 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: plox-macos
-          path: target/release/plox
+          path: |
+            target/release/plox
+            target/release/plox_gui
 
   ci-linux:
     runs-on: ubuntu-latest
@@ -57,4 +61,6 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: plox-linux
-          path: target/release/plox
+          path: |
+            target/release/plox
+            target/release/plox_gui
