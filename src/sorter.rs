@@ -187,7 +187,7 @@ impl Sorter {
                 &mut index,
             ) {
                 // sort esms now?
-                if game == ESupportedGame::Morrowind || game == ESupportedGame::OpenMorrowind {
+                if game == ESupportedGame::Morrowind || game == ESupportedGame::OpenMW {
                     // put all items in mods_copy ending with .esm at the start
                     let mut esms = vec![];
                     for (i, m) in mods_copy.iter().enumerate() {

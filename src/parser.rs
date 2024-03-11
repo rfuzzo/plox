@@ -13,7 +13,7 @@ use crate::{expressions::*, rules::*, ESupportedGame, TParser};
 pub fn get_parser(game: ESupportedGame) -> Parser {
     match game {
         ESupportedGame::Morrowind => new_tes3_parser(),
-        ESupportedGame::OpenMorrowind => new_openmw_parser(),
+        ESupportedGame::OpenMW => new_openmw_parser(),
         ESupportedGame::Cyberpunk => new_cyberpunk_parser(),
     }
 }
@@ -32,7 +32,7 @@ pub fn new_tes3_parser() -> Parser {
 pub fn new_openmw_parser() -> Parser {
     Parser::new(
         vec![".esp".into(), ".esm".into(), ".omwaddon".into()],
-        ESupportedGame::OpenMorrowind,
+        ESupportedGame::OpenMW,
     )
 }
 
@@ -154,7 +154,7 @@ impl Parser {
         self.order_rules.clear();
 
         let rules_files = match self.game {
-            ESupportedGame::Morrowind | ESupportedGame::OpenMorrowind => {
+            ESupportedGame::Morrowind | ESupportedGame::OpenMW => {
                 ["mlox_base.txt", "mlox_user.txt", "mlox_my_rules.txt"].as_slice()
             }
             ESupportedGame::Cyberpunk => ["plox_base.txt", "plox_my_rules.txt"].as_slice(),

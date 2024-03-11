@@ -9,7 +9,7 @@ Rules are automatically downloaded from the respective Rules repository (see bel
 Supported games:
 
 - ✅TES3 - Morrowind
-- ✅OpenMorrowind
+- ✅OpenMW
 - 🚧Cyberpunk 2077
 
 ## Rules
@@ -20,7 +20,7 @@ Plugins are sorted according to rules. For the rules spec see: [Rules Spec](./do
 
 The rules are hosted in their own repository:
 
-- TES3 - Morrowind and OpenMorrowind: <https://github.com/DanaePlays/mlox-rules>
+- TES3 - Morrowind and OpenMW: <https://github.com/DanaePlays/mlox-rules>
 - 🚧Cyberpunk 2077: <https://github.com/rfuzzo/cmop-rules>
 
 **PRs are welcome!**

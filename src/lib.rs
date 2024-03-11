@@ -42,7 +42,7 @@ pub fn log_level_to_str(level: ELogLevel) -> String {
 #[derive(Debug, Clone, Copy, ValueEnum, PartialEq, Eq)]
 pub enum ESupportedGame {
     Morrowind,
-    OpenMorrowind,
+    OpenMW,
     Cyberpunk,
 }
 pub const PLOX_RULES_BASE: &str = "plox_base.txt";
@@ -56,7 +56,7 @@ pub fn detect_game() -> Option<ESupportedGame> {
     if PathBuf::from("Morrowind.exe").exists() {
         Some(ESupportedGame::Morrowind)
     } else if PathBuf::from("openmw.exe").exists() {
-        Some(ESupportedGame::OpenMorrowind)
+        Some(ESupportedGame::OpenMW)
     } else if PathBuf::from("x64").join("Cyberpunk2077").exists() {
         Some(ESupportedGame::Cyberpunk)
     } else {
@@ -101,7 +101,7 @@ pub fn debug_get_mods_from_ordering(order: &[(String, String)]) -> Vec<String> {
 /// This function will return an error if .
 pub fn get_default_rules_dir(game: ESupportedGame) -> PathBuf {
     match game {
-        ESupportedGame::Morrowind | ESupportedGame::OpenMorrowind => PathBuf::from("mlox"),
+        ESupportedGame::Morrowind | ESupportedGame::OpenMW => PathBuf::from("mlox"),
         ESupportedGame::Cyberpunk => PathBuf::from("plox"),
     }
 }
@@ -109,7 +109,7 @@ pub fn get_default_rules_dir(game: ESupportedGame) -> PathBuf {
 /// Download latest rules from the internet
 pub fn download_latest_rules(game: ESupportedGame, rules_dir: &PathBuf) {
     match game {
-        ESupportedGame::Morrowind | ESupportedGame::OpenMorrowind => download_mlox_rules(rules_dir),
+        ESupportedGame::Morrowind | ESupportedGame::OpenMW => download_mlox_rules(rules_dir),
         ESupportedGame::Cyberpunk => download_plox_rules(rules_dir),
     }
 }
@@ -211,7 +211,7 @@ where
     match game {
         ESupportedGame::Morrowind => gather_tes3_mods(root),
         ESupportedGame::Cyberpunk => gather_cp77_mods(root),
-        ESupportedGame::OpenMorrowind => gather_openmw_mods(root),
+        ESupportedGame::OpenMW => gather_openmw_mods(root),
     }
 }
 
@@ -378,7 +378,7 @@ where
 pub fn update_new_load_order(game: ESupportedGame, result: &[String]) -> std::io::Result<()> {
     match game {
         ESupportedGame::Morrowind => update_tes3(result),
-        ESupportedGame::OpenMorrowind => update_openmw(result),
+        ESupportedGame::OpenMW => update_openmw(result),
         ESupportedGame::Cyberpunk => update_cp77(result),
     }
 }

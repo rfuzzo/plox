@@ -25,6 +25,7 @@ pub struct TemplateApp {
     show_conflicts: bool,
     show_requires: bool,
     show_patches: bool,
+
     #[serde(skip)]
     mod_list_view: EModListView,
     #[serde(skip)]

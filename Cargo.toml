@@ -6,7 +6,7 @@ resolver = "2"
 name = "plox"
 version = "0.1.0"
 authors = ["Moritz Baron"]
-description = "PLOX - Plugin Load Order eXpert. PLOX is a tool for analyzing and sorting your plugin load order. Supports Morrowind, OpenMorrowind and Cyberpunk"
+description = "PLOX - Plugin Load Order eXpert. PLOX is a tool for analyzing and sorting your plugin load order. Supports Morrowind, OpenMW and Cyberpunk"
 documentation = ""
 
 [workspace.dependencies]
