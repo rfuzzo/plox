@@ -1,9 +1,13 @@
-use std::sync::mpsc::{Receiver, Sender};
+use std::{
+    fs::File,
+    sync::mpsc::{Receiver, Sender},
+};
 
 use egui::{Color32, Label, Sense};
 
-use log::{error, info};
+use log::{error, info, LevelFilter};
 use plox::{rules::EWarningRule, update_new_load_order};
+use simplelog::WriteLogger;
 
 use crate::{init_parser, AppData, AppSettings, ETheme};
 
@@ -94,23 +98,41 @@ impl TemplateApp {
         // deserialize settings from plox.toml
         let settings = AppSettings::from_file("plox.toml");
 
-        // debug save settings to plox.toml
-        let settings_example = AppSettings {
-            game: Some(plox::ESupportedGame::OpenMW),
-            no_rules_download: true,
-            config: Some(std::path::PathBuf::from("openmw.cfg")),
-        };
-
-        if let Ok(s) = toml::to_string_pretty(&settings_example) {
-            if let Err(e) = std::fs::write("plox.toml", s) {
-                error!("Error writing settings to file: {}", e);
-            }
+        // init logger
+        let log_level = settings.log_level.clone().unwrap_or("info".to_string());
+        if settings.log_to_file {
+            let _ = WriteLogger::init(
+                from_string(log_level),
+                simplelog::Config::default(),
+                File::create("plox.log").unwrap(),
+            );
+        } else {
+            let _ = simplelog::TermLogger::init(
+                from_string(log_level),
+                simplelog::Config::default(),
+                simplelog::TerminalMode::Mixed,
+                simplelog::ColorChoice::Auto,
+            );
         }
+
+        info!("PLOX v{}", crate::CARGO_PKG_VERSION);
+
+        // TODO remove this when we have a settings UI
+        // if let Ok(s) = toml::to_string_pretty(&AppSettings {
+        //     game: Some(plox::ESupportedGame::OpenMW),
+        //     no_rules_download: true,
+        //     config: Some(std::path::PathBuf::from("openmw.cfg")),
+        //     log_level: Some("debug".to_string()),
+        //     log_to_file: true,
+        // }) {
+        //     if let Err(e) = std::fs::write("plox.toml", s) {
+        //         error!("Error writing settings to file: {}", e);
+        //     }
+        // }
 
         // do all the logic here
         // init parser
         // Execute the runtime in its own thread.
-        // The future doesn't have to do anything. In this example, it just sleeps forever.
         let tx = app.tx.clone();
         let tx2 = app.tx2.clone();
 
@@ -133,6 +155,18 @@ impl TemplateApp {
             true => self.theme = Some(ETheme::Dark),
             false => self.theme = Some(ETheme::Light),
         }
+    }
+}
+
+fn from_string(log_level: String) -> LevelFilter {
+    match log_level.to_lowercase().as_str() {
+        "trace" => LevelFilter::Trace,
+        "debug" => LevelFilter::Debug,
+        "info" => LevelFilter::Info,
+        "warn" => LevelFilter::Warn,
+        "error" => LevelFilter::Error,
+        "off" => LevelFilter::Off,
+        _ => LevelFilter::Info,
     }
 }
 

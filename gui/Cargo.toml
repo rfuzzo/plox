@@ -19,11 +19,10 @@ eframe = { version = "0.26.0", default-features = false, features = [
 
 log = { workspace = true }
 serde = { workspace = true }
+simplelog = "0.12"
 toml = "0.8"
 
 # native:
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-env_logger = { workspace = true }
 pollster = "0.3"
 
 # web:

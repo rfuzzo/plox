@@ -18,6 +18,8 @@ The PLOX GUI supports a configuration file called `plox.toml` (place next to `pl
 config = "openmw.cfg"
 game = "OpenMW"
 no_rules_download = true
+log_level = "debug"
+log_to_file = true
 ```
 
 ## Rules

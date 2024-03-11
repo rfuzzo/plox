@@ -30,6 +30,12 @@ struct AppSettings {
 
     /// set to not download rules
     no_rules_download: bool,
+
+    /// log level
+    log_level: Option<String>,
+
+    /// use a log file bool
+    log_to_file: bool,
 }
 impl AppSettings {
     fn from_file(arg: &str) -> Self {
