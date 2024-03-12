@@ -102,6 +102,35 @@ mod unit_tests {
     }
 
     #[test]
+    fn evaluate_size() {
+        init();
+
+        let mods = [A, B, C, D, E, F]
+            .iter()
+            .enumerate()
+            .map(|(i, e)| PluginData::new(e.to_string(), (i + 1) as u64))
+            .collect::<Vec<_>>();
+
+        // [SIZE] is true if the plugin size matches the given size
+        {
+            let expr = SIZE::new(Atomic::from(A), 1_u64, false);
+            assert!(expr.eval(&mods).is_some());
+        }
+
+        // [SIZE] is true if the plugin size does not matches the given size and is negated
+        {
+            let expr = SIZE::new(Atomic::from(A), 2_u64, true);
+            assert!(expr.eval(&mods).is_some());
+        }
+
+        // [SIZE] is false if the plugin size does not match the given size
+        {
+            let expr = SIZE::new(Atomic::from(A), 2_u64, false);
+            assert!(expr.eval(&mods).is_none());
+        }
+    }
+
+    #[test]
     fn evaluate_nested() {
         init();
 

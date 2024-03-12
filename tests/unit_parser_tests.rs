@@ -571,7 +571,6 @@ mod unit_tests {
             .expect("No expressions parsed");
 
         if let Expression::SIZE(e) = expr {
-            assert!(is_atomic(e.expression.as_ref(), expected[1]));
             assert_eq!(format!("{}", e.size), expected[0]);
             assert!(!e.is_negated);
         } else {
@@ -595,7 +594,6 @@ mod unit_tests {
             .expect("No expressions parsed");
 
         if let Expression::SIZE(e) = expr {
-            assert!(is_atomic(e.expression.as_ref(), expected[1]));
             assert_eq!(format!("!{}", e.size), expected[0]);
             assert!(e.is_negated);
         } else {

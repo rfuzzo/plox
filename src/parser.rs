@@ -3,7 +3,6 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader, Cursor, Error, ErrorKind, Read, Result, Seek, SeekFrom};
 use std::path::Path;
-use std::usize;
 
 use byteorder::ReadBytesExt;
 use log::*;
@@ -660,10 +659,23 @@ impl Parser {
                 if let Some((expr, size, negated)) = parse_size(body) {
                     // do something
                     let expressions = self.parse_expressions(expr.as_bytes())?;
-                    if let Some(first) = expressions.into_iter().last() {
-                        let expr = SIZE::new(first, size, negated);
+                    // check that it is of len 1
+                    if expressions.len() != 1 {
+                        return Err(Error::new(
+                            ErrorKind::Other,
+                            "Parsing error: SIZE expression must have exactly one child expression",
+                        ));
+                    }
+                    // check that the child expression is an atomic
+                    if let Some(Expression::Atomic(atomic)) = expressions.first() {
+                        let expr = SIZE::new(atomic.clone(), size, negated);
                         return Ok(expr.into());
                     }
+
+                    return Err(Error::new(
+                        ErrorKind::Other,
+                        "Parsing error: SIZE expression must have an atomic child expression",
+                    ));
                 }
                 Err(Error::new(
                     ErrorKind::Other,
@@ -735,12 +747,12 @@ fn parse_desc(input: &str) -> Option<(String, String, bool)> {
 }
 
 /// Parses the SIZE predicate and returns its parts
-fn parse_size(input: &str) -> Option<(String, usize, bool)> {
+fn parse_size(input: &str) -> Option<(String, u64, bool)> {
     // !4921700 Annastia V3.3.esp]
     if let Some(input) = input.strip_prefix('!') {
         if let Some(left_part) = input.split_whitespace().next() {
             if let Some(right_part) = input.trim_start().strip_prefix(left_part) {
-                if let Ok(size) = left_part.parse::<usize>() {
+                if let Ok(size) = left_part.parse::<u64>() {
                     return Some((right_part[1..].to_owned(), size, true));
                 }
             }
@@ -749,7 +761,7 @@ fn parse_size(input: &str) -> Option<(String, usize, bool)> {
     // 591786 BMS_Timers_Patch.esp]
     else if let Some(left_part) = input.split_whitespace().next() {
         if let Some(right_part) = input.trim_start().strip_prefix(left_part) {
-            if let Ok(size) = left_part.parse::<usize>() {
+            if let Ok(size) = left_part.parse::<u64>() {
                 return Some((right_part[1..].to_owned(), size, false));
             }
         }

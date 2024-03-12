@@ -1648,9 +1648,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "airship5_holo-deck2.esp"
-                    }
+                    "item": "airship5_holo-deck2.esp"
                   },
                   "size": 40618,
                   "is_negated": false
@@ -2075,9 +2073,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "ash 2.0.esp"
-              }
+              "item": "ash 2.0.esp"
             },
             "size": 11054,
             "is_negated": true
@@ -2146,9 +2142,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "redaynia village.esp"
-              }
+              "item": "redaynia village.esp"
             },
             "size": 304650,
             "is_negated": false
@@ -2168,9 +2162,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "ald redaynia extended.esp"
-                    }
+                    "item": "ald redaynia extended.esp"
                   },
                   "size": 1106213,
                   "is_negated": false
@@ -2179,9 +2171,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "ald redaynia extended com.esp"
-                    }
+                    "item": "ald redaynia extended com.esp"
                   },
                   "size": 1114009,
                   "is_negated": false
@@ -2410,9 +2400,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "ald-vendras_v31.esp"
-                    }
+                    "item": "ald-vendras_v31.esp"
                   },
                   "size": 10204798,
                   "is_negated": false
@@ -2421,9 +2409,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "ald-vendras_v31-lokken.esp"
-                    }
+                    "item": "ald-vendras_v31-lokken.esp"
                   },
                   "size": 9978740,
                   "is_negated": false
@@ -2432,9 +2418,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "ald-vendras_v31-lokken-sc.esp"
-                    }
+                    "item": "ald-vendras_v31-lokken-sc.esp"
                   },
                   "size": 9789132,
                   "is_negated": false
@@ -2443,9 +2427,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "ald-vendras_v3.esp"
-                    }
+                    "item": "ald-vendras_v3.esp"
                   },
                   "size": 10053493,
                   "is_negated": false
@@ -2454,9 +2436,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "ald-vendras_v3-lokken.esp"
-                    }
+                    "item": "ald-vendras_v3-lokken.esp"
                   },
                   "size": 9827301,
                   "is_negated": false
@@ -2465,9 +2445,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "ald-vendras_v3-lokken-sc.esp"
-                    }
+                    "item": "ald-vendras_v3-lokken-sc.esp"
                   },
                   "size": 9630441,
                   "is_negated": false
@@ -4091,9 +4069,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "annastia v3.3.esp"
-              }
+              "item": "annastia v3.3.esp"
             },
             "size": 4921700,
             "is_negated": true
@@ -5718,9 +5694,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "asgard.esp"
-                    }
+                    "item": "asgard.esp"
                   },
                   "size": 411947,
                   "is_negated": false
@@ -6432,9 +6406,7 @@
       "expression_a": {
         "SIZE": {
           "expression": {
-            "Atomic": {
-              "item": "ashlandertentdx - nom addon.esp"
-            }
+            "item": "ashlandertentdx - nom addon.esp"
           },
           "size": 2287,
           "is_negated": false
@@ -6465,9 +6437,7 @@
       "expression_a": {
         "SIZE": {
           "expression": {
-            "Atomic": {
-              "item": "ashlandertentdx - nom addon.esp"
-            }
+            "item": "ashlandertentdx - nom addon.esp"
           },
           "size": 4126,
           "is_negated": false
@@ -9831,9 +9801,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "the bedroll shop 2.esp"
-              }
+              "item": "the bedroll shop 2.esp"
             },
             "size": 52679,
             "is_negated": true
@@ -11428,9 +11396,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "bms_timers_patch.esp"
-                    }
+                    "item": "bms_timers_patch.esp"
                   },
                   "size": 591786,
                   "is_negated": false
@@ -12204,9 +12170,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "better_sounds.esp"
-              }
+              "item": "better_sounds.esp"
             },
             "size": 87068,
             "is_negated": true
@@ -12252,9 +12216,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "better_sounds.esp"
-                    }
+                    "item": "better_sounds.esp"
                   },
                   "size": 87068,
                   "is_negated": true
@@ -12330,9 +12292,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "better_sounds.esp"
-                    }
+                    "item": "better_sounds.esp"
                   },
                   "size": 82084,
                   "is_negated": false
@@ -12341,9 +12301,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "better_sounds.esp"
-                    }
+                    "item": "better_sounds.esp"
                   },
                   "size": 81877,
                   "is_negated": false
@@ -12352,9 +12310,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "better_sounds.esp"
-                    }
+                    "item": "better_sounds.esp"
                   },
                   "size": 107425,
                   "is_negated": false
@@ -12363,9 +12319,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "better_sounds.esp"
-                    }
+                    "item": "better_sounds.esp"
                   },
                   "size": 106539,
                   "is_negated": false
@@ -12570,9 +12524,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "havish.esm"
-              }
+              "item": "havish.esm"
             },
             "size": 4646696,
             "is_negated": false
@@ -12805,9 +12757,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "wizards islands - scourge of the frost bringer.esm"
-              }
+              "item": "wizards islands - scourge of the frost bringer.esm"
             },
             "size": 14993627,
             "is_negated": false
@@ -12870,9 +12820,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "wizards islands - scourge of the frost bringer.esm"
-                    }
+                    "item": "wizards islands - scourge of the frost bringer.esm"
                   },
                   "size": 14993627,
                   "is_negated": true
@@ -14223,9 +14171,7 @@
       "expression_b": {
         "SIZE": {
           "expression": {
-            "Atomic": {
-              "item": "bob's armory.esp"
-            }
+            "item": "bob's armory.esp"
           },
           "size": 134091,
           "is_negated": false
@@ -14635,9 +14581,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "juniper's twin lamps (1.1 tribunal).esp"
-              }
+              "item": "juniper's twin lamps (1.1 tribunal).esp"
             },
             "size": 1536911,
             "is_negated": false
@@ -15708,9 +15652,7 @@
                     {
                       "SIZE": {
                         "expression": {
-                          "Atomic": {
-                            "item": "uniquefinery.esp"
-                          }
+                          "item": "uniquefinery.esp"
                         },
                         "size": 34529,
                         "is_negated": false
@@ -15767,9 +15709,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "uniquefinery.esp"
-                    }
+                    "item": "uniquefinery.esp"
                   },
                   "size": 34529,
                   "is_negated": false
@@ -18005,9 +17945,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "bb_clothiers_of_vvardenfell_v1.1.esp"
-              }
+              "item": "bb_clothiers_of_vvardenfell_v1.1.esp"
             },
             "size": 851243,
             "is_negated": false
@@ -18029,9 +17967,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "bb_clothiers_of_vvardenfell_v1.1.esp"
-              }
+              "item": "bb_clothiers_of_vvardenfell_v1.1.esp"
             },
             "size": 851243,
             "is_negated": false
@@ -21888,9 +21824,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "devil's rock for vivec's soul.esp"
-              }
+              "item": "devil's rock for vivec's soul.esp"
             },
             "size": 1587770,
             "is_negated": true
@@ -21928,9 +21862,7 @@
                   {
                     "SIZE": {
                       "expression": {
-                        "Atomic": {
-                          "item": "mca.esm"
-                        }
+                        "item": "mca.esm"
                       },
                       "size": 2458536,
                       "is_negated": false
@@ -23971,9 +23903,7 @@
                     {
                       "SIZE": {
                         "expression": {
-                          "Atomic": {
-                            "item": "dwemerclock.esp"
-                          }
+                          "item": "dwemerclock.esp"
                         },
                         "size": 4315,
                         "is_negated": false
@@ -24016,9 +23946,7 @@
                     {
                       "SIZE": {
                         "expression": {
-                          "Atomic": {
-                            "item": "dwemerclock.esp"
-                          }
+                          "item": "dwemerclock.esp"
                         },
                         "size": 4315,
                         "is_negated": false
@@ -24027,9 +23955,7 @@
                     {
                       "SIZE": {
                         "expression": {
-                          "Atomic": {
-                            "item": "dwemerclock.esp"
-                          }
+                          "item": "dwemerclock.esp"
                         },
                         "size": 23039,
                         "is_negated": false
@@ -24731,9 +24657,7 @@
             {
               "SIZE": {
                 "expression": {
-                  "Atomic": {
-                    "item": "mca.esm"
-                  }
+                  "item": "mca.esm"
                 },
                 "size": 2303212,
                 "is_negated": false
@@ -24820,9 +24744,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "elders mca add-on v2.0.esp"
-                    }
+                    "item": "elders mca add-on v2.0.esp"
                   },
                   "size": 123422,
                   "is_negated": false
@@ -29139,9 +29061,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "ghostpath 1.41a.esp"
-              }
+              "item": "ghostpath 1.41a.esp"
             },
             "size": 843986,
             "is_negated": false
@@ -29208,9 +29128,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "giants.esm"
-              }
+              "item": "giants.esm"
             },
             "size": 1841362,
             "is_negated": false
@@ -29238,9 +29156,7 @@
                     {
                       "SIZE": {
                         "expression": {
-                          "Atomic": {
-                            "item": "giants.esm"
-                          }
+                          "item": "giants.esm"
                         },
                         "size": 1841362,
                         "is_negated": false
@@ -29436,9 +29352,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "havish.esm"
-              }
+              "item": "havish.esm"
             },
             "size": 4646696,
             "is_negated": false
@@ -29685,9 +29599,7 @@
       "expression_b": {
         "SIZE": {
           "expression": {
-            "Atomic": {
-              "item": "golden gold.esp"
-            }
+            "item": "golden gold.esp"
           },
           "size": 2537,
           "is_negated": true
@@ -32386,9 +32298,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "havish.esm"
-              }
+              "item": "havish.esm"
             },
             "size": 4646696,
             "is_negated": false
@@ -32410,9 +32320,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "havish.esm"
-              }
+              "item": "havish.esm"
             },
             "size": 4646696,
             "is_negated": false
@@ -35651,9 +35559,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "house_spear.esp"
-              }
+              "item": "house_spear.esp"
             },
             "size": 123894,
             "is_negated": false
@@ -36145,9 +36051,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "bob's armory.esp"
-              }
+              "item": "bob's armory.esp"
             },
             "size": 134091,
             "is_negated": true
@@ -39923,9 +39827,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "kynareth.esp"
-                    }
+                    "item": "kynareth.esp"
                   },
                   "size": 64535,
                   "is_negated": false
@@ -39934,9 +39836,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "knights of tamriel.esp"
-                    }
+                    "item": "knights of tamriel.esp"
                   },
                   "size": 324570,
                   "is_negated": false
@@ -40272,9 +40172,7 @@
             {
               "SIZE": {
                 "expression": {
-                  "Atomic": {
-                    "item": "giants.esm"
-                  }
+                  "item": "giants.esm"
                 },
                 "size": 1915997,
                 "is_negated": false
@@ -40305,9 +40203,7 @@
             {
               "SIZE": {
                 "expression": {
-                  "Atomic": {
-                    "item": "giants.esm"
-                  }
+                  "item": "giants.esm"
                 },
                 "size": 1825067,
                 "is_negated": false
@@ -43718,9 +43614,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "havish.esm"
-              }
+              "item": "havish.esm"
             },
             "size": 4646696,
             "is_negated": false
@@ -44534,9 +44428,7 @@
                     {
                       "SIZE": {
                         "expression": {
-                          "Atomic": {
-                            "item": "mtt iv master.esp"
-                          }
+                          "item": "mtt iv master.esp"
                         },
                         "size": 1629334,
                         "is_negated": true
@@ -44601,9 +44493,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "mtt iv master.esp"
-              }
+              "item": "mtt iv master.esp"
             },
             "size": 1629334,
             "is_negated": false
@@ -46078,9 +45968,7 @@
       "expression_a": {
         "SIZE": {
           "expression": {
-            "Atomic": {
-              "item": "marandus abode mca patch.esp"
-            }
+            "item": "marandus abode mca patch.esp"
           },
           "size": 101249,
           "is_negated": false
@@ -46122,9 +46010,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "marandus abode mca patch.esp"
-                    }
+                    "item": "marandus abode mca patch.esp"
                   },
                   "size": 101249,
                   "is_negated": false
@@ -47205,9 +47091,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "mca wizard hats addon.esp"
-                    }
+                    "item": "mca wizard hats addon.esp"
                   },
                   "size": 112173,
                   "is_negated": false
@@ -49695,9 +49579,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "mw_a01.esp"
-              }
+              "item": "mw_a01.esp"
             },
             "size": 687982,
             "is_negated": true
@@ -51183,9 +51065,7 @@
                   {
                     "SIZE": {
                       "expression": {
-                        "Atomic": {
-                          "item": "mca.esm"
-                        }
+                        "item": "mca.esm"
                       },
                       "size": 2551516,
                       "is_negated": false
@@ -51194,9 +51074,7 @@
                   {
                     "SIZE": {
                       "expression": {
-                        "Atomic": {
-                          "item": "mca.esm"
-                        }
+                        "item": "mca.esm"
                       },
                       "size": 2559987,
                       "is_negated": false
@@ -51228,9 +51106,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "mca.esm"
-              }
+              "item": "mca.esm"
             },
             "size": 2597537,
             "is_negated": false
@@ -51318,9 +51194,7 @@
                           {
                             "SIZE": {
                               "expression": {
-                                "Atomic": {
-                                  "item": "mca.esm"
-                                }
+                                "item": "mca.esm"
                               },
                               "size": 2519851,
                               "is_negated": true
@@ -51363,9 +51237,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "mca.esm"
-                    }
+                    "item": "mca.esm"
                   },
                   "size": 2519851,
                   "is_negated": false
@@ -51390,9 +51262,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "mca.esm"
-              }
+              "item": "mca.esm"
             },
             "size": 2519851,
             "is_negated": false
@@ -51401,9 +51271,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "vampire embrace mca patch.esp"
-              }
+              "item": "vampire embrace mca patch.esp"
             },
             "size": 150081,
             "is_negated": false
@@ -52059,9 +51927,7 @@
             {
               "SIZE": {
                 "expression": {
-                  "Atomic": {
-                    "item": "mca.esm"
-                  }
+                  "item": "mca.esm"
                 },
                 "size": 2597537,
                 "is_negated": false
@@ -52092,9 +51958,7 @@
             {
               "SIZE": {
                 "expression": {
-                  "Atomic": {
-                    "item": "morrowind comes alive.esm"
-                  }
+                  "item": "morrowind comes alive.esm"
                 },
                 "size": 2442550,
                 "is_negated": false
@@ -52153,9 +52017,7 @@
       "expression_b": {
         "SIZE": {
           "expression": {
-            "Atomic": {
-              "item": "mca.esm"
-            }
+            "item": "mca.esm"
           },
           "size": 2458536,
           "is_negated": false
@@ -52175,9 +52037,7 @@
       "expression_b": {
         "SIZE": {
           "expression": {
-            "Atomic": {
-              "item": "mca.esm"
-            }
+            "item": "mca.esm"
           },
           "size": 2303212,
           "is_negated": false
@@ -52354,9 +52214,7 @@
             {
               "SIZE": {
                 "expression": {
-                  "Atomic": {
-                    "item": "morrowind comes alive.esm"
-                  }
+                  "item": "morrowind comes alive.esm"
                 },
                 "size": 2442550,
                 "is_negated": false
@@ -52454,9 +52312,7 @@
       "expression_b": {
         "SIZE": {
           "expression": {
-            "Atomic": {
-              "item": "mca.esm"
-            }
+            "item": "mca.esm"
           },
           "size": 2597537,
           "is_negated": false
@@ -52560,9 +52416,7 @@
       "expression_b": {
         "SIZE": {
           "expression": {
-            "Atomic": {
-              "item": "mca.esm"
-            }
+            "item": "mca.esm"
           },
           "size": 2597537,
           "is_negated": false
@@ -52749,9 +52603,7 @@
       "expression_b": {
         "SIZE": {
           "expression": {
-            "Atomic": {
-              "item": "mca.esm"
-            }
+            "item": "mca.esm"
           },
           "size": 2597537,
           "is_negated": false
@@ -52799,9 +52651,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "mca.esm"
-              }
+              "item": "mca.esm"
             },
             "size": 2303212,
             "is_negated": true
@@ -52875,9 +52725,7 @@
             {
               "SIZE": {
                 "expression": {
-                  "Atomic": {
-                    "item": "mca tamriel knights addon.esp"
-                  }
+                  "item": "mca tamriel knights addon.esp"
                 },
                 "size": 56487,
                 "is_negated": false
@@ -52886,9 +52734,7 @@
             {
               "SIZE": {
                 "expression": {
-                  "Atomic": {
-                    "item": "mca tamriel knights addon.esp"
-                  }
+                  "item": "mca tamriel knights addon.esp"
                 },
                 "size": 96642,
                 "is_negated": false
@@ -52912,9 +52758,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "mca tamriel knights addon.esp"
-              }
+              "item": "mca tamriel knights addon.esp"
             },
             "size": 56487,
             "is_negated": false
@@ -52930,9 +52774,7 @@
       "expression_a": {
         "SIZE": {
           "expression": {
-            "Atomic": {
-              "item": "mca tamriel knights addon.esp"
-            }
+            "item": "mca tamriel knights addon.esp"
           },
           "size": 56269,
           "is_negated": false
@@ -52965,9 +52807,7 @@
                     {
                       "SIZE": {
                         "expression": {
-                          "Atomic": {
-                            "item": "mca tamriel knights addon.esp"
-                          }
+                          "item": "mca tamriel knights addon.esp"
                         },
                         "size": 56487,
                         "is_negated": false
@@ -52976,9 +52816,7 @@
                     {
                       "SIZE": {
                         "expression": {
-                          "Atomic": {
-                            "item": "mca tamriel knights addon.esp"
-                          }
+                          "item": "mca tamriel knights addon.esp"
                         },
                         "size": 96642,
                         "is_negated": false
@@ -53144,9 +52982,7 @@
       "expression_a": {
         "SIZE": {
           "expression": {
-            "Atomic": {
-              "item": "mca wizard hats addon.esp"
-            }
+            "item": "mca wizard hats addon.esp"
           },
           "size": 143700,
           "is_negated": false
@@ -53155,9 +52991,7 @@
       "expression_b": {
         "SIZE": {
           "expression": {
-            "Atomic": {
-              "item": "mca.esm"
-            }
+            "item": "mca.esm"
           },
           "size": 2458536,
           "is_negated": false
@@ -53172,9 +53006,7 @@
       "expression_a": {
         "SIZE": {
           "expression": {
-            "Atomic": {
-              "item": "mca wizard hats addon.esp"
-            }
+            "item": "mca wizard hats addon.esp"
           },
           "size": 112173,
           "is_negated": false
@@ -54207,9 +54039,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "otr_coast_variety.esp"
-                    }
+                    "item": "otr_coast_variety.esp"
                   },
                   "size": 755202,
                   "is_negated": false
@@ -54218,9 +54048,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "poorly placed object fix 1.2.esm"
-                    }
+                    "item": "poorly placed object fix 1.2.esm"
                   },
                   "size": 20029,
                   "is_negated": false
@@ -54258,9 +54086,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "poorly placed object fix 1.2.esm"
-              }
+              "item": "poorly placed object fix 1.2.esm"
             },
             "size": 19994,
             "is_negated": false
@@ -56436,9 +56262,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "mh transportation.esp"
-              }
+              "item": "mh transportation.esp"
             },
             "size": 2652,
             "is_negated": false
@@ -56745,9 +56569,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "muffinwind.esp"
-              }
+              "item": "muffinwind.esp"
             },
             "size": 1582308,
             "is_negated": false
@@ -58291,9 +58113,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "creatures.esp"
-              }
+              "item": "creatures.esp"
             },
             "size": 813641,
             "is_negated": true
@@ -58315,9 +58135,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "real_wildlife_2b complete.esp"
-              }
+              "item": "real_wildlife_2b complete.esp"
             },
             "size": 739807,
             "is_negated": true
@@ -60330,9 +60148,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "nimawia pearl farm.esp"
-              }
+              "item": "nimawia pearl farm.esp"
             },
             "size": 54955,
             "is_negated": false
@@ -65903,9 +65719,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "real_wildlife_2b complete.esp"
-                    }
+                    "item": "real_wildlife_2b complete.esp"
                   },
                   "size": 739677,
                   "is_negated": false
@@ -65914,9 +65728,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "real_wildlife_2b.esp"
-                    }
+                    "item": "real_wildlife_2b.esp"
                   },
                   "size": 547424,
                   "is_negated": false
@@ -66091,9 +65903,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "redaynia village.esp"
-                    }
+                    "item": "redaynia village.esp"
                   },
                   "size": 238938,
                   "is_negated": true
@@ -66102,9 +65912,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "redaynia village.esp"
-                    }
+                    "item": "redaynia village.esp"
                   },
                   "size": 238710,
                   "is_negated": true
@@ -66163,9 +65971,7 @@
             {
               "SIZE": {
                 "expression": {
-                  "Atomic": {
-                    "item": "mw_children_1_0.esm"
-                  }
+                  "item": "mw_children_1_0.esm"
                 },
                 "size": 1683326,
                 "is_negated": true
@@ -66188,9 +65994,7 @@
       "expression_b": {
         "SIZE": {
           "expression": {
-            "Atomic": {
-              "item": "mw_children_1_0.esm"
-            }
+            "item": "mw_children_1_0.esm"
           },
           "size": 1683326,
           "is_negated": true
@@ -66214,9 +66018,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "mw_children_1_0.esm"
-                    }
+                    "item": "mw_children_1_0.esm"
                   },
                   "size": 1683326,
                   "is_negated": false
@@ -66314,9 +66116,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "house of mannequins v1.0.esp"
-              }
+              "item": "house of mannequins v1.0.esp"
             },
             "size": 457977,
             "is_negated": false
@@ -66362,9 +66162,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "areaeffectarrows.esp"
-                    }
+                    "item": "areaeffectarrows.esp"
                   },
                   "size": 30094,
                   "is_negated": true
@@ -71546,9 +71344,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "silentchargen.esp"
-              }
+              "item": "silentchargen.esp"
             },
             "size": 30881,
             "is_negated": true
@@ -71767,9 +71563,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "havish.esm"
-              }
+              "item": "havish.esm"
             },
             "size": 4646696,
             "is_negated": false
@@ -72211,9 +72005,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "wizards islands - scourge of the frost bringer.esm"
-                    }
+                    "item": "wizards islands - scourge of the frost bringer.esm"
                   },
                   "size": 14993627,
                   "is_negated": true
@@ -72402,9 +72194,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "slof's better beasts a.esp"
-              }
+              "item": "slof's better beasts a.esp"
             },
             "size": 10592,
             "is_negated": false
@@ -72514,9 +72304,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "slof's goth shop 1.1.esp"
-              }
+              "item": "slof's goth shop 1.1.esp"
             },
             "size": 290646,
             "is_negated": false
@@ -72572,9 +72360,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "slof's pillow book.esp"
-              }
+              "item": "slof's pillow book.esp"
             },
             "size": 1815,
             "is_negated": false
@@ -72594,9 +72380,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "slof's pillow book.esp"
-                    }
+                    "item": "slof's pillow book.esp"
                   },
                   "size": 1815,
                   "is_negated": false
@@ -75451,9 +75235,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "gardeners of morrowind.esp"
-              }
+              "item": "gardeners of morrowind.esp"
             },
             "size": 364308,
             "is_negated": true
@@ -76893,9 +76675,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "suran_underworld_2.5.esp"
-                    }
+                    "item": "suran_underworld_2.5.esp"
                   },
                   "size": 2086615,
                   "is_negated": false
@@ -76994,9 +76774,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "suran_underworld_2.5.esp"
-                    }
+                    "item": "suran_underworld_2.5.esp"
                   },
                   "size": 2086615,
                   "is_negated": false
@@ -78774,9 +78552,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "havish.esm"
-              }
+              "item": "havish.esm"
             },
             "size": 4646696,
             "is_negated": false
@@ -81681,9 +81457,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "mca.esm"
-              }
+              "item": "mca.esm"
             },
             "size": 2519851,
             "is_negated": true
@@ -82929,9 +82703,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "the_underground.esp"
-              }
+              "item": "the_underground.esp"
             },
             "size": 5935708,
             "is_negated": false
@@ -83042,9 +82814,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "mca.esm"
-                    }
+                    "item": "mca.esm"
                   },
                   "size": 2519851,
                   "is_negated": true
@@ -83072,9 +82842,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "mca.esm"
-                    }
+                    "item": "mca.esm"
                   },
                   "size": 2519851,
                   "is_negated": false
@@ -83818,9 +83586,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "uniquefinery.esp"
-                    }
+                    "item": "uniquefinery.esp"
                   },
                   "size": 22585,
                   "is_negated": true
@@ -83882,9 +83648,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "uniquefinery.esp"
-                    }
+                    "item": "uniquefinery.esp"
                   },
                   "size": 22585,
                   "is_negated": true
@@ -83971,9 +83735,7 @@
                     {
                       "SIZE": {
                         "expression": {
-                          "Atomic": {
-                            "item": "uniquefinery.esp"
-                          }
+                          "item": "uniquefinery.esp"
                         },
                         "size": 22585,
                         "is_negated": true
@@ -84027,9 +83789,7 @@
                               {
                                 "SIZE": {
                                   "expression": {
-                                    "Atomic": {
-                                      "item": "uniquefinery.esp"
-                                    }
+                                    "item": "uniquefinery.esp"
                                   },
                                   "size": 22585,
                                   "is_negated": true
@@ -84522,9 +84282,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "ci_global.esp"
-                    }
+                    "item": "ci_global.esp"
                   },
                   "size": 3471,
                   "is_negated": true
@@ -84603,9 +84361,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "uvirith inside.esp"
-                    }
+                    "item": "uvirith inside.esp"
                   },
                   "size": 1118342,
                   "is_negated": false
@@ -84614,9 +84370,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "uvirith inside.esp"
-                    }
+                    "item": "uvirith inside.esp"
                   },
                   "size": 1100376,
                   "is_negated": false
@@ -84625,9 +84379,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "uvirith inside.esp"
-                    }
+                    "item": "uvirith inside.esp"
                   },
                   "size": 1110978,
                   "is_negated": false
@@ -86538,9 +86290,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "vampiric hunger base.esp"
-                    }
+                    "item": "vampiric hunger base.esp"
                   },
                   "size": 288521,
                   "is_negated": false
@@ -87999,9 +87749,7 @@
               {
                 "SIZE": {
                   "expression": {
-                    "Atomic": {
-                      "item": "vivec expansion 2.0.esp"
-                    }
+                    "item": "vivec expansion 2.0.esp"
                   },
                   "size": 1482242,
                   "is_negated": true
@@ -88102,9 +87850,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "vivec_voice_addon mw only.esp"
-              }
+              "item": "vivec_voice_addon mw only.esp"
             },
             "size": 55096,
             "is_negated": true
@@ -88126,9 +87872,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "vivec_voice_addon tribunal.esp"
-              }
+              "item": "vivec_voice_addon tribunal.esp"
             },
             "size": 64990,
             "is_negated": true
@@ -89852,9 +89596,7 @@
                     {
                       "SIZE": {
                         "expression": {
-                          "Atomic": {
-                            "item": "dwemerclock.esp"
-                          }
+                          "item": "dwemerclock.esp"
                         },
                         "size": 23039,
                         "is_negated": false
@@ -91735,9 +91477,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "wizards islands - scourge of the frost bringer.esm"
-              }
+              "item": "wizards islands - scourge of the frost bringer.esm"
             },
             "size": 14993627,
             "is_negated": true
@@ -91759,9 +91499,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "wizards islands - scourge of the frost bringer.esm"
-              }
+              "item": "wizards islands - scourge of the frost bringer.esm"
             },
             "size": 14993627,
             "is_negated": true
@@ -91783,9 +91521,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "wizards islands - scourge of the frost bringer.esm"
-              }
+              "item": "wizards islands - scourge of the frost bringer.esm"
             },
             "size": 14993627,
             "is_negated": true
@@ -92098,9 +91834,7 @@
         {
           "SIZE": {
             "expression": {
-              "Atomic": {
-                "item": "wrye patches m.esp"
-              }
+              "item": "wrye patches m.esp"
             },
             "size": 63823,
             "is_negated": false

@@ -328,14 +328,14 @@ impl Display for DESC {
 /// [SIZE ### A.esp] or [SIZE !### A.esp]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SIZE {
-    pub expression: Box<Expression>,
-    pub size: usize,
+    pub expression: Atomic,
+    pub size: u64,
     pub is_negated: bool,
 }
 impl SIZE {
-    pub fn new(expression: Expression, size: usize, is_negated: bool) -> Self {
+    pub fn new(expression: Atomic, size: u64, is_negated: bool) -> Self {
         Self {
-            expression: Box::new(expression),
+            expression,
             size,
             is_negated,
         }
@@ -343,7 +343,28 @@ impl SIZE {
 }
 impl TExpression for SIZE {
     fn eval(&self, items: &[PluginData]) -> Option<Vec<String>> {
-        self.expression.eval(items)
+        // check the atomic
+        let results = crate::wild_contains_data(items, &self.expression.item);
+
+        // check the size
+        if let Some(plugins) = results {
+            let mut results = vec![];
+            for p in &plugins {
+                if self.is_negated {
+                    if p.size != self.size {
+                        results.push(p.name.clone());
+                    }
+                } else if p.size == self.size {
+                    results.push(p.name.clone());
+                }
+            }
+            if results.is_empty() {
+                return None;
+            } else {
+                return Some(results);
+            }
+        }
+        None
     }
 }
 impl Clone for SIZE {

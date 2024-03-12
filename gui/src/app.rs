@@ -48,7 +48,6 @@ pub struct TemplateApp {
     tx: Sender<String>,
     #[serde(skip)]
     rx: Receiver<String>,
-    // TODO UI refactor to use one channel
     #[serde(skip)]
     tx2: Sender<Option<AppData>>,
     #[serde(skip)]
@@ -117,7 +116,7 @@ impl TemplateApp {
 
         info!("PLOX v{}", crate::CARGO_PKG_VERSION);
 
-        // TODO remove this when we have a settings UI
+        // remove this when not in debug
         // if let Ok(s) = toml::to_string_pretty(&AppSettings {
         //     game: Some(plox::ESupportedGame::OpenMW),
         //     no_rules_download: true,
@@ -318,7 +317,7 @@ impl eframe::App for TemplateApp {
                         // item view
                         egui::Frame::none().fill(bg_color).show(ui, |ui| {
                             let label = Label::new(mod_name).sense(Sense::click());
-                            // TODO UI Left align the text
+
                             let r = ui.add_sized([ui.available_width(), 0_f32], label);
                             if r.clicked() {
                                 // unselect if clicked again

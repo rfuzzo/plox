@@ -1,10 +1,10 @@
 use std::collections::HashMap;
-use std::env;
 use std::error::Error;
 use std::fs::{self, File};
 use std::io::{self, BufRead, Write};
 use std::ops::ControlFlow;
 use std::path::{Path, PathBuf};
+use std::{env, vec};
 
 use clap::ValueEnum;
 
@@ -54,13 +54,15 @@ pub const PLOX_RULES_BASE: &str = "plox_base.txt";
 
 /// Detect game from current working directory
 pub fn detect_game() -> Option<ESupportedGame> {
-    // TODO fix that for non-windows
-
     if PathBuf::from("Morrowind.exe").exists() {
         Some(ESupportedGame::Morrowind)
-    } else if PathBuf::from("openmw.exe").exists() {
+    } else if PathBuf::from("openmw.cfg").exists() {
         Some(ESupportedGame::OpenMW)
-    } else if PathBuf::from("x64").join("Cyberpunk2077").exists() {
+    } else if PathBuf::from("bin")
+        .join("x64")
+        .join("Cyberpunk2077")
+        .exists()
+    {
         Some(ESupportedGame::Cyberpunk)
     } else {
         None
@@ -300,7 +302,7 @@ where
         .iter()
         .filter_map(|f| {
             if let Some(file_name) = f.file_name().and_then(|n| n.to_str()) {
-                // TODO parse the file and get the header content
+                // TODO TES3 parse the file and get the header content
                 let data = PluginData {
                     name: file_name.to_owned(),
                     size: f.metadata().unwrap().len(),
@@ -363,7 +365,7 @@ where
                 .iter()
                 .filter_map(|f| {
                     if let Some(file_name) = f.file_name().and_then(|n| n.to_str()) {
-                        // TODO parse the file and get the header content
+                        // TODO TES3 parse the file and get the header content
                         let data = PluginData {
                             name: file_name.to_owned(),
                             size: f.metadata().unwrap().len(),
@@ -714,6 +716,46 @@ pub fn wild_contains(list: &[String], str: &String) -> Option<Vec<String>> {
 
     if list.contains(str) {
         return Some(vec![str.to_owned()]);
+    }
+
+    None
+}
+
+/// Checks if the list contains the str
+pub fn wild_contains_data(list: &[PluginData], str: &String) -> Option<Vec<PluginData>> {
+    if str.contains('*') || str.contains('?') || str.contains("<ver>") {
+        let mut results = vec![];
+        // Replace * with .* to match any sequence of characters
+        let mut regex_pattern = str.replace('*', r".*");
+        // Replace ? with . to match any single character
+        regex_pattern = regex_pattern.replace('?', r".");
+        // Replace <ver> with (\d+(?:[_.-]?\d+)*[a-z]?) to match a version number :hidethepain:
+        // the following are valid version numbers: 1.2.3a, 1.0, 1, 1a, 1_3a, 77g
+        regex_pattern = regex_pattern.replace("<ver>", r"(\d+(?:[_.-]?\d+)*[a-z]?)");
+
+        regex_pattern = format!("^{}$", regex_pattern);
+        if let Ok(regex) = regex::Regex::new(&regex_pattern) {
+            for item in list {
+                // Check if the item matches the pattern
+                if regex.is_match(&item.name) {
+                    //return true;
+                    results.push(item.to_owned());
+                }
+            }
+        } else {
+            log::error!("Could not construct wildcard pattern for {}", str);
+            return None;
+        }
+
+        if results.is_empty() {
+            return None;
+        }
+
+        return Some(results);
+    }
+
+    if let Some(r) = list.iter().find(|f| f.name.eq(str)) {
+        return Some(vec![r.to_owned()]);
     }
 
     None
