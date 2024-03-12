@@ -14,12 +14,19 @@ Supported games:
 
 The PLOX GUI supports a configuration file called `plox.toml` (place next to `plox_gui`) that allows you to customize its behavior. Here's an example of how to use the `plox.toml` file:
 
+Required fields:
+
 ```toml
-config = "openmw.cfg"
-game = "OpenMW"
 no_rules_download = true
 log_level = "debug"
 log_to_file = true
+```
+
+Optional fields:
+
+```toml
+config = "openmw.cfg"
+game = "OpenMW"
 ```
 
 ## Rules
