@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.2.0]
+## v[0.2.0]
 
 ### Added
 
@@ -16,9 +16,10 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
--
+- fixed missing Predicates
+- fixed a bug where openmw was not recognized properly
 
-## [0.1.0]
+## v[0.1.0]
 
 ### Added
 
