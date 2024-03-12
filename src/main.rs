@@ -201,7 +201,7 @@ pub fn sort(options: CliSortOptions) -> ExitCode {
         mods = match game {
             ESupportedGame::Morrowind => gather_tes3_mods(&root),
             ESupportedGame::Cyberpunk => gather_cp77_mods(&root),
-            ESupportedGame::OpenMW => gather_openmw_mods(config),
+            ESupportedGame::OpenMW => gather_openmw_mods(&config),
         };
         if mods.is_empty() {
             info!("No mods found");
@@ -303,7 +303,7 @@ pub fn sort(options: CliSortOptions) -> ExitCode {
                     } else {
                         info!("New:\n{:?}", result);
 
-                        match update_new_load_order(game, &result) {
+                        match update_new_load_order(game, &result, config) {
                             Ok(_) => {
                                 info!("Update successful");
                                 ExitCode::SUCCESS

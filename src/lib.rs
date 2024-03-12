@@ -238,7 +238,7 @@ where
     match game {
         ESupportedGame::Morrowind => gather_tes3_mods(root),
         ESupportedGame::Cyberpunk => gather_cp77_mods(root),
-        ESupportedGame::OpenMW => gather_openmw_mods(config),
+        ESupportedGame::OpenMW => gather_openmw_mods(&config),
     }
 }
 
@@ -365,7 +365,7 @@ where
     names
 }
 
-pub fn gather_openmw_mods<P>(config: Option<P>) -> Vec<PluginData>
+pub fn gather_openmw_mods<P>(config: &Option<P>) -> Vec<PluginData>
 where
     P: AsRef<Path>,
 {
@@ -468,10 +468,14 @@ where
 }
 
 /// Update on disk
-pub fn update_new_load_order(game: ESupportedGame, result: &[String]) -> std::io::Result<()> {
+pub fn update_new_load_order<P: AsRef<Path>>(
+    game: ESupportedGame,
+    result: &[String],
+    config: Option<P>,
+) -> std::io::Result<()> {
     match game {
         ESupportedGame::Morrowind => update_tes3(result),
-        ESupportedGame::OpenMW => update_openmw(result),
+        ESupportedGame::OpenMW => update_openmw(result, config),
         ESupportedGame::Cyberpunk => update_cp77(result),
     }
 }
@@ -481,12 +485,21 @@ fn update_cp77(_result: &[String]) -> std::io::Result<()> {
     panic!("Not implemented")
 }
 
-fn update_openmw(result: &[String]) -> std::io::Result<()> {
+fn update_openmw<P: AsRef<Path>>(result: &[String], config: Option<P>) -> std::io::Result<()> {
     // in openMW we just update the cfg with the new order
-    if let Ok(_cfg) = openmw_cfg::get_config() {
+    let mut path = config_path();
+    if let Some(config_path) = config {
+        if config_path.as_ref().exists() {
+            path = config_path.as_ref().to_path_buf();
+        } else {
+            error!("openmw.cfg not found at {}", config_path.as_ref().display());
+        }
+    }
+
+    if let Ok(_cfg) = openmw_cfg::Ini::load_from_file_noescape(&path) {
         // parse ini
         let mut buf = Vec::new();
-        for line in read_lines(config_path())?.map_while(Result::ok) {
+        for line in read_lines(&path)?.map_while(Result::ok) {
             // skip plugin lines
 
             if line.starts_with("content=") {
@@ -501,7 +514,7 @@ fn update_openmw(result: &[String]) -> std::io::Result<()> {
         }
 
         // save
-        let mut file = File::create(config_path())?;
+        let mut file = File::create(path)?;
         file.write_all(&buf)?;
     } else {
         error!("No openmw.cfg found");

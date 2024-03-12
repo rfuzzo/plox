@@ -23,6 +23,8 @@ pub enum EModListView {
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct TemplateApp {
     #[serde(skip)]
+    settings: AppSettings,
+    #[serde(skip)]
     app_data: Option<AppData>,
 
     // filters
@@ -61,6 +63,7 @@ impl Default for TemplateApp {
         let (tx2, rx2) = std::sync::mpsc::channel();
 
         Self {
+            settings: AppSettings::default(),
             app_data: None,
             show_notes: true,
             show_conflicts: true,
@@ -89,7 +92,7 @@ impl TemplateApp {
 
         // Load previous app state (if any).
         // Note that you must enable the `persistence` feature for this to work.
-        let app: TemplateApp = if let Some(storage) = cc.storage {
+        let mut app: TemplateApp = if let Some(storage) = cc.storage {
             eframe::get_value(storage, eframe::APP_KEY).unwrap_or_default()
         } else {
             Default::default()
@@ -97,6 +100,7 @@ impl TemplateApp {
 
         // deserialize settings from plox.toml
         let settings = AppSettings::from_file(&PathBuf::from("plox.toml"));
+        app.settings = settings.clone();
 
         // init logger
         let log_level = settings.log_level.clone().unwrap_or("info".to_string());
@@ -256,7 +260,11 @@ impl eframe::App for TemplateApp {
 
                     if r.clicked() {
                         // apply sorting
-                        match update_new_load_order(data.game, &data.new_order) {
+                        match update_new_load_order(
+                            data.game,
+                            &data.new_order,
+                            self.settings.config.clone(),
+                        ) {
                             Ok(_) => {
                                 info!("Update successful");
                             }
