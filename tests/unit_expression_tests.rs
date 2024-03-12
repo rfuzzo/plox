@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod unit_tests {
-    use plox::expressions::*;
+    use plox::{expressions::*, PluginData};
 
     fn init() {
         let _ = env_logger::builder().is_test(true).try_init();
@@ -19,8 +19,11 @@ mod unit_tests {
         Atomic::from(str).into()
     }
 
-    fn get_mods() -> Vec<String> {
-        [A, B, C, D, E, F].iter().map(|e| (*e).into()).collect()
+    fn get_mods() -> Vec<PluginData> {
+        [A, B, C, D, E, F]
+            .iter()
+            .map(|e| PluginData::new(e.to_string(), 0))
+            .collect::<Vec<_>>()
     }
 
     #[test]

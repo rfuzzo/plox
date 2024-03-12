@@ -19,8 +19,12 @@ mod integration_tests {
         init();
 
         let mods_path = "./tests/modlist.txt";
+        let mods_data = read_file_as_list(mods_path);
         assert_eq!(
-            read_file_as_list(mods_path),
+            mods_data
+                .iter()
+                .map(|s| s.name.to_owned())
+                .collect::<Vec<_>>(),
             vec![
                 "a.archive",
                 "b.archive",
@@ -392,7 +396,7 @@ mod integration_tests {
 
         let mods = gather_mods(&root_path, ESupportedGame::Cyberpunk, None);
         assert_eq!(
-            mods,
+            mods.iter().map(|s| s.name.to_owned()).collect::<Vec<_>>(),
             vec![
                 "a.archive".to_owned(),
                 "b.archive".into(),

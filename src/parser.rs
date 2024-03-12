@@ -94,7 +94,16 @@ impl Parser {
     /// Evaluates all warning rules and stores a copy of them in self
     /// Retrieve them with self.warnings
     pub fn evaluate_plugins(&mut self, plugins: &[PluginData]) {
-        let mods_cpy: Vec<_> = plugins.iter().map(|f| f.name.to_lowercase()).collect();
+        // lowercase all plugin names
+        let mods_cpy: Vec<_> = plugins
+            .iter()
+            .map(|f| {
+                let mut x = f.clone();
+                let name_lc = x.name.to_lowercase();
+                x.name = name_lc;
+                x
+            })
+            .collect();
 
         let mut result = vec![];
         for rule in &mut self.warning_rules {

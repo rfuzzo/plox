@@ -9,10 +9,7 @@ use std::{
 use log::warn;
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    expressions::*,
-    parser::{self},
-};
+use crate::{expressions::*, parser, PluginData};
 
 ///////////////////////////////////////////////////
 // ENUMS
@@ -49,7 +46,7 @@ pub trait TWarningRule {
 
     fn set_comment(&mut self, comment: String);
     /// every rule may be evaluated
-    fn eval(&mut self, items: &[String]) -> bool;
+    fn eval(&mut self, items: &[PluginData]) -> bool;
 }
 
 impl TWarningRule for EWarningRule {
@@ -80,7 +77,7 @@ impl TWarningRule for EWarningRule {
         }
     }
 
-    fn eval(&mut self, items: &[String]) -> bool {
+    fn eval(&mut self, items: &[PluginData]) -> bool {
         match self {
             EWarningRule::Note(o) => o.eval(items),
             EWarningRule::Conflict(o) => o.eval(items),
@@ -431,7 +428,7 @@ impl TWarningRule for Note {
         self.comment = comment;
     }
     /// Notes evaluate as true if any of the containing expressions evaluates as true
-    fn eval(&mut self, items: &[String]) -> bool {
+    fn eval(&mut self, items: &[PluginData]) -> bool {
         let mut result = false;
         for expr in &self.expressions {
             if let Some(plugins) = expr.eval(items) {
@@ -510,7 +507,7 @@ impl TWarningRule for Conflict {
         self.comment = comment;
     }
     /// Conflicts evaluate as true if both expressions evaluate as true
-    fn eval(&mut self, items: &[String]) -> bool {
+    fn eval(&mut self, items: &[PluginData]) -> bool {
         let mut i = 0;
         for e in &self.expressions {
             if let Some(plugins) = e.eval(items) {
@@ -592,7 +589,7 @@ impl TWarningRule for Requires {
         self.comment = comment;
     }
     /// Requires evaluates as true if A is true and B is not true
-    fn eval(&mut self, items: &[String]) -> bool {
+    fn eval(&mut self, items: &[PluginData]) -> bool {
         let mut result = false;
         if let Some(expr_a) = &self.expression_a {
             if let Some(expr_b) = &self.expression_b {
@@ -684,7 +681,7 @@ impl TWarningRule for Patch {
         self.comment = comment;
     }
     /// Patch evaluates as true if A is true and B is not true or if B is true and A is not true
-    fn eval(&mut self, items: &[String]) -> bool {
+    fn eval(&mut self, items: &[PluginData]) -> bool {
         let mut result = false;
         if let Some(expr_a) = &self.expression_a {
             if let Some(expr_b) = &self.expression_b {

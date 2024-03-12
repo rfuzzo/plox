@@ -68,13 +68,13 @@ pub fn detect_game() -> Option<ESupportedGame> {
 }
 
 /// flattens a list of ordered mod pairs into a list of mod names
-pub fn debug_get_mods_from_order_rules(order_rules: &[EOrderRule]) -> Vec<String> {
+pub fn debug_get_mods_from_order_rules(order_rules: &[EOrderRule]) -> Vec<PluginData> {
     debug_get_mods_from_ordering(&get_ordering_from_order_rules(order_rules))
 }
 
 /// flattens a list of ordered mod pairs into a list of mod names
-pub fn debug_get_mods_from_ordering(order: &[(String, String)]) -> Vec<String> {
-    let mut result: Vec<String> = vec![];
+pub fn debug_get_mods_from_ordering(order: &[(String, String)]) -> Vec<PluginData> {
+    let mut result: Vec<PluginData> = vec![];
     for (a, b) in order.iter() {
         for a in [a, b] {
             let name = if a.contains('*') || a.contains('?') || a.contains("<ver>") {
@@ -86,8 +86,9 @@ pub fn debug_get_mods_from_ordering(order: &[(String, String)]) -> Vec<String> {
                 a.to_owned()
             };
 
-            if !result.contains(&name) {
-                result.push(name);
+            let data = PluginData::new(name, 0);
+            if !result.contains(&data) {
+                result.push(data);
             }
         }
     }
@@ -202,13 +203,24 @@ fn download_plox_rules(rules_dir: &PathBuf) {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq, PartialOrd, Ord)]
 pub struct PluginData {
     pub name: String,
     pub size: u64,
 
     pub description: Option<String>,
     pub version: Option<String>,
+}
+
+impl PluginData {
+    pub fn new(name: String, size: u64) -> Self {
+        Self {
+            name,
+            size,
+            description: None,
+            version: None,
+        }
+    }
 }
 
 /// Gets a list of mod names from the game root folder
@@ -648,14 +660,20 @@ where
 }
 
 /// read file line by line into vector
-pub fn read_file_as_list<P>(modlist_path: P) -> Vec<String>
+pub fn read_file_as_list<P>(modlist_path: P) -> Vec<PluginData>
 where
     P: AsRef<Path>,
 {
-    let mut result: Vec<String> = vec![];
+    let mut result: Vec<PluginData> = vec![];
     if let Ok(lines) = read_lines(modlist_path) {
         for line in lines.map_while(Result::ok) {
-            result.push(line);
+            let data = PluginData {
+                name: line,
+                size: 0, // TODO fix dummy size
+                description: None,
+                version: None,
+            };
+            result.push(data);
         }
     }
     result

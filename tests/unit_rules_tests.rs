@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod unit_tests {
-    use plox::{expressions::*, rules::*, sorter::new_stable_sorter, ESupportedGame};
+    use plox::{expressions::*, rules::*, sorter::new_stable_sorter, ESupportedGame, PluginData};
 
     fn init() {
         let _ = env_logger::builder().is_test(true).try_init();
@@ -19,8 +19,11 @@ mod unit_tests {
         Atomic::from(str).into()
     }
 
-    fn get_mods() -> Vec<String> {
-        [A, B, C, D, E, F].iter().map(|e| (*e).into()).collect()
+    fn get_mods() -> Vec<PluginData> {
+        [A, B, C, D, E, F]
+            .iter()
+            .map(|e| PluginData::new(e.to_string(), 0))
+            .collect()
     }
 
     #[test]
@@ -237,10 +240,16 @@ mod unit_tests {
                 "b.ESP".to_string(),
                 "c.esp".to_string(),
             ];
+            let mods_data = mods
+                .iter()
+                .map(|e| PluginData::new(e.to_string(), 0))
+                .collect::<Vec<_>>();
+
             let order: Order = Order::new(vec!["b.esp".to_string(), "a.esp".to_string()]);
             let order_rules: Vec<EOrderRule> = vec![order.into()];
 
-            match new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &order_rules) {
+            match new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods_data, &order_rules)
+            {
                 Ok(result) => {
                     // check for A,B,C -> B,A,C
                     assert_eq!(

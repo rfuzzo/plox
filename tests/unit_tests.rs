@@ -29,9 +29,9 @@ mod unit_tests {
             Order::from("b", "a").into(),
         ];
 
-        let mods: Vec<String> = ["a", "b", "c", "d", "e", "f", "g"]
+        let mods: Vec<PluginData> = ["a", "b", "c", "d", "e", "f", "g"]
             .iter()
-            .map(|e| (*e).into())
+            .map(|e| PluginData::new(e.to_string(), 0))
             .collect();
 
         assert!(
@@ -68,10 +68,10 @@ mod unit_tests {
             Order::from("test.archive", "test2.archive").into(),
         ];
 
-        let mods = ["d", "e", "f", "g", "a", "b", "c"]
+        let mods: Vec<PluginData> = ["d", "e", "f", "g", "a", "b", "c"]
             .iter()
-            .map(|e| (*e).into())
-            .collect::<Vec<_>>();
+            .map(|e| PluginData::new(e.to_string(), 0))
+            .collect();
 
         match sorter::new_unstable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &order) {
             Ok(result) => {

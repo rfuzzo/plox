@@ -277,7 +277,12 @@ pub fn sort(options: CliSortOptions) -> ExitCode {
                     debug!("Old:\n{:?}", &mods);
                     debug!("New:\n{:?}", result);
 
-                    if mods.eq(&result) {
+                    if mods
+                        .iter()
+                        .map(|f| f.name.clone())
+                        .collect::<Vec<_>>()
+                        .eq(&result)
+                    {
                         info!("Mods are in correct order, no sorting needed.");
                     } else {
                         info!("New order:\n{:?}", result);
@@ -287,7 +292,12 @@ pub fn sort(options: CliSortOptions) -> ExitCode {
                 } else {
                     info!("Current:\n{:?}", &mods);
 
-                    if mods.eq(&result) {
+                    if mods
+                        .iter()
+                        .map(|f| f.name.clone())
+                        .collect::<Vec<_>>()
+                        .eq(&result)
+                    {
                         info!("Mods are in correct order, no sorting needed.");
                         ExitCode::SUCCESS
                     } else {
@@ -362,7 +372,7 @@ pub fn list_mods(
     };
 
     for m in gather_mods(&root, game, config) {
-        println!("{}", m);
+        println!("{}", m.name);
         //info!("{}", m);
     }
 

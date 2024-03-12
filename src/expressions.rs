@@ -6,11 +6,11 @@ use std::fmt::Display;
 
 use serde::{Deserialize, Serialize};
 
-use crate::wild_contains;
+use crate::{wild_contains, PluginData};
 
 // An expression may be evaluated against a load order
 pub trait TExpression {
-    fn eval(&self, items: &[String]) -> Option<Vec<String>>;
+    fn eval(&self, items: &[PluginData]) -> Option<Vec<String>>;
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -39,7 +39,7 @@ impl Display for Expression {
     }
 }
 impl TExpression for Expression {
-    fn eval(&self, items: &[String]) -> Option<Vec<String>> {
+    fn eval(&self, items: &[PluginData]) -> Option<Vec<String>> {
         match self {
             Expression::Atomic(x) => x.eval(items),
             Expression::ALL(x) => x.eval(items),
@@ -110,8 +110,11 @@ impl Atomic {
 }
 impl TExpression for Atomic {
     /// atomics evaluate as true if the input list contains the item
-    fn eval(&self, items: &[String]) -> Option<Vec<String>> {
-        wild_contains(items, &self.item)
+    fn eval(&self, items: &[PluginData]) -> Option<Vec<String>> {
+        wild_contains(
+            &items.iter().map(|f| f.name.to_owned()).collect::<Vec<_>>(),
+            &self.item,
+        )
     }
 }
 
@@ -148,7 +151,7 @@ impl ALL {
 }
 impl TExpression for ALL {
     /// ALL evaluates as true if all expressions evaluate as true
-    fn eval(&self, items: &[String]) -> Option<Vec<String>> {
+    fn eval(&self, items: &[PluginData]) -> Option<Vec<String>> {
         let mut result = true;
         let mut results: Vec<String> = vec![];
 
@@ -199,7 +202,7 @@ impl ANY {
 }
 impl TExpression for ANY {
     // ANY evaluate as true if any expressions evaluates as true
-    fn eval(&self, items: &[String]) -> Option<Vec<String>> {
+    fn eval(&self, items: &[PluginData]) -> Option<Vec<String>> {
         let mut result = false;
         let mut results: Vec<String> = vec![];
 
@@ -250,7 +253,7 @@ impl NOT {
 }
 impl TExpression for NOT {
     // NOT evaluates as true if the wrapped expression evaluates as true
-    fn eval(&self, items: &[String]) -> Option<Vec<String>> {
+    fn eval(&self, items: &[PluginData]) -> Option<Vec<String>> {
         if let Some(_plugins) = self.expression.eval(items) {
             None
         } else {
@@ -294,7 +297,7 @@ impl DESC {
     }
 }
 impl TExpression for DESC {
-    fn eval(&self, items: &[String]) -> Option<Vec<String>> {
+    fn eval(&self, items: &[PluginData]) -> Option<Vec<String>> {
         self.expression.eval(items)
     }
 }
@@ -339,7 +342,7 @@ impl SIZE {
     }
 }
 impl TExpression for SIZE {
-    fn eval(&self, items: &[String]) -> Option<Vec<String>> {
+    fn eval(&self, items: &[PluginData]) -> Option<Vec<String>> {
         self.expression.eval(items)
     }
 }
@@ -403,7 +406,7 @@ impl VER {
     }
 }
 impl TExpression for VER {
-    fn eval(&self, items: &[String]) -> Option<Vec<String>> {
+    fn eval(&self, items: &[PluginData]) -> Option<Vec<String>> {
         self.expression.eval(items)
     }
 }
