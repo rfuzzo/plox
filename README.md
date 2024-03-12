@@ -80,7 +80,7 @@ Commands:
 
 Options:
   -l, --log-level <LOG_LEVEL>  Set the log level, default is "info" [possible values: trace, debug, info, warn, error]
-  -g, --game <GAME>            Set the game to evaluate, if no game is specified it will attempt to deduce the game from the current working directory [possible values: morrowind, open-morrowind, cyberpunk]
+  -g, --game <GAME>            Set the game to evaluate, if no game is specified it will attempt to deduce the game from the current working directory [possible values: morrowind, open-mw, cyberpunk]  
   -n, --non-interactive        Disable user input
   -h, --help                   Print help
   -V, --version                Print version
@@ -94,8 +94,9 @@ Lists the current mod load order.
 Usage: plox.exe list [OPTIONS]
 
 Options:
-  -r, --root <ROOT>  Root game folder (e.g. "Cyberpunk 2077" or "Data Files"). Default is current working directory 
-  -h, --help         Print help
+  -r, --root <ROOT>      Root game folder (e.g. "Cyberpunk 2077" or "Morrowind"). Default is current working directory
+  -c, --config <CONFIG>  (OpenMW only) Path to the openmw.cfg file
+  -h, --help             Print help
 ```
 
 ### sort
@@ -106,11 +107,12 @@ Sorts the current mod load order according to specified rules
 Usage: plox.exe sort [OPTIONS]
 
 Options:
-  -g, --game-folder <GAME_FOLDER>  Root game folder (e.g. "Cyberpunk 2077" or "Data Files"). Default is current working directory
-  -r, --rules-dir <RULES_DIR>      Folder to read sorting rules from. Default is ./plox or ./mlox for TES3
+  -g, --game-folder <GAME_FOLDER>  Root game folder (e.g. "Cyberpunk 2077" or "Morrowind"). Default is current working directory
+  -r, --rules-dir <RULES_DIR>      Folder to read sorting rules from. Default is ./mlox for TES3
   -d, --dry-run                    Just print the suggested load order without sorting
   -u, --unstable                   Use the potentially faster unstable sorter
   -n, --no-download                Disable automatic downloading of latest ruleset
   -m, --mod-list <MOD_LIST>        Read the input mods from a file instead of checking the root folder
+  -c, --config <CONFIG>            (OpenMW only) Path to the openmw.cfg file
   -h, --help                       Print help
 ```
