@@ -410,19 +410,32 @@ mod integration_tests {
     fn test_parse_header() {
         init();
 
-        let plugin_test_path = PathBuf::from("tests").join("test1.esp");
-        let header = parse_header(&plugin_test_path).expect("failed to parse header");
+        {
+            let plugin_test_path = PathBuf::from("tests").join("test2.esp");
+            let header = parse_header(&plugin_test_path).expect("failed to parse header");
 
-        // check some things
-        assert_eq!(header.version, 1.3_f32);
-        assert_eq!(
-            header.description,
-            "The main data file for BloodMoon.\r\n(requires Morrowind.esm to run)"
-        );
-        // check master files
-        assert_eq!(
-            header.masters.unwrap(),
-            vec![("Morrowind.esm".to_string(), 79837557_u64),]
-        );
+            // check some things
+            assert_eq!(header.version, 1.2_f32);
+            assert_eq!(header.description, "The main data file For Morrowind");
+            // check master files
+            assert!(header.masters.is_none());
+        }
+
+        {
+            let plugin_test_path = PathBuf::from("tests").join("test1.esp");
+            let header = parse_header(&plugin_test_path).expect("failed to parse header");
+
+            // check some things
+            assert_eq!(header.version, 1.3_f32);
+            assert_eq!(
+                header.description,
+                "The main data file for BloodMoon.\r\n(requires Morrowind.esm to run)"
+            );
+            // check master files
+            assert_eq!(
+                header.masters.unwrap(),
+                vec![("Morrowind.esm".to_string(), 79837557_u64),]
+            );
+        }
     }
 }

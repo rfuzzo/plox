@@ -2,7 +2,11 @@
 
 mod app;
 
-use std::{env, path::PathBuf, sync::mpsc::Sender};
+use std::{
+    env,
+    path::{Path, PathBuf},
+    sync::mpsc::Sender,
+};
 
 pub use app::TemplateApp;
 use log::error;
@@ -38,7 +42,7 @@ struct AppSettings {
     log_to_file: bool,
 }
 impl AppSettings {
-    fn from_file(arg: &str) -> Self {
+    fn from_file(arg: &Path) -> Self {
         // deserialize from toml file
         match std::fs::read_to_string(arg) {
             Ok(s) => match toml::from_str(&s) {

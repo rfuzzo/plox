@@ -1,5 +1,6 @@
 use std::{
     fs::File,
+    path::PathBuf,
     sync::mpsc::{Receiver, Sender},
 };
 
@@ -95,7 +96,7 @@ impl TemplateApp {
         };
 
         // deserialize settings from plox.toml
-        let settings = AppSettings::from_file("plox.toml");
+        let settings = AppSettings::from_file(&PathBuf::from("plox.toml"));
 
         // init logger
         let log_level = settings.log_level.clone().unwrap_or("info".to_string());
@@ -103,7 +104,7 @@ impl TemplateApp {
             let _ = WriteLogger::init(
                 from_string(log_level),
                 simplelog::Config::default(),
-                File::create("plox.log").unwrap(),
+                File::create(PathBuf::from("plox.log")).unwrap(),
             );
         } else {
             let _ = simplelog::TermLogger::init(

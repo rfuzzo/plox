@@ -325,7 +325,7 @@ where
                         }
                     }
                     Err(e) => {
-                        log::debug!("Error parsing header: {}", e);
+                        log::debug!("Error parsing header: {}, {}", e, f.display());
                     }
                 }
 
@@ -407,7 +407,7 @@ where
                                 }
                             }
                             Err(e) => {
-                                log::debug!("Error parsing header: {}", e);
+                                log::debug!("Error parsing header: {}, {}", e, f.display());
                             }
                         }
                         return Some(data);
@@ -652,6 +652,10 @@ fn parse_hedr<R: Read + Seek>(reader: &mut R, stream_size: u64) -> std::io::Resu
     let data_magic: u32 = 1096040772;
 
     // read masters
+    if reader.stream_position()? >= stream_size {
+        return Ok(header);
+    }
+
     let mut masters = vec![];
     loop {
         let magic = reader.read_u32::<LittleEndian>()?;
