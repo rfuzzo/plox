@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v[0.2.1]
+
+### Fixed
+
+- fixed a bug where custom openmw cfg was not used
+
 ## v[0.2.0]
 
 ### Added
