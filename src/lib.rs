@@ -202,12 +202,21 @@ fn download_plox_rules(rules_dir: &PathBuf) {
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct PluginData {
+    pub name: String,
+    pub size: u64,
+
+    pub description: Option<String>,
+    pub version: Option<String>,
+}
+
 /// Gets a list of mod names from the game root folder
 ///
 /// # Errors
 ///
 /// This function will return an error if IO operations fail
-pub fn gather_mods<P>(root: &P, game: ESupportedGame, config: Option<P>) -> Vec<String>
+pub fn gather_mods<P>(root: &P, game: ESupportedGame, config: Option<P>) -> Vec<PluginData>
 where
     P: AsRef<Path>,
 {
@@ -270,7 +279,7 @@ where
     plugins
 }
 
-pub fn gather_tes3_mods<P>(path: &P) -> Vec<String>
+pub fn gather_tes3_mods<P>(path: &P) -> Vec<PluginData>
 where
     P: AsRef<Path>,
 {
@@ -279,7 +288,14 @@ where
         .iter()
         .filter_map(|f| {
             if let Some(file_name) = f.file_name().and_then(|n| n.to_str()) {
-                return Some(file_name.to_owned());
+                // TODO parse the file and get the header content
+                let data = PluginData {
+                    name: file_name.to_owned(),
+                    size: f.metadata().unwrap().len(),
+                    description: None,
+                    version: None,
+                };
+                return Some(data);
             }
             None
         })
@@ -290,12 +306,12 @@ where
     if morrowind_ini_path.exists() {
         // parse ini
         if let Ok(ini) = Ini::load_from_file(morrowind_ini_path) {
-            let mut final_files: Vec<String> = vec![];
+            let mut final_files: Vec<PluginData> = vec![];
             if let Some(section) = ini.section(Some("Game Files")) {
                 let mods_in_ini: Vec<_> = section.iter().map(|f| f.1).collect();
-                for plugin_name in names {
-                    if mods_in_ini.contains(&plugin_name.as_str()) {
-                        final_files.push(plugin_name.to_owned());
+                for data in names {
+                    if mods_in_ini.contains(&data.name.as_str()) {
+                        final_files.push(data.clone());
                     }
                 }
 
@@ -315,7 +331,7 @@ where
     names
 }
 
-pub fn gather_openmw_mods<P>(config: Option<P>) -> Vec<String>
+pub fn gather_openmw_mods<P>(config: Option<P>) -> Vec<PluginData>
 where
     P: AsRef<Path>,
 {
@@ -335,7 +351,14 @@ where
                 .iter()
                 .filter_map(|f| {
                     if let Some(file_name) = f.file_name().and_then(|n| n.to_str()) {
-                        return Some(file_name.to_owned());
+                        // TODO parse the file and get the header content
+                        let data = PluginData {
+                            name: file_name.to_owned(),
+                            size: f.metadata().unwrap().len(),
+                            description: None,
+                            version: None,
+                        };
+                        return Some(data);
                     }
                     None
                 })
@@ -349,7 +372,7 @@ where
     vec![]
 }
 
-pub fn gather_cp77_mods<P>(root: &P) -> Vec<String>
+pub fn gather_cp77_mods<P>(root: &P) -> Vec<PluginData>
 where
     P: AsRef<Path>,
 {
@@ -366,7 +389,13 @@ where
                         if let Some(ext) = os_ext.to_ascii_lowercase().to_str() {
                             if ext.contains("archive") {
                                 if let Some(file_name) = e.file_name().and_then(|n| n.to_str()) {
-                                    return Some(file_name.to_owned());
+                                    let data = PluginData {
+                                        name: file_name.to_owned(),
+                                        size: e.metadata().unwrap().len(),
+                                        description: None,
+                                        version: None,
+                                    };
+                                    return Some(data);
                                 }
                             }
                         }
@@ -379,7 +408,7 @@ where
         // TODO CP77 support modlist
 
         // TODO CP77 gather REDmods from mods/<NAME>
-        entries.sort();
+        entries.sort_by_key(|e| e.name.clone());
         return entries;
     }
 

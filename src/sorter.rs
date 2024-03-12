@@ -5,6 +5,7 @@ use toposort_scc::IndexGraph;
 
 use crate::{
     get_ordering_from_order_rules, nearend2, nearstart2, wild_contains, EOrderRule, ESupportedGame,
+    PluginData,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -47,7 +48,7 @@ impl Sorter {
     pub fn topo_sort(
         &mut self,
         game: ESupportedGame,
-        mods_cased: &[String],
+        mods_cased: &[PluginData],
         order_rules: &[EOrderRule],
     ) -> Result<Vec<String>, &'static str> {
         // early out
@@ -64,12 +65,12 @@ impl Sorter {
         let mut index_dict_rev: HashMap<usize, String> = HashMap::default();
         let mut mod_map: HashMap<usize, String> = HashMap::default();
         for (i, m) in mods_cased.iter().enumerate() {
-            let lower_case = m.to_lowercase();
+            let lower_case = m.name.to_lowercase();
 
             index_dict.insert(lower_case.clone(), i);
             index_dict_rev.insert(i, lower_case.clone());
 
-            mod_map.insert(i, m.to_owned());
+            mod_map.insert(i, m.name.to_owned());
             mods.push(lower_case.to_owned());
         }
 

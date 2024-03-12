@@ -143,7 +143,7 @@ fn init_parser(settings: AppSettings, tx: Sender<String>) -> Option<AppData> {
 
     let r = AppData {
         game,
-        old_order: mods,
+        old_order: mods.iter().map(|m| m.name.clone()).collect(),
         new_order,
         warnings,
         plugin_warning_map,

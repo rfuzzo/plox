@@ -8,7 +8,7 @@ use std::usize;
 use byteorder::ReadBytesExt;
 use log::*;
 
-use crate::{expressions::*, rules::*, ESupportedGame, TParser};
+use crate::{expressions::*, rules::*, ESupportedGame, PluginData, TParser};
 
 pub fn get_parser(game: ESupportedGame) -> Parser {
     match game {
@@ -93,8 +93,8 @@ impl Parser {
 
     /// Evaluates all warning rules and stores a copy of them in self
     /// Retrieve them with self.warnings
-    pub fn evaluate_plugins(&mut self, plugins: &[String]) {
-        let mods_cpy: Vec<_> = plugins.iter().map(|f| f.to_lowercase()).collect();
+    pub fn evaluate_plugins(&mut self, plugins: &[PluginData]) {
+        let mods_cpy: Vec<_> = plugins.iter().map(|f| f.name.to_lowercase()).collect();
 
         let mut result = vec![];
         for rule in &mut self.warning_rules {
