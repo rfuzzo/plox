@@ -4,9 +4,10 @@
 
 use std::fmt::Display;
 
+use semver::VersionReq;
 use serde::{Deserialize, Serialize};
 
-use crate::{wild_contains, PluginData};
+use crate::{wild_contains, wild_contains_data, PluginData};
 
 // An expression may be evaluated against a load order
 pub trait TExpression {
@@ -283,22 +284,49 @@ impl Display for NOT {
 /// [DESC /regex/ A.esp] or [DESC !/regex/ A.esp]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DESC {
-    pub expression: Box<Expression>,
+    pub expression: Atomic,
     pub regex: String,
     pub is_negated: bool,
 }
 impl DESC {
-    pub fn new(expression: Expression, description: String, is_negated: bool) -> Self {
+    pub fn new(expression: Atomic, regex: String, is_negated: bool) -> Self {
         Self {
-            expression: Box::new(expression),
-            regex: description,
+            expression,
+            regex,
             is_negated,
         }
     }
 }
 impl TExpression for DESC {
     fn eval(&self, items: &[PluginData]) -> Option<Vec<String>> {
-        self.expression.eval(items)
+        // check the version
+        if let Some(plugins) = wild_contains_data(items, &self.expression.item) {
+            let mut results = vec![];
+            for p in &plugins {
+                if let Some(description) = &p.description {
+                    if let Ok(pattern) = regex::Regex::new(&self.regex) {
+                        match self.is_negated {
+                            true => {
+                                if !pattern.is_match(description) {
+                                    results.push(p.name.clone());
+                                }
+                            }
+                            false => {
+                                if pattern.is_match(description) {
+                                    results.push(p.name.clone());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if results.is_empty() {
+                return None;
+            } else {
+                return Some(results);
+            }
+        }
+        None
     }
 }
 impl Clone for DESC {
@@ -324,7 +352,7 @@ impl Display for DESC {
 ////////////////////////////////////////////////////////////////////////
 // SIZE
 
-/// TODO The Size predicate is a special predicate that matches the filesize of the plugin
+/// The Size predicate is a special predicate that matches the filesize of the plugin
 /// [SIZE ### A.esp] or [SIZE !### A.esp]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SIZE {
@@ -343,11 +371,8 @@ impl SIZE {
 }
 impl TExpression for SIZE {
     fn eval(&self, items: &[PluginData]) -> Option<Vec<String>> {
-        // check the atomic
-        let results = crate::wild_contains_data(items, &self.expression.item);
-
         // check the size
-        if let Some(plugins) = results {
+        if let Some(plugins) = wild_contains_data(items, &self.expression.item) {
             let mut results = vec![];
             for p in &plugins {
                 if self.is_negated {
@@ -407,20 +432,20 @@ impl Display for EVerOperator {
     }
 }
 
-/// TODO The Ver predicate is a special predicate that first tries to match the version number string stored in the plugin header,
+/// The Ver predicate is a special predicate that first tries to match the version number string stored in the plugin header,
 /// and if that fails it tries to match the version number from the plugin filename.
 /// If a version number is found, it can be used in a comparison.
 /// Syntax: [VER operator version plugin.esp]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct VER {
-    pub expression: Box<Expression>,
+    pub expression: Atomic,
     pub operator: EVerOperator,
     pub version: String,
 }
 impl VER {
-    pub fn new(expression: Expression, operator: EVerOperator, version: String) -> Self {
+    pub fn new(expression: Atomic, operator: EVerOperator, version: String) -> Self {
         Self {
-            expression: Box::new(expression),
+            expression,
             operator,
             version,
         }
@@ -428,7 +453,43 @@ impl VER {
 }
 impl TExpression for VER {
     fn eval(&self, items: &[PluginData]) -> Option<Vec<String>> {
-        self.expression.eval(items)
+        // check the version
+        if let Some(plugins) = wild_contains_data(items, &self.expression.item) {
+            let mut results = vec![];
+            for p in &plugins {
+                if let Some(plugin_version) = &p.version {
+                    // we can unwrap here because we know the version is valid
+                    let semversion = semver::Version::parse(&self.version).unwrap();
+                    let matches = match self.operator {
+                        EVerOperator::Less => {
+                            let req =
+                                VersionReq::parse(format!("<{}", semversion).as_str()).unwrap();
+                            req.matches(plugin_version)
+                        }
+                        EVerOperator::Equal => {
+                            let req =
+                                VersionReq::parse(format!("={}", semversion).as_str()).unwrap();
+                            req.matches(plugin_version)
+                        }
+                        EVerOperator::Greater => {
+                            let req =
+                                VersionReq::parse(format!(">{}", semversion).as_str()).unwrap();
+                            req.matches(plugin_version)
+                        }
+                    };
+
+                    if matches {
+                        results.push(p.name.clone());
+                    }
+                }
+            }
+            if results.is_empty() {
+                return None;
+            } else {
+                return Some(results);
+            }
+        }
+        None
     }
 }
 impl Clone for VER {

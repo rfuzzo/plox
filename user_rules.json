@@ -1102,9 +1102,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "mwse_poisoncrafting.esp"
-              }
+              "item": "mwse_poisoncrafting.esp"
             },
             "regex": "patches poison crafting",
             "is_negated": true
@@ -3778,9 +3776,7 @@
             {
               "DESC": {
                 "expression": {
-                  "Atomic": {
-                    "item": "camonna tong.esp"
-                  }
+                  "item": "camonna tong.esp"
                 },
                 "regex": "enjoy!",
                 "is_negated": false
@@ -3811,9 +3807,7 @@
             {
               "DESC": {
                 "expression": {
-                  "Atomic": {
-                    "item": "camonna tong.esp"
-                  }
+                  "item": "camonna tong.esp"
                 },
                 "regex": "enjoy!",
                 "is_negated": true
@@ -8587,9 +8581,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "tr_mainland.esm"
-                    }
+                    "item": "tr_mainland.esm"
                   },
                   "regex": "main file v. 22.11",
                   "is_negated": false
@@ -8633,9 +8625,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "tr_mainland.esm"
-                    }
+                    "item": "tr_mainland.esm"
                   },
                   "regex": "main file v. 22.11",
                   "is_negated": false

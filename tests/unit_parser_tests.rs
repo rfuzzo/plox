@@ -499,7 +499,7 @@ mod unit_tests {
             .expect("No expressions parsed");
 
         if let Expression::DESC(e) = expr {
-            assert!(is_atomic(e.expression.as_ref(), expected[1]));
+            assert!(is_atomic(&e.expression.into(), expected[1]));
             assert_eq!(format!("/{}/", e.regex), expected[0]);
             assert!(!e.is_negated);
         } else {
@@ -523,7 +523,7 @@ mod unit_tests {
             .expect("No expressions parsed");
 
         if let Expression::DESC(e) = expr {
-            assert!(is_atomic(e.expression.as_ref(), expected[1]));
+            assert!(is_atomic(&e.expression.into(), expected[1]));
             assert_eq!(format!("!/{}/", e.regex), expected[0]);
             assert!(e.is_negated);
         } else {
@@ -618,7 +618,7 @@ mod unit_tests {
         for (a, b, c) in inputs {
             test_ver(
                 format!("[VER {a} {b} {c}]").to_lowercase().as_str(),
-                [a, b, c].to_vec(),
+                [a, format!("{b}.0").as_str(), c].to_vec(),
             );
         }
     }
@@ -641,7 +641,7 @@ mod unit_tests {
         if let Expression::VER(e) = expr {
             assert_eq!(format!("{}", e.operator), expected[0]);
             assert_eq!(format!("{}", e.version), expected[1]);
-            assert!(is_atomic(e.expression.as_ref(), expected[2]));
+            assert!(is_atomic(&e.expression.into(), expected[2]));
         } else {
             panic!("wrong type");
         }

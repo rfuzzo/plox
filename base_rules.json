@@ -2531,12 +2531,10 @@
               {
                 "VER": {
                   "expression": {
-                    "Atomic": {
-                      "item": "rise of house telvanni.esm"
-                    }
+                    "item": "rise of house telvanni.esm"
                   },
                   "operator": "Greater",
-                  "version": "1.51"
+                  "version": "1.51.0"
                 }
               }
             ]
@@ -2937,9 +2935,7 @@
                   {
                     "DESC": {
                       "expression": {
-                        "Atomic": {
-                          "item": "mca.esm"
-                        }
+                        "item": "mca.esm"
                       },
                       "regex": "adds 1000 types of npcs to over 400",
                       "is_negated": false
@@ -2948,9 +2944,7 @@
                   {
                     "DESC": {
                       "expression": {
-                        "Atomic": {
-                          "item": "mca.esm"
-                        }
+                        "item": "mca.esm"
                       },
                       "regex": "adds 1100 types of npcs to over 550",
                       "is_negated": false
@@ -3911,9 +3905,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "animated_morrowind - expanded.esp"
-              }
+              "item": "animated_morrowind - expanded.esp"
             },
             "regex": "spirithawke edit",
             "is_negated": true
@@ -3930,9 +3922,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "animated morrowind - expanded - mca_patch.esp"
-              }
+              "item": "animated morrowind - expanded - mca_patch.esp"
             },
             "regex": "spirithawke edit",
             "is_negated": true
@@ -6567,9 +6557,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "dw_assassination.esp"
-              }
+              "item": "dw_assassination.esp"
             },
             "regex": "bite works only with vampire embrace",
             "is_negated": true
@@ -6595,12 +6583,10 @@
       "expression_b": {
         "VER": {
           "expression": {
-            "Atomic": {
-              "item": "vampire_embrace.esp"
-            }
+            "item": "vampire_embrace.esp"
           },
           "operator": "Greater",
-          "version": "2.3"
+          "version": "2.3.0"
         }
       },
       "plugins": []
@@ -6613,9 +6599,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "dw_assassination.esp"
-              }
+              "item": "dw_assassination.esp"
             },
             "regex": "bite works only with vampire embrace",
             "is_negated": false
@@ -9337,12 +9321,10 @@
         {
           "VER": {
             "expression": {
-              "Atomic": {
-                "item": "balmora university v<ver>.esp"
-              }
+              "item": "balmora university v<ver>.esp"
             },
             "operator": "Less",
-            "version": "2.3"
+            "version": "2.3.0"
           }
         }
       ],
@@ -11066,9 +11048,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "complete armor joints.esp"
-              }
+              "item": "complete armor joints.esp"
             },
             "regex": "better morrowind armor",
             "is_negated": true
@@ -11093,9 +11073,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "lefemmarmor.esp"
-                    }
+                    "item": "lefemmarmor.esp"
                   },
                   "regex": "lefemm(tm) armor",
                   "is_negated": false
@@ -11125,9 +11103,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "snow prince armor redux.esp"
-              }
+              "item": "snow prince armor redux.esp"
             },
             "regex": "a model replacer for the ancient steel armor",
             "is_negated": true
@@ -11894,9 +11870,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "ufr_v3dot2.esp"
-                    }
+                    "item": "ufr_v3dot2.esp"
                   },
                   "regex": "this version is compatible with better robes and better clothes.",
                   "is_negated": true
@@ -11925,9 +11899,7 @@
       "expression_a": {
         "DESC": {
           "expression": {
-            "Atomic": {
-              "item": "ufr_v3dot2.esp"
-            }
+            "item": "ufr_v3dot2.esp"
           },
           "regex": "this version is compatible with better robes and better clothes.",
           "is_negated": false
@@ -12029,9 +12001,7 @@
             {
               "DESC": {
                 "expression": {
-                  "Atomic": {
-                    "item": "ufr_v3dot2.esp"
-                  }
+                  "item": "ufr_v3dot2.esp"
                 },
                 "regex": "this version is compatible with better robes and better clothes.",
                 "is_negated": false
@@ -12934,12 +12904,10 @@
         {
           "VER": {
             "expression": {
-              "Atomic": {
-                "item": "blood and gore.esp"
-              }
+              "item": "blood and gore.esp"
             },
             "operator": "Less",
-            "version": "2.14"
+            "version": "2.14.0"
           }
         }
       ],
@@ -12959,20 +12927,16 @@
                     {
                       "VER": {
                         "expression": {
-                          "Atomic": {
-                            "item": "blood and gore.esp"
-                          }
+                          "item": "blood and gore.esp"
                         },
                         "operator": "Equal",
-                        "version": "2.14"
+                        "version": "2.14.0"
                       }
                     },
                     {
                       "DESC": {
                         "expression": {
-                          "Atomic": {
-                            "item": "blood and gore.esp"
-                          }
+                          "item": "blood and gore.esp"
                         },
                         "regex": "dragon32",
                         "is_negated": true
@@ -15635,9 +15599,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "btb - equipment.esp"
-              }
+              "item": "btb - equipment.esp"
             },
             "regex": "tooplex",
             "is_negated": true
@@ -15695,9 +15657,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "btb - equipment.esp"
-              }
+              "item": "btb - equipment.esp"
             },
             "regex": "tooplex",
             "is_negated": false
@@ -15749,9 +15709,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "btb - equipment.esp"
-              }
+              "item": "btb - equipment.esp"
             },
             "regex": "left gloves addon",
             "is_negated": true
@@ -15773,9 +15731,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "btb - equipment.esp"
-              }
+              "item": "btb - equipment.esp"
             },
             "regex": "left gloves addon",
             "is_negated": false
@@ -15797,9 +15753,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "btb - equipment.esp"
-              }
+              "item": "btb - equipment.esp"
             },
             "regex": "tooplex",
             "is_negated": false
@@ -15808,9 +15762,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "better clothes complete (btb edit).esp"
-              }
+              "item": "better clothes complete (btb edit).esp"
             },
             "regex": "tooplex",
             "is_negated": true
@@ -15827,9 +15779,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "sirluthor-tools.esp"
-              }
+              "item": "sirluthor-tools.esp"
             },
             "regex": "tooplex",
             "is_negated": true
@@ -15862,9 +15812,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "btb - spells.esp"
-              }
+              "item": "btb - spells.esp"
             },
             "regex": "tooplex",
             "is_negated": true
@@ -15886,9 +15834,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "btb - spells.esp"
-              }
+              "item": "btb - spells.esp"
             },
             "regex": "tooplex",
             "is_negated": false
@@ -15915,9 +15861,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "btb - spells.esp"
-              }
+              "item": "btb - spells.esp"
             },
             "regex": "tooplex",
             "is_negated": false
@@ -15934,9 +15878,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "syc_athomealchemy.esp"
-              }
+              "item": "syc_athomealchemy.esp"
             },
             "regex": "tooplex",
             "is_negated": true
@@ -15958,9 +15900,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "btb - alchemy.esp"
-              }
+              "item": "btb - alchemy.esp"
             },
             "regex": "tooplex",
             "is_negated": true
@@ -15982,9 +15922,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "btb - alchemy.esp"
-              }
+              "item": "btb - alchemy.esp"
             },
             "regex": "tooplex",
             "is_negated": false
@@ -16006,9 +15944,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "btb - alchemy.esp"
-              }
+              "item": "btb - alchemy.esp"
             },
             "regex": "tooplex",
             "is_negated": false
@@ -16988,9 +16924,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "changing faces replacer.esp"
-              }
+              "item": "changing faces replacer.esp"
             },
             "regex": "changes all faces",
             "is_negated": false
@@ -17762,12 +17696,10 @@
         {
           "VER": {
             "expression": {
-              "Atomic": {
-                "item": "class abilities <ver>.esp"
-              }
+              "item": "class abilities <ver>.esp"
             },
             "operator": "Less",
-            "version": "3.1"
+            "version": "3.1.0"
           }
         }
       ],
@@ -17781,12 +17713,10 @@
         {
           "VER": {
             "expression": {
-              "Atomic": {
-                "item": "class abilities <ver>.esp"
-              }
+              "item": "class abilities <ver>.esp"
             },
             "operator": "Less",
-            "version": "3.1"
+            "version": "3.1.0"
           }
         },
         {
@@ -18267,12 +18197,10 @@
         {
           "VER": {
             "expression": {
-              "Atomic": {
-                "item": "1gr_comp_beryl.esp"
-              }
+              "item": "1gr_comp_beryl.esp"
             },
             "operator": "Greater",
-            "version": "1.0"
+            "version": "1.0.0"
           }
         },
         {
@@ -21451,9 +21379,7 @@
               {
                 "VER": {
                   "expression": {
-                    "Atomic": {
-                      "item": "decorator+ (balanced).esp"
-                    }
+                    "item": "decorator+ (balanced).esp"
                   },
                   "operator": "Less",
                   "version": "1.1.1"
@@ -21462,9 +21388,7 @@
               {
                 "VER": {
                   "expression": {
-                    "Atomic": {
-                      "item": "decorator+.esp"
-                    }
+                    "item": "decorator+.esp"
                   },
                   "operator": "Less",
                   "version": "1.1.1"
@@ -21848,9 +21772,7 @@
             {
               "DESC": {
                 "expression": {
-                  "Atomic": {
-                    "item": "vampire_embrace.esp"
-                  }
+                  "item": "vampire_embrace.esp"
                 },
                 "regex": "vampire embrace 2.4",
                 "is_negated": false
@@ -21871,9 +21793,7 @@
                   {
                     "DESC": {
                       "expression": {
-                        "Atomic": {
-                          "item": "mca.esm"
-                        }
+                        "item": "mca.esm"
                       },
                       "regex": "over 1200 friendly",
                       "is_negated": false
@@ -21902,9 +21822,7 @@
             {
               "DESC": {
                 "expression": {
-                  "Atomic": {
-                    "item": "vampire_embrace.esp"
-                  }
+                  "item": "vampire_embrace.esp"
                 },
                 "regex": "vampire embrace 2.4",
                 "is_negated": false
@@ -21913,12 +21831,10 @@
             {
               "VER": {
                 "expression": {
-                  "Atomic": {
-                    "item": "vampiric hunger base.esp"
-                  }
+                  "item": "vampiric hunger base.esp"
                 },
                 "operator": "Greater",
-                "version": "1.0"
+                "version": "1.0.0"
               }
             }
           ]
@@ -21944,12 +21860,10 @@
                   "expression": {
                     "VER": {
                       "expression": {
-                        "Atomic": {
-                          "item": "scentofblood_vr.esp"
-                        }
+                        "item": "scentofblood_vr.esp"
                       },
                       "operator": "Less",
-                      "version": "1.2"
+                      "version": "1.2.0"
                     }
                   }
                 }
@@ -24072,12 +23986,10 @@
         {
           "VER": {
             "expression": {
-              "Atomic": {
-                "item": "dwemer shock gun tribute.esp"
-              }
+              "item": "dwemer shock gun tribute.esp"
             },
             "operator": "Less",
-            "version": "2.3"
+            "version": "2.3.0"
           }
         }
       ],
@@ -24612,12 +24524,10 @@
       "expression_a": {
         "VER": {
           "expression": {
-            "Atomic": {
-              "item": "elders mca add-on v2.0.esp"
-            }
+            "item": "elders mca add-on v2.0.esp"
           },
           "operator": "Equal",
-          "version": "2.0"
+          "version": "2.0.0"
         }
       },
       "expression_b": {
@@ -24675,12 +24585,10 @@
       "expression_a": {
         "VER": {
           "expression": {
-            "Atomic": {
-              "item": "elders mca add-on v2.0.esp"
-            }
+            "item": "elders mca add-on v2.0.esp"
           },
           "operator": "Equal",
-          "version": "2.02"
+          "version": "2.2.0"
         }
       },
       "expression_b": {
@@ -24720,9 +24628,7 @@
             {
               "DESC": {
                 "expression": {
-                  "Atomic": {
-                    "item": "mca.esm"
-                  }
+                  "item": "mca.esm"
                 },
                 "regex": "over 1200 friendly",
                 "is_negated": false
@@ -24753,12 +24659,10 @@
               {
                 "VER": {
                   "expression": {
-                    "Atomic": {
-                      "item": "elders mca add-on v2.0.esp"
-                    }
+                    "item": "elders mca add-on v2.0.esp"
                   },
                   "operator": "Equal",
-                  "version": "2.02"
+                  "version": "2.2.0"
                 }
               }
             ]
@@ -24827,9 +24731,7 @@
                   {
                     "DESC": {
                       "expression": {
-                        "Atomic": {
-                          "item": "btb - spells.esp"
-                        }
+                        "item": "btb - spells.esp"
                       },
                       "regex": "tooplex",
                       "is_negated": false
@@ -25157,9 +25059,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "turenyalredone.esp"
-              }
+              "item": "turenyalredone.esp"
             },
             "regex": "redoes turenyal to be better than things.",
             "is_negated": true
@@ -26433,9 +26333,7 @@
             {
               "DESC": {
                 "expression": {
-                  "Atomic": {
-                    "item": "mca.esm"
-                  }
+                  "item": "mca.esm"
                 },
                 "regex": "over 1200 friendly",
                 "is_negated": false
@@ -27730,12 +27628,10 @@
         {
           "VER": {
             "expression": {
-              "Atomic": {
-                "item": "fletcher.esp"
-              }
+              "item": "fletcher.esp"
             },
             "operator": "Less",
-            "version": "2.0"
+            "version": "2.0.0"
           }
         }
       ],
@@ -28104,9 +28000,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "ships of the imperial navy.esp"
-                    }
+                    "item": "ships of the imperial navy.esp"
                   },
                   "regex": "solstheim",
                   "is_negated": true
@@ -32770,12 +32664,10 @@
       "expression_b": {
         "VER": {
           "expression": {
-            "Atomic": {
-              "item": "havish.esm"
-            }
+            "item": "havish.esm"
           },
           "operator": "Equal",
-          "version": "1.3"
+          "version": "1.3.0"
         }
       },
       "plugins": []
@@ -32817,12 +32709,10 @@
         {
           "VER": {
             "expression": {
-              "Atomic": {
-                "item": "havish mini patch.esp"
-              }
+              "item": "havish mini patch.esp"
             },
             "operator": "Less",
-            "version": "2.0"
+            "version": "2.0.0"
           }
         }
       ],
@@ -32846,34 +32736,28 @@
                   {
                     "VER": {
                       "expression": {
-                        "Atomic": {
-                          "item": "havish.esm"
-                        }
+                        "item": "havish.esm"
                       },
                       "operator": "Equal",
-                      "version": "1.3"
+                      "version": "1.3.0"
                     }
                   },
                   {
                     "VER": {
                       "expression": {
-                        "Atomic": {
-                          "item": "havishm.esm"
-                        }
+                        "item": "havishm.esm"
                       },
                       "operator": "Equal",
-                      "version": "1.3"
+                      "version": "1.3.0"
                     }
                   },
                   {
                     "VER": {
                       "expression": {
-                        "Atomic": {
-                          "item": "havishmn.esm"
-                        }
+                        "item": "havishmn.esm"
                       },
                       "operator": "Equal",
-                      "version": "1.3"
+                      "version": "1.3.0"
                     }
                   }
                 ]
@@ -32935,34 +32819,28 @@
                     {
                       "VER": {
                         "expression": {
-                          "Atomic": {
-                            "item": "havish.esm"
-                          }
+                          "item": "havish.esm"
                         },
                         "operator": "Equal",
-                        "version": "1.3"
+                        "version": "1.3.0"
                       }
                     },
                     {
                       "VER": {
                         "expression": {
-                          "Atomic": {
-                            "item": "havishm.esm"
-                          }
+                          "item": "havishm.esm"
                         },
                         "operator": "Equal",
-                        "version": "1.3"
+                        "version": "1.3.0"
                       }
                     },
                     {
                       "VER": {
                         "expression": {
-                          "Atomic": {
-                            "item": "havishmn.esm"
-                          }
+                          "item": "havishmn.esm"
                         },
                         "operator": "Equal",
-                        "version": "1.3"
+                        "version": "1.3.0"
                       }
                     }
                   ]
@@ -35012,9 +34890,7 @@
             {
               "DESC": {
                 "expression": {
-                  "Atomic": {
-                    "item": "mca.esm"
-                  }
+                  "item": "mca.esm"
                 },
                 "regex": "v8.1",
                 "is_negated": false
@@ -35202,9 +35078,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "better morrowind armor defemm(a).esp"
-                    }
+                    "item": "better morrowind armor defemm(a).esp"
                   },
                   "regex": "hollaajith",
                   "is_negated": true
@@ -35213,9 +35087,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "better morrowind armor defemm(o).esp"
-                    }
+                    "item": "better morrowind armor defemm(o).esp"
                   },
                   "regex": "hollaajith",
                   "is_negated": true
@@ -35224,9 +35096,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "better morrowind armor defemm(r).esp"
-                    }
+                    "item": "better morrowind armor defemm(r).esp"
                   },
                   "regex": "hollaajith",
                   "is_negated": true
@@ -35235,9 +35105,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "better morrowind armor.esp"
-                    }
+                    "item": "better morrowind armor.esp"
                   },
                   "regex": "hollaajith",
                   "is_negated": true
@@ -35249,9 +35117,7 @@
                     {
                       "DESC": {
                         "expression": {
-                          "Atomic": {
-                            "item": "complete armor joints.esp"
-                          }
+                          "item": "complete armor joints.esp"
                         },
                         "regex": "hollaajith",
                         "is_negated": true
@@ -35260,9 +35126,7 @@
                     {
                       "DESC": {
                         "expression": {
-                          "Atomic": {
-                            "item": "complete armor joints.esp"
-                          }
+                          "item": "complete armor joints.esp"
                         },
                         "regex": "better morrowind armor",
                         "is_negated": false
@@ -35277,9 +35141,7 @@
                     {
                       "DESC": {
                         "expression": {
-                          "Atomic": {
-                            "item": "snow prince armor redux.esp"
-                          }
+                          "item": "snow prince armor redux.esp"
                         },
                         "regex": "hollaajith",
                         "is_negated": true
@@ -35288,9 +35150,7 @@
                     {
                       "DESC": {
                         "expression": {
-                          "Atomic": {
-                            "item": "snow prince armor redux.esp"
-                          }
+                          "item": "snow prince armor redux.esp"
                         },
                         "regex": "a model replacer for the ancient steel armor",
                         "is_negated": false
@@ -35332,9 +35192,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "complete armor joints.esp"
-                    }
+                    "item": "complete armor joints.esp"
                   },
                   "regex": "hollaajith",
                   "is_negated": true
@@ -35343,9 +35201,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "complete armor joints.esp"
-                    }
+                    "item": "complete armor joints.esp"
                   },
                   "regex": "better morrowind armor",
                   "is_negated": true
@@ -35384,9 +35240,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "snow prince armor redux.esp"
-                    }
+                    "item": "snow prince armor redux.esp"
                   },
                   "regex": "hollaajith",
                   "is_negated": true
@@ -35395,9 +35249,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "snow prince armor redux.esp"
-                    }
+                    "item": "snow prince armor redux.esp"
                   },
                   "regex": "a model replacer for the ancient steel armor",
                   "is_negated": true
@@ -37724,23 +37576,19 @@
                   {
                     "VER": {
                       "expression": {
-                        "Atomic": {
-                          "item": "1gr_comp_beryl.esp"
-                        }
+                        "item": "1gr_comp_beryl.esp"
                       },
                       "operator": "Less",
-                      "version": "1.1"
+                      "version": "1.1.0"
                     }
                   },
                   {
                     "VER": {
                       "expression": {
-                        "Atomic": {
-                          "item": "constance1_0.esp"
-                        }
+                        "item": "constance1_0.esp"
                       },
                       "operator": "Less",
-                      "version": "1.1"
+                      "version": "1.1.0"
                     }
                   }
                 ]
@@ -39337,9 +39185,7 @@
             {
               "DESC": {
                 "expression": {
-                  "Atomic": {
-                    "item": "mca.esm"
-                  }
+                  "item": "mca.esm"
                 },
                 "regex": "adds 1100 types of npcs to over 550",
                 "is_negated": false
@@ -41249,9 +41095,7 @@
                   {
                     "DESC": {
                       "expression": {
-                        "Atomic": {
-                          "item": "mca.esm"
-                        }
+                        "item": "mca.esm"
                       },
                       "regex": "over 1000 friendly",
                       "is_negated": false
@@ -41260,9 +41104,7 @@
                   {
                     "DESC": {
                       "expression": {
-                        "Atomic": {
-                          "item": "mca.esm"
-                        }
+                        "item": "mca.esm"
                       },
                       "regex": "over 1200 friendly",
                       "is_negated": false
@@ -41284,12 +41126,10 @@
         {
           "VER": {
             "expression": {
-              "Atomic": {
-                "item": "lgnpc_sn.esp"
-              }
+              "item": "lgnpc_sn.esp"
             },
             "operator": "Less",
-            "version": "0.32"
+            "version": "0.32.0"
           }
         },
         {
@@ -43009,12 +42849,10 @@
             {
               "VER": {
                 "expression": {
-                  "Atomic": {
-                    "item": "npc lcv schedules 03.esp"
-                  }
+                  "item": "npc lcv schedules 03.esp"
                 },
                 "operator": "Greater",
-                "version": "03-12"
+                "version": "3.0.0-12"
               }
             },
             {
@@ -44354,9 +44192,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "btb - spells.esp"
-                    }
+                    "item": "btb - spells.esp"
                   },
                   "regex": "tooplex",
                   "is_negated": false
@@ -44721,9 +44557,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "btb - spells.esp"
-                    }
+                    "item": "btb - spells.esp"
                   },
                   "regex": "tooplex",
                   "is_negated": false
@@ -45813,9 +45647,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "mqe_mainquestenhancers.esp"
-              }
+              "item": "mqe_mainquestenhancers.esp"
             },
             "regex": "abot",
             "is_negated": true
@@ -47355,9 +47187,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "mills of morrowind.esp"
-              }
+              "item": "mills of morrowind.esp"
             },
             "regex": "abot",
             "is_negated": true
@@ -47373,9 +47203,7 @@
       "expression_a": {
         "DESC": {
           "expression": {
-            "Atomic": {
-              "item": "mills of morrowind.esp"
-            }
+            "item": "mills of morrowind.esp"
           },
           "regex": "abot",
           "is_negated": true
@@ -48266,9 +48094,7 @@
       "expression_b": {
         "DESC": {
           "expression": {
-            "Atomic": {
-              "item": "mca.esm"
-            }
+            "item": "mca.esm"
           },
           "regex": "over 1200 friendly",
           "is_negated": false
@@ -50194,9 +50020,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "mca.esm"
-                    }
+                    "item": "mca.esm"
                   },
                   "regex": "adds 1200 types of npcs to over 550",
                   "is_negated": true
@@ -50205,12 +50029,10 @@
               {
                 "VER": {
                   "expression": {
-                    "Atomic": {
-                      "item": "mca.esm"
-                    }
+                    "item": "mca.esm"
                   },
                   "operator": "Less",
-                  "version": "8.2"
+                  "version": "8.2.0"
                 }
               }
             ]
@@ -50581,9 +50403,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "mca.esm"
-                    }
+                    "item": "mca.esm"
                   },
                   "regex": "adds 1000 types of npcs to over 400",
                   "is_negated": false
@@ -50592,9 +50412,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "mca.esm"
-                    }
+                    "item": "mca.esm"
                   },
                   "regex": "adds 1100 types of npcs to over 550",
                   "is_negated": false
@@ -50603,9 +50421,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "mca.esm"
-                    }
+                    "item": "mca.esm"
                   },
                   "regex": "v8",
                   "is_negated": false
@@ -50649,9 +50465,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "mca.esm"
-                    }
+                    "item": "mca.esm"
                   },
                   "regex": "adds 1100 types of npcs to over 550",
                   "is_negated": false
@@ -50660,9 +50474,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "mca.esm"
-                    }
+                    "item": "mca.esm"
                   },
                   "regex": "v8",
                   "is_negated": false
@@ -50690,9 +50502,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "mca.esm"
-                    }
+                    "item": "mca.esm"
                   },
                   "regex": "adds 1100 types of npcs to over 550",
                   "is_negated": false
@@ -50701,9 +50511,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "mca.esm"
-                    }
+                    "item": "mca.esm"
                   },
                   "regex": "v8",
                   "is_negated": false
@@ -50729,9 +50537,7 @@
                     {
                       "DESC": {
                         "expression": {
-                          "Atomic": {
-                            "item": "mca.esm"
-                          }
+                          "item": "mca.esm"
                         },
                         "regex": "adds 1000 types of npcs to over 400",
                         "is_negated": false
@@ -50740,9 +50546,7 @@
                     {
                       "DESC": {
                         "expression": {
-                          "Atomic": {
-                            "item": "mca.esm"
-                          }
+                          "item": "mca.esm"
                         },
                         "regex": "adds 1100 types of npcs to over 550",
                         "is_negated": false
@@ -50777,9 +50581,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "mca.esm"
-                    }
+                    "item": "mca.esm"
                   },
                   "regex": "adds 1000 types of npcs to over 400",
                   "is_negated": false
@@ -50788,9 +50590,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "mca.esm"
-                    }
+                    "item": "mca.esm"
                   },
                   "regex": "adds 1100 types of npcs to over 550",
                   "is_negated": false
@@ -50857,9 +50657,7 @@
                     {
                       "DESC": {
                         "expression": {
-                          "Atomic": {
-                            "item": "mca.esm"
-                          }
+                          "item": "mca.esm"
                         },
                         "regex": "over 1000 friendly",
                         "is_negated": false
@@ -50868,9 +50666,7 @@
                     {
                       "DESC": {
                         "expression": {
-                          "Atomic": {
-                            "item": "mca.esm"
-                          }
+                          "item": "mca.esm"
                         },
                         "regex": "over 1200 friendly",
                         "is_negated": false
@@ -50879,9 +50675,7 @@
                     {
                       "DESC": {
                         "expression": {
-                          "Atomic": {
-                            "item": "mca.esm"
-                          }
+                          "item": "mca.esm"
                         },
                         "regex": "adds 1000 types of npcs to over 400",
                         "is_negated": false
@@ -50890,9 +50684,7 @@
                     {
                       "DESC": {
                         "expression": {
-                          "Atomic": {
-                            "item": "mca.esm"
-                          }
+                          "item": "mca.esm"
                         },
                         "regex": "adds 1100 types of npcs to over 550",
                         "is_negated": false
@@ -50972,9 +50764,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "mca.esm"
-                    }
+                    "item": "mca.esm"
                   },
                   "regex": "v8",
                   "is_negated": true
@@ -50983,9 +50773,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "mca - tr addon.esp"
-                    }
+                    "item": "mca - tr addon.esp"
                   },
                   "regex": "7.1a",
                   "is_negated": true
@@ -51012,9 +50800,7 @@
             {
               "DESC": {
                 "expression": {
-                  "Atomic": {
-                    "item": "mca.esm"
-                  }
+                  "item": "mca.esm"
                 },
                 "regex": "over 1000 friendly",
                 "is_negated": false
@@ -51023,9 +50809,7 @@
             {
               "DESC": {
                 "expression": {
-                  "Atomic": {
-                    "item": "mca.esm"
-                  }
+                  "item": "mca.esm"
                 },
                 "regex": "over 1200 friendly",
                 "is_negated": false
@@ -51034,9 +50818,7 @@
             {
               "DESC": {
                 "expression": {
-                  "Atomic": {
-                    "item": "mca.esm"
-                  }
+                  "item": "mca.esm"
                 },
                 "regex": "adds 1000 types of npcs to over 400",
                 "is_negated": false
@@ -51169,9 +50951,7 @@
                     {
                       "DESC": {
                         "expression": {
-                          "Atomic": {
-                            "item": "mca.esm"
-                          }
+                          "item": "mca.esm"
                         },
                         "regex": "over 1000 friendly",
                         "is_negated": false
@@ -51183,9 +50963,7 @@
                           {
                             "DESC": {
                               "expression": {
-                                "Atomic": {
-                                  "item": "mca.esm"
-                                }
+                                "item": "mca.esm"
                               },
                               "regex": "over 1200 friendly",
                               "is_negated": false
@@ -51298,9 +51076,7 @@
                   {
                     "DESC": {
                       "expression": {
-                        "Atomic": {
-                          "item": "mca.esm"
-                        }
+                        "item": "mca.esm"
                       },
                       "regex": "over 1000 friendly",
                       "is_negated": false
@@ -51309,9 +51085,7 @@
                   {
                     "DESC": {
                       "expression": {
-                        "Atomic": {
-                          "item": "mca.esm"
-                        }
+                        "item": "mca.esm"
                       },
                       "regex": "over 1200 friendly",
                       "is_negated": false
@@ -51348,9 +51122,7 @@
                   {
                     "DESC": {
                       "expression": {
-                        "Atomic": {
-                          "item": "mca.esm"
-                        }
+                        "item": "mca.esm"
                       },
                       "regex": "over 1000 friendly",
                       "is_negated": false
@@ -51359,9 +51131,7 @@
                   {
                     "DESC": {
                       "expression": {
-                        "Atomic": {
-                          "item": "mca.esm"
-                        }
+                        "item": "mca.esm"
                       },
                       "regex": "over 1200 friendly",
                       "is_negated": false
@@ -51474,9 +51244,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "mca.esm"
-              }
+              "item": "mca.esm"
             },
             "regex": "over 1000 friendly",
             "is_negated": false
@@ -51501,9 +51269,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "mca.esm"
-                    }
+                    "item": "mca.esm"
                   },
                   "regex": "adds 1000 types of npcs to over 400",
                   "is_negated": false
@@ -51512,9 +51278,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "mca.esm"
-                    }
+                    "item": "mca.esm"
                   },
                   "regex": "adds 1100 types of npcs to over 550",
                   "is_negated": false
@@ -51625,9 +51389,7 @@
             {
               "DESC": {
                 "expression": {
-                  "Atomic": {
-                    "item": "mca.esm"
-                  }
+                  "item": "mca.esm"
                 },
                 "regex": "over 1200 friendly",
                 "is_negated": false
@@ -51713,9 +51475,7 @@
             {
               "DESC": {
                 "expression": {
-                  "Atomic": {
-                    "item": "mca.esm"
-                  }
+                  "item": "mca.esm"
                 },
                 "regex": "over 1000 friendly",
                 "is_negated": false
@@ -51724,9 +51484,7 @@
             {
               "DESC": {
                 "expression": {
-                  "Atomic": {
-                    "item": "mca.esm"
-                  }
+                  "item": "mca.esm"
                 },
                 "regex": "over 1200 friendly",
                 "is_negated": false
@@ -51789,9 +51547,7 @@
       "expression_b": {
         "DESC": {
           "expression": {
-            "Atomic": {
-              "item": "mca.esm"
-            }
+            "item": "mca.esm"
           },
           "regex": "over 1200 friendly",
           "is_negated": false
@@ -51851,9 +51607,7 @@
       "expression_b": {
         "DESC": {
           "expression": {
-            "Atomic": {
-              "item": "mca.esm"
-            }
+            "item": "mca.esm"
           },
           "regex": "over 1200 friendly",
           "is_negated": false
@@ -51894,9 +51648,7 @@
             {
               "DESC": {
                 "expression": {
-                  "Atomic": {
-                    "item": "mca.esm"
-                  }
+                  "item": "mca.esm"
                 },
                 "regex": "over 1200 friendly",
                 "is_negated": false
@@ -52057,9 +51809,7 @@
       "expression_b": {
         "DESC": {
           "expression": {
-            "Atomic": {
-              "item": "mca.esm"
-            }
+            "item": "mca.esm"
           },
           "regex": "over 1200 friendly",
           "is_negated": false
@@ -52079,9 +51829,7 @@
       "expression_b": {
         "DESC": {
           "expression": {
-            "Atomic": {
-              "item": "mca.esm"
-            }
+            "item": "mca.esm"
           },
           "regex": "over 1200 friendly",
           "is_negated": false
@@ -52101,9 +51849,7 @@
       "expression_b": {
         "DESC": {
           "expression": {
-            "Atomic": {
-              "item": "mca.esm"
-            }
+            "item": "mca.esm"
           },
           "regex": "adds 1100 types of npcs to over 550",
           "is_negated": false
@@ -52126,9 +51872,7 @@
             {
               "DESC": {
                 "expression": {
-                  "Atomic": {
-                    "item": "mca.esm"
-                  }
+                  "item": "mca.esm"
                 },
                 "regex": "adds 1100 types of npcs to over 550",
                 "is_negated": false
@@ -52156,9 +51900,7 @@
       "expression_b": {
         "DESC": {
           "expression": {
-            "Atomic": {
-              "item": "mca.esm"
-            }
+            "item": "mca.esm"
           },
           "regex": "v8.1",
           "is_negated": false
@@ -52181,9 +51923,7 @@
             {
               "DESC": {
                 "expression": {
-                  "Atomic": {
-                    "item": "mca.esm"
-                  }
+                  "item": "mca.esm"
                 },
                 "regex": "v8.1",
                 "is_negated": false
@@ -52268,9 +52008,7 @@
       "expression_b": {
         "DESC": {
           "expression": {
-            "Atomic": {
-              "item": "mca.esm"
-            }
+            "item": "mca.esm"
           },
           "regex": "over 1200 friendly",
           "is_negated": false
@@ -52290,9 +52028,7 @@
       "expression_b": {
         "DESC": {
           "expression": {
-            "Atomic": {
-              "item": "mca.esm"
-            }
+            "item": "mca.esm"
           },
           "regex": "over 1200 friendly",
           "is_negated": false
@@ -52343,9 +52079,7 @@
       "expression_b": {
         "DESC": {
           "expression": {
-            "Atomic": {
-              "item": "mca.esm"
-            }
+            "item": "mca.esm"
           },
           "regex": "v8.1",
           "is_negated": false
@@ -52497,9 +52231,7 @@
       "expression_b": {
         "DESC": {
           "expression": {
-            "Atomic": {
-              "item": "mca.esm"
-            }
+            "item": "mca.esm"
           },
           "regex": "over 1200 friendly",
           "is_negated": false
@@ -52783,9 +52515,7 @@
       "expression_b": {
         "DESC": {
           "expression": {
-            "Atomic": {
-              "item": "mca.esm"
-            }
+            "item": "mca.esm"
           },
           "regex": "over 1200 friendly",
           "is_negated": false
@@ -52924,9 +52654,7 @@
             {
               "DESC": {
                 "expression": {
-                  "Atomic": {
-                    "item": "mca.esm"
-                  }
+                  "item": "mca.esm"
                 },
                 "regex": "over 1200 friendly",
                 "is_negated": false
@@ -53055,9 +52783,7 @@
       "expression_b": {
         "DESC": {
           "expression": {
-            "Atomic": {
-              "item": "mca.esm"
-            }
+            "item": "mca.esm"
           },
           "regex": "over 1200 friendly",
           "is_negated": false
@@ -62327,9 +62053,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "lefemmarmor.esp"
-                    }
+                    "item": "lefemmarmor.esp"
                   },
                   "regex": "lefemm(tm) armor",
                   "is_negated": false
@@ -64131,9 +63855,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "pssorticon.esp"
-              }
+              "item": "pssorticon.esp"
             },
             "regex": "spirithawke",
             "is_negated": true
@@ -64824,9 +64546,7 @@
         {
           "VER": {
             "expression": {
-              "Atomic": {
-                "item": "pursuit enhanced.esp"
-              }
+              "item": "pursuit enhanced.esp"
             },
             "operator": "Equal",
             "version": "1.2.4"
@@ -65323,12 +65043,10 @@
         {
           "VER": {
             "expression": {
-              "Atomic": {
-                "item": "encumbrance bar.esp"
-              }
+              "item": "encumbrance bar.esp"
             },
             "operator": "Less",
-            "version": "0.3"
+            "version": "0.3.0"
           }
         }
       ],
@@ -66324,9 +66042,7 @@
       "expression_b": {
         "DESC": {
           "expression": {
-            "Atomic": {
-              "item": "mca.esm"
-            }
+            "item": "mca.esm"
           },
           "regex": "over 1200 friendly",
           "is_negated": false
@@ -67813,23 +67529,19 @@
                     {
                       "VER": {
                         "expression": {
-                          "Atomic": {
-                            "item": "lgnpc_paxredoran*.esp"
-                          }
+                          "item": "lgnpc_paxredoran*.esp"
                         },
                         "operator": "Less",
-                        "version": "1.21"
+                        "version": "1.21.0"
                       }
                     },
                     {
                       "VER": {
                         "expression": {
-                          "Atomic": {
-                            "item": "lgnpc_teluvirith_v<ver>.esp"
-                          }
+                          "item": "lgnpc_teluvirith_v<ver>.esp"
                         },
                         "operator": "Less",
-                        "version": "1.20"
+                        "version": "1.20.0"
                       }
                     }
                   ]
@@ -68018,12 +67730,10 @@
             {
               "VER": {
                 "expression": {
-                  "Atomic": {
-                    "item": "rise of house telvanni.esm"
-                  }
+                  "item": "rise of house telvanni.esm"
                 },
                 "operator": "Equal",
-                "version": "1.3"
+                "version": "1.3.0"
               }
             },
             {
@@ -69320,56 +69030,46 @@
               {
                 "VER": {
                   "expression": {
-                    "Atomic": {
-                      "item": "scentofblood.esp"
-                    }
+                    "item": "scentofblood.esp"
                   },
                   "operator": "Less",
-                  "version": "1.2"
+                  "version": "1.2.0"
                 }
               },
               {
                 "VER": {
                   "expression": {
-                    "Atomic": {
-                      "item": "scentofblood_mca.esp"
-                    }
+                    "item": "scentofblood_mca.esp"
                   },
                   "operator": "Less",
-                  "version": "1.2"
+                  "version": "1.2.0"
                 }
               },
               {
                 "VER": {
                   "expression": {
-                    "Atomic": {
-                      "item": "scentofblood_mca_vr.esp"
-                    }
+                    "item": "scentofblood_mca_vr.esp"
                   },
                   "operator": "Less",
-                  "version": "1.2"
+                  "version": "1.2.0"
                 }
               },
               {
                 "VER": {
                   "expression": {
-                    "Atomic": {
-                      "item": "scentofblood_mwse_addon.esp"
-                    }
+                    "item": "scentofblood_mwse_addon.esp"
                   },
                   "operator": "Less",
-                  "version": "1.2"
+                  "version": "1.2.0"
                 }
               },
               {
                 "VER": {
                   "expression": {
-                    "Atomic": {
-                      "item": "scentofblood_vr.esp"
-                    }
+                    "item": "scentofblood_vr.esp"
                   },
                   "operator": "Less",
-                  "version": "1.2"
+                  "version": "1.2.0"
                 }
               },
               {
@@ -69683,9 +69383,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "btb - spells.esp"
-                    }
+                    "item": "btb - spells.esp"
                   },
                   "regex": "tooplex",
                   "is_negated": false
@@ -70841,9 +70539,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "sg1-sgaileach_estate.esp"
-                    }
+                    "item": "sg1-sgaileach_estate.esp"
                   },
                   "regex": "version 2.01",
                   "is_negated": true
@@ -70852,9 +70548,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "sg1-sgaileach_estate-nom.esp"
-                    }
+                    "item": "sg1-sgaileach_estate-nom.esp"
                   },
                   "regex": "version 2.01",
                   "is_negated": true
@@ -70880,12 +70574,10 @@
                     {
                       "VER": {
                         "expression": {
-                          "Atomic": {
-                            "item": "stinkers.esp"
-                          }
+                          "item": "stinkers.esp"
                         },
                         "operator": "Greater",
-                        "version": "1.71"
+                        "version": "1.71.0"
                       }
                     },
                     {
@@ -70912,9 +70604,7 @@
                     {
                       "DESC": {
                         "expression": {
-                          "Atomic": {
-                            "item": "sg1-sgaileach_estate.esp"
-                          }
+                          "item": "sg1-sgaileach_estate.esp"
                         },
                         "regex": "version 2.01",
                         "is_negated": false
@@ -70923,9 +70613,7 @@
                     {
                       "DESC": {
                         "expression": {
-                          "Atomic": {
-                            "item": "sg1-sgaileach_estate-nom.esp"
-                          }
+                          "item": "sg1-sgaileach_estate-nom.esp"
                         },
                         "regex": "version 2.01",
                         "is_negated": false
@@ -70958,9 +70646,7 @@
                   {
                     "DESC": {
                       "expression": {
-                        "Atomic": {
-                          "item": "sg1-sgaileach_estate.esp"
-                        }
+                        "item": "sg1-sgaileach_estate.esp"
                       },
                       "regex": "version 2.01",
                       "is_negated": false
@@ -70969,9 +70655,7 @@
                   {
                     "DESC": {
                       "expression": {
-                        "Atomic": {
-                          "item": "sg1-sgaileach_estate-nom.esp"
-                        }
+                        "item": "sg1-sgaileach_estate-nom.esp"
                       },
                       "regex": "version 2.01",
                       "is_negated": false
@@ -70986,12 +70670,10 @@
                   {
                     "VER": {
                       "expression": {
-                        "Atomic": {
-                          "item": "stinkers.esp"
-                        }
+                        "item": "stinkers.esp"
                       },
                       "operator": "Greater",
-                      "version": "1.71"
+                      "version": "1.71.0"
                     }
                   },
                   {
@@ -71045,9 +70727,7 @@
                     {
                       "DESC": {
                         "expression": {
-                          "Atomic": {
-                            "item": "sg1-sgaileach_estate.esp"
-                          }
+                          "item": "sg1-sgaileach_estate.esp"
                         },
                         "regex": "version 2.01",
                         "is_negated": false
@@ -71056,9 +70736,7 @@
                     {
                       "DESC": {
                         "expression": {
-                          "Atomic": {
-                            "item": "sg1-sgaileach_estate-nom.esp"
-                          }
+                          "item": "sg1-sgaileach_estate-nom.esp"
                         },
                         "regex": "version 2.01",
                         "is_negated": false
@@ -73448,9 +73126,7 @@
             {
               "DESC": {
                 "expression": {
-                  "Atomic": {
-                    "item": "mca.esm"
-                  }
+                  "item": "mca.esm"
                 },
                 "regex": "over 1200 friendly",
                 "is_negated": false
@@ -73854,9 +73530,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "btb - spells.esp"
-                    }
+                    "item": "btb - spells.esp"
                   },
                   "regex": "tooplex",
                   "is_negated": false
@@ -74105,12 +73779,10 @@
       "expression_a": {
         "VER": {
           "expression": {
-            "Atomic": {
-              "item": "sris_alchemy_bm.esp"
-            }
+            "item": "sris_alchemy_bm.esp"
           },
           "operator": "Equal",
-          "version": "1.1109"
+          "version": "1.1109.0"
         }
       },
       "expression_b": {
@@ -74152,9 +73824,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "sris_alchemy_bm.esp"
-              }
+              "item": "sris_alchemy_bm.esp"
             },
             "regex": "adelie",
             "is_negated": false
@@ -74698,9 +74368,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "starfires npc additions ver-1.11.esp"
-              }
+              "item": "starfires npc additions ver-1.11.esp"
             },
             "regex": "redesigned vivec compatible version",
             "is_negated": true
@@ -75137,12 +74805,10 @@
         {
           "VER": {
             "expression": {
-              "Atomic": {
-                "item": "stinkers.esp"
-              }
+              "item": "stinkers.esp"
             },
             "operator": "Less",
-            "version": "2"
+            "version": "2.0.0"
           }
         }
       ],
@@ -75159,12 +74825,10 @@
               {
                 "VER": {
                   "expression": {
-                    "Atomic": {
-                      "item": "stinkers.esp"
-                    }
+                    "item": "stinkers.esp"
                   },
                   "operator": "Less",
-                  "version": "2"
+                  "version": "2.0.0"
                 }
               },
               {
@@ -75198,12 +74862,10 @@
             {
               "VER": {
                 "expression": {
-                  "Atomic": {
-                    "item": "stinkers.esp"
-                  }
+                  "item": "stinkers.esp"
                 },
                 "operator": "Less",
-                "version": "2"
+                "version": "2.0.0"
               }
             },
             {
@@ -75224,12 +74886,10 @@
         {
           "VER": {
             "expression": {
-              "Atomic": {
-                "item": "stinkers.esp"
-              }
+              "item": "stinkers.esp"
             },
             "operator": "Less",
-            "version": "2"
+            "version": "2.0.0"
           }
         },
         {
@@ -75259,12 +74919,10 @@
             {
               "VER": {
                 "expression": {
-                  "Atomic": {
-                    "item": "stinkers.esp"
-                  }
+                  "item": "stinkers.esp"
                 },
                 "operator": "Less",
-                "version": "2"
+                "version": "2.0.0"
               }
             },
             {
@@ -75309,12 +74967,10 @@
               {
                 "VER": {
                   "expression": {
-                    "Atomic": {
-                      "item": "stinkers.esp"
-                    }
+                    "item": "stinkers.esp"
                   },
                   "operator": "Less",
-                  "version": "2"
+                  "version": "2.0.0"
                 }
               },
               {
@@ -75379,12 +75035,10 @@
               {
                 "VER": {
                   "expression": {
-                    "Atomic": {
-                      "item": "stinkers.esp"
-                    }
+                    "item": "stinkers.esp"
                   },
                   "operator": "Greater",
-                  "version": "1.71"
+                  "version": "1.71.0"
                 }
               },
               {
@@ -75467,12 +75121,10 @@
                   {
                     "VER": {
                       "expression": {
-                        "Atomic": {
-                          "item": "stinkers.esp"
-                        }
+                        "item": "stinkers.esp"
                       },
                       "operator": "Greater",
-                      "version": "1.71"
+                      "version": "1.71.0"
                     }
                   },
                   {
@@ -75540,12 +75192,10 @@
         {
           "VER": {
             "expression": {
-              "Atomic": {
-                "item": "stinkers.esp"
-              }
+              "item": "stinkers.esp"
             },
             "operator": "Greater",
-            "version": "1.71"
+            "version": "1.71.0"
           }
         },
         {
@@ -75790,12 +75440,10 @@
                   {
                     "VER": {
                       "expression": {
-                        "Atomic": {
-                          "item": "stinkers.esp"
-                        }
+                        "item": "stinkers.esp"
                       },
                       "operator": "Greater",
-                      "version": "1.71"
+                      "version": "1.71.0"
                     }
                   },
                   {
@@ -76365,9 +76013,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "lefemmarmor.esp"
-                    }
+                    "item": "lefemmarmor.esp"
                   },
                   "regex": "lefemm(tm) armor",
                   "is_negated": false
@@ -77204,9 +76850,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "lefemmarmor.esp"
-                    }
+                    "item": "lefemmarmor.esp"
                   },
                   "regex": "lefemm(tm) armor",
                   "is_negated": false
@@ -77576,9 +77220,7 @@
               {
                 "DESC": {
                   "expression": {
-                    "Atomic": {
-                      "item": "lefemmarmor.esp"
-                    }
+                    "item": "lefemmarmor.esp"
                   },
                   "regex": "lefemm(tm) armor",
                   "is_negated": false
@@ -79607,9 +79249,7 @@
             {
               "DESC": {
                 "expression": {
-                  "Atomic": {
-                    "item": "mca.esm"
-                  }
+                  "item": "mca.esm"
                 },
                 "regex": "over 1200 friendly",
                 "is_negated": false
@@ -79684,12 +79324,10 @@
         {
           "VER": {
             "expression": {
-              "Atomic": {
-                "item": "texture fix <ver>.esm"
-              }
+              "item": "texture fix <ver>.esm"
             },
             "operator": "Less",
-            "version": "2.0"
+            "version": "2.0.0"
           }
         }
       ],
@@ -79933,12 +79571,10 @@
         {
           "VER": {
             "expression": {
-              "Atomic": {
-                "item": "constance1_0.esp"
-              }
+              "item": "constance1_0.esp"
             },
             "operator": "Less",
-            "version": "1.1"
+            "version": "1.1.0"
           }
         },
         {
@@ -84222,9 +83858,7 @@
       "expression_b": {
         "DESC": {
           "expression": {
-            "Atomic": {
-              "item": "mca.esm"
-            }
+            "item": "mca.esm"
           },
           "regex": "over 1200 friendly",
           "is_negated": false
@@ -84399,12 +84033,10 @@
         {
           "VER": {
             "expression": {
-              "Atomic": {
-                "item": "uvirith's legacy_<ver>.esp"
-              }
+              "item": "uvirith's legacy_<ver>.esp"
             },
             "operator": "Greater",
-            "version": "3.1"
+            "version": "3.1.0"
           }
         },
         {
@@ -84460,12 +84092,10 @@
         {
           "VER": {
             "expression": {
-              "Atomic": {
-                "item": "uvirith's legacy_<ver>.esp"
-              }
+              "item": "uvirith's legacy_<ver>.esp"
             },
             "operator": "Greater",
-            "version": "3.2"
+            "version": "3.2.0"
           }
         }
       ],
@@ -84609,12 +84239,10 @@
             {
               "VER": {
                 "expression": {
-                  "Atomic": {
-                    "item": "rise of house telvanni.esm"
-                  }
+                  "item": "rise of house telvanni.esm"
                 },
                 "operator": "Equal",
-                "version": "1.52"
+                "version": "1.52.0"
               }
             }
           ]
@@ -86020,12 +85648,10 @@
         {
           "VER": {
             "expression": {
-              "Atomic": {
-                "item": "vampiric hunger base.esp"
-              }
+              "item": "vampiric hunger base.esp"
             },
             "operator": "Equal",
-            "version": "1.2"
+            "version": "1.2.0"
           }
         },
         {
@@ -86317,31 +85943,25 @@
             {
               "VER": {
                 "expression": {
-                  "Atomic": {
-                    "item": "vampiric hunger base.esp"
-                  }
+                  "item": "vampiric hunger base.esp"
                 },
                 "operator": "Greater",
-                "version": "1.0"
+                "version": "1.0.0"
               }
             },
             {
               "VER": {
                 "expression": {
-                  "Atomic": {
-                    "item": "scripted_spells.esp"
-                  }
+                  "item": "scripted_spells.esp"
                 },
                 "operator": "Greater",
-                "version": "1.4"
+                "version": "1.4.0"
               }
             },
             {
               "DESC": {
                 "expression": {
-                  "Atomic": {
-                    "item": "vampire_embrace.esp"
-                  }
+                  "item": "vampire_embrace.esp"
                 },
                 "regex": "vampire embrace 2.4",
                 "is_negated": false
@@ -86501,9 +86121,7 @@
             {
               "DESC": {
                 "expression": {
-                  "Atomic": {
-                    "item": "vampire_embrace.esp"
-                  }
+                  "item": "vampire_embrace.esp"
                 },
                 "regex": "vampire embrace 2.4",
                 "is_negated": false
@@ -87779,9 +87397,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "vivec expansion 2.0.esp"
-              }
+              "item": "vivec expansion 2.0.esp"
             },
             "regex": "fixed the floating door",
             "is_negated": true
@@ -88958,12 +88574,10 @@
         {
           "VER": {
             "expression": {
-              "Atomic": {
-                "item": "abotwaterlife.esm"
-              }
+              "item": "abotwaterlife.esm"
             },
             "operator": "Greater",
-            "version": "1.12"
+            "version": "1.12.0"
           }
         },
         {
@@ -88982,12 +88596,10 @@
         {
           "VER": {
             "expression": {
-              "Atomic": {
-                "item": "abotwaterlife.esm"
-              }
+              "item": "abotwaterlife.esm"
             },
             "operator": "Greater",
-            "version": "1.16"
+            "version": "1.16.0"
           }
         },
         {
@@ -91249,9 +90861,7 @@
         {
           "DESC": {
             "expression": {
-              "Atomic": {
-                "item": "windows glow - raven rock eng.esp"
-              }
+              "item": "windows glow - raven rock eng.esp"
             },
             "regex": "abot",
             "is_negated": true

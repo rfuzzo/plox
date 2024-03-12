@@ -645,10 +645,24 @@ impl Parser {
                 if let Some((expr, regex, negated)) = parse_desc(body) {
                     // do something
                     let expressions = self.parse_expressions(expr.as_bytes())?;
-                    if let Some(first) = expressions.into_iter().last() {
-                        let expr = DESC::new(first, regex, negated);
+                    // check that it is of len 1
+                    if expressions.len() != 1 {
+                        return Err(Error::new(
+                            ErrorKind::Other,
+                            "Parsing error: DESC expression must have exactly one child expression",
+                        ));
+                    }
+
+                    // check that the child expression is an atomic
+                    if let Some(Expression::Atomic(atomic)) = expressions.first() {
+                        let expr = DESC::new(atomic.clone(), regex, negated);
                         return Ok(expr.into());
                     }
+
+                    return Err(Error::new(
+                        ErrorKind::Other,
+                        "Parsing error: DESC expression must have an atomic child expression",
+                    ));
                 }
                 Err(Error::new(
                     ErrorKind::Other,
@@ -686,10 +700,24 @@ impl Parser {
                 if let Some((expr, operator, version)) = parse_ver(body) {
                     // do something
                     let expressions = self.parse_expressions(expr.as_bytes())?;
-                    if let Some(first) = expressions.into_iter().last() {
-                        let expr = VER::new(first, operator, version);
+                    // check that it is of len 1
+                    if expressions.len() != 1 {
+                        return Err(Error::new(
+                            ErrorKind::Other,
+                            "Parsing error: VER expression must have exactly one child expression",
+                        ));
+                    }
+
+                    // check that the child expression is an atomic
+                    if let Some(Expression::Atomic(atomic)) = expressions.first() {
+                        let expr = VER::new(atomic.clone(), operator, version.to_string());
                         return Ok(expr.into());
                     }
+
+                    return Err(Error::new(
+                        ErrorKind::Other,
+                        "Parsing error: VER expression must have an atomic child expression",
+                    ));
                 }
                 Err(Error::new(
                     ErrorKind::Other,
@@ -771,38 +799,32 @@ fn parse_size(input: &str) -> Option<(String, u64, bool)> {
 }
 
 /// Parses the VER predicate and returns its parts
-fn parse_ver(input: &str) -> Option<(String, EVerOperator, String)> {
+fn parse_ver(input: &str) -> Option<(String, EVerOperator, semver::Version)> {
     // >1.51 Rise of House Telvanni.esm
     // = 2.14 Blood and Gore.esp
     // < 3.1 Class Abilities <VER>.esp
     if let Some(input) = input.strip_prefix('<') {
         if let Some(version) = input.split_whitespace().next() {
             if let Some(right_part) = input.trim_start().strip_prefix(version) {
-                return Some((
-                    right_part.to_owned(),
-                    EVerOperator::Less,
-                    version.to_owned(),
-                ));
+                if let Ok(semversion) = lenient_semver::parse(version) {
+                    return Some((right_part.to_owned(), EVerOperator::Less, semversion));
+                }
             }
         }
     } else if let Some(input) = input.strip_prefix('>') {
         if let Some(version) = input.split_whitespace().next() {
             if let Some(right_part) = input.trim_start().strip_prefix(version) {
-                return Some((
-                    right_part.to_owned(),
-                    EVerOperator::Greater,
-                    version.to_owned(),
-                ));
+                if let Ok(semversion) = lenient_semver::parse(version) {
+                    return Some((right_part.to_owned(), EVerOperator::Greater, semversion));
+                }
             }
         }
     } else if let Some(input) = input.strip_prefix('=') {
         if let Some(version) = input.split_whitespace().next() {
             if let Some(right_part) = input.trim_start().strip_prefix(version) {
-                return Some((
-                    right_part.to_owned(),
-                    EVerOperator::Equal,
-                    version.to_owned(),
-                ));
+                if let Ok(semversion) = lenient_semver::parse(version) {
+                    return Some((right_part.to_owned(), EVerOperator::Equal, semversion));
+                }
             }
         }
     }

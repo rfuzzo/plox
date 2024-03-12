@@ -131,6 +131,187 @@ mod unit_tests {
     }
 
     #[test]
+    fn evaluate_desc() {
+        init();
+
+        let mods = [A, B, C, D, E, F]
+            .iter()
+            .map(|e| PluginData {
+                name: e.to_string(),
+                size: 0_u64,
+                description: Some("description".to_string()),
+                version: None,
+            })
+            .collect::<Vec<_>>();
+
+        // [DESC] is true if the plugin description matches the given description
+        {
+            let expr = DESC::new(Atomic::from(A), "description".to_string(), false);
+            assert!(expr.eval(&mods).is_some());
+        }
+        // [DESC] is true if the plugin description matches the given description with regex
+        {
+            let expr = DESC::new(Atomic::from(A), "des*".to_string(), false);
+            assert!(expr.eval(&mods).is_some());
+        }
+
+        // [DESC] is false if the plugin description does not match the given description
+        {
+            let expr = DESC::new(Atomic::from(A), "another description".to_string(), false);
+            assert!(expr.eval(&mods).is_none());
+        }
+
+        // [DESC] is true if the plugin description does not matches the given description and is negated is true
+        {
+            let expr = DESC::new(Atomic::from(A), "another description".to_string(), true);
+            assert!(expr.eval(&mods).is_some());
+        }
+
+        // [DESC] is false if the plugin description does match the given description and is negated is true
+        {
+            let expr = DESC::new(Atomic::from(A), "description".to_string(), true);
+            assert!(expr.eval(&mods).is_none());
+        }
+    }
+
+    #[test]
+    fn evaluate_ver() {
+        init();
+
+        let mods = [A, B, C, D, E, F]
+            .iter()
+            .map(|e| PluginData {
+                name: e.to_string(),
+                size: 0_u64,
+                description: None,
+                version: Some(lenient_semver::parse("1.0").unwrap()),
+            })
+            .collect::<Vec<_>>();
+
+        // Check equals
+        // [VER] equals is true if the plugin version matches the given version
+        {
+            let expr = VER::new(Atomic::from(A), EVerOperator::Equal, "1.0.0".to_string());
+            assert!(expr.eval(&mods).is_some());
+        }
+
+        // [VER] equals is false if the plugin version does not matches the given version
+        {
+            let expr = VER::new(Atomic::from(A), EVerOperator::Equal, "1.1.0".to_string());
+            assert!(expr.eval(&mods).is_none());
+        }
+
+        // Check greater
+        // [Note this is a newer version, it's broken] [VER > 0.1 foo.esp]
+        // [VER] greater is true if the plugin version is greater than the rule version
+        {
+            let expr = VER::new(Atomic::from(A), EVerOperator::Greater, "0.1.0".to_string());
+            assert!(expr.eval(&mods).is_some());
+        }
+
+        // [VER] greater is false if the plugin version is less than the given version
+        {
+            let expr = VER::new(Atomic::from(A), EVerOperator::Greater, "1.2.0".to_string());
+            assert!(expr.eval(&mods).is_none());
+        }
+
+        // [VER] greater is false if the plugin version is equal to the given version
+        {
+            let expr = VER::new(Atomic::from(A), EVerOperator::Greater, "1.0.0".to_string());
+            assert!(expr.eval(&mods).is_none());
+        }
+
+        // Check less
+        // [Note this is an old version, please upgrade] [VER < 1.2 foo.esp]
+        // [VER] less is true if the plugin version is less than the rule version
+        {
+            let expr = VER::new(Atomic::from(A), EVerOperator::Less, "1.2.0".to_string());
+            assert!(expr.eval(&mods).is_some());
+        }
+
+        // [VER] less is false if the plugin version is greater than the given version
+        {
+            let expr = VER::new(Atomic::from(A), EVerOperator::Less, "0.1.0".to_string());
+            assert!(expr.eval(&mods).is_none());
+        }
+
+        // [VER] less is false if the plugin version is equal to the given version
+        {
+            let expr = VER::new(Atomic::from(A), EVerOperator::Less, "1.0.0".to_string());
+            assert!(expr.eval(&mods).is_none());
+        }
+    }
+
+    #[allow(dead_code)]
+    //TODO add plugin filename version parsing #[test]
+    fn evaluate_ver_filename() {
+        init();
+
+        let mods = ["a.esp", "b.esp"]
+            .iter()
+            .map(|e| PluginData {
+                name: e.to_string(),
+                size: 0_u64,
+                description: None,
+                version: None,
+            })
+            .collect::<Vec<_>>();
+
+        // Check equals
+        // [VER] equals is true if the plugin version matches the given version
+        {
+            let expr = VER::new(Atomic::from(A), EVerOperator::Equal, "1.0.0".to_string());
+            assert!(expr.eval(&mods).is_some());
+        }
+
+        // [VER] equals is false if the plugin version does not matches the given version
+        {
+            let expr = VER::new(Atomic::from(A), EVerOperator::Equal, "1.1.0".to_string());
+            assert!(expr.eval(&mods).is_none());
+        }
+
+        // Check greater
+        // [Note this is a newer version, it's broken] [VER > 0.1 foo.esp]
+        // [VER] greater is true if the plugin version is greater than the rule version
+        {
+            let expr = VER::new(Atomic::from(A), EVerOperator::Greater, "0.1.0".to_string());
+            assert!(expr.eval(&mods).is_some());
+        }
+
+        // [VER] greater is false if the plugin version is less than the given version
+        {
+            let expr = VER::new(Atomic::from(A), EVerOperator::Greater, "1.2.0".to_string());
+            assert!(expr.eval(&mods).is_none());
+        }
+
+        // [VER] greater is false if the plugin version is equal to the given version
+        {
+            let expr = VER::new(Atomic::from(A), EVerOperator::Greater, "1.0.0".to_string());
+            assert!(expr.eval(&mods).is_none());
+        }
+
+        // Check less
+        // [Note this is an old version, please upgrade] [VER < 1.2 foo.esp]
+        // [VER] less is true if the plugin version is less than the rule version
+        {
+            let expr = VER::new(Atomic::from(A), EVerOperator::Less, "1.2.0".to_string());
+            assert!(expr.eval(&mods).is_some());
+        }
+
+        // [VER] less is false if the plugin version is greater than the given version
+        {
+            let expr = VER::new(Atomic::from(A), EVerOperator::Less, "0.1.0".to_string());
+            assert!(expr.eval(&mods).is_none());
+        }
+
+        // [VER] less is false if the plugin version is equal to the given version
+        {
+            let expr = VER::new(Atomic::from(A), EVerOperator::Less, "1.0.0".to_string());
+            assert!(expr.eval(&mods).is_none());
+        }
+    }
+
+    #[test]
     fn evaluate_nested() {
         init();
 

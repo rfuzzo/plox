@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::error::Error;
 use std::fs::{self, File};
-use std::io::{self, BufRead, Write};
+use std::io::{self, BufRead, Read, Seek, Write};
 use std::ops::ControlFlow;
 use std::path::{Path, PathBuf};
 use std::{env, vec};
@@ -13,6 +13,7 @@ pub mod parser;
 pub mod rules;
 pub mod sorter;
 
+use byteorder::{LittleEndian, ReadBytesExt};
 use filetime::set_file_mtime;
 use ini::Ini;
 use log::{error, info, warn};
@@ -205,13 +206,13 @@ fn download_plox_rules(rules_dir: &PathBuf) {
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(Debug, Clone, PartialEq, PartialOrd)]
 pub struct PluginData {
     pub name: String,
     pub size: u64,
 
     pub description: Option<String>,
-    pub version: Option<String>,
+    pub version: Option<semver::Version>,
 }
 
 impl PluginData {
@@ -302,13 +303,32 @@ where
         .iter()
         .filter_map(|f| {
             if let Some(file_name) = f.file_name().and_then(|n| n.to_str()) {
-                // TODO TES3 parse the file and get the header content
-                let data = PluginData {
+                let mut data = PluginData {
                     name: file_name.to_owned(),
                     size: f.metadata().unwrap().len(),
                     description: None,
                     version: None,
                 };
+                match parse_header(f) {
+                    Ok(header) => {
+                        data.description = Some(header.description);
+
+                        // parse semver
+                        let version = header.version.to_string();
+                        match lenient_semver::parse(&version) {
+                            Ok(v) => {
+                                data.version = Some(v);
+                            }
+                            Err(e) => {
+                                log::debug!("Error parsing version: {}", e);
+                            }
+                        }
+                    }
+                    Err(e) => {
+                        log::debug!("Error parsing header: {}", e);
+                    }
+                }
+
                 return Some(data);
             }
             None
@@ -365,13 +385,31 @@ where
                 .iter()
                 .filter_map(|f| {
                     if let Some(file_name) = f.file_name().and_then(|n| n.to_str()) {
-                        // TODO TES3 parse the file and get the header content
-                        let data = PluginData {
+                        let mut data = PluginData {
                             name: file_name.to_owned(),
                             size: f.metadata().unwrap().len(),
                             description: None,
                             version: None,
                         };
+                        match parse_header(f) {
+                            Ok(header) => {
+                                data.description = Some(header.description);
+
+                                // parse semver
+                                let version = header.version.to_string();
+                                match lenient_semver::parse(&version) {
+                                    Ok(v) => {
+                                        data.version = Some(v);
+                                    }
+                                    Err(e) => {
+                                        log::debug!("Error parsing version: {}", e);
+                                    }
+                                }
+                            }
+                            Err(e) => {
+                                log::debug!("Error parsing header: {}", e);
+                            }
+                        }
                         return Some(data);
                     }
                     None
@@ -513,6 +551,154 @@ fn update_tes3(result: &[String]) -> std::io::Result<()> {
     Ok(())
 }
 
+/// Checks if the list of mods is in the correct order
+pub fn check_order(result: &[String], order_rules: &[EOrderRule]) -> bool {
+    let order = get_ordering_from_order_rules(order_rules);
+    let pairs = order;
+    for (a, b) in pairs {
+        if let Some(results_for_a) = wild_contains(result, &a) {
+            if let Some(results_for_b) = wild_contains(result, &b) {
+                for i in &results_for_a {
+                    for j in &results_for_b {
+                        let pos_a = result.iter().position(|x| x == i).unwrap();
+                        let pos_b = result.iter().position(|x| x == j).unwrap();
+                        if pos_a > pos_b {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    true
+}
+
+////////////////////////////////////////////////////////////////////////
+/// TES3
+////////////////////////////////////////////////////////////////////////
+#[derive(Debug, Clone, Default)]
+pub struct Tes3Header {
+    pub version: f32,
+    pub description: String,
+    pub masters: Option<Vec<(String, u64)>>,
+}
+
+pub fn parse_header(f: &Path) -> std::io::Result<Tes3Header> {
+    let magic: u32 = 861095252;
+    // read file to binary reader
+    let mut reader = std::io::BufReader::new(std::fs::File::open(f)?);
+    // read first 4 bytes and check magic
+    let file_magic = reader.read_u32::<LittleEndian>()?;
+    if file_magic != magic {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidData,
+            "Not a valid TES3 plugin",
+        ));
+    }
+
+    // next 4 bytes is the size of the header
+    let header_size = reader.read_u32::<LittleEndian>()?;
+    // skip 8 bytes
+    reader.seek(std::io::SeekFrom::Current(8))?;
+    // read the header
+    let mut header_buffer = vec![0; header_size as usize];
+    reader.read_exact(&mut header_buffer)?;
+
+    let mut reader = std::io::Cursor::new(header_buffer);
+    let header = parse_hedr(&mut reader, header_size as u64)?;
+    Ok(header)
+}
+
+fn parse_hedr<R: Read + Seek>(reader: &mut R, stream_size: u64) -> std::io::Result<Tes3Header> {
+    let magic: u32 = 1380205896;
+    // check magic
+    let file_magic = reader.read_u32::<LittleEndian>()?;
+
+    if file_magic != magic {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidData,
+            "Not a valid TES3 plugin",
+        ));
+    }
+
+    let mut header = Tes3Header::default();
+
+    // next 4 bytes is the size of the header
+    let _header_size = reader.read_u32::<LittleEndian>()?;
+
+    // next 4 bytes is the version
+    header.version = reader.read_f32::<LittleEndian>()?;
+
+    // next 4 bytes is unused
+    let _ = reader.read_u32::<LittleEndian>()?;
+
+    // read 32 bytes as string
+    let mut string_buffer = [0; 32];
+    reader.read_exact(&mut string_buffer)?;
+    let _author = String::from_utf8_lossy(&string_buffer).to_string();
+
+    // read 256 bytes as string
+    let mut string_buffer = [0; 256];
+    reader.read_exact(&mut string_buffer)?;
+    header.description = String::from_utf8_lossy(&string_buffer)
+        .trim_end_matches('\0')
+        .to_string();
+
+    // read 4 bytes as u32
+    let _num_records = reader.read_u32::<LittleEndian>()?;
+
+    let master_magic: u32 = 1414742349;
+    let data_magic: u32 = 1096040772;
+
+    // read masters
+    let mut masters = vec![];
+    loop {
+        let magic = reader.read_u32::<LittleEndian>()?;
+        if magic == master_magic {
+            // next 4 bytes is the size of the master string name
+            let master_size = reader.read_u32::<LittleEndian>()?;
+            // read master name
+            let mut master_buffer = vec![0; master_size as usize];
+            reader.read_exact(&mut master_buffer)?;
+            let master_name = String::from_utf8_lossy(&master_buffer).to_string();
+
+            // read data magic
+            let magic_data = reader.read_u32::<LittleEndian>()?;
+            if magic_data != data_magic {
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::InvalidData,
+                    "Not a valid TES3 plugin",
+                ));
+            }
+            // next 4 bytes is the size of the master data
+            let master_data_size = reader.read_u32::<LittleEndian>()?;
+            // verify master data size is 8
+            if master_data_size != 8 {
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::InvalidData,
+                    "Not a valid TES3 plugin",
+                ));
+            }
+
+            // next 8 bytes is size
+            let size = reader.read_u64::<LittleEndian>()?;
+
+            masters.push((master_name.trim_end_matches('\0').to_string(), size));
+
+            // break out if end of stream
+            if reader.stream_position()? >= stream_size {
+                break;
+            }
+        } else {
+            break;
+        }
+    }
+    header.masters = Some(masters);
+
+    Ok(header)
+}
+
 fn redate_mods(files: &[PathBuf]) -> Result<(), io::Error> {
     let fixed_file_times: HashMap<String, usize> = HashMap::from([
         ("morrowind.esm".into(), 1024695106),
@@ -540,29 +726,6 @@ fn redate_mods(files: &[PathBuf]) -> Result<(), io::Error> {
     }
 
     Ok(())
-}
-
-/// Checks if the list of mods is in the correct order
-pub fn check_order(result: &[String], order_rules: &[EOrderRule]) -> bool {
-    let order = get_ordering_from_order_rules(order_rules);
-    let pairs = order;
-    for (a, b) in pairs {
-        if let Some(results_for_a) = wild_contains(result, &a) {
-            if let Some(results_for_b) = wild_contains(result, &b) {
-                for i in &results_for_a {
-                    for j in &results_for_b {
-                        let pos_a = result.iter().position(|x| x == i).unwrap();
-                        let pos_b = result.iter().position(|x| x == j).unwrap();
-                        if pos_a > pos_b {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    true
 }
 
 ////////////////////////////////////////////////////////////////////////
