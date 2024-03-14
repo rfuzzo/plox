@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## v[0.2.2]
+
+### Fixed
+
+- Add omwgame support  #22
+- Add omwscripts support  #24
+- fixed plugin references log output as info
+
 ## v[0.2.1]
 
 ### Fixed
