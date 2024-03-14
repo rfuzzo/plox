@@ -192,7 +192,7 @@ impl Sorter {
                     // put all items in mods_copy ending with .esm at the start
                     let mut esms = vec![];
                     for (i, m) in mods_copy.iter().enumerate() {
-                        if m.ends_with(".esm") {
+                        if m.ends_with(".esm") || m.ends_with(".omwgame") {
                             esms.push(i);
                         }
                     }

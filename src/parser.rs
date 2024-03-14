@@ -33,6 +33,7 @@ pub fn new_openmw_parser() -> Parser {
         vec![
             ".esp".into(),
             ".esm".into(),
+            ".omwgame".into(),
             ".omwaddon".into(),
             ".omwscripts".into(),
         ],
