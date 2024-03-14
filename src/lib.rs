@@ -213,6 +213,7 @@ pub struct PluginData {
 
     pub description: Option<String>,
     pub version: Option<semver::Version>,
+    pub masters: Option<Vec<(String, u64)>>,
 }
 
 impl PluginData {
@@ -222,6 +223,7 @@ impl PluginData {
             size,
             description: None,
             version: None,
+            masters: None,
         }
     }
 }
@@ -309,6 +311,7 @@ where
                     size: f.metadata().unwrap().len(),
                     description: None,
                     version: None,
+                    masters: None,
                 };
 
                 // skip if extension is omwscripts
@@ -316,6 +319,7 @@ where
                     match parse_header(f) {
                         Ok(header) => {
                             data.description = Some(header.description);
+                            data.masters = header.masters;
 
                             // parse semver
                             let version = header.version.to_string();
@@ -395,10 +399,12 @@ where
                             size: f.metadata().unwrap().len(),
                             description: None,
                             version: None,
+                            masters: None,
                         };
                         match parse_header(f) {
                             Ok(header) => {
                                 data.description = Some(header.description);
+                                data.masters = header.masters;
 
                                 // parse semver
                                 let version = header.version.to_string();
@@ -451,6 +457,7 @@ where
                                         size: e.metadata().unwrap().len(),
                                         description: None,
                                         version: None,
+                                        masters: None,
                                     };
                                     return Some(data);
                                 }
@@ -859,6 +866,7 @@ where
                 size: 0, // TODO fix dummy size
                 description: None,
                 version: None,
+                masters: None,
             };
             result.push(data);
         }

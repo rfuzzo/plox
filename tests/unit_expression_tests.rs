@@ -141,6 +141,7 @@ mod unit_tests {
                 size: 0_u64,
                 description: Some("description".to_string()),
                 version: None,
+                masters: None,
             })
             .collect::<Vec<_>>();
 
@@ -184,6 +185,7 @@ mod unit_tests {
                 name: e.to_string(),
                 size: 0_u64,
                 description: None,
+                masters: None,
                 version: Some(lenient_semver::parse("1.0").unwrap()),
             })
             .collect::<Vec<_>>();
@@ -254,6 +256,7 @@ mod unit_tests {
                 size: 0_u64,
                 description: None,
                 version: None,
+                masters: None,
             })
             .collect::<Vec<_>>();
 
