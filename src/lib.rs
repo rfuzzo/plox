@@ -260,6 +260,7 @@ where
                             || ext == "esp"
                             || (use_omw_plugins && ext == "omwaddon")
                             || (use_omw_plugins && ext == "omwscripts")
+                            || (use_omw_plugins && ext == "omwgame")
                         {
                             results.push(file_path);
                         }
