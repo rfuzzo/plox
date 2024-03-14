@@ -228,19 +228,19 @@ pub fn sort(options: CliSortOptions) -> ExitCode {
             match rule {
                 EWarningRule::Note(n) => {
                     info!("[NOTE]\n{}", n.get_comment());
-                    debug!("Reference: [{}]", n.plugins.join(";"));
+                    info!("Reference: [{}]", n.plugins.join(";"));
                 }
                 EWarningRule::Conflict(c) => {
                     warn!("[CONFLICT]\n{}", c.get_comment());
-                    debug!("Reference: [{}]", c.plugins.join(";"));
+                    info!("Reference: [{}]", c.plugins.join(";"));
                 }
                 EWarningRule::Requires(r) => {
                     error!("[REQUIRES]\n{}", r.get_comment());
-                    debug!("Reference: [{}]", r.plugins.join(";"));
+                    info!("Reference: [{}]", r.plugins.join(";"));
                 }
                 EWarningRule::Patch(p) => {
                     warn!("[Patch]\n{}", p.get_comment());
-                    debug!("Reference: [{}]", p.plugins.join(";"));
+                    info!("Reference: [{}]", p.plugins.join(";"));
                 }
             }
             println!();

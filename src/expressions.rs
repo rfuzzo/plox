@@ -280,7 +280,7 @@ impl Display for NOT {
 ////////////////////////////////////////////////////////////////////////
 // DESC
 
-/// TODO The Desc predicate is a special predicate that matches strings in the header of a plugin with regular expressions.
+/// The Desc predicate is a special predicate that matches strings in the header of a plugin with regular expressions.
 /// [DESC /regex/ A.esp] or [DESC !/regex/ A.esp]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DESC {

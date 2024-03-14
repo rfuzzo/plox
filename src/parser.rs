@@ -30,7 +30,13 @@ pub fn new_tes3_parser() -> Parser {
 
 pub fn new_openmw_parser() -> Parser {
     Parser::new(
-        vec![".esp".into(), ".esm".into(), ".omwaddon".into(), ".omwgame".into()],
+        vec![
+            ".esp".into(),
+            ".esm".into(),
+            ".omwgame".into(),
+            ".omwaddon".into(),
+            ".omwscripts".into(),
+        ],
         ESupportedGame::OpenMW,
     )
 }

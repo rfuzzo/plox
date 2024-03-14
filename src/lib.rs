@@ -310,23 +310,27 @@ where
                     description: None,
                     version: None,
                 };
-                match parse_header(f) {
-                    Ok(header) => {
-                        data.description = Some(header.description);
 
-                        // parse semver
-                        let version = header.version.to_string();
-                        match lenient_semver::parse(&version) {
-                            Ok(v) => {
-                                data.version = Some(v);
-                            }
-                            Err(e) => {
-                                log::debug!("Error parsing version: {}", e);
+                // skip if extension is omwscripts
+                if !file_name.to_ascii_lowercase().ends_with("omwscripts") {
+                    match parse_header(f) {
+                        Ok(header) => {
+                            data.description = Some(header.description);
+
+                            // parse semver
+                            let version = header.version.to_string();
+                            match lenient_semver::parse(&version) {
+                                Ok(v) => {
+                                    data.version = Some(v);
+                                }
+                                Err(e) => {
+                                    log::debug!("Error parsing version: {}", e);
+                                }
                             }
                         }
-                    }
-                    Err(e) => {
-                        log::debug!("Error parsing header: {}, {}", e, f.display());
+                        Err(e) => {
+                            log::debug!("Error parsing header: {}, {}", e, f.display());
+                        }
                     }
                 }
 
