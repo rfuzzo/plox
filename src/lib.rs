@@ -44,7 +44,7 @@ pub fn log_level_to_str(level: ELogLevel) -> String {
 #[derive(Debug, Clone, Copy, ValueEnum, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ESupportedGame {
     Morrowind,
-    OpenMW,
+    Openmw,
     Cyberpunk,
 }
 pub const PLOX_RULES_BASE: &str = "plox_base.txt";
@@ -58,7 +58,7 @@ pub fn detect_game() -> Option<ESupportedGame> {
     if PathBuf::from("Morrowind.exe").exists() {
         Some(ESupportedGame::Morrowind)
     } else if PathBuf::from("openmw.cfg").exists() {
-        Some(ESupportedGame::OpenMW)
+        Some(ESupportedGame::Openmw)
     } else if PathBuf::from("bin")
         .join("x64")
         .join("Cyberpunk2077")
@@ -108,7 +108,7 @@ pub fn debug_get_mods_from_ordering(order: &[(String, String)]) -> Vec<PluginDat
 /// This function will return an error if .
 pub fn get_default_rules_dir(game: ESupportedGame) -> PathBuf {
     match game {
-        ESupportedGame::Morrowind | ESupportedGame::OpenMW => PathBuf::from("mlox"),
+        ESupportedGame::Morrowind | ESupportedGame::Openmw => PathBuf::from("mlox"),
         ESupportedGame::Cyberpunk => PathBuf::from("plox"),
     }
 }
@@ -116,7 +116,7 @@ pub fn get_default_rules_dir(game: ESupportedGame) -> PathBuf {
 /// Download latest rules from the internet
 pub fn download_latest_rules(game: ESupportedGame, rules_dir: &PathBuf) {
     match game {
-        ESupportedGame::Morrowind | ESupportedGame::OpenMW => download_mlox_rules(rules_dir),
+        ESupportedGame::Morrowind | ESupportedGame::Openmw => download_mlox_rules(rules_dir),
         ESupportedGame::Cyberpunk => download_plox_rules(rules_dir),
     }
 }
@@ -240,7 +240,7 @@ where
     match game {
         ESupportedGame::Morrowind => gather_tes3_mods(root),
         ESupportedGame::Cyberpunk => gather_cp77_mods(root),
-        ESupportedGame::OpenMW => gather_openmw_mods(&config),
+        ESupportedGame::Openmw => gather_openmw_mods(&config),
     }
 }
 
@@ -487,7 +487,7 @@ pub fn update_new_load_order<P: AsRef<Path>>(
 ) -> std::io::Result<()> {
     match game {
         ESupportedGame::Morrowind => update_tes3(result),
-        ESupportedGame::OpenMW => update_openmw(result, config),
+        ESupportedGame::Openmw => update_openmw(result, config),
         ESupportedGame::Cyberpunk => update_cp77(result),
     }
 }

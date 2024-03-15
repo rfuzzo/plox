@@ -12,7 +12,7 @@ use crate::{expressions::*, rules::*, ESupportedGame, PluginData, TParser};
 pub fn get_parser(game: ESupportedGame) -> Parser {
     match game {
         ESupportedGame::Morrowind => new_tes3_parser(),
-        ESupportedGame::OpenMW => new_openmw_parser(),
+        ESupportedGame::Openmw => new_openmw_parser(),
         ESupportedGame::Cyberpunk => new_cyberpunk_parser(),
     }
 }
@@ -37,7 +37,7 @@ pub fn new_openmw_parser() -> Parser {
             ".omwaddon".into(),
             ".omwscripts".into(),
         ],
-        ESupportedGame::OpenMW,
+        ESupportedGame::Openmw,
     )
 }
 
@@ -168,7 +168,7 @@ impl Parser {
         self.order_rules.clear();
 
         let rules_files = match self.game {
-            ESupportedGame::Morrowind | ESupportedGame::OpenMW => {
+            ESupportedGame::Morrowind | ESupportedGame::Openmw => {
                 ["mlox_base.txt", "mlox_user.txt", "mlox_my_rules.txt"].as_slice()
             }
             ESupportedGame::Cyberpunk => ["plox_base.txt", "plox_my_rules.txt"].as_slice(),

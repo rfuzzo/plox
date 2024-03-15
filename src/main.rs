@@ -201,7 +201,7 @@ pub fn sort(options: CliSortOptions) -> ExitCode {
         mods = match game {
             ESupportedGame::Morrowind => gather_tes3_mods(&root),
             ESupportedGame::Cyberpunk => gather_cp77_mods(&root),
-            ESupportedGame::OpenMW => gather_openmw_mods(&config),
+            ESupportedGame::Openmw => gather_openmw_mods(&config),
         };
         if mods.is_empty() {
             info!("No mods found");

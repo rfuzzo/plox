@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v[0.2.3]
+
+### Changed
+
+- Fixed OpenMW enum naming again
+
 ## v[0.2.2]
 
 ### Fixed
