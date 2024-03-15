@@ -64,13 +64,13 @@ impl Sorter {
         let mut index_dict: HashMap<String, usize> = HashMap::new();
         let mut index_dict_rev: HashMap<usize, String> = HashMap::default();
         let mut mod_map: HashMap<usize, String> = HashMap::default();
-        for (i, m) in mods_cased.iter().enumerate() {
-            let lower_case = m.name.to_lowercase();
+        for (i, cased_name) in mods_cased.iter().enumerate() {
+            let lower_case = cased_name.name.to_lowercase();
 
             index_dict.insert(lower_case.clone(), i);
             index_dict_rev.insert(i, lower_case.clone());
 
-            mod_map.insert(i, m.name.to_owned());
+            mod_map.insert(i, cased_name.name.to_owned());
             mods.push(lower_case.to_owned());
         }
 
@@ -94,6 +94,27 @@ impl Sorter {
                             if !edges.contains(&(idx_a, idx_b)) {
                                 edges.push((idx_a, idx_b));
                                 g.add_edge(idx_a, idx_b);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // add edges from masters
+        for mod_data in mods_cased.iter() {
+            // add an edge from the mod to all its masters
+            let idx = index_dict[&mod_data.name.to_lowercase()];
+            if let Some(masters) = &mod_data.masters {
+                for (master, _hash) in masters {
+                    let master = master.to_lowercase();
+                    if let Some(results) = wild_contains(&mods, &master) {
+                        for result in results {
+                            let idx_master = index_dict[&result];
+                            let edge = (idx_master, idx);
+                            if !edges.contains(&edge) {
+                                edges.push(edge);
+                                g.add_edge(edge.0, edge.1);
                             }
                         }
                     }
