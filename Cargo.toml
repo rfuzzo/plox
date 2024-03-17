@@ -4,7 +4,7 @@ resolver = "2"
 
 [workspace.package]
 name = "plox"
-version = "0.2.3"
+version = "0.3.0"
 authors = ["Moritz Baron"]
 description = "PLOX - Plugin Load Order eXpert. PLOX is a tool for analyzing and sorting your plugin load order. Supports Morrowind, OpenMW and Cyberpunk"
 documentation = ""
