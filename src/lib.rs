@@ -395,19 +395,21 @@ fn map_data(f: &Path) -> Option<PluginData> {
 const VERSION_REGEX: &str = r"(\d+(?:[_.-]?\d+)*[a-zA-Z]?)";
 
 /// Get version from filename or description
-fn get_version(file_name: &str, description: &Option<String>) -> Option<Version> {
+pub fn get_version(file_name: &str, description: &Option<String>) -> Option<Version> {
     let mut final_version_str = None;
 
-    // try to get version from description first
+    // try to get version from description
     if let Some(desc) = description {
         if let Some(value) = match_desc_version(desc) {
             final_version_str = Some(value);
         }
     }
 
-    // try to get version from filename
-    if let Some(value) = match_filename_version(file_name) {
-        final_version_str = Some(value);
+    // try to get version from filename if not found in description
+    if final_version_str.is_none() {
+        if let Some(value) = match_filename_version(file_name) {
+            final_version_str = Some(value);
+        }
     }
 
     if let Some(version) = final_version_str {

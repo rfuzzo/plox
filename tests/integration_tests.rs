@@ -7,6 +7,7 @@ mod integration_tests {
     use plox::{parser::*, sorter::*, *};
     use rand::seq::SliceRandom;
     use rand::thread_rng;
+    use semver::Version;
 
     fn init() {
         let env = env_logger::Env::default()
@@ -415,13 +416,24 @@ mod integration_tests {
             let header = parse_header(&plugin_test_path).expect("failed to parse header");
 
             // check some things
-            assert_eq!(header.description, "The main data file For Morrowind");
+            assert_eq!(
+                header.description,
+                "The main data file For Morrowind with version 5.3"
+            );
             // check master files
             assert!(header.masters.is_none());
+
+            // check version
+            let got = get_version(
+                plugin_test_path.file_name().unwrap().to_str().unwrap(),
+                &Some(header.description),
+            );
+            let expected = Version::new(5, 3, 0);
+            assert_eq!(got.unwrap(), expected);
         }
 
         {
-            let plugin_test_path = PathBuf::from("tests").join("test1.esp");
+            let plugin_test_path = PathBuf::from("tests").join("test 1.1.esp");
             let header = parse_header(&plugin_test_path).expect("failed to parse header");
 
             // check some things
@@ -434,6 +446,14 @@ mod integration_tests {
                 header.masters.unwrap(),
                 vec![("Morrowind.esm".to_string(), 79837557_u64),]
             );
+
+            // check version
+            let got = get_version(
+                plugin_test_path.file_name().unwrap().to_str().unwrap(),
+                &Some(header.description),
+            );
+            let expected = Version::new(1, 1, 0);
+            assert_eq!(got.unwrap(), expected);
         }
     }
 }
