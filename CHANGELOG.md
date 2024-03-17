@@ -2,11 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
-## v[0.2.3]
+## v[0.3.0]
+
+### Added
+
+- sort plugins also by masters (masters before dependent plugins)
 
 ### Changed
 
 - Fixed OpenMW enum naming again
+
+### Fixed
+
+- fixed a bug where the VER predicate was not properly parsed
 
 ## v[0.2.2]
 
