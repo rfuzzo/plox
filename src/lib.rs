@@ -18,7 +18,9 @@ use filetime::set_file_mtime;
 use ini::Ini;
 use log::{error, info, warn};
 use openmw_cfg::config_path;
+use regex::Regex;
 use rules::*;
+use semver::Version;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, ValueEnum, Default)]
@@ -302,47 +304,7 @@ where
     P: AsRef<Path>,
 {
     let files = get_plugins_sorted(&path.as_ref().join("Data Files"), false);
-    let names = files
-        .iter()
-        .filter_map(|f| {
-            if let Some(file_name) = f.file_name().and_then(|n| n.to_str()) {
-                let mut data = PluginData {
-                    name: file_name.to_owned(),
-                    size: f.metadata().unwrap().len(),
-                    description: None,
-                    version: None,
-                    masters: None,
-                };
-
-                // skip if extension is omwscripts
-                if !file_name.to_ascii_lowercase().ends_with("omwscripts") {
-                    match parse_header(f) {
-                        Ok(header) => {
-                            data.description = Some(header.description);
-                            data.masters = header.masters;
-
-                            // parse semver
-                            let version = header.version.to_string();
-                            match lenient_semver::parse(&version) {
-                                Ok(v) => {
-                                    data.version = Some(v);
-                                }
-                                Err(e) => {
-                                    log::debug!("Error parsing version: {}", e);
-                                }
-                            }
-                        }
-                        Err(e) => {
-                            log::debug!("Error parsing header: {}, {}", e, f.display());
-                        }
-                    }
-                }
-
-                return Some(data);
-            }
-            None
-        })
-        .collect::<Vec<_>>();
+    let names = files.iter().filter_map(|f| map_data(f)).collect::<Vec<_>>();
 
     // check against mw ini
     let morrowind_ini_path = PathBuf::from("Morrowind.ini");
@@ -390,42 +352,7 @@ where
 
     if let Ok(cfg) = openmw_cfg::Ini::load_from_file_noescape(path) {
         if let Ok(files) = openmw_cfg::get_plugins(&cfg) {
-            let names = files
-                .iter()
-                .filter_map(|f| {
-                    if let Some(file_name) = f.file_name().and_then(|n| n.to_str()) {
-                        let mut data = PluginData {
-                            name: file_name.to_owned(),
-                            size: f.metadata().unwrap().len(),
-                            description: None,
-                            version: None,
-                            masters: None,
-                        };
-                        match parse_header(f) {
-                            Ok(header) => {
-                                data.description = Some(header.description);
-                                data.masters = header.masters;
-
-                                // parse semver
-                                let version = header.version.to_string();
-                                match lenient_semver::parse(&version) {
-                                    Ok(v) => {
-                                        data.version = Some(v);
-                                    }
-                                    Err(e) => {
-                                        log::debug!("Error parsing version: {}", e);
-                                    }
-                                }
-                            }
-                            Err(e) => {
-                                log::debug!("Error parsing header: {}, {}", e, f.display());
-                            }
-                        }
-                        return Some(data);
-                    }
-                    None
-                })
-                .collect::<Vec<_>>();
+            let names = files.iter().filter_map(|f| map_data(f)).collect::<Vec<_>>();
             return names;
         }
     } else {
@@ -433,6 +360,110 @@ where
     }
 
     vec![]
+}
+
+fn map_data(f: &Path) -> Option<PluginData> {
+    if let Some(file_name) = f.file_name().and_then(|n| n.to_str()) {
+        let mut data = PluginData {
+            name: file_name.to_owned(),
+            size: f.metadata().unwrap().len(),
+            description: None,
+            version: None,
+            masters: None,
+        };
+
+        match parse_header(f) {
+            Ok(header) => {
+                data.description = Some(header.description);
+                data.masters = header.masters;
+            }
+            Err(e) => {
+                log::debug!("Error parsing header: {}, {}", e, f.display());
+            }
+        };
+
+        // parse semver
+        if let Some(version) = get_version(file_name, &data.description) {
+            data.version = Some(version);
+        }
+
+        return Some(data);
+    }
+    None
+}
+
+const VERSION_REGEX: &str = r"(\d+(?:[_.-]?\d+)*[a-zA-Z]?)";
+
+/// Get version from filename or description
+fn get_version(file_name: &str, description: &Option<String>) -> Option<Version> {
+    let mut final_version_str = None;
+
+    // try to get version from description first
+    if let Some(desc) = description {
+        if let Some(value) = match_desc_version(desc) {
+            final_version_str = Some(value);
+        }
+    }
+
+    // try to get version from filename
+    if let Some(value) = match_filename_version(file_name) {
+        final_version_str = Some(value);
+    }
+
+    if let Some(version) = final_version_str {
+        if let Some(value) = get_semver(version.as_str()) {
+            return Some(value);
+        }
+    }
+
+    None
+}
+
+/// Get semver from string
+fn get_semver(version: &str) -> Option<Version> {
+    // replace _ and - with .
+    let formatted_version = version.replace(['_', '-'], ".");
+    // TODO limit to major minor and patch version
+
+    match lenient_semver::parse(&formatted_version) {
+        Ok(v) => return Some(v),
+        Err(e) => {
+            log::debug!("Error parsing version: {}", e);
+        }
+    }
+    None
+}
+
+/// Get version from filename
+///
+/// # Panics
+///
+/// Panics if the regex pattern is invalid
+fn match_filename_version(file_name: &str) -> Option<String> {
+    let filename_version_regex = format!(r"\D{}\D*", VERSION_REGEX);
+    let pattern: Regex = Regex::new(filename_version_regex.as_str()).unwrap();
+    if let Some(captures) = pattern.captures(file_name) {
+        if let Some(version) = captures.get(1) {
+            return Some(version.as_str().to_string());
+        }
+    }
+    None
+}
+
+/// Get version from description
+///
+/// # Panics
+///
+/// Panics if the regex pattern is invalid
+fn match_desc_version(desc: &str) -> Option<String> {
+    let header_version_regex = format!(r"\b(?:version\b\D+|v(?:er)?\.?\s*){}", VERSION_REGEX);
+    let pattern: Regex = Regex::new(header_version_regex.as_str()).unwrap();
+    if let Some(captures) = pattern.captures(desc) {
+        if let Some(version) = captures.get(1) {
+            return Some(version.as_str().to_string());
+        }
+    }
+    None
 }
 
 pub fn gather_cp77_mods<P>(root: &P) -> Vec<PluginData>
@@ -604,7 +635,6 @@ pub fn check_order(result: &[String], order_rules: &[EOrderRule]) -> bool {
 ////////////////////////////////////////////////////////////////////////
 #[derive(Debug, Clone, Default)]
 pub struct Tes3Header {
-    pub version: f32,
     pub description: String,
     pub masters: Option<Vec<(String, u64)>>,
 }
@@ -653,7 +683,7 @@ fn parse_hedr<R: Read + Seek>(reader: &mut R, stream_size: u64) -> std::io::Resu
     let _header_size = reader.read_u32::<LittleEndian>()?;
 
     // next 4 bytes is the version
-    header.version = reader.read_f32::<LittleEndian>()?;
+    let _ = reader.read_f32::<LittleEndian>()?;
 
     // next 4 bytes is unused
     let _ = reader.read_u32::<LittleEndian>()?;
@@ -915,7 +945,8 @@ pub fn wild_contains(list: &[String], str: &String) -> Option<Vec<String>> {
 }
 
 /// Checks if the list contains the str
-pub fn wild_contains_data(list: &[PluginData], str: &String) -> Option<Vec<PluginData>> {
+pub fn wild_contains_data(list: &[PluginData], str: &str) -> Option<Vec<PluginData>> {
+    let str = str.to_lowercase();
     if str.contains('*') || str.contains('?') || str.contains("<ver>") {
         let mut results = vec![];
         // Replace * with .* to match any sequence of characters
@@ -947,7 +978,7 @@ pub fn wild_contains_data(list: &[PluginData], str: &String) -> Option<Vec<Plugi
         return Some(results);
     }
 
-    if let Some(r) = list.iter().find(|f| f.name.eq(str)) {
+    if let Some(r) = list.iter().find(|f| f.name.to_lowercase().eq(&str)) {
         return Some(vec![r.to_owned()]);
     }
 
@@ -1021,6 +1052,8 @@ pub fn nearend2(f: &EOrderRule) -> Option<NearEnd> {
 #[cfg(test)]
 mod tests {
     //use std::fs::create_dir_all;
+
+    use semver::{BuildMetadata, Prerelease};
 
     // Note this useful idiom: importing names from outer (for mod tests) scope.
     use super::*;
@@ -1219,4 +1252,101 @@ mod tests {
     //         fs::remove_file(path).expect("remove failed");
     //     }
     // }
+
+    #[test]
+    fn test_match_filename_version() {
+        let inputs = [
+            ("a.esp", None),
+            ("a_2.0.esp", Some("2.0".to_owned())),
+            ("a_3.0_comment.esp", Some("3.0".to_owned())),
+            ("a_4.0a_comment.archive", Some("4.0a".to_owned())),
+            ("a_5-0-3abc_comment.omwaddon", Some("5-0-3a".to_owned())),
+            ("a_6_0_3abc_comment.omwaddon", Some("6_0_3a".to_owned())),
+            ("a_7.0_3abc_comment.omwaddon", Some("7.0_3a".to_owned())),
+            ("a_7.0-3abc_comment.omwaddon", Some("7.0-3a".to_owned())),
+            // TODO this is a valid version number but we don't support it
+            ("a_1.1-nightly_comment.esp", Some("1.1".to_owned())),
+        ];
+
+        for (input, expected) in &inputs {
+            let got = match_filename_version(input);
+            assert_eq!(got, *expected);
+        }
+    }
+
+    #[test]
+    fn test_match_desc_version() {
+        let inputs = [
+            ("a version 1.0", Some("1.0".to_owned())),
+            ("a version 1.0_comment", Some("1.0".to_owned())),
+            ("a version 1.0", Some("1.0".to_owned())),
+            ("some comments", None),
+            (
+                "some comment about a plugin with version 2.0 and some other stuff",
+                Some("2.0".to_owned()),
+            ),
+            ("do we support v2.4 here? yes", Some("2.4".to_owned())),
+            ("many v3.0 anf v2.0 in the header", Some("3.0".to_owned())),
+            ("we also match ver6.8 etc", Some("6.8".to_owned())),
+            (
+                "and other delims v3-5-7-8-8 are supported",
+                Some("3-5-7-8-8".to_owned()),
+            ),
+            (
+                "and other delims v1_5_5 are supported",
+                Some("1_5_5".to_owned()),
+            ),
+            ("and mixed ver3.6_7-8 versions", Some("3.6_7-8".to_owned())),
+            (
+                "and with chars version 9.3a at the end",
+                Some("9.3a".to_owned()),
+            ),
+            (
+                "but not actually v3.5.6-nightly semver",
+                Some("3.5.6".to_owned()),
+            ),
+            ("we only have v1.1-5n this stuff", Some("1.1-5n".to_owned())),
+        ];
+
+        for (input, expected) in &inputs {
+            let got = match_desc_version(input);
+            assert_eq!(got, *expected);
+        }
+    }
+
+    #[test]
+    fn test_get_semver() {
+        let inputs = [
+            ("nothing", None),
+            ("1.0", Some(Version::new(1, 0, 0))),
+            ("1_5_5", Some(Version::new(1, 5, 5))),
+            ("3.6_7", Some(Version::new(3, 6, 7))),
+            ("3-6_7", Some(Version::new(3, 6, 7))),
+            (
+                "9.3a",
+                Some(Version {
+                    major: 9,
+                    minor: 0,
+                    patch: 0,
+                    pre: Prerelease::new("3a").unwrap(),
+                    build: BuildMetadata::EMPTY,
+                }),
+            ),
+            (
+                "1.1-5n",
+                Some(Version {
+                    major: 1,
+                    minor: 1,
+                    patch: 0,
+                    pre: Prerelease::new("5n").unwrap(),
+                    build: BuildMetadata::EMPTY,
+                }),
+            ),
+        ];
+
+        for (input, expected) in &inputs {
+            let got = get_semver(input.to_owned());
+            assert_eq!(got, *expected);
+        }
+    }
 }

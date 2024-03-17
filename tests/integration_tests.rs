@@ -415,7 +415,6 @@ mod integration_tests {
             let header = parse_header(&plugin_test_path).expect("failed to parse header");
 
             // check some things
-            assert_eq!(header.version, 1.2_f32);
             assert_eq!(header.description, "The main data file For Morrowind");
             // check master files
             assert!(header.masters.is_none());
@@ -426,7 +425,6 @@ mod integration_tests {
             let header = parse_header(&plugin_test_path).expect("failed to parse header");
 
             // check some things
-            assert_eq!(header.version, 1.3_f32);
             assert_eq!(
                 header.description,
                 "The main data file for BloodMoon.\r\n(requires Morrowind.esm to run)"

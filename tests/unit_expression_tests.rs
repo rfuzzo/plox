@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod unit_tests {
-    use plox::{expressions::*, PluginData};
+    use plox::{expressions::*, rules::TWarningRule, PluginData};
 
     fn init() {
         let _ = env_logger::builder().is_test(true).try_init();
@@ -244,73 +244,42 @@ mod unit_tests {
         }
     }
 
-    #[allow(dead_code)]
-    //TODO add plugin filename version parsing #[test]
-    fn evaluate_ver_filename() {
-        init();
+    #[test]
+    fn test_ver_problem() {
+        // check specific problem
+        // [Conflict]
+        // Texture Fix 2.0.esm
+        // [VER < 2.0 Texture Fix <VER>.esm]
 
-        let mods = ["a.esp", "b.esp"]
+        let mods = ["Texture Fix 2.0.esm"]
             .iter()
             .map(|e| PluginData {
-                name: e.to_string(),
+                name: e.to_lowercase().to_string(),
                 size: 0_u64,
                 description: None,
-                version: None,
                 masters: None,
+                version: None,
             })
             .collect::<Vec<_>>();
 
-        // Check equals
-        // [VER] equals is true if the plugin version matches the given version
-        {
-            let expr = VER::new(Atomic::from(A), EVerOperator::Equal, "1.0.0".to_string());
-            assert!(expr.eval(&mods).is_some());
-        }
+        // {
+        //     let expr = VER::new(
+        //         Atomic::from("Texture Fix <VER>.esm"),
+        //         EVerOperator::Less,
+        //         "3.0.0".to_string(),
+        //     );
+        //     assert!(expr.eval(&mods).is_some());
+        // }
 
-        // [VER] equals is false if the plugin version does not matches the given version
         {
-            let expr = VER::new(Atomic::from(A), EVerOperator::Equal, "1.1.0".to_string());
-            assert!(expr.eval(&mods).is_none());
-        }
-
-        // Check greater
-        // [Note this is a newer version, it's broken] [VER > 0.1 foo.esp]
-        // [VER] greater is true if the plugin version is greater than the rule version
-        {
-            let expr = VER::new(Atomic::from(A), EVerOperator::Greater, "0.1.0".to_string());
-            assert!(expr.eval(&mods).is_some());
-        }
-
-        // [VER] greater is false if the plugin version is less than the given version
-        {
-            let expr = VER::new(Atomic::from(A), EVerOperator::Greater, "1.2.0".to_string());
-            assert!(expr.eval(&mods).is_none());
-        }
-
-        // [VER] greater is false if the plugin version is equal to the given version
-        {
-            let expr = VER::new(Atomic::from(A), EVerOperator::Greater, "1.0.0".to_string());
-            assert!(expr.eval(&mods).is_none());
-        }
-
-        // Check less
-        // [Note this is an old version, please upgrade] [VER < 1.2 foo.esp]
-        // [VER] less is true if the plugin version is less than the rule version
-        {
-            let expr = VER::new(Atomic::from(A), EVerOperator::Less, "1.2.0".to_string());
-            assert!(expr.eval(&mods).is_some());
-        }
-
-        // [VER] less is false if the plugin version is greater than the given version
-        {
-            let expr = VER::new(Atomic::from(A), EVerOperator::Less, "0.1.0".to_string());
-            assert!(expr.eval(&mods).is_none());
-        }
-
-        // [VER] less is false if the plugin version is equal to the given version
-        {
-            let expr = VER::new(Atomic::from(A), EVerOperator::Less, "1.0.0".to_string());
-            assert!(expr.eval(&mods).is_none());
+            let expr1 = Atomic::from("Texture Fix 2.0.esm");
+            let expr2 = VER::new(
+                Atomic::from("Texture Fix <VER>.esm"),
+                EVerOperator::Less,
+                "2.0.0".to_string(),
+            );
+            let mut rule = plox::rules::Conflict::new("".into(), &[expr1.into(), expr2.into()]);
+            assert!(!rule.eval(&mods));
         }
     }
 

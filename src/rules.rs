@@ -506,6 +506,7 @@ impl TWarningRule for Conflict {
     fn set_comment(&mut self, comment: String) {
         self.comment = comment;
     }
+
     /// Conflicts evaluate as true if both expressions evaluate as true
     fn eval(&mut self, items: &[PluginData]) -> bool {
         let mut i = 0;
@@ -525,10 +526,6 @@ impl TParser<Conflict> for Conflict {
         reader: R,
         parser: &parser::Parser,
     ) -> Result<()> {
-        // if let Ok(Some(comment)) = read_comment(&mut reader) {
-        //     this.set_comment(comment);
-        // }
-
         // add all parsed expressions
         this.expressions = parser.parse_expressions(reader)?;
 
