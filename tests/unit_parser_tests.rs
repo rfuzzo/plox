@@ -60,6 +60,19 @@ mod unit_tests {
         }
     }
 
+    #[test]
+    fn test_invalid_rule() {
+        let input = "[Order]\nab01GOTYpatch.esp\n;JoinAll*.esp";
+
+        let reader = Cursor::new(input.as_bytes());
+        let rules = parser::new_cyberpunk_parser()
+            .parse_rules_from_reader(reader)
+            .expect("Failed to parse rule");
+
+        // should not parse any rule here
+        assert!(rules.is_empty());
+    }
+
     ////////////////////////////////////////////////////////////////////////
     // NEARSTART
 
