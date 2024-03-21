@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v[0.3.1]
+
+### Fixed
+
+- fixed a bug where desc would not match properly
+
 ## v[0.3.0]
 
 ### Added
