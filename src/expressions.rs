@@ -305,6 +305,7 @@ impl TExpression for DESC {
             for p in &plugins {
                 if let Some(description) = &p.description {
                     if let Ok(pattern) = regex::Regex::new(&self.regex) {
+                        let description = &description.to_lowercase();
                         match self.is_negated {
                             true => {
                                 if !pattern.is_match(description) {

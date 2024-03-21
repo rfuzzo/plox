@@ -123,27 +123,19 @@ fn init_parser(settings: AppSettings, tx: Sender<String>) -> Option<AppData> {
     }
 
     // sort
-    //let mut new_order = mods.clone();
-    // check order first
-    //match check_order(&mods, &parser.order_rules) {
-    //    true => {
-    //        // exit
-    //        info!("Mods are in correct order, no sorting needed.");
-    //        let _ = tx.send("Mods are in correct order, no sorting needed.".to_string());
-    //     }
-    //    false => {
-    let mut sorter = new_stable_sorter();
-    let _ = tx.send("Sorting mods".to_string());
-    let new_order = match sorter.topo_sort(game, &mods, &parser.order_rules) {
-        Ok(new) => new,
-        Err(e) => {
-            error!("error sorting: {e:?}");
-            let _ = tx.send(format!("error sorting: {e:?}"));
-            return None;
-        }
-    };
-    //}
-    //}
+    let mut new_order = mods.iter().map(|m| m.name.clone()).collect();
+    if !&parser.order_rules.is_empty() {
+        let mut sorter = new_stable_sorter();
+        let _ = tx.send("Sorting mods".to_string());
+        new_order = match sorter.topo_sort(game, &mods, &parser.order_rules) {
+            Ok(new) => new,
+            Err(e) => {
+                error!("error sorting: {e:?}");
+                let _ = tx.send(format!("error sorting: {e:?}"));
+                return None;
+            }
+        };
+    }
 
     let r = AppData {
         game,
