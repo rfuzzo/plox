@@ -1,0 +1,17 @@
+[
+  [
+    816,
+    "GameFile3=PNOG.esm",
+    "GameFile3=a.esp"
+  ],
+  [
+    817,
+    "GameFile4=Texture Fix 2.0.esm",
+    "GameFile4=b.esp"
+  ],
+  [
+    818,
+    "GameFile5=Texture Fix - Bloodmoon 1.1.esm",
+    "GameFile5=c.esp"
+  ]
+]

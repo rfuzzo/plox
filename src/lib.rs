@@ -299,6 +299,39 @@ where
     plugins
 }
 
+pub fn list_tes3_mods<P>(path: &P) -> io::Result<Vec<String>>
+where
+    P: AsRef<Path>,
+{
+    let mut names = vec![];
+
+    // parse ini
+    let mut in_section = false;
+    let lines = read_lines(path)?;
+    for line in lines {
+        match line {
+            Ok(line) => {
+                // skip plugin lines
+                if line.starts_with("[Game Files]") {
+                    in_section = true;
+                    continue;
+                }
+                if in_section && line.starts_with("GameFile") {
+                    names.push(line);
+                }
+            }
+            Err(e) => {
+                // log  error
+
+                error!("Error reading line: {}", e);
+                return Err(e);
+            }
+        }
+    }
+
+    Ok(names)
+}
+
 pub fn gather_tes3_mods<P>(path: &P) -> Vec<PluginData>
 where
     P: AsRef<Path>,
@@ -310,7 +343,7 @@ where
     let morrowind_ini_path = PathBuf::from("Morrowind.ini");
     if morrowind_ini_path.exists() {
         // parse ini
-        if let Ok(ini) = Ini::load_from_file(morrowind_ini_path) {
+        if let Ok(ini) = Ini::load_from_file(path) {
             let mut final_files: Vec<PluginData> = vec![];
             if let Some(section) = ini.section(Some("Game Files")) {
                 let mods_in_ini: Vec<_> = section.iter().map(|f| f.1).collect();
@@ -892,7 +925,21 @@ where
 }
 
 /// read file line by line into vector
-pub fn read_file_as_list<P>(modlist_path: P) -> Vec<PluginData>
+pub fn read_lines_to_vec<P>(filename: P) -> Vec<String>
+where
+    P: AsRef<Path>,
+{
+    let mut result: Vec<String> = vec![];
+    if let Ok(lines) = read_lines(filename) {
+        for line in lines.map_while(Result::ok) {
+            result.push(line);
+        }
+    }
+    result
+}
+
+/// read file line by line into vector and convert to PluginData
+pub fn read_plugin_data<P>(modlist_path: P) -> Vec<PluginData>
 where
     P: AsRef<Path>,
 {

@@ -21,7 +21,7 @@ mod integration_tests {
         init();
 
         let mods_path = "./tests/modlist.txt";
-        let mods_data = read_file_as_list(mods_path);
+        let mods_data = read_plugin_data(mods_path);
         assert_eq!(
             mods_data
                 .iter()
@@ -455,5 +455,38 @@ mod integration_tests {
             let expected = Version::new(1, 1, 0);
             assert_eq!(got.unwrap(), expected);
         }
+    }
+
+    #[test]
+    fn test_update_tes3() {
+        let ini_path = PathBuf::from("tests").join("Morrowind_fr.ini");
+        let temp_folder = PathBuf::from("tests").join("temp");
+        std::fs::create_dir_all(&temp_folder).expect("could not create temp folder");
+        let temp_ini_path = temp_folder.join("Morrowind_fr.ini");
+        // copy file
+        std::fs::copy(ini_path, &temp_ini_path).expect("could not copy file");
+
+        let result = [
+            "Morrowind.esm".to_owned(),
+            "Tribunal.esm".to_owned(),
+            "Bloodmoon.esm".to_owned(),
+            "a.esp".to_owned(),
+            "b.esp".to_owned(),
+            "c.esp".to_owned(),
+        ];
+        update_tes3(&temp_ini_path, &result, true).expect("could not update ini file");
+
+        // gather mods from new ini
+        let mods = list_tes3_mods(&temp_ini_path).expect("could not list mods");
+        assert_eq!(mods, result);
+    }
+
+    #[test]
+    fn test_read_tes3_ini() {
+        init();
+
+        let ini_path = PathBuf::from("tests").join("Morrowind_fr.ini");
+        let mods = list_tes3_mods(&ini_path).expect("could not list mods");
+        assert_eq!(mods.len(), 55);
     }
 }

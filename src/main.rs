@@ -196,7 +196,7 @@ pub fn sort(options: CliSortOptions) -> ExitCode {
     // gather mods (optionally from a list)
     let mods: Vec<PluginData>;
     if let Some(modlist_path) = mod_list {
-        mods = read_file_as_list(modlist_path);
+        mods = read_plugin_data(modlist_path);
     } else {
         mods = match game {
             ESupportedGame::Morrowind => gather_tes3_mods(&root),
