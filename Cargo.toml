@@ -26,7 +26,6 @@ documentation.workspace = true
 [dependencies]
 openmw-cfg = "0.5"                                              # move to feature flag
 clap = { version = "4.1", features = ["derive"] }
-toposort-scc = "0.5"
 petgraph = "0.6"
 rust-ini = "0.21"
 regex = "1.10"

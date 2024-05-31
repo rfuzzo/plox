@@ -1897,7 +1897,6 @@ dependencies = [
  "semver",
  "serde",
  "serde_json",
- "toposort-scc",
 ]
 
 [[package]]
@@ -2698,12 +2697,6 @@ dependencies = [
  "toml_datetime",
  "winnow 0.6.5",
 ]
-
-[[package]]
-name = "toposort-scc"
-version = "0.5.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3c4db64c78ed1b303e5820f74bae56ff7a94b7f10ba8231d9ddaa484d80118c7"
 
 [[package]]
 name = "tower"

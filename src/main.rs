@@ -1,3 +1,4 @@
+use std::f32::consts::E;
 use std::process::ExitCode;
 use std::{env, path::PathBuf};
 
@@ -75,6 +76,15 @@ enum Command {
         #[arg(short, long)]
         rules_dir: Option<String>,
     },
+    Graph {
+        /// Root game folder (e.g. "Cyberpunk 2077" or "Morrowind"). Default is current working directory
+        #[arg(short, long)]
+        game_folder: Option<PathBuf>,
+
+        /// Folder to read sorting rules from. Default is ./mlox for TES3
+        #[arg(short, long)]
+        rules_dir: Option<String>,
+    },
 }
 
 fn main() -> ExitCode {
@@ -123,6 +133,10 @@ fn main() -> ExitCode {
     let code = match &cli.command {
         Command::List { root, config } => list_mods(root, game, config.clone()),
         Command::Verify { rules_dir } => verify(game, rules_dir),
+        Command::Graph {
+            game_folder,
+            rules_dir,
+        } => graph(game, game_folder, rules_dir),
         Command::Sort {
             game_folder: root,
             rules_dir,
@@ -161,6 +175,14 @@ pub struct CliSortOptions {
     pub unstable: bool,
     pub no_download: bool,
     pub config: Option<PathBuf>,
+}
+
+pub fn graph(
+    game: ESupportedGame,
+    game_folder: &Option<PathBuf>,
+    rules_dir: &Option<String>,
+) -> ExitCode {
+    ExitCode::SUCCESS
 }
 
 /// Sorts the current mod load order according to specified rules
@@ -269,7 +291,7 @@ pub fn sort(options: CliSortOptions) -> ExitCode {
         //     false => {}
         // }
 
-        match sorter.topo_sort(game, &mods, &parser.order_rules) {
+        match sorter.topo_sort(game, &mods, &parser.order_rules, &parser.warning_rules) {
             Ok(result) => {
                 if dry_run {
                     info!("Dry run...");
@@ -346,7 +368,12 @@ pub fn verify(game: ESupportedGame, rules_path: &Option<String>) -> ExitCode {
     }
 
     let mods = debug_get_mods_from_order_rules(&parser.order_rules);
-    match sorter::new_unstable_sorter().topo_sort(game, &mods, &parser.order_rules) {
+    match sorter::new_unstable_sorter().topo_sort(
+        game,
+        &mods,
+        &parser.order_rules,
+        &parser.warning_rules,
+    ) {
         Ok(_) => {
             info!("Verify SUCCESS");
             ExitCode::SUCCESS

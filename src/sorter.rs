@@ -1,11 +1,15 @@
 use std::collections::HashMap;
 
 use log::warn;
-use petgraph::{graph::NodeIndex, stable_graph::StableGraph};
+use petgraph::{
+    dot::{Config, Dot},
+    graph::NodeIndex,
+    stable_graph::StableGraph,
+};
 
 use crate::{
     get_ordering_from_order_rules, nearend2, nearstart2, order2, wild_contains, EOrderRule,
-    ESupportedGame, PluginData,
+    ESupportedGame, EWarningRule, PluginData,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -50,6 +54,7 @@ impl Sorter {
         game: ESupportedGame,
         mods_cased: &[PluginData],
         order_rules: &[EOrderRule],
+        warn_rules: &[EWarningRule],
     ) -> Result<Vec<String>, &'static str> {
         // early out
         if order_rules.is_empty() {
@@ -100,9 +105,10 @@ impl Sorter {
         }
 
         // create graph from edges
-        let mut g = StableGraph::<(), ()>::with_capacity(mods.len(), edges.len());
-        for _ in 0..mods.len() {
-            g.add_node(());
+        let mut g = StableGraph::<String, ()>::with_capacity(mods.len(), edges.len());
+        for n in 0..mods.len() {
+            let name = index_dict_rev[&n].clone();
+            g.add_node(name);
         }
         // add edges
         for edge in &edges {
@@ -146,6 +152,16 @@ impl Sorter {
                 let file = std::fs::File::create("tmp/toposort.json").expect("file create failed");
                 serde_json::to_writer_pretty(file, &res).expect("serialize failed");
             } else {
+                {
+                    let viz = Dot::with_config(&g, &[Config::EdgeNoLabel]);
+                    // write to file
+                    let _ = std::fs::create_dir_all("tmp");
+                    let mut file =
+                        std::fs::File::create("tmp/graphviz.dot").expect("file create failed");
+                    std::io::Write::write_all(&mut file, format!("{:?}", viz).as_bytes())
+                        .expect("write failed");
+                }
+
                 // kosaraju_scc
                 {
                     let scc = petgraph::algo::kosaraju_scc(&g);
@@ -245,7 +261,6 @@ impl Sorter {
         }
 
         // sort
-
         let mut mods_copy: Vec<String> = mods.to_vec();
 
         // nearstart rules
@@ -289,14 +304,17 @@ impl Sorter {
         edges.sort_by_key(|k| k.0);
 
         for i in 1..self.max_iterations {
-            if !self.stable_topo_sort_inner(
+            let any_change = self.stable_topo_sort_inner(
                 n,
                 &edges,
                 &index_dict,
                 &index_dict_rev,
                 &mut mods_copy,
                 &mut index,
-            ) {
+            );
+
+            // sort again
+            if !any_change {
                 // sort esms now?
                 if game == ESupportedGame::Morrowind || game == ESupportedGame::Openmw {
                     // put all items in mods_copy ending with .esm at the start
@@ -343,9 +361,9 @@ impl Sorter {
             }
 
             if let Some(edge) = edges.get(index) {
-                let resoved_0 = &index_dict_rev[&edge.0];
-                let resoved_1 = &index_dict_rev[&edge.1];
-                log::debug!("{}, index {} ({}, {})", i, index, resoved_0, resoved_1);
+                let resolved_0 = &index_dict_rev[&edge.0];
+                let resolved_1 = &index_dict_rev[&edge.1];
+                log::debug!("{}, index {} ({}, {})", i, index, resolved_0, resolved_1);
             } else {
                 log::debug!("{}, index {}", i, index);
             }
@@ -364,7 +382,7 @@ impl Sorter {
         result: &mut Vec<String>,
         last_index: &mut usize,
     ) -> bool {
-        match self.sort_type {
+        let was_changed = match self.sort_type {
             ESortType::Unstable => panic!("not supported"),
             ESortType::StableOpt => {
                 Self::stable_topo_sort_opt2(n, edges, index_dict_rev, result, last_index)
@@ -372,7 +390,12 @@ impl Sorter {
             ESortType::StableFull => {
                 Self::stable_topo_sort_full(n, edges, index_dict, result, last_index)
             }
-        }
+        };
+
+        // check if it is fine regardless of sorting
+        if was_changed {}
+
+        was_changed
     }
 
     pub fn stable_topo_sort_full(
@@ -428,6 +451,9 @@ impl Sorter {
                 *last_index = idx;
 
                 b = true;
+
+                // logging
+                log::debug!("\t{}: {} -> {}: {}", idx_of_x, x, idx_of_y, y);
             }
         }
 

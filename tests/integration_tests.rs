@@ -50,8 +50,12 @@ mod integration_tests {
 
         let mods = debug_get_mods_from_order_rules(&parser.order_rules);
 
-        match new_unstable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules)
-        {
+        match new_unstable_sorter().topo_sort(
+            ESupportedGame::Morrowind,
+            &mods,
+            &parser.order_rules,
+            &parser.warning_rules,
+        ) {
             Ok(result) => {
                 assert!(
                     check_order(&result, &parser.order_rules),
@@ -61,7 +65,12 @@ mod integration_tests {
             Err(e) => panic!("Error: {}", e),
         }
 
-        match new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules) {
+        match new_stable_sorter().topo_sort(
+            ESupportedGame::Morrowind,
+            &mods,
+            &parser.order_rules,
+            &parser.warning_rules,
+        ) {
             Ok(result) => {
                 assert!(
                     check_order(&result, &parser.order_rules),
@@ -203,28 +212,33 @@ mod integration_tests {
         let mut rng = thread_rng();
         mods.shuffle(&mut rng);
 
-        // match new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules) {
-        //     Ok(result) => {
-        //         assert!(
-        //             check_order(&result, &parser.order_rules),
-        //             "stable(true) order is wrong"
-        //         );
-        //     }
-        //     Err(e) => {
-        //         panic!("Error: {}", e)
-        //     }
-        // }
-
-        match new_unstable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules)
-        {
+        match new_stable_sorter().topo_sort(
+            ESupportedGame::Morrowind,
+            &mods,
+            &parser.order_rules,
+            &parser.warning_rules,
+        ) {
             Ok(result) => {
                 assert!(
                     check_order(&result, &parser.order_rules),
                     "stable(true) order is wrong"
                 );
             }
-            Err(e) => panic!("Error: {}", e),
+            Err(e) => {
+                panic!("Error: {}", e)
+            }
         }
+
+        // match new_unstable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules)
+        // {
+        //     Ok(result) => {
+        //         assert!(
+        //             check_order(&result, &parser.order_rules),
+        //             "stable(true) order is wrong"
+        //         );
+        //     }
+        //     Err(e) => panic!("Error: {}", e),
+        // }
 
         Ok(())
     }
@@ -241,7 +255,12 @@ mod integration_tests {
         let mut rng = thread_rng();
         mods.shuffle(&mut rng);
 
-        match new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules) {
+        match new_stable_sorter().topo_sort(
+            ESupportedGame::Morrowind,
+            &mods,
+            &parser.order_rules,
+            &parser.warning_rules,
+        ) {
             Ok(result) => {
                 assert!(
                     check_order(&result, &parser.order_rules),
@@ -253,8 +272,12 @@ mod integration_tests {
             }
         }
 
-        match new_unstable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules)
-        {
+        match new_unstable_sorter().topo_sort(
+            ESupportedGame::Morrowind,
+            &mods,
+            &parser.order_rules,
+            &parser.warning_rules,
+        ) {
             Ok(result) => {
                 assert!(
                     check_order(&result, &parser.order_rules),
@@ -282,7 +305,12 @@ mod integration_tests {
 
         warn!("MODS: {}", mods.len());
 
-        match new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules) {
+        match new_stable_sorter().topo_sort(
+            ESupportedGame::Morrowind,
+            &mods,
+            &parser.order_rules,
+            &parser.warning_rules,
+        ) {
             Ok(result) => {
                 assert!(
                     check_order(&result, &parser.order_rules),
@@ -294,6 +322,7 @@ mod integration_tests {
                     ESupportedGame::Morrowind,
                     &mods,
                     &parser.order_rules,
+                    &parser.warning_rules,
                 ) {
                     Ok(result) => {
                         assert!(
@@ -307,8 +336,12 @@ mod integration_tests {
             }
         }
 
-        match new_unstable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules)
-        {
+        match new_unstable_sorter().topo_sort(
+            ESupportedGame::Morrowind,
+            &mods,
+            &parser.order_rules,
+            &parser.warning_rules,
+        ) {
             Ok(result) => {
                 assert!(
                     check_order(&result, &parser.order_rules),
@@ -338,10 +371,20 @@ mod integration_tests {
         let mods = mods.into_iter().take(100).collect::<Vec<_>>();
 
         let full_result = new_stable_full_sorter()
-            .topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules)
+            .topo_sort(
+                ESupportedGame::Morrowind,
+                &mods,
+                &parser.order_rules,
+                &parser.warning_rules,
+            )
             .expect("rules contain a cycle");
         let opt_result = sorter::new_stable_sorter()
-            .topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules)
+            .topo_sort(
+                ESupportedGame::Morrowind,
+                &mods,
+                &parser.order_rules,
+                &parser.warning_rules,
+            )
             .expect("opt rules contain a cycle");
 
         assert_eq!(full_result, opt_result);
@@ -366,7 +409,12 @@ mod integration_tests {
 
             let now = std::time::Instant::now();
             sorter::new_stable_sorter()
-                .topo_sort(ESupportedGame::Morrowind, &mods_rnd, &parser.order_rules)
+                .topo_sort(
+                    ESupportedGame::Morrowind,
+                    &mods_rnd,
+                    &parser.order_rules,
+                    &parser.warning_rules,
+                )
                 .expect("error: ");
             let elapsed = now.elapsed().as_secs();
 

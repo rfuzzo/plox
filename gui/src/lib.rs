@@ -127,7 +127,8 @@ fn init_parser(settings: AppSettings, tx: Sender<String>) -> Option<AppData> {
     if !&parser.order_rules.is_empty() {
         let mut sorter = new_stable_sorter();
         let _ = tx.send("Sorting mods".to_string());
-        new_order = match sorter.topo_sort(game, &mods, &parser.order_rules) {
+        new_order = match sorter.topo_sort(game, &mods, &parser.order_rules, &parser.warning_rules)
+        {
             Ok(new) => new,
             Err(e) => {
                 error!("error sorting: {e:?}");
