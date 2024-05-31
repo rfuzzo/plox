@@ -4,8 +4,8 @@ use log::warn;
 use petgraph::{graph::NodeIndex, stable_graph::StableGraph};
 
 use crate::{
-    get_ordering_from_order_rules, nearend2, nearstart2, wild_contains, EOrderRule, ESupportedGame,
-    PluginData,
+    get_ordering_from_order_rules, nearend2, nearstart2, order2, wild_contains, EOrderRule,
+    ESupportedGame, PluginData,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -74,17 +74,13 @@ impl Sorter {
             mods.push(lower_case.to_owned());
         }
 
-        // add edges
-        // let mut g = IndexGraph::with_vertices(mods.len());
-
-        // add nodes
-
+        // add edges from order rules
         let order_pairs = get_ordering_from_order_rules(order_rules);
         let mut edges: Vec<(usize, usize)> = vec![];
         for (a, b) in order_pairs {
             if let Some(results_for_a) = wild_contains(&mods, &a) {
                 if let Some(results_for_b) = wild_contains(&mods, &b) {
-                    // foreach esm i, add an edge to all esps j
+                    // foreach esp i, add an edge to all esps j
                     for i in &results_for_a {
                         for j in &results_for_b {
                             if i == j {
@@ -150,52 +146,95 @@ impl Sorter {
                 let file = std::fs::File::create("tmp/toposort.json").expect("file create failed");
                 serde_json::to_writer_pretty(file, &res).expect("serialize failed");
             } else {
-                let scc = petgraph::algo::kosaraju_scc(&g);
-                let mut res: Vec<Vec<String>> = vec![];
-                for er in &scc {
-                    if er.len() > 1 {
-                        warn!("cycles:");
-                        let mut cycle = vec![];
-                        for e in er {
-                            // lookup name
-                            let name = index_dict_rev[&e.index()].clone();
-                            warn!("\t{}: {}", e.index(), name);
-                            cycle.push(name);
+                // kosaraju_scc
+                {
+                    let scc = petgraph::algo::kosaraju_scc(&g);
+                    let mut res: Vec<Vec<String>> = vec![];
+                    for er in &scc {
+                        if er.len() > 1 {
+                            warn!("cycles:");
+                            let mut cycle = vec![];
+                            for e in er {
+                                // lookup name
+                                let name = index_dict_rev[&e.index()].clone();
+                                warn!("\t{}: {}", e.index(), name);
+                                cycle.push(name);
+                            }
+                            res.push(cycle);
                         }
-                        res.push(cycle);
+                    }
+                    // debug print to file
+                    if !res.is_empty() {
+                        let _ = std::fs::create_dir_all("tmp");
+                        let file = std::fs::File::create("tmp/kosaraju_scc.json")
+                            .expect("file create failed");
+                        serde_json::to_writer_pretty(file, &res).expect("serialize failed");
                     }
                 }
-                // debug print to file
-                if !res.is_empty() {
-                    let _ = std::fs::create_dir_all("tmp");
-                    let file = std::fs::File::create("tmp/scc.json").expect("file create failed");
-                    serde_json::to_writer_pretty(file, &res).expect("serialize failed");
+
+                // tarjan_scc
+                {
+                    let scc = petgraph::algo::tarjan_scc(&g);
+                    let mut res: Vec<Vec<String>> = vec![];
+                    for er in &scc {
+                        if er.len() > 1 {
+                            warn!("cycles:");
+                            let mut cycle = vec![];
+                            for e in er {
+                                // lookup name
+                                let name = index_dict_rev[&e.index()].clone();
+                                warn!("\t{}: {}", e.index(), name);
+                                cycle.push(name);
+                            }
+                            res.push(cycle);
+                        }
+                    }
+                    // debug print to file
+                    if !res.is_empty() {
+                        let _ = std::fs::create_dir_all("tmp");
+                        let file = std::fs::File::create("tmp/tarjan_scc.json")
+                            .expect("file create failed");
+                        serde_json::to_writer_pretty(file, &res).expect("serialize failed");
+
+                        // find all rules that are part of a cycle
+                        let mut cycle_rules = vec![];
+                        for cycle in &res {
+                            for rule in order_rules {
+                                // switch
+                                let mut names = vec![];
+                                if let Some(nearstart) = nearstart2(rule) {
+                                    names.push(nearstart.names);
+                                } else if let Some(nearend) = nearend2(rule) {
+                                    names.push(nearend.names);
+                                } else if let Some(order) = order2(rule.clone()) {
+                                    names.push(order.names);
+                                }
+
+                                // check that the names contain at least 2 mods
+                                let mut found = 0;
+                                for name in &names {
+                                    for n in name {
+                                        if cycle.contains(n) {
+                                            found += 1;
+                                        }
+                                    }
+                                }
+                                if found > 1 {
+                                    cycle_rules.push(rule.clone());
+                                }
+                            }
+                        }
+
+                        // print cycle rules to file
+                        let _ = std::fs::create_dir_all("tmp");
+                        let file = std::fs::File::create("tmp/cycle_rules.json")
+                            .expect("file create failed");
+                        serde_json::to_writer_pretty(file, &cycle_rules).expect("serialize failed");
+                    }
                 }
 
                 return Err("Graph contains a cycle");
             }
-
-            // if let Some(result) = g.clone().toposort() {
-            //     sort = result;
-            // } else {
-            //     // error!("Graph contains a cycle");
-            //     // let err = g.scc();
-            //     // error!("SCC: {}", err.len());
-            //     let mut res = vec![];
-            //     // for er in &err {
-            //     //     error!("cycles:");
-            //     //     for e in er {
-            //     //         error!("\t{}: {}", e, index_dict_rev[e]);
-            //     //         res.push(index_dict_rev[e].clone());
-            //     //     }
-            //     // }
-
-            //     let _ = fs::create_dir_all("tmp");
-            //     let file = fs::File::create("tmp/scc.json").expect("file create failed");
-            //     serde_json::to_writer_pretty(file, &res).expect("serialize failed");
-
-            //     return Err("Graph contains a cycle");
-            // }
 
             // map sorted index back to mods
             let mut result = vec![];
