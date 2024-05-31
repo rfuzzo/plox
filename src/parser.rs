@@ -457,9 +457,13 @@ impl Parser {
         let mut tokens: Vec<String> = vec![];
 
         // ignore everything after ;
-        let mut line = line.clone();
+        let line = line.clone();
         if line.contains(';') {
-            line = line.split(';').next().unwrap_or("").trim().to_owned();
+            line.split(';')
+                .next()
+                .unwrap_or("")
+                .trim()
+                .clone_into(&mut line.to_owned());
         }
 
         let mut is_quoted = false;

@@ -135,8 +135,8 @@ impl Sorter {
                 for er in &err {
                     error!("cycles:");
                     for e in er {
-                        error!("\t{}: {}", e, index_dict_rev[&e]);
-                        res.push(index_dict_rev[&e].clone());
+                        error!("\t{}: {}", e, index_dict_rev[e]);
+                        res.push(index_dict_rev[e].clone());
                     }
                 }
 

@@ -235,7 +235,7 @@ mod unit_tests {
     #[test]
     fn test_order_case() {
         {
-            let mods = vec![
+            let mods = [
                 "a.esp".to_string(),
                 "b.ESP".to_string(),
                 "c.esp".to_string(),

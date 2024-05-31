@@ -334,7 +334,7 @@ impl eframe::App for TemplateApp {
                                     self.plugin_filter = String::new();
                                 } else {
                                     // add notes to filter
-                                    self.plugin_filter = mod_name.clone();
+                                    self.plugin_filter.clone_from(mod_name);
                                 }
                             }
                         });
@@ -435,7 +435,7 @@ impl eframe::App for TemplateApp {
                         frame.frame.fill = bg_color;
 
                         // update hover filter
-                        self.plugin_hover_filter = w.get_plugins().clone();
+                        self.plugin_hover_filter.clone_from(&w.get_plugins());
                     } else {
                         self.plugin_hover_filter = vec![];
                     }
