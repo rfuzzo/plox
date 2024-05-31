@@ -1,7 +1,7 @@
-use std::{collections::HashMap, fs};
+use std::collections::HashMap;
 
-use log::{error, warn};
-use toposort_scc::IndexGraph;
+use log::warn;
+use petgraph::{graph::NodeIndex, stable_graph::StableGraph};
 
 use crate::{
     get_ordering_from_order_rules, nearend2, nearstart2, wild_contains, EOrderRule, ESupportedGame,
@@ -75,7 +75,10 @@ impl Sorter {
         }
 
         // add edges
-        let mut g = IndexGraph::with_vertices(mods.len());
+        // let mut g = IndexGraph::with_vertices(mods.len());
+
+        // add nodes
+
         let order_pairs = get_ordering_from_order_rules(order_rules);
         let mut edges: Vec<(usize, usize)> = vec![];
         for (a, b) in order_pairs {
@@ -93,64 +96,111 @@ impl Sorter {
 
                             if !edges.contains(&(idx_a, idx_b)) {
                                 edges.push((idx_a, idx_b));
-                                g.add_edge(idx_a, idx_b);
                             }
                         }
                     }
                 }
             }
+        }
+
+        // create graph from edges
+        let mut g = StableGraph::<(), ()>::with_capacity(mods.len(), edges.len());
+        for _ in 0..mods.len() {
+            g.add_node(());
+        }
+        // add edges
+        for edge in &edges {
+            g.add_edge(NodeIndex::new(edge.0), NodeIndex::new(edge.1), ());
         }
 
         // add edges from masters
-        for mod_data in mods_cased.iter() {
-            // add an edge from the mod to all its masters
-            let idx = index_dict[&mod_data.name.to_lowercase()];
-            if let Some(masters) = &mod_data.masters {
-                for (master, _hash) in masters {
-                    let master = master.to_lowercase();
-                    if let Some(results) = wild_contains(&mods, &master) {
-                        for result in results {
-                            let idx_master = index_dict[&result];
-                            let edge = (idx_master, idx);
-                            if !edges.contains(&edge) {
-                                edges.push(edge);
-                                g.add_edge(edge.0, edge.1);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        // for mod_data in mods_cased.iter() {
+        //     // add an edge from the mod to all its masters
+        //     let idx = index_dict[&mod_data.name.to_lowercase()];
+        //     if let Some(masters) = &mod_data.masters {
+        //         for (master, _hash) in masters {
+        //             let master = master.to_lowercase();
+        //             if let Some(results) = wild_contains(&mods, &master) {
+        //                 for result in results {
+        //                     let idx_master = index_dict[&result];
+        //                     let edge = (idx_master, idx);
+        //                     if !edges.contains(&edge) {
+        //                         edges.push(edge);
+        //                         g.add_edge(NodeIndex::new(edge.0), NodeIndex::new(edge.1), 1);
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         // cycle check
         if self.sort_type == ESortType::Unstable {
+            let s = petgraph::algo::toposort(&g, None);
             let sort;
-            if let Some(result) = g.clone().toposort() {
+            if let Ok(result) = s {
                 sort = result;
-            } else {
-                error!("Graph contains a cycle");
-                let err = g.scc();
-                error!("SCC: {}", err.len());
+
+                // debug print to file
                 let mut res = vec![];
-                for er in &err {
-                    error!("cycles:");
-                    for e in er {
-                        error!("\t{}: {}", e, index_dict_rev[e]);
-                        res.push(index_dict_rev[e].clone());
+                for idx in &sort {
+                    res.push(idx.index());
+                }
+                let _ = std::fs::create_dir_all("tmp");
+                let file = std::fs::File::create("tmp/toposort.json").expect("file create failed");
+                serde_json::to_writer_pretty(file, &res).expect("serialize failed");
+            } else {
+                let scc = petgraph::algo::kosaraju_scc(&g);
+                let mut res: Vec<Vec<String>> = vec![];
+                for er in &scc {
+                    if er.len() > 1 {
+                        warn!("cycles:");
+                        let mut cycle = vec![];
+                        for e in er {
+                            // lookup name
+                            let name = index_dict_rev[&e.index()].clone();
+                            warn!("\t{}: {}", e.index(), name);
+                            cycle.push(name);
+                        }
+                        res.push(cycle);
                     }
                 }
-
-                let _ = fs::create_dir_all("tmp");
-                let file = fs::File::create("tmp/scc.json").expect("file create failed");
-                serde_json::to_writer_pretty(file, &res).expect("serialize failed");
+                // debug print to file
+                if !res.is_empty() {
+                    let _ = std::fs::create_dir_all("tmp");
+                    let file = std::fs::File::create("tmp/scc.json").expect("file create failed");
+                    serde_json::to_writer_pretty(file, &res).expect("serialize failed");
+                }
 
                 return Err("Graph contains a cycle");
             }
 
+            // if let Some(result) = g.clone().toposort() {
+            //     sort = result;
+            // } else {
+            //     // error!("Graph contains a cycle");
+            //     // let err = g.scc();
+            //     // error!("SCC: {}", err.len());
+            //     let mut res = vec![];
+            //     // for er in &err {
+            //     //     error!("cycles:");
+            //     //     for e in er {
+            //     //         error!("\t{}: {}", e, index_dict_rev[e]);
+            //     //         res.push(index_dict_rev[e].clone());
+            //     //     }
+            //     // }
+
+            //     let _ = fs::create_dir_all("tmp");
+            //     let file = fs::File::create("tmp/scc.json").expect("file create failed");
+            //     serde_json::to_writer_pretty(file, &res).expect("serialize failed");
+
+            //     return Err("Graph contains a cycle");
+            // }
+
             // map sorted index back to mods
             let mut result = vec![];
             for idx in sort {
-                result.push(mod_map[&idx].to_owned());
+                result.push(mod_map[&idx.index()].to_owned());
             }
             return Ok(result);
         }
