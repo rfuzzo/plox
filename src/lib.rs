@@ -1006,6 +1006,12 @@ pub fn conflict(f: ERule) -> Option<Conflict> {
         _ => None,
     }
 }
+pub fn conflict2(f: &EWarningRule) -> Option<Conflict> {
+    match f {
+        EWarningRule::Conflict(n) => Some(n.clone()),
+        _ => None,
+    }
+}
 pub fn requires(f: ERule) -> Option<Requires> {
     match f {
         ERule::EWarningRule(EWarningRule::Requires(n)) => Some(n),

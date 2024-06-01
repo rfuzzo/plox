@@ -4,8 +4,8 @@ use log::warn;
 use petgraph::{graph::NodeIndex, stable_graph::StableGraph};
 
 use crate::{
-    get_ordering_from_order_rules, nearend2, nearstart2, order2, wild_contains, EOrderRule,
-    ESupportedGame, EWarningRule, PluginData,
+    conflict2, get_ordering_from_order_rules, nearend2, nearstart2, order2, wild_contains,
+    EOrderRule, ESupportedGame, EWarningRule, PluginData, TWarningRule,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -392,7 +392,7 @@ impl Sorter {
                 b = true;
 
                 // logging
-                log::debug!("\t{}: {} -> {}: {}", idx_of_x, x, idx_of_y, y);
+                //log::debug!("\t{}: {} -> {}: {}", idx_of_x, x, idx_of_y, y);
             }
         }
 
@@ -420,6 +420,7 @@ pub fn get_graph_data(
     let mut index_dict: HashMap<String, usize> = HashMap::new();
     let mut index_dict_rev: HashMap<usize, String> = HashMap::default();
     let mut mod_map: HashMap<usize, String> = HashMap::default();
+    let mut plugin_map: HashMap<usize, PluginData> = HashMap::default();
     for (i, cased_name) in mods_cased.iter().enumerate() {
         let lower_case = cased_name.name.to_lowercase();
 
@@ -427,6 +428,7 @@ pub fn get_graph_data(
         index_dict_rev.insert(i, lower_case.clone());
 
         mod_map.insert(i, cased_name.name.to_owned());
+        plugin_map.insert(i, cased_name.to_owned());
         mods.push(lower_case.to_owned());
     }
 
@@ -447,13 +449,34 @@ pub fn get_graph_data(
                         let idx_b = index_dict[j.as_str()];
 
                         if !edges.contains(&(idx_a, idx_b)) {
-                            edges.push((idx_a, idx_b));
+                            // TODO don't add edge if a warning rule is present for them
+                            let mut add_edge = true;
+                            for warn_rule in warn_rules {
+                                if let Some(mut conflict) = conflict2(warn_rule) {
+                                    let items = vec![
+                                        plugin_map[&idx_a].clone(),
+                                        plugin_map[&idx_b].clone(),
+                                    ];
+                                    if conflict.eval(items.as_slice()) {
+                                        add_edge = false;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if add_edge {
+                                edges.push((idx_a, idx_b));
+                            } else {
+                                warn!("Skipping edge between {} and {} due to warning rule", i, j);
+                            }
                         }
                     }
                 }
             }
         }
     }
+
+    // return
     GraphData {
         mods,
         index_dict,

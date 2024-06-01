@@ -235,8 +235,7 @@ pub fn graph(
     {
         let viz = Dot::with_config(&g, &[Config::EdgeNoLabel]);
         // write to file
-        let _ = std::fs::create_dir_all("tmp");
-        let mut file = std::fs::File::create("tmp/graphviz.dot").expect("file create failed");
+        let mut file = std::fs::File::create("graphviz.dot").expect("file create failed");
         std::io::Write::write_all(&mut file, format!("{:?}", viz).as_bytes())
             .expect("write failed");
     }

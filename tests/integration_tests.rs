@@ -201,7 +201,7 @@ mod integration_tests {
     }
 
     #[test]
-    fn test_mlox_user_rules() -> std::io::Result<()> {
+    fn test_mlox_user_rules_stable() -> std::io::Result<()> {
         init();
 
         let mut parser = new_tes3_parser();
@@ -229,16 +229,62 @@ mod integration_tests {
             }
         }
 
-        // match new_unstable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules)
-        // {
-        //     Ok(result) => {
-        //         assert!(
-        //             check_order(&result, &parser.order_rules),
-        //             "stable(true) order is wrong"
-        //         );
-        //     }
-        //     Err(e) => panic!("Error: {}", e),
-        // }
+        Ok(())
+    }
+
+    #[test]
+    fn graphviz() -> std::io::Result<()> {
+        init();
+
+        let mut parser = new_tes3_parser();
+        parser.init_from_file("./tests/mlox/mlox_user.txt")?;
+
+        let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
+
+        let mut rng = thread_rng();
+        mods.shuffle(&mut rng);
+
+        let data = sorter::get_graph_data(&mods, &parser.order_rules, &parser.warning_rules);
+        let g = sorter::build_graph(&data);
+
+        {
+            let viz = petgraph::dot::Dot::with_config(&g, &[petgraph::dot::Config::EdgeNoLabel]);
+            // write to file
+            let _ = std::fs::create_dir_all("tmp");
+            let mut file = std::fs::File::create("tmp/graphviz.dot").expect("file create failed");
+            std::io::Write::write_all(&mut file, format!("{:?}", viz).as_bytes())
+                .expect("write failed");
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_mlox_user_rules_unstable() -> std::io::Result<()> {
+        init();
+
+        let mut parser = new_tes3_parser();
+        parser.init_from_file("./tests/mlox/mlox_user.txt")?;
+
+        let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
+
+        let mut rng = thread_rng();
+        mods.shuffle(&mut rng);
+
+        match new_unstable_sorter().topo_sort(
+            ESupportedGame::Morrowind,
+            &mods,
+            &parser.order_rules,
+            &parser.warning_rules,
+        ) {
+            Ok(result) => {
+                assert!(
+                    check_order(&result, &parser.order_rules),
+                    "stable(true) order is wrong"
+                );
+            }
+            Err(e) => panic!("Error: {}", e),
+        }
 
         Ok(())
     }
