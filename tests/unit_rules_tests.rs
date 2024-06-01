@@ -166,7 +166,7 @@ mod unit_tests {
                 ESupportedGame::Morrowind,
                 &mods,
                 &order_rules,
-                &vec![], // no warning rules
+                &[], // no warning rules
             ) {
                 Ok(result) => {
                     // check for A,B,C,D,E,F -> D,A,B,C,E,F
@@ -192,12 +192,8 @@ mod unit_tests {
             let mods = get_mods();
             let order_rules: Vec<EOrderRule> = vec![EOrderRule::NearStart(nearstart)];
 
-            match new_stable_sorter().topo_sort(
-                ESupportedGame::Morrowind,
-                &mods,
-                &order_rules,
-                &vec![],
-            ) {
+            match new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &order_rules, &[])
+            {
                 Ok(result) => {
                     // check for A,B,C,D,E,F -> B,D,A,C,E,F
                     assert_eq!(
@@ -222,12 +218,8 @@ mod unit_tests {
             let mods = get_mods();
             let order_rules: Vec<EOrderRule> = vec![EOrderRule::NearStart(nearstart)];
 
-            match new_stable_sorter().topo_sort(
-                ESupportedGame::Morrowind,
-                &mods,
-                &order_rules,
-                &vec![],
-            ) {
+            match new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &order_rules, &[])
+            {
                 Ok(result) => {
                     // check for A,B,C,D,E,F -> D,B,A,C,E,F
                     assert_eq!(
@@ -267,7 +259,7 @@ mod unit_tests {
                 ESupportedGame::Morrowind,
                 &mods_data,
                 &order_rules,
-                &vec![],
+                &[],
             ) {
                 Ok(result) => {
                     // check for A,B,C -> B,A,C
@@ -292,12 +284,8 @@ mod unit_tests {
             let order: Order = Order::new(vec![D.to_string(), A.to_string()]);
             let order_rules: Vec<EOrderRule> = vec![order.into()];
 
-            match new_stable_sorter().topo_sort(
-                ESupportedGame::Morrowind,
-                &mods,
-                &order_rules,
-                &vec![],
-            ) {
+            match new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &order_rules, &[])
+            {
                 Ok(result) => {
                     // check for A,B,C,D,E,F -> D,A,B,C,E,F
                     assert_eq!(
@@ -321,12 +309,8 @@ mod unit_tests {
             let order: Order = Order::new(vec![D.to_string(), A.to_string()]);
             let order_rules: Vec<EOrderRule> = vec![order.into()];
 
-            match new_stable_sorter().topo_sort(
-                ESupportedGame::Morrowind,
-                &mods,
-                &order_rules,
-                &vec![],
-            ) {
+            match new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &order_rules, &[])
+            {
                 Ok(result) => {
                     // check for A,B,C,D,E,F -> A,B,C,E,F,D
                     assert_ne!(
@@ -354,7 +338,8 @@ mod unit_tests {
             let nearend = NearEnd::new(vec![D.to_string()]);
             let order_rules: Vec<EOrderRule> = vec![EOrderRule::NearEnd(nearend)];
 
-            match new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &order_rules) {
+            match new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &order_rules, &[])
+            {
                 Ok(result) => {
                     // check for A,B,C,D,E,F -> A,B,C,E,F,D
                     assert_eq!(
@@ -379,7 +364,8 @@ mod unit_tests {
             let mods = get_mods();
             let order_rules: Vec<EOrderRule> = vec![EOrderRule::NearEnd(nearend)];
 
-            match new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &order_rules) {
+            match new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &order_rules, &[])
+            {
                 Ok(result) => {
                     // check for A,B,C,D,E,F -> A,C,E,F,D,B
                     assert_eq!(
@@ -404,7 +390,8 @@ mod unit_tests {
             let mods = get_mods();
             let order_rules: Vec<EOrderRule> = vec![EOrderRule::NearEnd(nearend)];
 
-            match new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &order_rules) {
+            match new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &order_rules, &[])
+            {
                 Ok(result) => {
                     // check for A,B,C,D,E,F -> A,C,E,F,B,D
                     assert_eq!(

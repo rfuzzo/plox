@@ -296,7 +296,7 @@ mod integration_tests {
         init();
 
         let mut parser = new_tes3_parser();
-        parser.init("./tests/mlox")?;
+        parser.parse("./tests/mlox")?;
 
         let mods = debug_get_mods_from_order_rules(&parser.order_rules);
 

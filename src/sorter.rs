@@ -1,11 +1,7 @@
 use std::collections::HashMap;
 
 use log::warn;
-use petgraph::{
-    dot::{Config, Dot},
-    graph::NodeIndex,
-    stable_graph::StableGraph,
-};
+use petgraph::{graph::NodeIndex, stable_graph::StableGraph};
 
 use crate::{
     get_ordering_from_order_rules, nearend2, nearstart2, order2, wild_contains, EOrderRule,
@@ -62,58 +58,16 @@ impl Sorter {
             return Err("No order rules found");
         }
 
-        // build hashmaps for lookup
-        // first map lowercase to cased, this is kinda dumb, but our input is small enough that I don't care about the memory hit
-        let mut mods: Vec<String> = vec![];
+        let data = get_graph_data(mods_cased, order_rules, warn_rules);
+        let g = build_graph(&data);
 
-        let mut index_dict: HashMap<String, usize> = HashMap::new();
-        let mut index_dict_rev: HashMap<usize, String> = HashMap::default();
-        let mut mod_map: HashMap<usize, String> = HashMap::default();
-        for (i, cased_name) in mods_cased.iter().enumerate() {
-            let lower_case = cased_name.name.to_lowercase();
-
-            index_dict.insert(lower_case.clone(), i);
-            index_dict_rev.insert(i, lower_case.clone());
-
-            mod_map.insert(i, cased_name.name.to_owned());
-            mods.push(lower_case.to_owned());
-        }
-
-        // add edges from order rules
-        let order_pairs = get_ordering_from_order_rules(order_rules);
-        let mut edges: Vec<(usize, usize)> = vec![];
-        for (a, b) in order_pairs {
-            if let Some(results_for_a) = wild_contains(&mods, &a) {
-                if let Some(results_for_b) = wild_contains(&mods, &b) {
-                    // foreach esp i, add an edge to all esps j
-                    for i in &results_for_a {
-                        for j in &results_for_b {
-                            if i == j {
-                                warn!("Skipping circular edge: {}", i);
-                                continue;
-                            }
-                            let idx_a = index_dict[i.as_str()];
-                            let idx_b = index_dict[j.as_str()];
-
-                            if !edges.contains(&(idx_a, idx_b)) {
-                                edges.push((idx_a, idx_b));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // create graph from edges
-        let mut g = StableGraph::<String, ()>::with_capacity(mods.len(), edges.len());
-        for n in 0..mods.len() {
-            let name = index_dict_rev[&n].clone();
-            g.add_node(name);
-        }
-        // add edges
-        for edge in &edges {
-            g.add_edge(NodeIndex::new(edge.0), NodeIndex::new(edge.1), ());
-        }
+        let GraphData {
+            mods,
+            index_dict,
+            index_dict_rev,
+            mod_map,
+            mut edges,
+        } = data;
 
         // add edges from masters
         // for mod_data in mods_cased.iter() {
@@ -152,16 +106,6 @@ impl Sorter {
                 let file = std::fs::File::create("tmp/toposort.json").expect("file create failed");
                 serde_json::to_writer_pretty(file, &res).expect("serialize failed");
             } else {
-                {
-                    let viz = Dot::with_config(&g, &[Config::EdgeNoLabel]);
-                    // write to file
-                    let _ = std::fs::create_dir_all("tmp");
-                    let mut file =
-                        std::fs::File::create("tmp/graphviz.dot").expect("file create failed");
-                    std::io::Write::write_all(&mut file, format!("{:?}", viz).as_bytes())
-                        .expect("write failed");
-                }
-
                 // kosaraju_scc
                 {
                     let scc = petgraph::algo::kosaraju_scc(&g);
@@ -382,7 +326,7 @@ impl Sorter {
         result: &mut Vec<String>,
         last_index: &mut usize,
     ) -> bool {
-        let was_changed = match self.sort_type {
+        match self.sort_type {
             ESortType::Unstable => panic!("not supported"),
             ESortType::StableOpt => {
                 Self::stable_topo_sort_opt2(n, edges, index_dict_rev, result, last_index)
@@ -390,12 +334,7 @@ impl Sorter {
             ESortType::StableFull => {
                 Self::stable_topo_sort_full(n, edges, index_dict, result, last_index)
             }
-        };
-
-        // check if it is fine regardless of sorting
-        if was_changed {}
-
-        was_changed
+        }
     }
 
     pub fn stable_topo_sort_full(
@@ -459,4 +398,88 @@ impl Sorter {
 
         b
     }
+}
+
+pub struct GraphData {
+    mods: Vec<String>,
+    index_dict: HashMap<String, usize>,
+    index_dict_rev: HashMap<usize, String>,
+    mod_map: HashMap<usize, String>,
+    edges: Vec<(usize, usize)>,
+}
+
+pub fn get_graph_data(
+    mods_cased: &[PluginData],
+    order_rules: &[EOrderRule],
+    warn_rules: &[EWarningRule],
+) -> GraphData {
+    // build hashmaps for lookup
+    // first map lowercase to cased, this is kinda dumb, but our input is small enough that I don't care about the memory hit
+    let mut mods: Vec<String> = vec![];
+
+    let mut index_dict: HashMap<String, usize> = HashMap::new();
+    let mut index_dict_rev: HashMap<usize, String> = HashMap::default();
+    let mut mod_map: HashMap<usize, String> = HashMap::default();
+    for (i, cased_name) in mods_cased.iter().enumerate() {
+        let lower_case = cased_name.name.to_lowercase();
+
+        index_dict.insert(lower_case.clone(), i);
+        index_dict_rev.insert(i, lower_case.clone());
+
+        mod_map.insert(i, cased_name.name.to_owned());
+        mods.push(lower_case.to_owned());
+    }
+
+    // add edges from order rules
+    let order_pairs = get_ordering_from_order_rules(order_rules);
+    let mut edges: Vec<(usize, usize)> = vec![];
+    for (a, b) in order_pairs {
+        if let Some(results_for_a) = wild_contains(&mods, &a) {
+            if let Some(results_for_b) = wild_contains(&mods, &b) {
+                // foreach esp i, add an edge to all esps j
+                for i in &results_for_a {
+                    for j in &results_for_b {
+                        if i == j {
+                            warn!("Skipping circular edge: {}", i);
+                            continue;
+                        }
+                        let idx_a = index_dict[i.as_str()];
+                        let idx_b = index_dict[j.as_str()];
+
+                        if !edges.contains(&(idx_a, idx_b)) {
+                            edges.push((idx_a, idx_b));
+                        }
+                    }
+                }
+            }
+        }
+    }
+    GraphData {
+        mods,
+        index_dict,
+        index_dict_rev,
+        mod_map,
+        edges,
+    }
+}
+
+pub fn build_graph(data: &GraphData) -> StableGraph<String, ()> {
+    let GraphData {
+        mods,
+        index_dict_rev,
+        edges,
+        ..
+    } = data;
+
+    // create graph from edges
+    let mut g = StableGraph::<String, ()>::with_capacity(mods.len(), edges.len());
+    for n in 0..mods.len() {
+        let name = index_dict_rev[&n].clone();
+        g.add_node(name);
+    }
+    // add edges
+    for edge in edges {
+        g.add_edge(NodeIndex::new(edge.0), NodeIndex::new(edge.1), ());
+    }
+    g
 }

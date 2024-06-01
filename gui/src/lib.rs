@@ -105,7 +105,7 @@ fn init_parser(settings: AppSettings, tx: Sender<String>) -> Option<AppData> {
     // parser
     let mut parser = parser::get_parser(game);
     let _ = tx.send("Initializing parser".to_string());
-    if let Err(e) = parser.init(rules_dir) {
+    if let Err(e) = parser.parse(rules_dir) {
         error!("Parser init failed: {}", e);
         let _ = tx.send(format!("Parser init failed: {}", e));
         return None;
