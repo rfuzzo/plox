@@ -229,8 +229,8 @@ pub fn graph(
         return ExitCode::FAILURE;
     }
 
-    let data = sorter::get_graph_data(&mods, &parser.order_rules, &parser.warning_rules);
-    let g = sorter::build_graph(&data);
+    let mut data = sorter::get_graph_data(&mods, &parser.order_rules, &parser.warning_rules);
+    let g = sorter::build_graph(&mut data);
 
     {
         let viz = Dot::with_config(&g, &[Config::EdgeNoLabel]);

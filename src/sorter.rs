@@ -4,8 +4,8 @@ use log::warn;
 use petgraph::{graph::NodeIndex, stable_graph::StableGraph};
 
 use crate::{
-    conflict2, get_ordering_from_order_rules, nearend2, nearstart2, order2, wild_contains,
-    EOrderRule, ESupportedGame, EWarningRule, PluginData, TWarningRule,
+    get_ordering_from_order_rules, nearend2, nearstart2, wild_contains, EOrderRule, ESupportedGame,
+    EWarningRule, PluginData,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -48,7 +48,7 @@ impl Sorter {
     pub fn topo_sort(
         &mut self,
         game: ESupportedGame,
-        mods_cased: &[PluginData],
+        plugins: &[PluginData],
         order_rules: &[EOrderRule],
         warn_rules: &[EWarningRule],
     ) -> Result<Vec<String>, &'static str> {
@@ -58,37 +58,16 @@ impl Sorter {
             return Err("No order rules found");
         }
 
-        let data = get_graph_data(mods_cased, order_rules, warn_rules);
-        let g = build_graph(&data);
+        let mut data = get_graph_data(plugins, order_rules, warn_rules);
+        let g = build_graph(&mut data);
 
         let GraphData {
-            mods,
+            plugins,
             index_dict,
             index_dict_rev,
             mod_map,
             mut edges,
         } = data;
-
-        // add edges from masters
-        // for mod_data in mods_cased.iter() {
-        //     // add an edge from the mod to all its masters
-        //     let idx = index_dict[&mod_data.name.to_lowercase()];
-        //     if let Some(masters) = &mod_data.masters {
-        //         for (master, _hash) in masters {
-        //             let master = master.to_lowercase();
-        //             if let Some(results) = wild_contains(&mods, &master) {
-        //                 for result in results {
-        //                     let idx_master = index_dict[&result];
-        //                     let edge = (idx_master, idx);
-        //                     if !edges.contains(&edge) {
-        //                         edges.push(edge);
-        //                         g.add_edge(NodeIndex::new(edge.0), NodeIndex::new(edge.1), 1);
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
 
         // cycle check
         if self.sort_type == ESortType::Unstable {
@@ -96,103 +75,7 @@ impl Sorter {
             let sort;
             if let Ok(result) = s {
                 sort = result;
-
-                // debug print to file
-                let mut res = vec![];
-                for idx in &sort {
-                    res.push(idx.index());
-                }
-                let _ = std::fs::create_dir_all("tmp");
-                let file = std::fs::File::create("tmp/toposort.json").expect("file create failed");
-                serde_json::to_writer_pretty(file, &res).expect("serialize failed");
             } else {
-                // kosaraju_scc
-                {
-                    let scc = petgraph::algo::kosaraju_scc(&g);
-                    let mut res: Vec<Vec<String>> = vec![];
-                    for er in &scc {
-                        if er.len() > 1 {
-                            warn!("cycles:");
-                            let mut cycle = vec![];
-                            for e in er {
-                                // lookup name
-                                let name = index_dict_rev[&e.index()].clone();
-                                warn!("\t{}: {}", e.index(), name);
-                                cycle.push(name);
-                            }
-                            res.push(cycle);
-                        }
-                    }
-                    // debug print to file
-                    if !res.is_empty() {
-                        let _ = std::fs::create_dir_all("tmp");
-                        let file = std::fs::File::create("tmp/kosaraju_scc.json")
-                            .expect("file create failed");
-                        serde_json::to_writer_pretty(file, &res).expect("serialize failed");
-                    }
-                }
-
-                // tarjan_scc
-                {
-                    let scc = petgraph::algo::tarjan_scc(&g);
-                    let mut res: Vec<Vec<String>> = vec![];
-                    for er in &scc {
-                        if er.len() > 1 {
-                            warn!("cycles:");
-                            let mut cycle = vec![];
-                            for e in er {
-                                // lookup name
-                                let name = index_dict_rev[&e.index()].clone();
-                                warn!("\t{}: {}", e.index(), name);
-                                cycle.push(name);
-                            }
-                            res.push(cycle);
-                        }
-                    }
-                    // debug print to file
-                    if !res.is_empty() {
-                        let _ = std::fs::create_dir_all("tmp");
-                        let file = std::fs::File::create("tmp/tarjan_scc.json")
-                            .expect("file create failed");
-                        serde_json::to_writer_pretty(file, &res).expect("serialize failed");
-
-                        // find all rules that are part of a cycle
-                        let mut cycle_rules = vec![];
-                        for cycle in &res {
-                            for rule in order_rules {
-                                // switch
-                                let mut names = vec![];
-                                if let Some(nearstart) = nearstart2(rule) {
-                                    names.push(nearstart.names);
-                                } else if let Some(nearend) = nearend2(rule) {
-                                    names.push(nearend.names);
-                                } else if let Some(order) = order2(rule.clone()) {
-                                    names.push(order.names);
-                                }
-
-                                // check that the names contain at least 2 mods
-                                let mut found = 0;
-                                for name in &names {
-                                    for n in name {
-                                        if cycle.contains(n) {
-                                            found += 1;
-                                        }
-                                    }
-                                }
-                                if found > 1 {
-                                    cycle_rules.push(rule.clone());
-                                }
-                            }
-                        }
-
-                        // print cycle rules to file
-                        let _ = std::fs::create_dir_all("tmp");
-                        let file = std::fs::File::create("tmp/cycle_rules.json")
-                            .expect("file create failed");
-                        serde_json::to_writer_pretty(file, &cycle_rules).expect("serialize failed");
-                    }
-                }
-
                 return Err("Graph contains a cycle");
             }
 
@@ -205,7 +88,7 @@ impl Sorter {
         }
 
         // sort
-        let mut mods_copy: Vec<String> = mods.to_vec();
+        let mut mods: Vec<String> = plugins.iter().map(|f| f.name.to_owned()).collect();
 
         // nearstart rules
         for nearstart in order_rules
@@ -214,12 +97,12 @@ impl Sorter {
             .flat_map(|f| f.names)
             .rev()
         {
-            if let Some(results) = wild_contains(&mods_copy, &nearstart) {
+            if let Some(results) = wild_contains(&mods, &nearstart) {
                 // push to start of mods
                 for r in results {
-                    let index = mods_copy.iter().position(|f| f == &r).unwrap();
-                    let element = mods_copy.remove(index);
-                    mods_copy.insert(0, element);
+                    let index = mods.iter().position(|f| f == &r).unwrap();
+                    let element = mods.remove(index);
+                    mods.insert(0, element);
                 }
             }
         }
@@ -231,17 +114,17 @@ impl Sorter {
             .flat_map(|f| f.names)
             .rev()
         {
-            if let Some(results) = wild_contains(&mods_copy, &nearend) {
+            if let Some(results) = wild_contains(&mods, &nearend) {
                 // push to end of mods
                 for r in results {
-                    let index = mods_copy.iter().position(|f| f == &r).unwrap();
-                    let element = mods_copy.remove(index);
-                    mods_copy.push(element);
+                    let index = mods.iter().position(|f| f == &r).unwrap();
+                    let element = mods.remove(index);
+                    mods.push(element);
                 }
             }
         }
 
-        let n = mods.len();
+        let n = plugins.len();
 
         let mut index = 0;
 
@@ -253,7 +136,7 @@ impl Sorter {
                 &edges,
                 &index_dict,
                 &index_dict_rev,
-                &mut mods_copy,
+                &mut mods,
                 &mut index,
             );
 
@@ -263,15 +146,15 @@ impl Sorter {
                 if game == ESupportedGame::Morrowind || game == ESupportedGame::Openmw {
                     // put all items in mods_copy ending with .esm at the start
                     let mut esms = vec![];
-                    for (i, m) in mods_copy.iter().enumerate() {
+                    for (i, m) in mods.iter().enumerate() {
                         if m.ends_with(".esm") || m.ends_with(".omwgame") {
                             esms.push(i);
                         }
                     }
                     // now sort the mods_copy list
                     for (last_i, i) in esms.iter().enumerate() {
-                        let element = mods_copy.remove(*i);
-                        mods_copy.insert(last_i, element);
+                        let element = mods.remove(*i);
+                        mods.insert(last_i, element);
                     }
 
                     // put standard tes3 esms at the start
@@ -287,17 +170,17 @@ impl Sorter {
                     //     mods_copy.insert(0, element);
                     // }
 
-                    if mods_copy.contains(&"morrowind.esm".into()) {
-                        let index = mods_copy.iter().position(|f| f == "morrowind.esm").unwrap();
-                        let element = mods_copy.remove(index);
-                        mods_copy.insert(0, element);
+                    if mods.contains(&"morrowind.esm".into()) {
+                        let index = mods.iter().position(|f| f == "morrowind.esm").unwrap();
+                        let element = mods.remove(index);
+                        mods.insert(0, element);
                     }
                 }
 
                 // Return the sorted vector
                 // map sorted index back to mods
                 let mut result = vec![];
-                for lower_case_name in mods_copy {
+                for lower_case_name in mods {
                     let idx = index_dict[&lower_case_name.clone()];
                     result.push(mod_map[&idx].to_owned());
                 }
@@ -401,38 +284,40 @@ impl Sorter {
 }
 
 pub struct GraphData {
-    mods: Vec<String>,
-    index_dict: HashMap<String, usize>,
-    index_dict_rev: HashMap<usize, String>,
-    mod_map: HashMap<usize, String>,
-    edges: Vec<(usize, usize)>,
+    pub plugins: Vec<PluginData>,
+    pub index_dict: HashMap<String, usize>,
+    pub index_dict_rev: HashMap<usize, String>,
+    pub mod_map: HashMap<usize, String>,
+    pub edges: Vec<(usize, usize)>,
 }
 
 pub fn get_graph_data(
-    mods_cased: &[PluginData],
+    plugins: &[PluginData],
     order_rules: &[EOrderRule],
-    warn_rules: &[EWarningRule],
+    _warn_rules: &[EWarningRule],
 ) -> GraphData {
     // build hashmaps for lookup
-    // first map lowercase to cased, this is kinda dumb, but our input is small enough that I don't care about the memory hit
-    let mut mods: Vec<String> = vec![];
-
     let mut index_dict: HashMap<String, usize> = HashMap::new();
     let mut index_dict_rev: HashMap<usize, String> = HashMap::default();
+
     let mut mod_map: HashMap<usize, String> = HashMap::default();
     let mut plugin_map: HashMap<usize, PluginData> = HashMap::default();
-    for (i, cased_name) in mods_cased.iter().enumerate() {
-        let lower_case = cased_name.name.to_lowercase();
+
+    for (i, plugin_data) in plugins.iter().enumerate() {
+        let lower_case = plugin_data.name.to_lowercase();
 
         index_dict.insert(lower_case.clone(), i);
         index_dict_rev.insert(i, lower_case.clone());
 
-        mod_map.insert(i, cased_name.name.to_owned());
-        plugin_map.insert(i, cased_name.to_owned());
-        mods.push(lower_case.to_owned());
+        mod_map.insert(i, plugin_data.name.to_owned());
+        plugin_map.insert(i, plugin_data.to_owned());
     }
 
     // add edges from order rules
+    let mods = plugins
+        .iter()
+        .map(|f| f.name.to_lowercase())
+        .collect::<Vec<String>>();
     let order_pairs = get_ordering_from_order_rules(order_rules);
     let mut edges: Vec<(usize, usize)> = vec![];
     for (a, b) in order_pairs {
@@ -449,26 +334,7 @@ pub fn get_graph_data(
                         let idx_b = index_dict[j.as_str()];
 
                         if !edges.contains(&(idx_a, idx_b)) {
-                            // TODO don't add edge if a warning rule is present for them
-                            let mut add_edge = true;
-                            for warn_rule in warn_rules {
-                                if let Some(mut conflict) = conflict2(warn_rule) {
-                                    let items = vec![
-                                        plugin_map[&idx_a].clone(),
-                                        plugin_map[&idx_b].clone(),
-                                    ];
-                                    if conflict.eval(items.as_slice()) {
-                                        add_edge = false;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if add_edge {
-                                edges.push((idx_a, idx_b));
-                            } else {
-                                warn!("Skipping edge between {} and {} due to warning rule", i, j);
-                            }
+                            edges.push((idx_a, idx_b));
                         }
                     }
                 }
@@ -478,7 +344,7 @@ pub fn get_graph_data(
 
     // return
     GraphData {
-        mods,
+        plugins: plugins.to_vec(),
         index_dict,
         index_dict_rev,
         mod_map,
@@ -486,23 +352,54 @@ pub fn get_graph_data(
     }
 }
 
-pub fn build_graph(data: &GraphData) -> StableGraph<String, ()> {
+pub fn build_graph(data: &mut GraphData) -> StableGraph<String, ()> {
     let GraphData {
-        mods,
+        plugins,
+        index_dict,
         index_dict_rev,
         edges,
         ..
     } = data;
 
     // create graph from edges
-    let mut g = StableGraph::<String, ()>::with_capacity(mods.len(), edges.len());
-    for n in 0..mods.len() {
+    let mut g = StableGraph::<String, ()>::with_capacity(plugins.len(), edges.len());
+    for n in 0..plugins.len() {
         let name = index_dict_rev[&n].clone();
         g.add_node(name);
     }
     // add edges
-    for edge in edges {
+    for edge in edges.iter() {
         g.add_edge(NodeIndex::new(edge.0), NodeIndex::new(edge.1), ());
     }
+
+    let mut edges_cpy = edges.clone();
+
+    // add edges from masters
+    let mods = plugins
+        .iter()
+        .map(|f| f.name.to_lowercase())
+        .collect::<Vec<String>>();
+    for mod_data in plugins.iter() {
+        // add an edge from the mod to all its masters
+        let idx = index_dict[&mod_data.name.to_lowercase()];
+        if let Some(masters) = &mod_data.masters {
+            for (master, _hash) in masters {
+                let master = master.to_lowercase();
+                if let Some(results) = wild_contains(&mods, &master) {
+                    for result in results {
+                        let idx_master = index_dict[&result];
+                        let edge = (idx_master, idx);
+                        if !edges_cpy.contains(&edge) {
+                            edges_cpy.push(edge);
+                            g.add_edge(NodeIndex::new(edge.0), NodeIndex::new(edge.1), ());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    data.edges = edges_cpy;
+
     g
 }

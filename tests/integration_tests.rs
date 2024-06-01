@@ -7,6 +7,7 @@ mod integration_tests {
     use plox::{parser::*, sorter::*, *};
     use rand::seq::SliceRandom;
     use rand::thread_rng;
+    use rules::{EWarningRule, TWarningRule};
     use semver::Version;
 
     fn init() {
@@ -200,6 +201,180 @@ mod integration_tests {
         }
     }
 
+    fn clean_mods(plugins: &[PluginData], warning_rules: &[EWarningRule]) -> Vec<PluginData> {
+        // lowercase all plugin names
+        let mut mods_cpy: Vec<_> = plugins
+            .iter()
+            .map(|f| {
+                let mut x = f.clone();
+                let name_lc = x.name.to_lowercase();
+                x.name = name_lc;
+                x
+            })
+            .collect();
+
+        let mut warning_rules = warning_rules.to_vec();
+        for rule in warning_rules.iter_mut() {
+            // only conflict rules
+            if let EWarningRule::Conflict(ref mut conflict) = rule {
+                if conflict.eval(&mods_cpy) {
+                    // remove mods
+                    warn!("removing mods: {:?}", conflict.plugins.len());
+                    for mod_name in &conflict.plugins {
+                        mods_cpy.retain(|x| x.name != *mod_name);
+                    }
+                }
+            }
+        }
+
+        mods_cpy
+    }
+
+    #[test]
+    fn graphviz() -> std::io::Result<()> {
+        init();
+
+        let mut parser = new_tes3_parser();
+        parser.init_from_file("./tests/mlox/mlox_user.txt")?;
+
+        let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
+        mods = clean_mods(&mods, &parser.warning_rules);
+
+        let mut rng = thread_rng();
+        mods.shuffle(&mut rng);
+
+        let mut data = sorter::get_graph_data(&mods, &parser.order_rules, &parser.warning_rules);
+        let g = sorter::build_graph(&mut data);
+
+        {
+            let viz = petgraph::dot::Dot::with_config(&g, &[petgraph::dot::Config::EdgeNoLabel]);
+            // write to file
+            let _ = std::fs::create_dir_all("tmp");
+            let mut file = std::fs::File::create("tmp/graphviz.dot").expect("file create failed");
+            std::io::Write::write_all(&mut file, format!("{:?}", viz).as_bytes())
+                .expect("write failed");
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    fn scc() -> std::io::Result<()> {
+        init();
+
+        let mut parser = new_tes3_parser();
+        parser.init_from_file("./tests/mlox/mlox_user.txt")?;
+
+        let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
+        mods = clean_mods(&mods, &parser.warning_rules);
+
+        let mut rng = thread_rng();
+        mods.shuffle(&mut rng);
+
+        let mut data = sorter::get_graph_data(&mods, &parser.order_rules, &parser.warning_rules);
+        let g = sorter::build_graph(&mut data);
+
+        // cycle check
+        let s = petgraph::algo::toposort(&g, None);
+        if let Ok(result) = s {
+            // debug print to file
+            let mut res = vec![];
+            for idx in &result {
+                res.push(idx.index());
+            }
+            let _ = std::fs::create_dir_all("tmp");
+            let file = std::fs::File::create("tmp/toposort.json").expect("file create failed");
+            serde_json::to_writer_pretty(file, &res).expect("serialize failed");
+        } else {
+            // kosaraju_scc
+            {
+                let scc = petgraph::algo::kosaraju_scc(&g);
+                let mut res: Vec<Vec<String>> = vec![];
+                for er in &scc {
+                    if er.len() > 1 {
+                        warn!("Found a cycle with {} elements", er.len());
+                        let mut cycle = vec![];
+                        for e in er {
+                            // lookup name
+                            let name = data.index_dict_rev[&e.index()].clone();
+                            cycle.push(name);
+                        }
+                        res.push(cycle);
+                    }
+                }
+                // debug print to file
+                if !res.is_empty() {
+                    let _ = std::fs::create_dir_all("tmp");
+                    let file =
+                        std::fs::File::create("tmp/kosaraju_scc.json").expect("file create failed");
+                    serde_json::to_writer_pretty(file, &res).expect("serialize failed");
+                }
+            }
+
+            // tarjan_scc
+            {
+                let scc = petgraph::algo::tarjan_scc(&g);
+                let mut res: Vec<Vec<String>> = vec![];
+                for er in &scc {
+                    if er.len() > 1 {
+                        warn!("Found a cycle with {} elements", er.len());
+                        let mut cycle = vec![];
+                        for e in er {
+                            // lookup name
+                            let name = data.index_dict_rev[&e.index()].clone();
+                            cycle.push(name);
+                        }
+                        res.push(cycle);
+                    }
+                }
+                // debug print to file
+                if !res.is_empty() {
+                    let _ = std::fs::create_dir_all("tmp");
+                    let file =
+                        std::fs::File::create("tmp/tarjan_scc.json").expect("file create failed");
+                    serde_json::to_writer_pretty(file, &res).expect("serialize failed");
+
+                    // find all rules that are part of a cycle
+                    let mut cycle_rules = vec![];
+                    for cycle in &res {
+                        for rule in &parser.order_rules {
+                            // switch
+                            let mut names = vec![];
+                            if let Some(nearstart) = nearstart2(rule) {
+                                names.push(nearstart.names);
+                            } else if let Some(nearend) = nearend2(rule) {
+                                names.push(nearend.names);
+                            } else if let Some(order) = order2(rule.clone()) {
+                                names.push(order.names);
+                            }
+
+                            // check that the names contain at least 2 mods
+                            let mut found = 0;
+                            for name in &names {
+                                for n in name {
+                                    if cycle.contains(n) {
+                                        found += 1;
+                                    }
+                                }
+                            }
+                            if found > 1 {
+                                cycle_rules.push(rule.clone());
+                            }
+                        }
+                    }
+
+                    // print cycle rules to file
+                    let _ = std::fs::create_dir_all("tmp");
+                    let file =
+                        std::fs::File::create("tmp/cycle_rules.json").expect("file create failed");
+                    serde_json::to_writer_pretty(file, &cycle_rules).expect("serialize failed");
+                }
+            }
+        }
+
+        Ok(())
+    }
+
     #[test]
     fn test_mlox_user_rules_stable() -> std::io::Result<()> {
         init();
@@ -208,6 +383,7 @@ mod integration_tests {
         parser.init_from_file("./tests/mlox/mlox_user.txt")?;
 
         let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
+        mods = clean_mods(&mods, &parser.warning_rules);
 
         let mut rng = thread_rng();
         mods.shuffle(&mut rng);
@@ -233,33 +409,6 @@ mod integration_tests {
     }
 
     #[test]
-    fn graphviz() -> std::io::Result<()> {
-        init();
-
-        let mut parser = new_tes3_parser();
-        parser.init_from_file("./tests/mlox/mlox_user.txt")?;
-
-        let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
-
-        let mut rng = thread_rng();
-        mods.shuffle(&mut rng);
-
-        let data = sorter::get_graph_data(&mods, &parser.order_rules, &parser.warning_rules);
-        let g = sorter::build_graph(&data);
-
-        {
-            let viz = petgraph::dot::Dot::with_config(&g, &[petgraph::dot::Config::EdgeNoLabel]);
-            // write to file
-            let _ = std::fs::create_dir_all("tmp");
-            let mut file = std::fs::File::create("tmp/graphviz.dot").expect("file create failed");
-            std::io::Write::write_all(&mut file, format!("{:?}", viz).as_bytes())
-                .expect("write failed");
-        }
-
-        Ok(())
-    }
-
-    #[test]
     fn test_mlox_user_rules_unstable() -> std::io::Result<()> {
         init();
 
@@ -267,6 +416,7 @@ mod integration_tests {
         parser.init_from_file("./tests/mlox/mlox_user.txt")?;
 
         let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
+        mods = clean_mods(&mods, &parser.warning_rules);
 
         let mut rng = thread_rng();
         mods.shuffle(&mut rng);
