@@ -9,13 +9,12 @@ use std::{
 };
 
 pub use app::TemplateApp;
-use log::{debug, error, warn};
+use log::{error, warn};
 use plox::{
     conflict2, detect_game, download_latest_rules, gather_mods, get_default_rules_dir,
     parser::{self, Warning},
     sorter::new_stable_sorter,
 };
-use serde::de;
 
 const CARGO_PKG_VERSION: &str = env!("CARGO_PKG_VERSION");
 
