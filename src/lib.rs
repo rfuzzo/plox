@@ -2,11 +2,13 @@ use std::collections::HashMap;
 use std::error::Error;
 use std::fs::{self, File};
 use std::io::{self, BufRead, Read, Seek, Write};
-use std::ops::ControlFlow;
 use std::path::{Path, PathBuf};
 use std::{env, vec};
 
 use clap::ValueEnum;
+
+pub mod commands;
+pub use commands::*;
 
 pub mod expressions;
 pub mod parser;
@@ -809,25 +811,17 @@ fn generate_pair_permutations(input: &[String]) -> Vec<(String, String)> {
     permutations
 }
 
-fn get_permutations(o: &Order, orders: &mut Vec<(String, String)>) -> ControlFlow<()> {
-    // process order rules
-    if let std::cmp::Ordering::Less = o.names.len().cmp(&2) {
-        // Rule with only one element is an error
-        return ControlFlow::Break(());
-    }
-    orders.extend(generate_pair_permutations(&o.names));
-    ControlFlow::Continue(())
-}
-
 /// Extracts a list of ordering-pairs from the order rules
 pub fn get_ordering(rules: &Vec<ERule>) -> Vec<(String, String)> {
     let mut orders: Vec<(String, String)> = vec![];
 
     for r in rules {
         if let ERule::EOrderRule(EOrderRule::Order(o)) = r {
-            if let ControlFlow::Break(_) = get_permutations(o, &mut orders) {
+            // Rule with only one element is an error
+            if o.names.len() < 2 {
                 continue;
             }
+            orders.extend(generate_pair_permutations(&o.names));
         }
     }
 
@@ -840,9 +834,11 @@ pub fn get_ordering_from_order_rules(rules: &[EOrderRule]) -> Vec<(String, Strin
 
     for r in rules {
         if let EOrderRule::Order(o) = r {
-            if let ControlFlow::Break(_) = get_permutations(o, &mut orders) {
+            // Rule with only one element is an error
+            if o.names.len() < 2 {
                 continue;
             }
+            orders.extend(generate_pair_permutations(&o.names));
         }
     }
 
@@ -854,10 +850,11 @@ pub fn get_ordering_from_orders(rules: &Vec<Order>) -> Vec<(String, String)> {
     let mut orders: Vec<(String, String)> = vec![];
 
     for o in rules {
-        // process order rules
-        if let ControlFlow::Break(_) = get_permutations(o, &mut orders) {
+        // Rule with only one element is an error
+        if o.names.len() < 2 {
             continue;
         }
+        orders.extend(generate_pair_permutations(&o.names));
     }
 
     orders
@@ -1003,6 +1000,12 @@ pub fn note(f: ERule) -> Option<Note> {
 pub fn conflict(f: ERule) -> Option<Conflict> {
     match f {
         ERule::EWarningRule(EWarningRule::Conflict(n)) => Some(n),
+        _ => None,
+    }
+}
+pub fn conflict2(f: &EWarningRule) -> Option<Conflict> {
+    match f {
+        EWarningRule::Conflict(n) => Some(n.clone()),
         _ => None,
     }
 }

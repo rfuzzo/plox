@@ -160,7 +160,7 @@ impl Parser {
     /// # Errors
     ///
     /// This function will return an error if file io or parsing fails
-    pub fn init<P>(&mut self, path: P) -> Result<()>
+    pub fn parse<P>(&mut self, path: P) -> Result<()>
     where
         P: AsRef<Path>,
     {

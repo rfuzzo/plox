@@ -10,8 +10,8 @@ documentation.workspace = true
 [dependencies]
 plox = { path = "../" }
 
-egui = "0.26"
-eframe = { version = "0.26", default-features = false, features = [
+egui = "0.27"
+eframe = { version = "0.27", default-features = false, features = [
     "default_fonts", # Embed the default egui fonts.
     "glow",          # Use the glow rendering backend. Alternative: "wgpu".
     "persistence",   # Enable restoring app state when restarting the app.

@@ -101,6 +101,8 @@ Merged Lands.esp
 Mashed Lists.esp
 multipatch.esp
 Beautiful cities of Morrowind.ESP
+Interior exterior flag reset.esp
+BCOM_pathgrid_reset.ESP
 BTBGI Loot Patch*.ESP
 Morrowind Crafting 2*.esp
 Morrowind Crafting Equipment.esp
@@ -145,10 +147,6 @@ ab01UnderSkar.esp
 NPC_Commands*.esp
 MEN_Combat_merged.esp
 NOM3*.esp
-NoM_Creatures Loot Standard.esp
-NoM_MC Compatibility Patch.esp
-NoM_CoM Compatibility Patch.esp
-NoM_BF Compatibility Patch.esp
 RoHT NoM Addon.esp
 Owned Beds NOM.esp
 TR NoM-style Bed Renting.esp
@@ -6195,13 +6193,6 @@ NOM <VER>.esp
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; @Black Queen Chronicles 2.5 [Tenaka]
-
-;; Beyond Ysgramor - damages mountain outside Seyda Neen.
-;; Load Beyond Ysgramor after Black Queen Chronicles.
-;; ( Ref: http://gmml.pbwiki.com/Mod+Conflicts )
-;[Order]
-;Clean Black Queen Chronicles Ver 2.5.esp
-;Beyond YsGramor v2.5.esm
 
 ;; Siege at Firemoth conflicts with Black Queen Chronicles.
 ;; Load Siege at Firemoth after Black Queen Chronicles.
@@ -34397,7 +34388,6 @@ Rose_Cottage_Bathing_Patch.esp
 [Order] ; ( Ref: "Stinkers_ReadMe_v1.71.txt" )
 Stinkers.esp
 BE_Bathing_Patch.esp
-
 [Order]
 Balmora Expansion v1.4.esp
 Balmora Expansion v1.4+(1.4).esp

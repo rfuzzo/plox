@@ -7,6 +7,7 @@ mod integration_tests {
     use plox::{parser::*, sorter::*, *};
     use rand::seq::SliceRandom;
     use rand::thread_rng;
+    use rules::{EWarningRule, TWarningRule};
     use semver::Version;
 
     fn init() {
@@ -14,6 +15,49 @@ mod integration_tests {
             .default_filter_or(log_level_to_str(ELogLevel::Debug))
             .default_write_style_or("always");
         let _ = env_logger::Builder::from_env(env).is_test(true).try_init();
+    }
+
+    fn new_stable_full_sorter() -> Sorter {
+        Sorter::new(sorter::ESortType::StableFull, 1000)
+    }
+
+    fn clean_mods(plugins: &[PluginData], warning_rules: &[EWarningRule]) -> Vec<PluginData> {
+        let mut mods_to_remove = vec![];
+        let mut warning_rules = warning_rules.to_vec();
+        for rule in warning_rules.iter_mut() {
+            // only conflict rules
+            if let EWarningRule::Conflict(ref mut conflict) = rule {
+                if conflict.eval(plugins) {
+                    // remove mods
+                    // switch on the len of conflict.conflicts
+                    let groups_size = conflict.conflicts.len();
+                    if groups_size == 2 {
+                        // remove all mods of group 1
+                        for mod_name in &conflict.conflicts[0] {
+                            // add if not already in
+                            if !mods_to_remove.contains(mod_name) {
+                                mods_to_remove.push(mod_name.clone());
+                            }
+                        }
+                    } else {
+                        // TODO do nothing for now
+                        //warn!("groups_size: {}", groups_size);
+                    }
+                }
+            }
+        }
+
+        // log
+        warn!("removing mods: {:?}", mods_to_remove.len());
+        for mod_name in mods_to_remove.iter() {
+            warn!("\t{}", mod_name);
+        }
+
+        // remove mods
+        let mut mods_cpy = plugins.to_vec();
+        mods_cpy.retain(|x| !mods_to_remove.contains(&x.name));
+
+        mods_cpy
     }
 
     #[test]
@@ -50,8 +94,12 @@ mod integration_tests {
 
         let mods = debug_get_mods_from_order_rules(&parser.order_rules);
 
-        match new_unstable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules)
-        {
+        match new_unstable_sorter().topo_sort(
+            ESupportedGame::Morrowind,
+            &mods,
+            &parser.order_rules,
+            &parser.warning_rules,
+        ) {
             Ok(result) => {
                 assert!(
                     check_order(&result, &parser.order_rules),
@@ -61,7 +109,12 @@ mod integration_tests {
             Err(e) => panic!("Error: {}", e),
         }
 
-        match new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules) {
+        match new_stable_sorter().topo_sort(
+            ESupportedGame::Morrowind,
+            &mods,
+            &parser.order_rules,
+            &parser.warning_rules,
+        ) {
             Ok(result) => {
                 assert!(
                     check_order(&result, &parser.order_rules),
@@ -192,18 +245,52 @@ mod integration_tests {
     }
 
     #[test]
-    fn test_mlox_user_rules() -> std::io::Result<()> {
+    fn graphviz() -> std::io::Result<()> {
         init();
 
         let mut parser = new_tes3_parser();
         parser.init_from_file("./tests/mlox/mlox_user.txt")?;
 
         let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
+        mods = clean_mods(&mods, &parser.warning_rules);
 
         let mut rng = thread_rng();
         mods.shuffle(&mut rng);
 
-        match new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules) {
+        let data = sorter::get_graph_data(&mods, &parser.order_rules, &parser.warning_rules);
+        let g = sorter::build_graph(&data);
+
+        {
+            let viz = petgraph::dot::Dot::with_config(&g, &[petgraph::dot::Config::EdgeNoLabel]);
+            // write to file
+            let _ = std::fs::create_dir_all("tmp");
+            let mut file = std::fs::File::create("tmp/graphviz.dot").expect("file create failed");
+            std::io::Write::write_all(&mut file, format!("{:?}", viz).as_bytes())
+                .expect("write failed");
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_mlox_user_rules_stable() -> std::io::Result<()> {
+        init();
+
+        let mut parser = new_tes3_parser();
+        parser.init_from_file("./tests/mlox/mlox_user.txt")?;
+
+        let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
+        mods = clean_mods(&mods, &parser.warning_rules);
+
+        let mut rng = thread_rng();
+        mods.shuffle(&mut rng);
+
+        match new_stable_sorter().topo_sort(
+            ESupportedGame::Morrowind,
+            &mods,
+            &parser.order_rules,
+            &parser.warning_rules,
+        ) {
             Ok(result) => {
                 assert!(
                     check_order(&result, &parser.order_rules),
@@ -215,8 +302,28 @@ mod integration_tests {
             }
         }
 
-        match new_unstable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules)
-        {
+        Ok(())
+    }
+
+    #[test]
+    fn test_mlox_user_rules_unstable() -> std::io::Result<()> {
+        init();
+
+        let mut parser = new_tes3_parser();
+        parser.init_from_file("./tests/mlox/mlox_user.txt")?;
+
+        let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
+        mods = clean_mods(&mods, &parser.warning_rules);
+
+        let mut rng = thread_rng();
+        mods.shuffle(&mut rng);
+
+        match new_unstable_sorter().topo_sort(
+            ESupportedGame::Morrowind,
+            &mods,
+            &parser.order_rules,
+            &parser.warning_rules,
+        ) {
             Ok(result) => {
                 assert!(
                     check_order(&result, &parser.order_rules),
@@ -230,18 +337,24 @@ mod integration_tests {
     }
 
     #[test]
-    fn test_mlox_base_rules() -> std::io::Result<()> {
+    fn test_mlox_base_rules_stable() -> std::io::Result<()> {
         init();
 
         let mut parser = new_tes3_parser();
         parser.init_from_file("./tests/mlox/mlox_base.txt")?;
 
         let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
+        mods = clean_mods(&mods, &parser.warning_rules);
 
         let mut rng = thread_rng();
         mods.shuffle(&mut rng);
 
-        match new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules) {
+        match new_stable_sorter().topo_sort(
+            ESupportedGame::Morrowind,
+            &mods,
+            &parser.order_rules,
+            &parser.warning_rules,
+        ) {
             Ok(result) => {
                 assert!(
                     check_order(&result, &parser.order_rules),
@@ -253,62 +366,28 @@ mod integration_tests {
             }
         }
 
-        match new_unstable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules)
-        {
-            Ok(result) => {
-                assert!(
-                    check_order(&result, &parser.order_rules),
-                    "stable(true) order is wrong"
-                );
-            }
-            Err(e) => panic!("Error: {}", e),
-        }
-
         Ok(())
     }
 
-    #[allow(dead_code)]
-    //#[test]
-    fn test_mlox_rules() -> std::io::Result<()> {
+    #[test]
+    fn test_mlox_base_rules_unstable() -> std::io::Result<()> {
         init();
 
         let mut parser = new_tes3_parser();
-        parser.init("./tests/mlox")?;
+        parser.init_from_file("./tests/mlox/mlox_base.txt")?;
 
-        let mods = debug_get_mods_from_order_rules(&parser.order_rules);
+        let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
+        mods = clean_mods(&mods, &parser.warning_rules);
 
-        // let mut rng = thread_rng();
-        // mods.shuffle(&mut rng);
+        let mut rng = thread_rng();
+        mods.shuffle(&mut rng);
 
-        warn!("MODS: {}", mods.len());
-
-        match new_stable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules) {
-            Ok(result) => {
-                assert!(
-                    check_order(&result, &parser.order_rules),
-                    "stable(true) order is wrong"
-                );
-            }
-            Err(e) => {
-                match new_unstable_sorter().topo_sort(
-                    ESupportedGame::Morrowind,
-                    &mods,
-                    &parser.order_rules,
-                ) {
-                    Ok(result) => {
-                        assert!(
-                            check_order(&result, &parser.order_rules),
-                            "stable(true) order is wrong"
-                        );
-                    }
-                    Err(e) => panic!("Error: {}", e),
-                }
-                panic!("Error: {}", e)
-            }
-        }
-
-        match new_unstable_sorter().topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules)
-        {
+        match new_unstable_sorter().topo_sort(
+            ESupportedGame::Morrowind,
+            &mods,
+            &parser.order_rules,
+            &parser.warning_rules,
+        ) {
             Ok(result) => {
                 assert!(
                     check_order(&result, &parser.order_rules),
@@ -321,8 +400,72 @@ mod integration_tests {
         Ok(())
     }
 
-    fn new_stable_full_sorter() -> Sorter {
-        Sorter::new(sorter::ESortType::StableFull, 1000)
+    #[test]
+    fn test_mlox_rules_stable() -> std::io::Result<()> {
+        init();
+
+        let mut parser = new_tes3_parser();
+        parser.parse("./tests/mlox")?;
+
+        let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
+        mods = clean_mods(&mods, &parser.warning_rules);
+
+        let mut rng = thread_rng();
+        mods.shuffle(&mut rng);
+
+        warn!("MODS: {}", mods.len());
+
+        match new_stable_sorter().topo_sort(
+            ESupportedGame::Morrowind,
+            &mods,
+            &parser.order_rules,
+            &parser.warning_rules,
+        ) {
+            Ok(result) => {
+                assert!(
+                    check_order(&result, &parser.order_rules),
+                    "stable(true) order is wrong"
+                );
+            }
+            Err(e) => {
+                panic!("Error: {}", e)
+            }
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_mlox_rules_unstable() -> std::io::Result<()> {
+        init();
+
+        let mut parser = new_tes3_parser();
+        parser.parse("./tests/mlox")?;
+
+        let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
+        mods = clean_mods(&mods, &parser.warning_rules);
+
+        let mut rng = thread_rng();
+        mods.shuffle(&mut rng);
+
+        warn!("MODS: {}", mods.len());
+
+        match new_unstable_sorter().topo_sort(
+            ESupportedGame::Morrowind,
+            &mods,
+            &parser.order_rules,
+            &parser.warning_rules,
+        ) {
+            Ok(result) => {
+                assert!(
+                    check_order(&result, &parser.order_rules),
+                    "stable(true) order is wrong"
+                );
+            }
+            Err(e) => panic!("Error: {}", e),
+        }
+
+        Ok(())
     }
 
     #[test]
@@ -338,10 +481,20 @@ mod integration_tests {
         let mods = mods.into_iter().take(100).collect::<Vec<_>>();
 
         let full_result = new_stable_full_sorter()
-            .topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules)
+            .topo_sort(
+                ESupportedGame::Morrowind,
+                &mods,
+                &parser.order_rules,
+                &parser.warning_rules,
+            )
             .expect("rules contain a cycle");
         let opt_result = sorter::new_stable_sorter()
-            .topo_sort(ESupportedGame::Morrowind, &mods, &parser.order_rules)
+            .topo_sort(
+                ESupportedGame::Morrowind,
+                &mods,
+                &parser.order_rules,
+                &parser.warning_rules,
+            )
             .expect("opt rules contain a cycle");
 
         assert_eq!(full_result, opt_result);
@@ -366,7 +519,12 @@ mod integration_tests {
 
             let now = std::time::Instant::now();
             sorter::new_stable_sorter()
-                .topo_sort(ESupportedGame::Morrowind, &mods_rnd, &parser.order_rules)
+                .topo_sort(
+                    ESupportedGame::Morrowind,
+                    &mods_rnd,
+                    &parser.order_rules,
+                    &parser.warning_rules,
+                )
                 .expect("error: ");
             let elapsed = now.elapsed().as_secs();
 
