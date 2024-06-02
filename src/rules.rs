@@ -486,6 +486,7 @@ pub struct Conflict {
     pub expressions: Vec<Expression>,
 
     pub plugins: Vec<String>,
+    pub conflicts: Vec<Vec<String>>,
 }
 impl Conflict {
     pub fn new(comment: String, expressions: &[Expression]) -> Self {
@@ -493,6 +494,7 @@ impl Conflict {
             comment,
             expressions: expressions.to_vec(),
             plugins: vec![],
+            conflicts: vec![],
         }
     }
 }
@@ -512,7 +514,8 @@ impl TWarningRule for Conflict {
         let mut i = 0;
         for e in &self.expressions {
             if let Some(plugins) = e.eval(items) {
-                self.plugins.extend(plugins);
+                self.plugins.extend(plugins.clone());
+                self.conflicts.push(plugins);
                 i += 1;
             }
         }

@@ -29,39 +29,69 @@ mod scc_tests {
     }
 
     #[allow(unused_variables)]
-    fn clean_mods(plugins: &[PluginData], warning_rules: &[EWarningRule]) -> Vec<PluginData> {
-        // lowercase all plugin names
-        #[allow(unused_mut)]
-        let mut mods_cpy: Vec<_> = plugins
-            .iter()
-            .map(|f| {
-                let mut x = f.clone();
-                let name_lc = x.name.to_lowercase();
-                x.name = name_lc;
-                x
-            })
-            .collect();
+    fn clean_mods(
+        plugins: &[PluginData],
+        warning_rules: &[EWarningRule],
+        tmp_dir: &std::path::Path,
+    ) -> Vec<PluginData> {
+        // debug
+        let mut dbg_log_list: Vec<(Vec<String>, Vec<String>)> = vec![];
 
-        // let mut warning_rules = warning_rules.to_vec();
-        // for rule in warning_rules.iter_mut() {
-        //     // only conflict rules
-        //     if let EWarningRule::Conflict(ref mut conflict) = rule {
-        //         if conflict.eval(&mods_cpy) {
-        //             // remove mods
-        //             warn!("removing mods: {:?}", conflict.plugins.len());
-        //             for mod_name in &conflict.plugins {
-        //                 mods_cpy.retain(|x| x.name != *mod_name);
-        //             }
-        //         }
-        //     }
-        // }
+        let mut mods_to_remove = vec![];
+        let mut warning_rules = warning_rules.to_vec();
+        for rule in warning_rules.iter_mut() {
+            // only conflict rules
+            if let EWarningRule::Conflict(ref mut conflict) = rule {
+                if conflict.eval(plugins) {
+                    // remove mods
+                    // switch on the len of conflict.conflicts
+                    let groups_size = conflict.conflicts.len();
+                    if groups_size == 2 {
+                        // remove all mods of group 1
+                        for mod_name in &conflict.conflicts[0] {
+                            // add if not already in
+                            if !mods_to_remove.contains(mod_name) {
+                                mods_to_remove.push(mod_name.clone());
+                            }
+                        }
+
+                        // debug save groups
+                        dbg_log_list
+                            .push((conflict.conflicts[0].clone(), conflict.conflicts[1].clone()));
+                    } else {
+                        // TODO do nothing for now
+                        //warn!("groups_size: {}", groups_size);
+                    }
+                }
+            }
+        }
+
+        // log
+        warn!("removing mods: {:?}", mods_to_remove.len());
+        for mod_name in mods_to_remove.iter() {
+            warn!("\t{}", mod_name);
+        }
+
+        // debug print to file
+        let filepath = tmp_dir.join("mods_to_remove.json");
+        let file = std::fs::File::create(filepath).expect("file create failed");
+        serde_json::to_writer_pretty(file, &mods_to_remove).expect("serialize failed");
+
+        // debug print to file
+        let filepath = tmp_dir.join("dbg_log_list.json");
+        let file = std::fs::File::create(filepath).expect("file create failed");
+        serde_json::to_writer_pretty(file, &dbg_log_list).expect("serialize failed");
+
+        // remove mods
+        let mut mods_cpy = plugins.to_vec();
+        mods_cpy.retain(|x| !mods_to_remove.contains(&x.name));
 
         mods_cpy
     }
 
     fn scc(parser: Parser, tmp_dir: PathBuf) -> bool {
         let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
-        mods = clean_mods(&mods, &parser.warning_rules);
+        mods = clean_mods(&mods, &parser.warning_rules, &tmp_dir);
 
         let mut rng = thread_rng();
         mods.shuffle(&mut rng);
