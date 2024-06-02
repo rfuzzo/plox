@@ -243,8 +243,8 @@ mod integration_tests {
         let mut rng = thread_rng();
         mods.shuffle(&mut rng);
 
-        let mut data = sorter::get_graph_data(&mods, &parser.order_rules, &parser.warning_rules);
-        let g = sorter::build_graph(&mut data);
+        let data = sorter::get_graph_data(&mods, &parser.order_rules, &parser.warning_rules);
+        let g = sorter::build_graph(&data);
 
         {
             let viz = petgraph::dot::Dot::with_config(&g, &[petgraph::dot::Config::EdgeNoLabel]);
@@ -271,8 +271,8 @@ mod integration_tests {
         let mut rng = thread_rng();
         mods.shuffle(&mut rng);
 
-        let mut data = sorter::get_graph_data(&mods, &parser.order_rules, &parser.warning_rules);
-        let g = sorter::build_graph(&mut data);
+        let data = sorter::get_graph_data(&mods, &parser.order_rules, &parser.warning_rules);
+        let g = sorter::build_graph(&data);
 
         // cycle check
         let s = petgraph::algo::toposort(&g, None);

@@ -586,6 +586,42 @@
   },
   {
     "Conflict": {
+      "comment": "bcom already provides an improved version of this as an optional addon in the fomod installer.",
+      "expressions": [
+        {
+          "Atomic": {
+            "item": "beautiful cities of morrowind.esp"
+          }
+        },
+        {
+          "Atomic": {
+            "item": "the cool khuul lighthouse.esp"
+          }
+        }
+      ],
+      "plugins": []
+    }
+  },
+  {
+    "Conflict": {
+      "comment": "already merged into bcom.",
+      "expressions": [
+        {
+          "Atomic": {
+            "item": "beautiful cities of morrowind.esp"
+          }
+        },
+        {
+          "Atomic": {
+            "item": "ebonheart lighthouse.esp"
+          }
+        }
+      ],
+      "plugins": []
+    }
+  },
+  {
+    "Conflict": {
       "comment": "'bcom rocky west gash.esp' is an esp replacer, do not use it alongside the original plugin.",
       "expressions": [
         {
@@ -3641,7 +3677,7 @@
   },
   {
     "Conflict": {
-      "comment": "an esp replacer for \"dynamic distant buildings for openmw - ghostfence plugin\" that is compatible with \"bcom\" is provided in \"total overhaul patches\".\t[replacer download]( https://www.nexusmods.com/morrowind/mods/52989 )",
+      "comment": "an esp replacer for \"dynamic distant buildings for openmw - ghostfence plugin\" that is compatible with \"bcom\" is provided in \"momw patches\".\t[replacer download]( https://modding-openmw.gitlab.io/momw-patches/ )",
       "expressions": [
         {
           "Atomic": {
@@ -5870,6 +5906,89 @@
     }
   },
   {
+    "Conflict": {
+      "comment": "if you are using oaab - the ashen divide, then you need to rename mc-ashen.esp to clean_mines & caverns.esp and disable the original clean_mines & caverns.esp",
+      "expressions": [
+        {
+          "Atomic": {
+            "item": "clean_mines & caverns.esp"
+          }
+        },
+        {
+          "Atomic": {
+            "item": "mc-ashen.esp"
+          }
+        }
+      ],
+      "plugins": []
+    }
+  },
+  {
+    "Conflict": {
+      "comment": "if you are using bcom, then you need to rename mc-bcom.esp to clean_mines & caverns.esp and disable the original clean_mines & caverns.esp",
+      "expressions": [
+        {
+          "Atomic": {
+            "item": "clean_mines & caverns.esp"
+          }
+        },
+        {
+          "Atomic": {
+            "item": "mc-bcom.esp"
+          }
+        }
+      ],
+      "plugins": []
+    }
+  },
+  {
+    "Conflict": {
+      "comment": "if you are using oaab - the ashen divide and bcom, then you need to rename mc-bcom-ashen.esp to clean_mines & caverns.esp and disable the original clean_mines & caverns.esp",
+      "expressions": [
+        {
+          "Atomic": {
+            "item": "clean_mines & caverns.esp"
+          }
+        },
+        {
+          "Atomic": {
+            "item": "mc-bcom-ashen.esp"
+          }
+        }
+      ],
+      "plugins": []
+    }
+  },
+  {
+    "Note": {
+      "comment": "make sure you use the esp replacers provided on the clean mines and caverns nexus page under optional files!",
+      "expressions": [
+        {
+          "Atomic": {
+            "item": "clean_mines & caverns.esp"
+          }
+        },
+        {
+          "ANY": {
+            "expressions": [
+              {
+                "Atomic": {
+                  "item": "oaab - the ashen divide.esp"
+                }
+              },
+              {
+                "Atomic": {
+                  "item": "beautiful cities of morrowind.esp"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "plugins": []
+    }
+  },
+  {
     "Note": {
       "comment": "!! a patch for \"morag tong polished\" and \"tr factions\" is available.\t!! [patch download]( https://www.nexusmods.com/morrowind/mods/48955 )",
       "expressions": [
@@ -7258,6 +7377,30 @@
         {
           "Atomic": {
             "item": "oaab_grazelands.esp"
+          }
+        }
+      ],
+      "plugins": []
+    }
+  },
+  {
+    "Note": {
+      "comment": "'oaab grazelands' must load after 'quest twaeks and alternatives', but an order rule cannot be added to mlox as it conflicts with other rules so mlox cannot correctly sort it. a patch needs to be created to solve the conflict.",
+      "expressions": [
+        {
+          "ALL": {
+            "expressions": [
+              {
+                "Atomic": {
+                  "item": "quest tweaks and alternatives_<ver>.esp"
+                }
+              },
+              {
+                "Atomic": {
+                  "item": "oaab_grazelands.esp"
+                }
+              }
+            ]
           }
         }
       ],
@@ -9272,7 +9415,7 @@
             },
             {
               "Atomic": {
-                "item": "ul_3.5_tr_21.01_add-on.esp"
+                "item": "ul_3.5_tr_23.10_add-on.esp"
               }
             }
           ]
@@ -9313,7 +9456,7 @@
       "comment": "",
       "expression_a": {
         "Atomic": {
-          "item": "nordicdagonfel+rrbettershipsnboatspatch.esp"
+          "item": "affresh+samarysancestraltombexpanded.esp"
         }
       },
       "expression_b": {
@@ -9321,12 +9464,311 @@
           "expressions": [
             {
               "Atomic": {
-                "item": "rr_better_ships_n_boats_eng.esp"
+                "item": "samarys ancestral tomb expanded.esp"
               }
             },
             {
               "Atomic": {
-                "item": "nordic dagon fel.esp"
+                "item": "affresh.esp"
+              }
+            }
+          ]
+        }
+      },
+      "plugins": []
+    }
+  },
+  {
+    "Requires": {
+      "comment": "",
+      "expression_a": {
+        "Atomic": {
+          "item": "affresh+calderamineexpanded.esp"
+        }
+      },
+      "expression_b": {
+        "ALL": {
+          "expressions": [
+            {
+              "Atomic": {
+                "item": "dd_caldera_expansion.esp"
+              }
+            },
+            {
+              "Atomic": {
+                "item": "affresh.esp"
+              }
+            }
+          ]
+        }
+      },
+      "plugins": []
+    }
+  },
+  {
+    "Requires": {
+      "comment": "",
+      "expression_a": {
+        "Atomic": {
+          "item": "affresh+bcom.esp"
+        }
+      },
+      "expression_b": {
+        "ALL": {
+          "expressions": [
+            {
+              "Atomic": {
+                "item": "beautiful cities of morrowind.esp"
+              }
+            },
+            {
+              "Atomic": {
+                "item": "affresh.esp"
+              }
+            }
+          ]
+        }
+      },
+      "plugins": []
+    }
+  },
+  {
+    "Requires": {
+      "comment": "",
+      "expression_a": {
+        "Atomic": {
+          "item": "doors of oblivion+totsp patch.esp"
+        }
+      },
+      "expression_b": {
+        "ALL": {
+          "expressions": [
+            {
+              "Atomic": {
+                "item": "solstheim tomb of the snow prince.esm"
+              }
+            },
+            {
+              "Atomic": {
+                "item": "the doors of oblivion 1.4.esp"
+              }
+            }
+          ]
+        }
+      },
+      "plugins": []
+    }
+  },
+  {
+    "Requires": {
+      "comment": "",
+      "expression_a": {
+        "Atomic": {
+          "item": "ul_-_bcom_arena_patch.esp"
+        }
+      },
+      "expression_b": {
+        "ALL": {
+          "expressions": [
+            {
+              "Atomic": {
+                "item": "beautiful cities of morrowind.esp"
+              }
+            },
+            {
+              "Atomic": {
+                "item": "uvirith's legacy_3.53.esp"
+              }
+            }
+          ]
+        }
+      },
+      "plugins": []
+    }
+  },
+  {
+    "Requires": {
+      "comment": "",
+      "expression_a": {
+        "Atomic": {
+          "item": "ul_-_oaab_tel_mora_patch.esp"
+        }
+      },
+      "expression_b": {
+        "ALL": {
+          "expressions": [
+            {
+              "Atomic": {
+                "item": "uvirith's legacy_3.53.esp"
+              }
+            },
+            {
+              "Atomic": {
+                "item": "oaab_tel mora.esp"
+              }
+            }
+          ]
+        }
+      },
+      "plugins": []
+    }
+  },
+  {
+    "Requires": {
+      "comment": "",
+      "expression_a": {
+        "Atomic": {
+          "item": "affresh+adanumuranreclaimedpatch.esp"
+        }
+      },
+      "expression_b": {
+        "ALL": {
+          "expressions": [
+            {
+              "Atomic": {
+                "item": "affresh.esp"
+              }
+            },
+            {
+              "Atomic": {
+                "item": "adanumuran reclaimed.esp"
+              }
+            }
+          ]
+        }
+      },
+      "plugins": []
+    }
+  },
+  {
+    "Note": {
+      "comment": "make sure you use the esp replacer provided on the momw-patches download page.",
+      "expressions": [
+        {
+          "Atomic": {
+            "item": "clean_argonian full helms lore integrated.esp"
+          }
+        },
+        {
+          "ALL": {
+            "expressions": [
+              {
+                "Atomic": {
+                  "item": "concept_arts_plantations.esp"
+                }
+              },
+              {
+                "Atomic": {
+                  "item": "rpnr_who.esp"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "plugins": []
+    }
+  },
+  {
+    "Requires": {
+      "comment": "",
+      "expression_a": {
+        "Atomic": {
+          "item": "affreshlibraryofvivecenhanced.esp"
+        }
+      },
+      "expression_b": {
+        "ALL": {
+          "expressions": [
+            {
+              "Atomic": {
+                "item": "affresh.esp"
+              }
+            },
+            {
+              "Atomic": {
+                "item": "rpnr_library.esp"
+              }
+            }
+          ]
+        }
+      },
+      "plugins": []
+    }
+  },
+  {
+    "Requires": {
+      "comment": "",
+      "expression_a": {
+        "Atomic": {
+          "item": "blademeisteradanumuranreclaimedpatch.esp"
+        }
+      },
+      "expression_b": {
+        "ALL": {
+          "expressions": [
+            {
+              "Atomic": {
+                "item": "blademeister_v1.5.esp"
+              }
+            },
+            {
+              "Atomic": {
+                "item": "adanumuran reclaimed.esp"
+              }
+            }
+          ]
+        }
+      },
+      "plugins": []
+    }
+  },
+  {
+    "Requires": {
+      "comment": "",
+      "expression_a": {
+        "Atomic": {
+          "item": "nod_rpnr_library_patch.esp"
+        }
+      },
+      "expression_b": {
+        "ALL": {
+          "expressions": [
+            {
+              "Atomic": {
+                "item": "nod - core.esm"
+              }
+            },
+            {
+              "Atomic": {
+                "item": "rpnr_library.esp"
+              }
+            }
+          ]
+        }
+      },
+      "plugins": []
+    }
+  },
+  {
+    "Requires": {
+      "comment": "",
+      "expression_a": {
+        "Atomic": {
+          "item": "blademeisterdaedricshrineoverhaulsheogorathpatch.esp"
+        }
+      },
+      "expression_b": {
+        "ALL": {
+          "expressions": [
+            {
+              "Atomic": {
+                "item": "blademeister_v1.5.esp"
+              }
+            },
+            {
+              "Atomic": {
+                "item": "daedric shrine overhaul sheogorath.esp"
               }
             }
           ]

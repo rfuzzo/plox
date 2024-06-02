@@ -229,8 +229,8 @@ pub fn graph(
         return ExitCode::FAILURE;
     }
 
-    let mut data = sorter::get_graph_data(&mods, &parser.order_rules, &parser.warning_rules);
-    let g = sorter::build_graph(&mut data);
+    let data = sorter::get_graph_data(&mods, &parser.order_rules, &parser.warning_rules);
+    let g = sorter::build_graph(&data);
 
     {
         let viz = Dot::with_config(&g, &[Config::EdgeNoLabel]);
@@ -359,7 +359,7 @@ pub fn sort(options: CliSortOptions) -> ExitCode {
 
                     if mods
                         .iter()
-                        .map(|f| f.name.clone())
+                        .map(|f| f.name.to_lowercase())
                         .collect::<Vec<_>>()
                         .eq(&result)
                     {
@@ -374,7 +374,7 @@ pub fn sort(options: CliSortOptions) -> ExitCode {
 
                     if mods
                         .iter()
-                        .map(|f| f.name.clone())
+                        .map(|f| f.name.to_lowercase())
                         .collect::<Vec<_>>()
                         .eq(&result)
                     {

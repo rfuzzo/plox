@@ -23,6 +23,12 @@ pub fn new_stable_sorter() -> Sorter {
     Sorter::new(ESortType::StableOpt, 100)
 }
 
+pub struct GraphData {
+    pub index_dict: HashMap<String, usize>,
+    pub index_dict_rev: HashMap<usize, String>,
+    pub edges: Vec<(usize, usize)>,
+}
+
 pub struct Sorter {
     pub sort_type: ESortType,
     pub max_iterations: usize,
@@ -58,15 +64,14 @@ impl Sorter {
             return Err("No order rules found");
         }
 
-        let mut data = get_graph_data(plugins, order_rules, warn_rules);
-        let g = build_graph(&mut data);
+        let data = get_graph_data(plugins, order_rules, warn_rules);
+        let g = build_graph(&data);
 
         let GraphData {
-            plugins,
             index_dict,
             index_dict_rev,
-            mod_map,
             mut edges,
+            ..
         } = data;
 
         // cycle check
@@ -82,13 +87,17 @@ impl Sorter {
             // map sorted index back to mods
             let mut result = vec![];
             for idx in sort {
-                result.push(mod_map[&idx.index()].to_owned());
+                let plugin = &plugins[idx.index()];
+                result.push(plugin.name.to_owned());
             }
             return Ok(result);
         }
 
         // sort
-        let mut mods: Vec<String> = plugins.iter().map(|f| f.name.to_owned()).collect();
+        let mut mods = plugins
+            .iter()
+            .map(|f| f.name.to_lowercase())
+            .collect::<Vec<String>>();
 
         // nearstart rules
         for nearstart in order_rules
@@ -182,7 +191,8 @@ impl Sorter {
                 let mut result = vec![];
                 for lower_case_name in mods {
                     let idx = index_dict[&lower_case_name.clone()];
-                    result.push(mod_map[&idx].to_owned());
+                    let plugin = &plugins[idx];
+                    result.push(plugin.name.to_owned());
                 }
                 return Ok(result);
             }
@@ -283,14 +293,6 @@ impl Sorter {
     }
 }
 
-pub struct GraphData {
-    pub plugins: Vec<PluginData>,
-    pub index_dict: HashMap<String, usize>,
-    pub index_dict_rev: HashMap<usize, String>,
-    pub mod_map: HashMap<usize, String>,
-    pub edges: Vec<(usize, usize)>,
-}
-
 pub fn get_graph_data(
     plugins: &[PluginData],
     order_rules: &[EOrderRule],
@@ -299,8 +301,6 @@ pub fn get_graph_data(
     // build hashmaps for lookup
     let mut index_dict: HashMap<String, usize> = HashMap::new();
     let mut index_dict_rev: HashMap<usize, String> = HashMap::default();
-
-    let mut mod_map: HashMap<usize, String> = HashMap::default();
     let mut plugin_map: HashMap<usize, PluginData> = HashMap::default();
 
     for (i, plugin_data) in plugins.iter().enumerate() {
@@ -309,7 +309,6 @@ pub fn get_graph_data(
         index_dict.insert(lower_case.clone(), i);
         index_dict_rev.insert(i, lower_case.clone());
 
-        mod_map.insert(i, plugin_data.name.to_owned());
         plugin_map.insert(i, plugin_data.to_owned());
     }
 
@@ -318,6 +317,7 @@ pub fn get_graph_data(
         .iter()
         .map(|f| f.name.to_lowercase())
         .collect::<Vec<String>>();
+
     let order_pairs = get_ordering_from_order_rules(order_rules);
     let mut edges: Vec<(usize, usize)> = vec![];
     for (a, b) in order_pairs {
@@ -342,43 +342,7 @@ pub fn get_graph_data(
         }
     }
 
-    // return
-    GraphData {
-        plugins: plugins.to_vec(),
-        index_dict,
-        index_dict_rev,
-        mod_map,
-        edges,
-    }
-}
-
-pub fn build_graph(data: &mut GraphData) -> StableGraph<String, ()> {
-    let GraphData {
-        plugins,
-        index_dict,
-        index_dict_rev,
-        edges,
-        ..
-    } = data;
-
-    // create graph from edges
-    let mut g = StableGraph::<String, ()>::with_capacity(plugins.len(), edges.len());
-    for n in 0..plugins.len() {
-        let name = index_dict_rev[&n].clone();
-        g.add_node(name);
-    }
-    // add edges
-    for edge in edges.iter() {
-        g.add_edge(NodeIndex::new(edge.0), NodeIndex::new(edge.1), ());
-    }
-
-    let mut edges_cpy = edges.clone();
-
     // add edges from masters
-    let mods = plugins
-        .iter()
-        .map(|f| f.name.to_lowercase())
-        .collect::<Vec<String>>();
     for mod_data in plugins.iter() {
         // add an edge from the mod to all its masters
         let idx = index_dict[&mod_data.name.to_lowercase()];
@@ -389,9 +353,8 @@ pub fn build_graph(data: &mut GraphData) -> StableGraph<String, ()> {
                     for result in results {
                         let idx_master = index_dict[&result];
                         let edge = (idx_master, idx);
-                        if !edges_cpy.contains(&edge) {
-                            edges_cpy.push(edge);
-                            g.add_edge(NodeIndex::new(edge.0), NodeIndex::new(edge.1), ());
+                        if !edges.contains(&edge) {
+                            edges.push(edge);
                         }
                     }
                 }
@@ -399,7 +362,31 @@ pub fn build_graph(data: &mut GraphData) -> StableGraph<String, ()> {
         }
     }
 
-    data.edges = edges_cpy;
+    // return
+    GraphData {
+        index_dict,
+        index_dict_rev,
+        edges,
+    }
+}
+
+pub fn build_graph(data: &GraphData) -> StableGraph<String, ()> {
+    let GraphData {
+        index_dict_rev,
+        edges,
+        ..
+    } = data;
+
+    // create graph from edges
+    let mut g = StableGraph::<String, ()>::with_capacity(index_dict_rev.len(), edges.len());
+    for n in 0..index_dict_rev.len() {
+        let name = index_dict_rev[&n].clone();
+        g.add_node(name);
+    }
+    // add edges
+    for edge in edges.iter() {
+        g.add_edge(NodeIndex::new(edge.0), NodeIndex::new(edge.1), ());
+    }
 
     g
 }

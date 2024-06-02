@@ -77,6 +77,187 @@
   {
     "Order": {
       "names": [
+        "nom3*.esp",
+        "nom_mc*.esp",
+        "nom_bf*.esp",
+        "roht nom addon.esp",
+        "ab01worldfixes*.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "abotguards*.esp",
+        "ab01manausermerged*.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "k_weather.esp",
+        "ab01resources enhanced kollops&kwamaeggs.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "ab01armorsweaponsmerged*.esp",
+        "dualweapons*.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "ab01officialmerged*.esp",
+        "ab01armorsfixedmerged.esp",
+        "ab01manausermerged*.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "roads&races*.esp",
+        "ab01gameplay.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "k_weather.esp",
+        "ab01gameplay*.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "magic diversity*.esp",
+        "ab01gameplay*.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "abotthunders&lightnings.esp",
+        "ab01gameplay*.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "gladiator.esp",
+        "ab01gotypatch.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "ab01gameplay*.esp",
+        "quickchar*.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "ab01gotypatch.esp",
+        "quickchar*.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "vgreetings*.esp",
+        "ab01gotypatch.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "st practice dummies*.esp",
+        "ab01housesmerged*.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "mao_pcsound.esp",
+        "ab01gameplay*.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "k_weather.esp",
+        "ab01gameplay*.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "thegoblinlab*.esp",
+        "ab01gameplay*.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "haldenshore*.esp",
+        "ab01gameplay*.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "aim_*.esp",
+        "ab01armorsweaponsmerged*.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "aim_*.esp",
+        "ab01gotypatch.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "wgibalancing.esp",
+        "ab01wgibalancing.esp",
+        "ab01gameplay*.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "ab01gameplay*.esp",
+        "remiros' tombs expansion*.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
         "adamantium armor integrated.esp",
         "morrowind anti-cheese adamantium armor integrated patch.esp"
       ]
@@ -1076,6 +1257,14 @@
     "Order": {
       "names": [
         "beautiful cities of morrowind.esp",
+        "bcom_khuul_lighthouse*.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "beautiful cities of morrowind.esp",
         "magical lights.esp"
       ]
     }
@@ -1263,7 +1452,8 @@
         "beautiful cities of morrowind.esp",
         "mashed lists.esp",
         "bcom_pathgrid_reset.esp",
-        "interior exterior flag reset.esp",
+        "interior exterior flag reset_atmospheric arena.esp",
+        "interior exterior flag reset_atmospheric plazas.esp",
         "bcom_openmw_plazas.esp"
       ]
     }
@@ -1273,7 +1463,8 @@
       "names": [
         "beautiful cities of morrowind.esp",
         "bcom_pathgrid_reset.esp",
-        "interior exterior flag reset.esp",
+        "interior exterior flag reset_atmospheric arena.esp",
+        "interior exterior flag reset_atmospheric plazas.esp",
         "bcom_openmw_plazas.esp",
         "interior exterior flag reset_skywind_arena.esp"
       ]
@@ -5571,6 +5762,14 @@
   {
     "Order": {
       "names": [
+        "improved inns expanded - lgnpc seyda neen - entertainers.esp",
+        "rp_npcs.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
         "lgnpc_seydaneen.esp",
         "improved inns expanded - lgnpc seyda neen*.esp"
       ]
@@ -6604,6 +6803,15 @@
       "names": [
         "ashfall*.esp",
         "nom3*.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "nom3*.esp",
+        "nom_creatures loot standard.esp",
+        "building up uvirith*.esp"
       ]
     }
   },
@@ -7718,6 +7926,22 @@
       "names": [
         "library of vivec overhaul - full.esp",
         "library of vivec overhaul - full - dialogue fix.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "library of vivec overhaul - full.esp",
+        "secretsofthecrystalcity.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "library of vivec overhaul - questonly.esp",
+        "secretsofthecrystalcity.esp"
       ]
     }
   },
@@ -9358,23 +9582,7 @@
     "Order": {
       "names": [
         "uvirith's legacy_3.53.esp",
-        "ul_3.5_tr_21.01_add-on.esp"
-      ]
-    }
-  },
-  {
-    "Order": {
-      "names": [
-        "uvirith's legacy_3.53.esp",
-        "uvirithslegacy+tr patch.esp"
-      ]
-    }
-  },
-  {
-    "Order": {
-      "names": [
-        "ul_3.5_tr_21.01_add-on.esp",
-        "uvirithslegacy+tr patch.esp"
+        "ul_3.5_tr_23.10_add-on.esp"
       ]
     }
   },
@@ -9397,24 +9605,328 @@
   {
     "Order": {
       "names": [
-        "rr_better_ships_n_boats_eng.esp",
-        "nordic dagon fel.esp"
+        "draggle-tail shack.esp",
+        "draggletailpriceadjustment.esp"
       ]
     }
   },
   {
     "Order": {
       "names": [
-        "rr_better_ships_n_boats_eng.esp",
-        "nordicdagonfel+rrbettershipsnboatspatch.esp"
+        "samarys ancestral tomb expanded.esp",
+        "affresh.esp"
       ]
     }
   },
   {
     "Order": {
       "names": [
-        "nordic dagon fel.esp",
-        "nordicdagonfel+rrbettershipsnboatspatch.esp"
+        "samarys ancestral tomb expanded.esp",
+        "affresh+samarysancestraltombexpanded.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "affresh.esp",
+        "affresh+samarysancestraltombexpanded.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "dd_caldera_expansion.esp",
+        "affresh.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "dd_caldera_expansion.esp",
+        "affresh+calderamineexpanded.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "affresh.esp",
+        "affresh+calderamineexpanded.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "ebonheart_underworks.esp",
+        "ebonheartunderworksmomwpatch.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "mamaea awakened.esp",
+        "mamaeaawakenedopenmwpatch.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "affresh.esp",
+        "beautiful cities of morrowind.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "affresh.esp",
+        "affresh+bcom.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "beautiful cities of morrowind.esp",
+        "affresh+bcom.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "solstheim tomb of the snow prince.esm",
+        "the doors of oblivion 1.4.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "solstheim tomb of the snow prince.esm",
+        "doors of oblivion+totsp patch.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "the doors of oblivion 1.4.esp",
+        "doors of oblivion+totsp patch.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "beautiful cities of morrowind.esp",
+        "ul_-_bcom_arena_patch.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "uvirith's legacy_3.53.esp",
+        "ul_-_bcom_arena_patch.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "daedric shrine overhaul molag bal.esp",
+        "ul_-_daedric_shrine_overhaul_molag_bal_patch.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "daedric shrine overhaul sheogorath.esp",
+        "ul_-_daedric_shrine_overhaul_sheogorath.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "uvirith's legacy_3.53.esp",
+        "oaab_tel mora.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "uvirith's legacy_3.53.esp",
+        "ul_-_oaab_tel_mora_patch.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "oaab_tel mora.esp",
+        "ul_-_oaab_tel_mora_patch.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "affresh.esp",
+        "adanumuran reclaimed.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "affresh.esp",
+        "affresh+adanumuranreclaimedpatch.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "adanumuran reclaimed.esp",
+        "affresh+adanumuranreclaimedpatch.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "clean_argonian full helms lore integrated.esp",
+        "concept_arts_plantations.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "clean_argonian full helms lore integrated.esp",
+        "rpnr_who.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "morrowind anti-cheese.esp",
+        "morrowind_anti-cheesequest_voice_greetings_patch.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "better clothes complete.esp",
+        "bc_shoe_fix.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "uvirith's legacy_3.53.esp",
+        "ul_3.5_openmw_1.3_add-on.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "affresh.esp",
+        "affreshlibraryofvivecenhanced.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "affresh.esp",
+        "rpnr_library.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "affreshlibraryofvivecenhanced.esp",
+        "rpnr_library.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "blademeister_v1.5.esp",
+        "adanumuran reclaimed.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "blademeister_v1.5.esp",
+        "blademeisteradanumuranreclaimedpatch.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "adanumuran reclaimed.esp",
+        "blademeisteradanumuranreclaimedpatch.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "nod - core.esm",
+        "rpnr_library.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "rpnr_library.esp",
+        "nod_rpnr_library_patch.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "blademeister_v1.5.esp",
+        "daedric shrine overhaul sheogorath.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "blademeister_v1.5.esp",
+        "blademeisterdaedricshrineoverhaulsheogorathpatch.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "daedric shrine overhaul sheogorath.esp",
+        "blademeisterdaedricshrineoverhaulsheogorathpatch.esp"
       ]
     }
   },
@@ -10461,6 +10973,14 @@
   {
     "Order": {
       "names": [
+        "writer of the third era.esp",
+        "writer of the third era - tr addon.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
         "yet another guard diversity - regular*.esp",
         "yet another guard diversity - uniform ordinators.esp"
       ]
@@ -10639,6 +11159,125 @@
       "names": [
         "ttooth ecology - bmr patch.esp",
         "yandl - merged.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "magical missions.esp",
+        "djangos dialogue.esp",
+        "what thieves guild*.esp",
+        "the tribe unmourned*.esp",
+        "morag tong*.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "stonewood pass*.esp",
+        "trade disputes*.esp",
+        "caverns overhaul.esp",
+        "tr_preview.esp",
+        "tr_*hotfix*.esp",
+        "abotwaterlifetraddon*.esp",
+        "mca - tr addon*.esp",
+        "abotwindowsglow.esp",
+        "abotwindowsglowtr*.esp",
+        "abotsiltstriders.esp",
+        "abotsiltstriderstr*.esp",
+        "abotboats.esp",
+        "abotboatstr*.esp",
+        "abotriverstriderstr*.esp",
+        "abottrwatersound*.esp",
+        "pb_signpostsretexturedtr.esp",
+        "tr_signs*.esp",
+        "poe lighthouse.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "morrowind crafting 2*.esp",
+        "morrowind crafting equipment.esp",
+        "morrowind crafting houses.esp",
+        "book rotate - expanded.esp",
+        "mel_teleportplugin*.esp",
+        "abotmoretraps.esp",
+        "men_combat.esp",
+        "men_combat_merged.esp",
+        "men_lockbash.esp",
+        "lin_lockbashbeta.esp",
+        "wgibalancing.esp",
+        "ab01wgibalancing.esp",
+        "class abilities*.esp",
+        "ab01gameplay*.esp",
+        "abotcitylanterns.esp",
+        "ab01underskar.esp",
+        "abotdice.esp",
+        "npc_commands*.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "weapon sheaths ultimate*.esp",
+        "nom3*.esp",
+        "nom_creatures loot standard.esp",
+        "nom_mc compatibility patch.esp",
+        "nom_com compatibility patch.esp",
+        "nom_bf compatibility patch.esp",
+        "roht nom addon.esp",
+        "owned beds nom.esp",
+        "tr nom-style bed renting.esp",
+        "tr improved inns add-on for nom.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "texture fix 2.0.esm",
+        "texture fix - bloodmoon 1.1.esm",
+        "texture fix - merged.esm",
+        "better*bodies*.esm",
+        "better*heads*.esm",
+        "ab01head&hair*.esm",
+        "book rotate.esm",
+        "gdr_masterfile.esm",
+        "tamriel_data.esm"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "morrowind crafting*.esp",
+        "book rotate - expanded.esp",
+        "mw containers animated exp.esp",
+        "alchemyfilter*.esp",
+        "mwse_poisoncrafting*.esp",
+        "abotdice.esp",
+        "bound armor bugfix*.esp",
+        "boundweaponreplacer.esp",
+        "bound armor+weapon.esp"
+      ]
+    }
+  },
+  {
+    "Order": {
+      "names": [
+        "creature pack*.esp",
+        "creatures.esp",
+        "creatures (*).esp",
+        "ab01gameplay*.esp",
+        "abotdice.esp",
+        "clear your name.esp",
+        "hunters_achievements.esp",
+        "boundweaponreplacer.esp"
       ]
     }
   },
@@ -11439,7 +12078,6 @@
       "names": [
         "hold it - replacerws.esp",
         "aaa 4.0 addon - vanilla.esp",
-        "morag tong polished+nx9.esp",
         "combined clothing plugins and desele.esp",
         "face originality and duner nobles overhaul.esp"
       ]
