@@ -1,13 +1,23 @@
 @echo off
 
-sccmap ./tmp/scc_base/graphviz.dot -o ./tmp/scc_base.dot
-dot -Tpng ./tmp/scc_base.dot -O
+:: run clean
+call _clean.bat
 
-sccmap ./tmp/scc_user/graphviz.dot -o ./tmp/scc_user.dot
-dot -Tpng ./tmp/scc_user.dot -O
+cd ./tmp
 
-sccmap ./tmp/scc_full/graphviz.dot -o ./tmp/scc_full.dot
-dot -Tpng ./tmp/scc_full.dot -O
+sccmap ./scc_base/graphviz.dot -o ./scc_base.dot
+dot -Tpng ./scc_base.dot -O
 
-echo "Graphs generated"
+echo "Graphs generated for base"
+
+sccmap ./scc_user/graphviz.dot -o ./scc_user.dot
+dot -Tpng ./scc_user.dot -O
+
+echo "Graphs generated for user"
+
+sccmap ./scc_full/graphviz.dot -o ./scc_full.dot
+dot -Tpng ./scc_full.dot -O
+
+echo "Graphs generated for full"
+
 pause
