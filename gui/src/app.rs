@@ -10,7 +10,7 @@ use log::{error, info, LevelFilter};
 use plox::{rules::EWarningRule, update_new_load_order};
 use simplelog::WriteLogger;
 
-use crate::{init_parser, AppData, AppSettings, ETheme};
+use crate::{init_parser, AppData, AppSettings, ELoadStatus, ETheme};
 
 #[derive(PartialEq)]
 pub enum EModListView {
@@ -252,33 +252,44 @@ impl eframe::App for TemplateApp {
                 // accept button
                 ui.add_space(4_f32);
 
-                let button = egui::Button::new("Accept");
-                // disable button if new order is the same as old
-                let enabled = !data.old_order.eq(&data.new_order);
-                ui.add_enabled_ui(enabled, |ui| {
-                    let r = ui.add_sized([ui.available_width(), 0_f32], button);
+                // check for was_sorted
+                if data.status == ELoadStatus::Conflicts {
+                    let text = "Mods were not sorted, please resolve conflicts first.";
+                    // red text
+                    ui.colored_label(Color32::RED, text);
+                } else if data.status == ELoadStatus::Cycle {
+                    let text = "Cycle detected in rules, please contact the rules maintainers.";
+                    // red text
+                    ui.colored_label(Color32::RED, text);
+                } else if data.status == ELoadStatus::Success {
+                    let button = egui::Button::new("Accept");
+                    // disable button if new order is the same as old
+                    let enabled = !data.old_order.eq(&data.new_order);
+                    ui.add_enabled_ui(enabled, |ui| {
+                        let r = ui.add_sized([ui.available_width(), 0_f32], button);
 
-                    if r.clicked() {
-                        // apply sorting
-                        match update_new_load_order(
-                            data.game,
-                            &data.new_order,
-                            self.settings.config.clone(),
-                        ) {
-                            Ok(_) => {
-                                info!("Update successful");
+                        if r.clicked() {
+                            // apply sorting
+                            match update_new_load_order(
+                                data.game,
+                                &data.new_order,
+                                self.settings.config.clone(),
+                            ) {
+                                Ok(_) => {
+                                    info!("Update successful");
+                                }
+                                Err(e) => {
+                                    error!("Could not updae load order: {}", e);
+                                }
                             }
-                            Err(e) => {
-                                error!("Could not updae load order: {}", e);
-                            }
+
+                            // exit the app
+                            ctx.send_viewport_cmd(egui::ViewportCommand::Close);
                         }
 
-                        // exit the app
-                        ctx.send_viewport_cmd(egui::ViewportCommand::Close);
-                    }
-
-                    r.on_disabled_hover_text("Mods are in correct order. No need to apply.");
-                });
+                        r.on_disabled_hover_text("Mods are in correct order. No need to apply.");
+                    });
+                }
 
                 ui.separator();
 

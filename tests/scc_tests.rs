@@ -8,6 +8,7 @@ mod scc_tests {
     use plox::{parser::*, *};
     use rand::seq::SliceRandom;
     use rand::thread_rng;
+    #[allow(unused_imports)]
     use rules::{EWarningRule, TWarningRule};
 
     fn init() {
@@ -27,8 +28,10 @@ mod scc_tests {
             .expect("write failed");
     }
 
+    #[allow(unused_variables)]
     fn clean_mods(plugins: &[PluginData], warning_rules: &[EWarningRule]) -> Vec<PluginData> {
         // lowercase all plugin names
+        #[allow(unused_mut)]
         let mut mods_cpy: Vec<_> = plugins
             .iter()
             .map(|f| {
@@ -39,19 +42,19 @@ mod scc_tests {
             })
             .collect();
 
-        let mut warning_rules = warning_rules.to_vec();
-        for rule in warning_rules.iter_mut() {
-            // only conflict rules
-            if let EWarningRule::Conflict(ref mut conflict) = rule {
-                if conflict.eval(&mods_cpy) {
-                    // remove mods
-                    warn!("removing mods: {:?}", conflict.plugins.len());
-                    for mod_name in &conflict.plugins {
-                        mods_cpy.retain(|x| x.name != *mod_name);
-                    }
-                }
-            }
-        }
+        // let mut warning_rules = warning_rules.to_vec();
+        // for rule in warning_rules.iter_mut() {
+        //     // only conflict rules
+        //     if let EWarningRule::Conflict(ref mut conflict) = rule {
+        //         if conflict.eval(&mods_cpy) {
+        //             // remove mods
+        //             warn!("removing mods: {:?}", conflict.plugins.len());
+        //             for mod_name in &conflict.plugins {
+        //                 mods_cpy.retain(|x| x.name != *mod_name);
+        //             }
+        //         }
+        //     }
+        // }
 
         mods_cpy
     }

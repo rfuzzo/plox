@@ -9,12 +9,13 @@ use std::{
 };
 
 pub use app::TemplateApp;
-use log::error;
+use log::{debug, error, warn};
 use plox::{
-    detect_game, download_latest_rules, gather_mods, get_default_rules_dir,
+    conflict2, detect_game, download_latest_rules, gather_mods, get_default_rules_dir,
     parser::{self, Warning},
     sorter::new_stable_sorter,
 };
+use serde::de;
 
 const CARGO_PKG_VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -60,6 +61,13 @@ impl AppSettings {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ELoadStatus {
+    Conflicts,
+    Cycle,
+    Success,
+}
+
 #[derive(Debug, Clone)]
 struct AppData {
     game: plox::ESupportedGame,
@@ -67,6 +75,7 @@ struct AppData {
     new_order: Vec<String>,
     warnings: Vec<Warning>,
     plugin_warning_map: Vec<(String, usize)>,
+    status: ELoadStatus,
 }
 
 fn init_parser(settings: AppSettings, tx: Sender<String>) -> Option<AppData> {
@@ -122,20 +131,55 @@ fn init_parser(settings: AppSettings, tx: Sender<String>) -> Option<AppData> {
         }
     }
 
+    // check if there are any conflicts
+    let mut has_conflicts = false;
+    if !warnings.is_empty() {
+        // check if there are any conflict rules in the warnings
+        // conflict2
+
+        for w in &warnings {
+            if conflict2(&w.rule).is_some() {
+                has_conflicts = true;
+                warn!("Conflict detected: {:?}", w);
+            }
+        }
+    }
+
+    let status;
     // sort
     let mut new_order = mods.iter().map(|m| m.name.clone()).collect();
-    if !&parser.order_rules.is_empty() {
-        let mut sorter = new_stable_sorter();
-        let _ = tx.send("Sorting mods".to_string());
-        new_order = match sorter.topo_sort(game, &mods, &parser.order_rules, &parser.warning_rules)
-        {
-            Ok(new) => new,
-            Err(e) => {
-                error!("error sorting: {e:?}");
-                let _ = tx.send(format!("error sorting: {e:?}"));
-                return None;
-            }
-        };
+    if !has_conflicts {
+        if !&parser.order_rules.is_empty() {
+            let mut sorter = new_stable_sorter();
+            let _ = tx.send("Sorting mods".to_string());
+
+            match sorter.topo_sort(game, &mods, &parser.order_rules, &parser.warning_rules) {
+                Ok(new) => {
+                    new_order = new;
+                    status = ELoadStatus::Success;
+                }
+                Err(e) => {
+                    let error_msg = format!("{e:?}");
+                    error!("error sorting: {error_msg}");
+
+                    // TODO better
+                    if error_msg.contains("Out of iterations") {
+                        let _ = tx.send("Cycle detected, skipping sort.".to_string());
+                        status = ELoadStatus::Cycle;
+                    } else {
+                        let _ = tx.send(format!("error sorting: {e:?}"));
+                        // exit
+                        return None;
+                    }
+                }
+            };
+        } else {
+            status = ELoadStatus::Success;
+        }
+    } else {
+        warn!("Conflicts detected, skipping sort");
+        let _ = tx.send("Conflicts detected, skipping sort".to_string());
+        status = ELoadStatus::Conflicts;
     }
 
     let r = AppData {
@@ -144,6 +188,7 @@ fn init_parser(settings: AppSettings, tx: Sender<String>) -> Option<AppData> {
         new_order,
         warnings,
         plugin_warning_map,
+        status,
     };
 
     Some(r)
