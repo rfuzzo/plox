@@ -250,14 +250,6 @@
   {
     "Order": {
       "names": [
-        "ab01gameplay*.esp",
-        "remiros' tombs expansion*.esp"
-      ]
-    }
-  },
-  {
-    "Order": {
-      "names": [
         "adamantium armor integrated.esp",
         "morrowind anti-cheese adamantium armor integrated patch.esp"
       ]
@@ -6810,7 +6802,6 @@
     "Order": {
       "names": [
         "nom3*.esp",
-        "nom_creatures loot standard.esp",
         "building up uvirith*.esp"
       ]
     }
@@ -11226,10 +11217,6 @@
       "names": [
         "weapon sheaths ultimate*.esp",
         "nom3*.esp",
-        "nom_creatures loot standard.esp",
-        "nom_mc compatibility patch.esp",
-        "nom_com compatibility patch.esp",
-        "nom_bf compatibility patch.esp",
         "roht nom addon.esp",
         "owned beds nom.esp",
         "tr nom-style bed renting.esp",

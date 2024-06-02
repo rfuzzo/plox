@@ -9899,7 +9899,6 @@ RP_Overhaul.esp
 [Order]
 Hold it - replacerWS.esp
 AAA 4.0 Addon - Vanilla.esp
-Morag Tong Polished+NX9.esp
 Combined clothing plugins and desele.esp
 Face Originality and Duner Nobles Overhaul.esp
 

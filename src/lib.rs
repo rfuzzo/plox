@@ -7,6 +7,9 @@ use std::{env, vec};
 
 use clap::ValueEnum;
 
+pub mod commands;
+pub use commands::*;
+
 pub mod expressions;
 pub mod parser;
 pub mod rules;
