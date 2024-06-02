@@ -852,10 +852,6 @@ Beautiful cities of Morrowind.esp
 Trellis addon*.esp
 
 [Order]
-Morrowind Anti-Cheese.esp
-Beautiful cities of Morrowind.esp
-
-[Order]
 Morrowind Anti-Cheese Tweaked.esp
 Beautiful cities of Morrowind.esp
 
