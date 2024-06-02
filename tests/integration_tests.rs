@@ -17,6 +17,39 @@ mod integration_tests {
         let _ = env_logger::Builder::from_env(env).is_test(true).try_init();
     }
 
+    fn new_stable_full_sorter() -> Sorter {
+        Sorter::new(sorter::ESortType::StableFull, 1000)
+    }
+
+    fn clean_mods(plugins: &[PluginData], warning_rules: &[EWarningRule]) -> Vec<PluginData> {
+        // lowercase all plugin names
+        let mut mods_cpy: Vec<_> = plugins
+            .iter()
+            .map(|f| {
+                let mut x = f.clone();
+                let name_lc = x.name.to_lowercase();
+                x.name = name_lc;
+                x
+            })
+            .collect();
+
+        let mut warning_rules = warning_rules.to_vec();
+        for rule in warning_rules.iter_mut() {
+            // only conflict rules
+            if let EWarningRule::Conflict(ref mut conflict) = rule {
+                if conflict.eval(&mods_cpy) {
+                    // remove mods
+                    warn!("removing mods: {:?}", conflict.plugins.len());
+                    for mod_name in &conflict.plugins {
+                        mods_cpy.retain(|x| x.name != *mod_name);
+                    }
+                }
+            }
+        }
+
+        mods_cpy
+    }
+
     #[test]
     fn test_read_mods() {
         init();
@@ -201,35 +234,6 @@ mod integration_tests {
         }
     }
 
-    fn clean_mods(plugins: &[PluginData], warning_rules: &[EWarningRule]) -> Vec<PluginData> {
-        // lowercase all plugin names
-        let mut mods_cpy: Vec<_> = plugins
-            .iter()
-            .map(|f| {
-                let mut x = f.clone();
-                let name_lc = x.name.to_lowercase();
-                x.name = name_lc;
-                x
-            })
-            .collect();
-
-        let mut warning_rules = warning_rules.to_vec();
-        for rule in warning_rules.iter_mut() {
-            // only conflict rules
-            if let EWarningRule::Conflict(ref mut conflict) = rule {
-                if conflict.eval(&mods_cpy) {
-                    // remove mods
-                    warn!("removing mods: {:?}", conflict.plugins.len());
-                    for mod_name in &conflict.plugins {
-                        mods_cpy.retain(|x| x.name != *mod_name);
-                    }
-                }
-            }
-        }
-
-        mods_cpy
-    }
-
     #[test]
     fn graphviz() -> std::io::Result<()> {
         init();
@@ -253,123 +257,6 @@ mod integration_tests {
             let mut file = std::fs::File::create("tmp/graphviz.dot").expect("file create failed");
             std::io::Write::write_all(&mut file, format!("{:?}", viz).as_bytes())
                 .expect("write failed");
-        }
-
-        Ok(())
-    }
-
-    #[test]
-    fn scc() -> std::io::Result<()> {
-        init();
-
-        let mut parser = new_tes3_parser();
-        parser.init_from_file("./tests/mlox/mlox_user.txt")?;
-
-        let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
-        mods = clean_mods(&mods, &parser.warning_rules);
-
-        let mut rng = thread_rng();
-        mods.shuffle(&mut rng);
-
-        let data = sorter::get_graph_data(&mods, &parser.order_rules, &parser.warning_rules);
-        let g = sorter::build_graph(&data);
-
-        // cycle check
-        let s = petgraph::algo::toposort(&g, None);
-        if let Ok(result) = s {
-            // debug print to file
-            let mut res = vec![];
-            for idx in &result {
-                res.push(idx.index());
-            }
-            let _ = std::fs::create_dir_all("tmp");
-            let file = std::fs::File::create("tmp/toposort.json").expect("file create failed");
-            serde_json::to_writer_pretty(file, &res).expect("serialize failed");
-        } else {
-            // kosaraju_scc
-            {
-                let scc = petgraph::algo::kosaraju_scc(&g);
-                let mut res: Vec<Vec<String>> = vec![];
-                for er in &scc {
-                    if er.len() > 1 {
-                        warn!("Found a cycle with {} elements", er.len());
-                        let mut cycle = vec![];
-                        for e in er {
-                            // lookup name
-                            let name = data.index_dict_rev[&e.index()].clone();
-                            cycle.push(name);
-                        }
-                        res.push(cycle);
-                    }
-                }
-                // debug print to file
-                if !res.is_empty() {
-                    let _ = std::fs::create_dir_all("tmp");
-                    let file =
-                        std::fs::File::create("tmp/kosaraju_scc.json").expect("file create failed");
-                    serde_json::to_writer_pretty(file, &res).expect("serialize failed");
-                }
-            }
-
-            // tarjan_scc
-            {
-                let scc = petgraph::algo::tarjan_scc(&g);
-                let mut res: Vec<Vec<String>> = vec![];
-                for er in &scc {
-                    if er.len() > 1 {
-                        warn!("Found a cycle with {} elements", er.len());
-                        let mut cycle = vec![];
-                        for e in er {
-                            // lookup name
-                            let name = data.index_dict_rev[&e.index()].clone();
-                            cycle.push(name);
-                        }
-                        res.push(cycle);
-                    }
-                }
-                // debug print to file
-                if !res.is_empty() {
-                    let _ = std::fs::create_dir_all("tmp");
-                    let file =
-                        std::fs::File::create("tmp/tarjan_scc.json").expect("file create failed");
-                    serde_json::to_writer_pretty(file, &res).expect("serialize failed");
-
-                    // find all rules that are part of a cycle
-                    let mut cycle_rules = vec![];
-                    for cycle in &res {
-                        for rule in &parser.order_rules {
-                            // switch
-                            let mut names = vec![];
-                            if let Some(nearstart) = nearstart2(rule) {
-                                names.push(nearstart.names);
-                            } else if let Some(nearend) = nearend2(rule) {
-                                names.push(nearend.names);
-                            } else if let Some(order) = order2(rule.clone()) {
-                                names.push(order.names);
-                            }
-
-                            // check that the names contain at least 2 mods
-                            let mut found = 0;
-                            for name in &names {
-                                for n in name {
-                                    if cycle.contains(n) {
-                                        found += 1;
-                                    }
-                                }
-                            }
-                            if found > 1 {
-                                cycle_rules.push(rule.clone());
-                            }
-                        }
-                    }
-
-                    // print cycle rules to file
-                    let _ = std::fs::create_dir_all("tmp");
-                    let file =
-                        std::fs::File::create("tmp/cycle_rules.json").expect("file create failed");
-                    serde_json::to_writer_pretty(file, &cycle_rules).expect("serialize failed");
-                }
-            }
         }
 
         Ok(())
@@ -440,13 +327,14 @@ mod integration_tests {
     }
 
     #[test]
-    fn test_mlox_base_rules() -> std::io::Result<()> {
+    fn test_mlox_base_rules_stable() -> std::io::Result<()> {
         init();
 
         let mut parser = new_tes3_parser();
         parser.init_from_file("./tests/mlox/mlox_base.txt")?;
 
         let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
+        mods = clean_mods(&mods, &parser.warning_rules);
 
         let mut rng = thread_rng();
         mods.shuffle(&mut rng);
@@ -468,6 +356,22 @@ mod integration_tests {
             }
         }
 
+        Ok(())
+    }
+
+    #[test]
+    fn test_mlox_base_rules_unstable() -> std::io::Result<()> {
+        init();
+
+        let mut parser = new_tes3_parser();
+        parser.init_from_file("./tests/mlox/mlox_base.txt")?;
+
+        let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
+        mods = clean_mods(&mods, &parser.warning_rules);
+
+        let mut rng = thread_rng();
+        mods.shuffle(&mut rng);
+
         match new_unstable_sorter().topo_sort(
             ESupportedGame::Morrowind,
             &mods,
@@ -486,18 +390,18 @@ mod integration_tests {
         Ok(())
     }
 
-    #[allow(dead_code)]
-    //#[test]
-    fn test_mlox_rules() -> std::io::Result<()> {
+    #[test]
+    fn test_mlox_rules_stable() -> std::io::Result<()> {
         init();
 
         let mut parser = new_tes3_parser();
         parser.parse("./tests/mlox")?;
 
-        let mods = debug_get_mods_from_order_rules(&parser.order_rules);
+        let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
+        mods = clean_mods(&mods, &parser.warning_rules);
 
-        // let mut rng = thread_rng();
-        // mods.shuffle(&mut rng);
+        let mut rng = thread_rng();
+        mods.shuffle(&mut rng);
 
         warn!("MODS: {}", mods.len());
 
@@ -514,23 +418,27 @@ mod integration_tests {
                 );
             }
             Err(e) => {
-                match new_unstable_sorter().topo_sort(
-                    ESupportedGame::Morrowind,
-                    &mods,
-                    &parser.order_rules,
-                    &parser.warning_rules,
-                ) {
-                    Ok(result) => {
-                        assert!(
-                            check_order(&result, &parser.order_rules),
-                            "stable(true) order is wrong"
-                        );
-                    }
-                    Err(e) => panic!("Error: {}", e),
-                }
                 panic!("Error: {}", e)
             }
         }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_mlox_rules_unstable() -> std::io::Result<()> {
+        init();
+
+        let mut parser = new_tes3_parser();
+        parser.parse("./tests/mlox")?;
+
+        let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
+        mods = clean_mods(&mods, &parser.warning_rules);
+
+        let mut rng = thread_rng();
+        mods.shuffle(&mut rng);
+
+        warn!("MODS: {}", mods.len());
 
         match new_unstable_sorter().topo_sort(
             ESupportedGame::Morrowind,
@@ -548,10 +456,6 @@ mod integration_tests {
         }
 
         Ok(())
-    }
-
-    fn new_stable_full_sorter() -> Sorter {
-        Sorter::new(sorter::ESortType::StableFull, 1000)
     }
 
     #[test]
