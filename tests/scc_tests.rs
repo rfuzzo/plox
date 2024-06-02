@@ -8,7 +8,6 @@ mod scc_tests {
     use plox::{parser::*, *};
     use rand::seq::SliceRandom;
     use rand::thread_rng;
-    #[allow(unused_imports)]
     use rules::{EWarningRule, TWarningRule};
 
     fn init() {
@@ -28,7 +27,6 @@ mod scc_tests {
             .expect("write failed");
     }
 
-    #[allow(unused_variables)]
     fn clean_mods(
         plugins: &[PluginData],
         warning_rules: &[EWarningRule],
