@@ -40,6 +40,9 @@ struct AppSettings {
 
     /// use a log file bool
     log_to_file: bool,
+
+    /// ignore warnings
+    ignore_warnings: bool,
 }
 impl AppSettings {
     fn from_file(arg: &Path) -> Self {
@@ -142,6 +145,11 @@ fn init_parser(settings: AppSettings, tx: Sender<String>) -> Option<AppData> {
                 warn!("Conflict detected: {:?}", w);
             }
         }
+    }
+
+    // ignore warnings
+    if settings.ignore_warnings {
+        has_conflicts = false;
     }
 
     let status;
