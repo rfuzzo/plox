@@ -5,8 +5,8 @@ mod integration_tests {
 
     use log::warn;
     use plox::{parser::*, sorter::*, *};
+    use rand::rng;
     use rand::seq::SliceRandom;
-    use rand::thread_rng;
     use rules::{EWarningRule, TWarningRule};
     use semver::Version;
 
@@ -254,7 +254,7 @@ mod integration_tests {
         let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
         mods = clean_mods(&mods, &parser.warning_rules);
 
-        let mut rng = thread_rng();
+        let mut rng = rng();
         mods.shuffle(&mut rng);
 
         let data = sorter::get_graph_data(&mods, &parser.order_rules, &parser.warning_rules);
@@ -282,7 +282,7 @@ mod integration_tests {
         let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
         mods = clean_mods(&mods, &parser.warning_rules);
 
-        let mut rng = thread_rng();
+        let mut rng = rng();
         mods.shuffle(&mut rng);
 
         match new_stable_sorter().topo_sort(
@@ -315,7 +315,7 @@ mod integration_tests {
         let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
         mods = clean_mods(&mods, &parser.warning_rules);
 
-        let mut rng = thread_rng();
+        let mut rng = rng();
         mods.shuffle(&mut rng);
 
         match new_unstable_sorter().topo_sort(
@@ -346,7 +346,7 @@ mod integration_tests {
         let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
         mods = clean_mods(&mods, &parser.warning_rules);
 
-        let mut rng = thread_rng();
+        let mut rng = rng();
         mods.shuffle(&mut rng);
 
         match new_stable_sorter().topo_sort(
@@ -379,7 +379,7 @@ mod integration_tests {
         let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
         mods = clean_mods(&mods, &parser.warning_rules);
 
-        let mut rng = thread_rng();
+        let mut rng = rng();
         mods.shuffle(&mut rng);
 
         match new_unstable_sorter().topo_sort(
@@ -410,7 +410,7 @@ mod integration_tests {
         let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
         mods = clean_mods(&mods, &parser.warning_rules);
 
-        let mut rng = thread_rng();
+        let mut rng = rng();
         mods.shuffle(&mut rng);
 
         warn!("MODS: {}", mods.len());
@@ -445,7 +445,7 @@ mod integration_tests {
         let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
         mods = clean_mods(&mods, &parser.warning_rules);
 
-        let mut rng = thread_rng();
+        let mut rng = rng();
         mods.shuffle(&mut rng);
 
         warn!("MODS: {}", mods.len());
@@ -476,7 +476,7 @@ mod integration_tests {
         parser.init_from_file("./tests/mlox/mlox_base.txt")?;
         let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
 
-        let mut rng = thread_rng();
+        let mut rng = rng();
         mods.shuffle(&mut rng);
         let mods = mods.into_iter().take(100).collect::<Vec<_>>();
 
@@ -510,7 +510,7 @@ mod integration_tests {
         parser.init_from_file("./tests/mlox/mlox_base.txt")?;
         let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
 
-        let mut rng = thread_rng();
+        let mut rng = rng();
         let mut times = vec![];
         for n in [64, 128, 256, 512 /* 1024 , 2048 */] {
             mods.shuffle(&mut rng);

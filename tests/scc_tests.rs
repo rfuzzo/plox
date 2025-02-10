@@ -6,8 +6,8 @@ mod scc_tests {
     use log::warn;
     use petgraph::stable_graph::StableGraph;
     use plox::{parser::*, *};
+    use rand::rng;
     use rand::seq::SliceRandom;
-    use rand::thread_rng;
     use rules::{EWarningRule, TWarningRule};
 
     fn init() {
@@ -91,7 +91,7 @@ mod scc_tests {
         let mut mods = debug_get_mods_from_order_rules(&parser.order_rules);
         mods = clean_mods(&mods, &parser.warning_rules, &tmp_dir);
 
-        let mut rng = thread_rng();
+        let mut rng = rng();
         mods.shuffle(&mut rng);
 
         let data = sorter::get_graph_data(&mods, &parser.order_rules, &parser.warning_rules);
