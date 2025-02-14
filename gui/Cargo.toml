@@ -21,6 +21,7 @@ log = { workspace = true }
 serde = { workspace = true }
 byteorder = { workspace = true }
 
+open = "5.0"
 simplelog = "0.12"
 toml = "0.8"
 

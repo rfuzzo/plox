@@ -52,6 +52,7 @@ pub enum ESupportedGame {
     Cyberpunk,
 }
 pub const PLOX_RULES_BASE: &str = "plox_base.txt";
+pub const GRAPH_FILE: &str = "graphviz.dot";
 
 ////////////////////////////////////////////////////////////////////////
 // GAMES

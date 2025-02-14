@@ -5,7 +5,7 @@ use petgraph::{graph::NodeIndex, stable_graph::StableGraph};
 
 use crate::{
     get_ordering_from_order_rules, nearend2, nearstart2, wild_contains, EOrderRule, ESupportedGame,
-    EWarningRule, PluginData,
+    EWarningRule, PluginData, GRAPH_FILE,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -76,8 +76,9 @@ impl Sorter {
 
         // cycle check
         if self.sort_type == ESortType::Unstable {
-            let s = petgraph::algo::toposort(&g, None);
             let sort;
+            let s = petgraph::algo::toposort(&g, None);
+
             if let Ok(result) = s {
                 sort = result;
             } else {
@@ -204,6 +205,15 @@ impl Sorter {
             } else {
                 log::debug!("{}, index {}", i, index);
             }
+        }
+
+        // TODO find cycle
+        {
+            let viz = petgraph::dot::Dot::with_config(&g, &[petgraph::dot::Config::EdgeNoLabel]);
+            // write to file
+            let mut file = std::fs::File::create(GRAPH_FILE).expect("file create failed");
+            std::io::Write::write_all(&mut file, format!("{:?}", viz).as_bytes())
+                .expect("write failed");
         }
 
         log::error!("Out of iterations");

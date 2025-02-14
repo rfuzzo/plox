@@ -18,11 +18,8 @@ use plox::{
 
 const CARGO_PKG_VERSION: &str = env!("CARGO_PKG_VERSION");
 
-#[derive(serde::Deserialize, serde::Serialize, Debug, PartialEq)]
-enum ETheme {
-    Dark,
-    Light,
-}
+pub const PLOX_LOG_FILE: &str = "plox.log";
+pub const PLOX_CONF_FILE: &str = "plox.toml";
 
 #[derive(Debug, Clone, serde::Deserialize, serde::Serialize, Default)]
 struct AppSettings {

@@ -14,14 +14,6 @@ Supported games:
 
 The PLOX GUI supports a configuration file called `plox.toml` (place next to `plox_gui`) that allows you to customize its behavior. Here's an example of how to use the `plox.toml` file:
 
-Required fields:
-
-```toml
-no_rules_download = true
-log_level = "debug"
-log_to_file = true
-```
-
 Optional fields:
 
 ```toml
@@ -76,6 +68,7 @@ Commands:
   sort    Sorts the current mod load order according to specified rules
   list    Lists the current mod load order
   verify  Verifies integrity of the specified rules
+  graph   Outputs the rules as a graphviz dot file
   help    Print this message or the help of the given subcommand(s)
 
 Options:
@@ -86,9 +79,27 @@ Options:
   -V, --version                Print version
 ```
 
+### sort
+
+Sorts the current mod load order according to specified rules
+
+```txt
+Usage: plox.exe sort [OPTIONS]
+
+Options:
+  -g, --game-folder <GAME_FOLDER>  Root game folder (e.g. "Cyberpunk 2077" or "Morrowind"). Default is current working directory
+  -r, --rules-dir <RULES_DIR>      Folder to read sorting rules from. Default is ./mlox for TES3
+  -d, --dry-run                    Just print the suggested load order without sorting
+  -u, --unstable                   Use the potentially faster unstable sorter
+  -n, --no-download                Disable automatic downloading of latest ruleset
+  -m, --mod-list <MOD_LIST>        Read the input mods from a file instead of checking the root folder
+  -c, --config <CONFIG>            (OpenMW only) Path to the openmw.cfg file
+  -h, --help                       Print help
+```
+
 ### list
 
-Lists the current mod load order.
+Lists the current mod load order
 
 ```txt
 Usage: plox.exe list [OPTIONS]
@@ -99,19 +110,28 @@ Options:
   -h, --help             Print help
 ```
 
-### sort
+### verify
 
-Sorts the current mod load order according to specified rules
+Verifies integrity of the specified rules
 
 ```txt
-Usage: plox.exe sort [OPTIONS]
+Usage: plox.exe verify [OPTIONS]
 
 Options:
-  -g, --game-folder <GAME_FOLDER>  Root game folder (e.g. "Cyberpunk 2077" or "Morrowind"). Default is current working directory  
+  -r, --rules-dir <RULES_DIR>  Folder to read sorting rules from. Default is ./plox or ./mlox for TES3
+  -h, --help                   Print help
+```
+
+### graph
+
+Outputs the rules as a graphviz dot file
+
+```txt
+Usage: plox.exe graph [OPTIONS]
+
+Options:
+  -g, --game-folder <GAME_FOLDER>  Root game folder (e.g. "Cyberpunk 2077" or "Morrowind"). Default is current working directory
   -r, --rules-dir <RULES_DIR>      Folder to read sorting rules from. Default is ./mlox for TES3
-  -d, --dry-run                    Just print the suggested load order without sorting
-  -u, --unstable                   Use the potentially faster unstable sorter
-  -n, --no-download                Disable automatic downloading of latest ruleset
   -m, --mod-list <MOD_LIST>        Read the input mods from a file instead of checking the root folder
   -c, --config <CONFIG>            (OpenMW only) Path to the openmw.cfg file
   -h, --help                       Print help

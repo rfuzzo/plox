@@ -4,13 +4,13 @@ use std::{
     sync::mpsc::{Receiver, Sender},
 };
 
-use egui::{Color32, Label, Sense};
+use egui::{Color32, Id, Label, Modal, Sense};
 
 use log::{error, info, LevelFilter};
-use plox::{rules::EWarningRule, update_new_load_order};
+use plox::{rules::EWarningRule, update_new_load_order, GRAPH_FILE};
 use simplelog::WriteLogger;
 
-use crate::{init_parser, AppData, AppSettings, ELoadStatus, ETheme};
+use crate::{init_parser, AppData, AppSettings, ELoadStatus, PLOX_CONF_FILE, PLOX_LOG_FILE};
 
 #[derive(PartialEq)]
 pub enum EModListView {
@@ -36,6 +36,9 @@ pub struct TemplateApp {
     show_patches: bool,
 
     #[serde(skip)]
+    settings_open: bool,
+
+    #[serde(skip)]
     mod_list_view: EModListView,
     #[serde(skip)]
     text_filter: String,
@@ -45,7 +48,6 @@ pub struct TemplateApp {
     plugin_hover_filter: Vec<String>,
 
     // ui
-    theme: Option<ETheme>,
     #[serde(skip)]
     async_log: String,
     // Sender/Receiver for async notifications.
@@ -72,7 +74,7 @@ impl Default for TemplateApp {
             show_conflicts: true,
             show_requires: true,
             show_patches: true,
-            theme: None,
+            settings_open: false,
             mod_list_view: EModListView::NewOrder,
             text_filter: String::new(),
             plugin_filter: String::new(),
@@ -102,7 +104,7 @@ impl TemplateApp {
         };
 
         // deserialize settings from plox.toml
-        let settings = AppSettings::from_file(&PathBuf::from("plox.toml"));
+        let settings = AppSettings::from_file(&PathBuf::from(PLOX_CONF_FILE));
         app.settings = settings.clone();
 
         // init logger
@@ -111,7 +113,7 @@ impl TemplateApp {
             let _ = WriteLogger::init(
                 from_string(log_level),
                 simplelog::Config::default(),
-                File::create(PathBuf::from("plox.log")).unwrap(),
+                File::create(PathBuf::from(PLOX_LOG_FILE)).unwrap(),
             );
         } else {
             let _ = simplelog::TermLogger::init(
@@ -123,19 +125,6 @@ impl TemplateApp {
         }
 
         info!("PLOX v{}", crate::CARGO_PKG_VERSION);
-
-        // remove this when not in debug
-        // if let Ok(s) = toml::to_string_pretty(&AppSettings {
-        //     game: Some(plox::ESupportedGame::OpenMW),
-        //     no_rules_download: true,
-        //     config: Some(std::path::PathBuf::from("openmw.cfg")),
-        //     log_level: Some("debug".to_string()),
-        //     log_to_file: true,
-        // }) {
-        //     if let Err(e) = std::fs::write("plox.toml", s) {
-        //         error!("Error writing settings to file: {}", e);
-        //     }
-        // }
 
         // do all the logic here
         // init parser
@@ -174,13 +163,76 @@ impl eframe::App for TemplateApp {
 
     /// Called each time the UI needs repainting, which may be many times per second.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        // set dark mode by default
-        if self.theme.is_none() {
-            ctx.set_visuals(egui::Visuals::light())
-        } else if let Some(theme) = &self.theme {
-            match theme {
-                crate::ETheme::Dark => ctx.set_visuals(egui::Visuals::dark()),
-                crate::ETheme::Light => ctx.set_visuals(egui::Visuals::light()),
+        // modals
+        if self.settings_open {
+            let modal = Modal::new(Id::new("SettingsModal")).show(ctx, |ui| {
+                ui.set_width(250.0);
+
+                ui.heading("Settings");
+
+                // Settings
+                ui.checkbox(
+                    &mut self.settings.no_rules_download,
+                    "Do not download rules on startup",
+                );
+
+                ui.label("Log Level:");
+                ui.horizontal(|ui| {
+                    ui.radio_value(
+                        &mut self.settings.log_level,
+                        Some("trace".to_string()),
+                        "Trace",
+                    );
+                    ui.radio_value(
+                        &mut self.settings.log_level,
+                        Some("debug".to_string()),
+                        "Debug",
+                    );
+                    ui.radio_value(
+                        &mut self.settings.log_level,
+                        Some("info".to_string()),
+                        "Info",
+                    );
+                    ui.radio_value(
+                        &mut self.settings.log_level,
+                        Some("warn".to_string()),
+                        "Warn",
+                    );
+                    ui.radio_value(
+                        &mut self.settings.log_level,
+                        Some("error".to_string()),
+                        "Error",
+                    );
+                });
+
+                ui.checkbox(&mut self.settings.log_to_file, "Log to file");
+
+                ui.checkbox(&mut self.settings.ignore_warnings, "Ignore warnings");
+
+                // Buttons
+                ui.separator();
+                egui::Sides::new().show(
+                    ui,
+                    |_ui| {},
+                    |ui| {
+                        if ui.button("Save").clicked() {
+                            // save to plox.toml
+                            if let Ok(s) = toml::to_string_pretty(&self.settings) {
+                                if let Err(e) = std::fs::write(PLOX_CONF_FILE, s) {
+                                    error!("Error writing settings to file: {}", e);
+                                }
+                            }
+                            self.settings_open = false;
+                        }
+                        if ui.button("Cancel").clicked() {
+                            self.settings_open = false;
+                        }
+                    },
+                );
+            });
+
+            if modal.should_close() {
+                self.settings_open = false;
             }
         }
 
@@ -191,17 +243,39 @@ impl eframe::App for TemplateApp {
                 let is_web = cfg!(target_arch = "wasm32");
                 if !is_web {
                     ui.menu_button("File", |ui| {
-                        ui.hyperlink_to("PLOX on GitHub", "https://github.com/rfuzzo/plox");
+                        // open graph file
+                        if ui.button("Open graph file").clicked() {
+                            if let Err(e) = open::that(GRAPH_FILE) {
+                                error!("Error opening file: {}", e);
+                            }
+                            ui.close_menu();
+                        }
+
+                        ui.separator();
+                        // open settings file
+                        if ui.button("Settings").clicked() {
+                            self.settings_open = true;
+
+                            ui.close_menu();
+                        }
 
                         ui.separator();
                         if ui.button("Quit").clicked() {
                             ctx.send_viewport_cmd(egui::ViewportCommand::Close);
                         }
                     });
+
+                    ui.menu_button("About", |ui| {
+                        ui.hyperlink_to("PLOX on GitHub", "https://github.com/rfuzzo/plox");
+                    });
+
                     ui.add_space(16.0);
                 }
 
-                egui::widgets::global_theme_preference_buttons(ui);
+                // align right
+                ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                    egui::widgets::global_theme_preference_buttons(ui);
+                });
             });
         });
 
