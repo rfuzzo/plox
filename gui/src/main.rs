@@ -20,7 +20,7 @@ fn main() -> eframe::Result<()> {
     eframe::run_native(
         "PLOX GUI",
         native_options,
-        Box::new(|cc| Box::new(plox_gui::TemplateApp::new(cc))),
+        Box::new(|cc| Ok(Box::new(plox_gui::TemplateApp::new(cc)))),
     )
 }
 

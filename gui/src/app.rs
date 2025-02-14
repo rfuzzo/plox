@@ -152,17 +152,6 @@ impl TemplateApp {
 
         app
     }
-
-    /// Dark/light mode switch
-    fn global_dark_light_mode_buttons(&mut self, ui: &mut egui::Ui) {
-        let mut visuals = ui.ctx().style().visuals.clone();
-        visuals.light_dark_radio_buttons(ui);
-        ui.ctx().set_visuals(visuals);
-        match ui.ctx().style().visuals.clone().dark_mode {
-            true => self.theme = Some(ETheme::Dark),
-            false => self.theme = Some(ETheme::Light),
-        }
-    }
 }
 
 fn from_string(log_level: String) -> LevelFilter {
@@ -212,7 +201,7 @@ impl eframe::App for TemplateApp {
                     ui.add_space(16.0);
                 }
 
-                self.global_dark_light_mode_buttons(ui);
+                egui::widgets::global_theme_preference_buttons(ui);
             });
         });
 
