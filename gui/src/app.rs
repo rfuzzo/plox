@@ -343,7 +343,7 @@ impl eframe::App for TemplateApp {
                             }
 
                             // item view
-                            egui::Frame::none().fill(bg_color).show(ui, |ui| {
+                            egui::Frame::new().fill(bg_color).show(ui, |ui| {
                                 let label = Label::new(mod_name).sense(Sense::click());
 
                                 let r = ui.add_sized([ui.available_width(), 0_f32], label);
