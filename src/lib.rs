@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::error::Error;
 use std::fs::{self, File};
-use std::io::{self, BufRead, Read, Seek, Write};
+use std::io::{self, BufRead, BufReader, Read, Seek, Write};
 use std::path::{Path, PathBuf};
 use std::{env, vec};
 
@@ -526,6 +526,15 @@ fn match_desc_version(desc: &str) -> Option<String> {
     None
 }
 
+fn read_file_to_vec(file_path: &PathBuf) -> io::Result<Vec<String>> {
+    let file = File::open(file_path)?;
+    let reader = BufReader::new(file);
+
+    let lines: Vec<String> = reader.lines().map_while(Result::ok).collect();
+
+    Ok(lines)
+}
+
 pub fn gather_cp77_mods<P>(root: &P, game_version: &Option<String>) -> Vec<PluginData>
 where
     P: AsRef<Path>,
@@ -543,10 +552,43 @@ where
         }
     }
 
-    if let Ok(plugins) = fs::read_dir(archive_path) {
-        let mut entries = plugins
+    if let Ok(plugins) = fs::read_dir(&archive_path) {
+        let mut mods: Vec<PathBuf> = plugins
             .map(|res| res.map(|e| e.path()))
             .filter_map(Result::ok)
+            .collect::<Vec<_>>();
+
+        // load order
+        mods.sort_by(|a, b| {
+            a.to_string_lossy()
+                .as_bytes()
+                .cmp(b.to_string_lossy().as_bytes())
+        });
+
+        // load according to modlist.txt
+        let mut final_order: Vec<PathBuf> = vec![];
+        let modlist_name = "modlist.txt";
+        if let Ok(lines) = read_file_to_vec(&archive_path.join(modlist_name)) {
+            for name in lines {
+                let file_name = archive_path.join(name);
+                if mods.contains(&file_name) {
+                    final_order.push(file_name.to_owned());
+                }
+            }
+            // add remaining mods last
+            for m in mods.iter() {
+                if !final_order.contains(m) {
+                    final_order.push(m.to_path_buf());
+                }
+            }
+        } else {
+            final_order = mods;
+        }
+
+        // TODO Redmods
+
+        let vms = final_order
+            .iter()
             .filter_map(|e| {
                 if !e.is_dir() {
                     if let Some(os_ext) = e.extension() {
@@ -571,11 +613,7 @@ where
             })
             .collect::<Vec<_>>();
 
-        // TODO CP77 support modlist
-
-        // TODO CP77 gather REDmods from mods/<NAME>
-        entries.sort_by_key(|e| e.name.clone());
-        return entries;
+        return vms;
     }
 
     vec![]
