@@ -393,12 +393,16 @@ impl eframe::App for TemplateApp {
                             // get color for background
                             let mut bg_color = if !notes.is_empty() {
                                 let i = notes[0].1;
-                                let background_color = get_color_for_rule(&data.warnings[i].rule);
+                                let background_color = get_color_for_rule(
+                                    &data.warnings[i].rule,
+                                    ctx.style().visuals.dark_mode,
+                                );
                                 // make it more transparent
                                 background_color.gamma_multiply(0.5)
                             } else {
                                 Color32::TRANSPARENT
                             };
+
                             // override background color if mod is in plugin_filter with light blue
                             if !self.plugin_filter.is_empty()
                                 && mod_name.to_lowercase() == self.plugin_filter.to_lowercase()
@@ -408,17 +412,27 @@ impl eframe::App for TemplateApp {
                                     bg_color = Color32::DARK_BLUE;
                                 }
                             };
+
                             // override the background color if mod is hovered
-                            if self.plugin_hover_filter.contains(&mod_name.to_lowercase()) {
-                                bg_color = Color32::LIGHT_BLUE;
-                                if ctx.style().visuals.dark_mode {
-                                    bg_color = Color32::DARK_BLUE;
-                                }
+                            let is_hover = !notes.is_empty()
+                                && self.plugin_hover_filter.contains(&mod_name.to_lowercase());
+                            if is_hover {
+                                let i = notes[0].1;
+                                bg_color = get_highlight_color_for_rule(
+                                    &data.warnings[i].rule,
+                                    ctx.style().visuals.dark_mode,
+                                );
                             }
 
                             // item view
                             egui::Frame::new().fill(bg_color).show(ui, |ui| {
-                                let label = Label::new(mod_name).sense(Sense::click());
+                                // when hover and in dark mode, then make the text black
+                                let label = if is_hover && ctx.style().visuals.dark_mode {
+                                    Label::new(egui::RichText::new(mod_name).color(Color32::BLACK))
+                                        .sense(Sense::click())
+                                } else {
+                                    Label::new(mod_name).sense(Sense::click())
+                                };
 
                                 let r = ui.add_sized([ui.available_width(), 0_f32], label);
                                 if r.clicked() {
@@ -458,6 +472,8 @@ impl eframe::App for TemplateApp {
 
                 // display warnings
                 egui::ScrollArea::vertical().show(ui, |ui| {
+                    self.plugin_hover_filter = vec![];
+
                     for (i, w) in data.warnings.iter().enumerate() {
                         //filters
                         if !self.show_notes && matches!(w.rule, EWarningRule::Note(_)) {
@@ -505,8 +521,11 @@ impl eframe::App for TemplateApp {
                         let mut frame = egui::Frame::default().inner_margin(4.0).begin(ui);
                         {
                             // create itemview
-                            let color = get_color_for_rule(&w.rule);
-                            frame.content_ui.colored_label(color, w.get_rule_name());
+                            let fore_color =
+                                get_color_for_rule(&w.rule, ctx.style().visuals.dark_mode);
+                            frame
+                                .content_ui
+                                .colored_label(fore_color, w.get_rule_name());
 
                             frame.content_ui.label(w.get_comment());
 
@@ -518,6 +537,7 @@ impl eframe::App for TemplateApp {
                                 });
                             });
                         }
+
                         let response = frame.allocate_space(ui);
                         if response.hovered() {
                             let mut bg_color = egui::Color32::LIGHT_GRAY;
@@ -529,9 +549,8 @@ impl eframe::App for TemplateApp {
 
                             // update hover filter
                             self.plugin_hover_filter.clone_from(&w.get_plugins());
-                        } else {
-                            self.plugin_hover_filter = vec![];
                         }
+
                         frame.paint(ui);
                     }
                 });
@@ -540,11 +559,26 @@ impl eframe::App for TemplateApp {
     }
 }
 
-fn get_color_for_rule(rule: &EWarningRule) -> Color32 {
+fn get_color_for_rule(rule: &EWarningRule, _is_dark_mode: bool) -> Color32 {
     match rule {
-        EWarningRule::Note(_) => Color32::DARK_GREEN,
-        EWarningRule::Conflict(_) => Color32::RED,
-        EWarningRule::Requires(_) => Color32::YELLOW,
-        EWarningRule::Patch(_) => Color32::BLUE,
+        EWarningRule::Note(note) => {
+            // highlighting according to https://github.com/rfuzzo/mlox/blob/master/Documentation/Rule%20Guidelines.md#highlighting
+            if note.comment.starts_with("!!!") {
+                Color32::RED
+            } else if note.comment.starts_with("!!") {
+                Color32::ORANGE
+            } else if note.comment.starts_with("!") {
+                Color32::LIGHT_BLUE
+            } else {
+                Color32::DARK_GREEN
+            }
+        }
+        EWarningRule::Conflict(_) => Color32::YELLOW,
+        EWarningRule::Requires(_) => Color32::RED,
+        EWarningRule::Patch(_) => Color32::YELLOW,
     }
+}
+
+fn get_highlight_color_for_rule(rule: &EWarningRule, is_dark_mode: bool) -> Color32 {
+    get_color_for_rule(rule, is_dark_mode).to_opaque()
 }

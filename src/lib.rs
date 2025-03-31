@@ -66,7 +66,7 @@ pub fn detect_game() -> Option<ESupportedGame> {
         Some(ESupportedGame::Openmw)
     } else if PathBuf::from("bin")
         .join("x64")
-        .join("Cyberpunk2077")
+        .join("Cyberpunk2077.exe")
         .exists()
     {
         Some(ESupportedGame::Cyberpunk)
@@ -199,7 +199,17 @@ fn download_mlox_rules(rules_dir: &PathBuf) {
 fn download_plox_rules(rules_dir: &PathBuf) {
     match fs::create_dir_all(rules_dir) {
         Ok(_) => {
-            // TODO CP77 download plox rules
+            // download
+            let repo = "https://github.com/rfuzzo/cmop-rules/raw/main/";
+            let files = ["plox_base.txt"];
+            for file in files {
+                let output_path = rules_dir.join(file); // Specify the output path here
+                let url = repo.to_owned() + file;
+                match download_file(&url, &output_path) {
+                    Ok(()) => {}
+                    Err(err) => error!("Error downloading file: {}", err),
+                }
+            }
         }
         Err(e) => {
             error!(
