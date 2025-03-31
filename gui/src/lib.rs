@@ -12,6 +12,7 @@ pub use app::TemplateApp;
 use log::{error, warn};
 use plox::{
     conflict2, detect_game, download_latest_rules, gather_mods, get_default_rules_dir,
+    get_game_version,
     parser::{self, Warning},
     sorter::new_stable_sorter,
 };
@@ -75,6 +76,7 @@ struct AppData {
     warnings: Vec<Warning>,
     plugin_warning_map: Vec<(String, usize)>,
     status: ELoadStatus,
+    game_version: Option<String>,
 }
 
 fn init_parser(settings: AppSettings, tx: Sender<String>) -> Option<AppData> {
@@ -96,6 +98,7 @@ fn init_parser(settings: AppSettings, tx: Sender<String>) -> Option<AppData> {
     };
 
     let root = env::current_dir().expect("No current working dir");
+    let game_version = get_game_version(game);
 
     // rules
     let rules_dir = get_default_rules_dir(game);
@@ -108,10 +111,10 @@ fn init_parser(settings: AppSettings, tx: Sender<String>) -> Option<AppData> {
 
     // mods
     let _ = tx.send("Gathering mods".to_string());
-    let mods = gather_mods(&root, game, settings.config);
+    let mods = gather_mods(&root, game, &game_version, settings.config);
 
     // parser
-    let mut parser = parser::get_parser(game);
+    let mut parser = parser::get_parser(game, game_version.clone());
     let _ = tx.send("Initializing parser".to_string());
     if let Err(e) = parser.parse(rules_dir) {
         error!("Parser init failed: {}", e);
@@ -193,6 +196,7 @@ fn init_parser(settings: AppSettings, tx: Sender<String>) -> Option<AppData> {
         warnings,
         plugin_warning_map,
         status,
+        game_version,
     };
 
     Some(r)

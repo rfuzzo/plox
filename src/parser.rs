@@ -9,22 +9,41 @@ use log::*;
 
 use crate::{expressions::*, rules::*, ESupportedGame, PluginData, TParser};
 
-pub fn get_parser(game: ESupportedGame) -> Parser {
+pub fn get_parser(game: ESupportedGame, game_version: Option<String>) -> Parser {
     match game {
-        ESupportedGame::Morrowind => new_tes3_parser(),
-        ESupportedGame::Openmw => new_openmw_parser(),
-        ESupportedGame::Cyberpunk => new_cyberpunk_parser(),
+        ESupportedGame::Morrowind => Parser::new(
+            vec![".esp".into(), ".esm".into()],
+            ESupportedGame::Morrowind,
+            game_version,
+        ),
+        ESupportedGame::Openmw => Parser::new(
+            vec![
+                ".esp".into(),
+                ".esm".into(),
+                ".omwgame".into(),
+                ".omwaddon".into(),
+                ".omwscripts".into(),
+            ],
+            ESupportedGame::Openmw,
+            game_version,
+        ),
+        ESupportedGame::Cyberpunk => Parser::new(
+            vec![".archive".into()],
+            ESupportedGame::Cyberpunk,
+            game_version,
+        ),
     }
 }
 
 pub fn new_cyberpunk_parser() -> Parser {
-    Parser::new(vec![".archive".into()], ESupportedGame::Cyberpunk)
+    Parser::new(vec![".archive".into()], ESupportedGame::Cyberpunk, None)
 }
 
 pub fn new_tes3_parser() -> Parser {
     Parser::new(
         vec![".esp".into(), ".esm".into()],
         ESupportedGame::Morrowind,
+        None,
     )
 }
 
@@ -38,6 +57,7 @@ pub fn new_openmw_parser() -> Parser {
             ".omwscripts".into(),
         ],
         ESupportedGame::Openmw,
+        None,
     )
 }
 
@@ -78,6 +98,7 @@ impl Warning {
 #[derive(Debug, Clone)]
 pub struct Parser {
     pub game: ESupportedGame,
+    pub game_version: Option<String>,
     pub ext: Vec<String>,
 
     pub order_rules: Vec<EOrderRule>,
@@ -86,10 +107,11 @@ pub struct Parser {
 }
 
 impl Parser {
-    pub fn new(ext: Vec<String>, game: ESupportedGame) -> Self {
+    pub fn new(ext: Vec<String>, game: ESupportedGame, game_version: Option<String>) -> Self {
         Self {
             ext,
             game,
+            game_version,
             warning_rules: vec![],
             order_rules: vec![],
             warnings: vec![],
@@ -536,9 +558,10 @@ impl Parser {
                 current_buffer += &(b as char).to_string();
 
                 // check if really an expression
-                // valid expressions are [ANY], [ALL], [NOT], [DESC], [SIZE], [VER]
+                // valid expressions are [ANY], [ALL], [NOT], [DESC], [SIZE], [VER], [GVER]
 
                 if depth == 0 {
+                    // TODO get the list from the traits
                     // we reached the end of the current expression
                     let trimmed = current_buffer.trim();
                     if starts_with_whitespace(trimmed, "[any")
@@ -547,6 +570,7 @@ impl Parser {
                         || starts_with_whitespace(trimmed, "[desc")
                         || starts_with_whitespace(trimmed, "[size")
                         || starts_with_whitespace(trimmed, "[ver")
+                        || starts_with_whitespace(trimmed, "[gver")
                     {
                         is_expr = false;
                         chunks.push((trimmed.to_owned(), true));
@@ -733,6 +757,34 @@ impl Parser {
                     ErrorKind::Other,
                     "Parsing error: unknown expression",
                 ))
+            } else if let Some(rest) = reader.strip_prefix("[gver") {
+                let body = rest[..rest.len() - 1].trim_start();
+                if let Some((expr, operator, version)) = parse_gver(body) {
+                    // do something
+                    let expressions = self.parse_expressions(expr.as_bytes())?;
+                    // check that it is of len 1
+                    if expressions.len() != 1 {
+                        return Err(Error::new(
+                            ErrorKind::Other,
+                            "Parsing error: GVER expression must have exactly one child expression",
+                        ));
+                    }
+
+                    // check that the child expression is an atomic
+                    if let Some(Expression::Atomic(atomic)) = expressions.first() {
+                        let expr = GVER::new(atomic.clone(), operator, version.to_string());
+                        return Ok(expr.into());
+                    }
+
+                    return Err(Error::new(
+                        ErrorKind::Other,
+                        "Parsing error: GVER expression must have an atomic child expression",
+                    ));
+                }
+                Err(Error::new(
+                    ErrorKind::Other,
+                    "Parsing error: unknown expression",
+                ))
             } else {
                 // unknown expression
                 Err(Error::new(
@@ -834,6 +886,40 @@ fn parse_ver(input: &str) -> Option<(String, EVerOperator, semver::Version)> {
             if let Some(right_part) = input.trim_start().strip_prefix(version) {
                 if let Ok(semversion) = lenient_semver::parse(version) {
                     return Some((right_part.to_owned(), EVerOperator::Equal, semversion));
+                }
+            }
+        }
+    }
+
+    None
+}
+
+/// Parses the VER predicate and returns its parts
+fn parse_gver(input: &str) -> Option<(String, EGVerOperator, semver::Version)> {
+    // >1.51 Rise of House Telvanni.esm
+    // = 2.14 Blood and Gore.esp
+    // < 3.1 Class Abilities <VER>.esp
+    if let Some(input) = input.strip_prefix('<') {
+        if let Some(version) = input.split_whitespace().next() {
+            if let Some(right_part) = input.trim_start().strip_prefix(version) {
+                if let Ok(semversion) = lenient_semver::parse(version) {
+                    return Some((right_part.to_owned(), EGVerOperator::Less, semversion));
+                }
+            }
+        }
+    } else if let Some(input) = input.strip_prefix('>') {
+        if let Some(version) = input.split_whitespace().next() {
+            if let Some(right_part) = input.trim_start().strip_prefix(version) {
+                if let Ok(semversion) = lenient_semver::parse(version) {
+                    return Some((right_part.to_owned(), EGVerOperator::Greater, semversion));
+                }
+            }
+        }
+    } else if let Some(input) = input.strip_prefix('=') {
+        if let Some(version) = input.split_whitespace().next() {
+            if let Some(right_part) = input.trim_start().strip_prefix(version) {
+                if let Ok(semversion) = lenient_semver::parse(version) {
+                    return Some((right_part.to_owned(), EGVerOperator::Equal, semversion));
                 }
             }
         }

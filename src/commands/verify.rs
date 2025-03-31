@@ -15,7 +15,8 @@ pub fn verify(game: ESupportedGame, rules_path: &Option<String>) -> ExitCode {
 
     info!("Verifying rules from {} ...", rules_dir.display());
 
-    let mut parser = parser::get_parser(game);
+    let game_version = get_game_version(game);
+    let mut parser = parser::get_parser(game, game_version);
     if let Err(e) = parser.parse(rules_dir) {
         error!("Parser init failed: {}", e);
         return ExitCode::FAILURE;

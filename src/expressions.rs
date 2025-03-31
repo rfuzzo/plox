@@ -23,6 +23,7 @@ pub enum Expression {
     DESC(DESC),
     SIZE(SIZE),
     VER(VER),
+    GVER(GVER),
 }
 
 // pass-through
@@ -36,6 +37,7 @@ impl Display for Expression {
             Expression::DESC(x) => x.fmt(f),
             Expression::SIZE(x) => x.fmt(f),
             Expression::VER(x) => x.fmt(f),
+            Expression::GVER(x) => x.fmt(f),
         }
     }
 }
@@ -49,6 +51,7 @@ impl TExpression for Expression {
             Expression::DESC(x) => x.eval(items),
             Expression::SIZE(x) => x.eval(items),
             Expression::VER(x) => x.eval(items),
+            Expression::GVER(x) => x.eval(items),
         }
     }
 }
@@ -87,6 +90,11 @@ impl From<SIZE> for Expression {
 impl From<VER> for Expression {
     fn from(val: VER) -> Self {
         Expression::VER(val)
+    }
+}
+impl From<GVER> for Expression {
+    fn from(val: GVER) -> Self {
+        Expression::GVER(val)
     }
 }
 
@@ -508,6 +516,107 @@ impl Display for VER {
         write!(
             f,
             "[VER {} {} {}]",
+            self.operator,
+            self.version,
+            self.expression.clone()
+        )
+    }
+}
+
+////////////////////////////////////////////////////////////////////////
+// GVER
+
+#[derive(Debug, Serialize, Deserialize, Clone, Copy)]
+pub enum EGVerOperator {
+    Less,
+    Equal,
+    Greater,
+}
+
+impl Display for EGVerOperator {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            EGVerOperator::Less => write!(f, "<"),
+            EGVerOperator::Equal => write!(f, "="),
+            EGVerOperator::Greater => write!(f, ">"),
+        }
+    }
+}
+
+/// The GVER predicate is a special predicate that matches against the game version
+/// If a version number is found, it can be used in a comparison.
+/// Syntax: [GVER operator version plugin.esp]
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GVER {
+    pub expression: Atomic,
+    pub operator: EGVerOperator,
+    pub version: String,
+}
+impl GVER {
+    pub fn new(expression: Atomic, operator: EGVerOperator, version: String) -> Self {
+        Self {
+            expression,
+            operator,
+            version,
+        }
+    }
+}
+impl TExpression for GVER {
+    fn eval(&self, items: &[PluginData]) -> Option<Vec<String>> {
+        // check the version
+        if let Some(plugins) = wild_contains_data(items, &self.expression.item) {
+            let mut results = vec![];
+            for p in &plugins {
+                if let Some(game_version) = &p.game_version {
+                    // we can unwrap here because we know the version is valid
+                    let semversion = semver::Version::parse(&self.version).unwrap();
+                    let matches = match self.operator {
+                        EGVerOperator::Less => {
+                            let req =
+                                VersionReq::parse(format!("<{}", semversion).as_str()).unwrap();
+                            req.matches(game_version)
+                        }
+                        EGVerOperator::Equal => {
+                            let req =
+                                VersionReq::parse(format!("={}", semversion).as_str()).unwrap();
+                            req.matches(game_version)
+                        }
+                        EGVerOperator::Greater => {
+                            let req =
+                                VersionReq::parse(format!(">{}", semversion).as_str()).unwrap();
+                            req.matches(game_version)
+                        }
+                    };
+
+                    if matches {
+                        results.push(p.name.clone());
+                    }
+                }
+            }
+            if results.is_empty() {
+                return None;
+            } else {
+                return Some(results);
+            }
+        }
+        None
+    }
+}
+impl Clone for GVER {
+    fn clone(&self) -> Self {
+        Self {
+            expression: self.expression.clone(),
+            operator: self.operator,
+            version: self.version.clone(),
+        }
+    }
+}
+
+impl Display for GVER {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "[GVER {} {} {}]",
             self.operator,
             self.version,
             self.expression.clone()

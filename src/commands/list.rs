@@ -18,7 +18,7 @@ pub fn list_mods(
         None => env::current_dir().expect("No current working dir"),
     };
 
-    for m in gather_mods(&root, game, config) {
+    for m in gather_mods(&root, game, &None, config) {
         println!("{}", m.name);
         //info!("{}", m);
     }

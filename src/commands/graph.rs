@@ -26,14 +26,16 @@ pub fn graph(
         get_default_rules_dir(game)
     };
 
+    let game_version = get_game_version(game);
+
     // gather mods (optionally from a list)
     let mods: Vec<PluginData>;
     if let Some(modlist_path) = mod_list {
-        mods = read_file_as_list(modlist_path);
+        mods = read_file_as_list(modlist_path, &game_version);
     } else {
         mods = match game {
             ESupportedGame::Morrowind => gather_tes3_mods(&root),
-            ESupportedGame::Cyberpunk => gather_cp77_mods(&root),
+            ESupportedGame::Cyberpunk => gather_cp77_mods(&root, &game_version),
             ESupportedGame::Openmw => gather_openmw_mods(&config),
         };
         if mods.is_empty() {
@@ -42,7 +44,7 @@ pub fn graph(
         }
     }
 
-    let mut parser = parser::get_parser(game);
+    let mut parser = parser::get_parser(game, game_version);
     if let Err(e) = parser.parse(rules_dir) {
         error!("Parser init failed: {}", e);
         return ExitCode::FAILURE;

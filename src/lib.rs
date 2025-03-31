@@ -75,6 +75,43 @@ pub fn detect_game() -> Option<ESupportedGame> {
     }
 }
 
+/// Detect game from current working directory and read version from exe
+/// Does not log errors
+fn read_pe_version(path: &PathBuf) -> Option<String> {
+    use pelite::pe64::{Pe, PeFile};
+
+    if let Ok(map) = pelite::FileMap::open(path) {
+        if let Ok(file) = PeFile::from_bytes(&map) {
+            if let Ok(resources) = file.resources() {
+                if let Ok(version_info) = resources.version_info() {
+                    if let Some(language) = version_info.translation().first() {
+                        if let Some(version) = version_info.value(*language, "ProductVersion") {
+                            return Some(version);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    None
+}
+
+/// Detect game from current working directory and read version from exe
+pub fn get_game_version(game: ESupportedGame) -> Option<String> {
+    match game {
+        ESupportedGame::Morrowind => None,
+        ESupportedGame::Openmw => None,
+        ESupportedGame::Cyberpunk => {
+            let exe_path = PathBuf::from("bin").join("x64").join("Cyberpunk2077.exe");
+            if exe_path.exists() {
+                return read_pe_version(&exe_path);
+            }
+            None
+        }
+    }
+}
+
 /// flattens a list of ordered mod pairs into a list of mod names
 pub fn debug_get_mods_from_order_rules(order_rules: &[EOrderRule]) -> Vec<PluginData> {
     debug_get_mods_from_ordering(&get_ordering_from_order_rules(order_rules))
@@ -228,6 +265,7 @@ pub struct PluginData {
 
     pub description: Option<String>,
     pub version: Option<semver::Version>,
+    pub game_version: Option<semver::Version>,
     pub masters: Option<Vec<(String, u64)>>,
 }
 
@@ -237,6 +275,7 @@ impl PluginData {
             name,
             size,
             description: None,
+            game_version: None,
             version: None,
             masters: None,
         }
@@ -248,13 +287,18 @@ impl PluginData {
 /// # Errors
 ///
 /// This function will return an error if IO operations fail
-pub fn gather_mods<P>(root: &P, game: ESupportedGame, config: Option<P>) -> Vec<PluginData>
+pub fn gather_mods<P>(
+    root: &P,
+    game: ESupportedGame,
+    game_version: &Option<String>,
+    config: Option<P>,
+) -> Vec<PluginData>
 where
     P: AsRef<Path>,
 {
     match game {
         ESupportedGame::Morrowind => gather_tes3_mods(root),
-        ESupportedGame::Cyberpunk => gather_cp77_mods(root),
+        ESupportedGame::Cyberpunk => gather_cp77_mods(root, game_version),
         ESupportedGame::Openmw => gather_openmw_mods(&config),
     }
 }
@@ -383,6 +427,7 @@ fn map_data(f: &Path) -> Option<PluginData> {
             description: None,
             version: None,
             masters: None,
+            game_version: None, // TODO add game version
         };
 
         match parse_header(f) {
@@ -481,12 +526,22 @@ fn match_desc_version(desc: &str) -> Option<String> {
     None
 }
 
-pub fn gather_cp77_mods<P>(root: &P) -> Vec<PluginData>
+pub fn gather_cp77_mods<P>(root: &P, game_version: &Option<String>) -> Vec<PluginData>
 where
     P: AsRef<Path>,
 {
     // gather mods from archive/pc/mod
     let archive_path = root.as_ref().join("archive").join("pc").join("mod");
+
+    // parse version as semver
+    let mut game_version_semver = None;
+    if let Some(version) = game_version {
+        if let Ok(v) = lenient_semver::parse(version) {
+            game_version_semver = Some(v);
+        } else {
+            error!("Invalid game version: {}", version);
+        }
+    }
 
     if let Ok(plugins) = fs::read_dir(archive_path) {
         let mut entries = plugins
@@ -504,6 +559,7 @@ where
                                         description: None,
                                         version: None,
                                         masters: None,
+                                        game_version: game_version_semver.clone(),
                                     };
                                     return Some(data);
                                 }
@@ -900,10 +956,20 @@ where
 }
 
 /// read file line by line into vector
-pub fn read_file_as_list<P>(modlist_path: P) -> Vec<PluginData>
+pub fn read_file_as_list<P>(modlist_path: P, game_version: &Option<String>) -> Vec<PluginData>
 where
     P: AsRef<Path>,
 {
+    // parse version as semver
+    let mut game_version_semver = None;
+    if let Some(version) = game_version {
+        if let Ok(v) = lenient_semver::parse(version) {
+            game_version_semver = Some(v);
+        } else {
+            error!("Invalid game version: {}", version);
+        }
+    }
+
     let mut result: Vec<PluginData> = vec![];
     if let Ok(lines) = read_lines(modlist_path) {
         for line in lines.map_while(Result::ok) {
@@ -913,6 +979,7 @@ where
                 description: None,
                 version: None,
                 masters: None,
+                game_version: game_version_semver.clone(),
             };
             result.push(data);
         }

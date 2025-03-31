@@ -452,10 +452,16 @@ impl eframe::App for TemplateApp {
             // main panel
             egui::CentralPanel::default().show(ctx, |ui| {
                 // The central panel the region left after adding TopPanel's and SidePanel's
+                let game_version = if let Some(v) = &data.game_version {
+                    v.to_string()
+                } else {
+                    "Unknown".to_string()
+                };
                 ui.heading(format!(
-                    "PLOX v{} - {:?}",
+                    "PLOX v{} - {:?} v{:?}",
                     crate::CARGO_PKG_VERSION,
-                    data.game
+                    data.game,
+                    game_version
                 ));
 
                 // filters

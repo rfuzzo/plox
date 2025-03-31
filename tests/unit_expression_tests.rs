@@ -142,6 +142,7 @@ mod unit_tests {
                 description: Some("description".to_string()),
                 version: None,
                 masters: None,
+                game_version: None,
             })
             .collect::<Vec<_>>();
 
@@ -187,6 +188,7 @@ mod unit_tests {
                 description: None,
                 masters: None,
                 version: Some(lenient_semver::parse("1.0").unwrap()),
+                game_version: None,
             })
             .collect::<Vec<_>>();
 
@@ -245,6 +247,78 @@ mod unit_tests {
     }
 
     #[test]
+    fn evaluate_gver() {
+        init();
+
+        let version = lenient_semver::parse("1.0").unwrap();
+
+        let mods = [A, B, C, D, E, F]
+            .iter()
+            .map(|e| PluginData {
+                name: e.to_string(),
+                size: 0_u64,
+                description: None,
+                masters: None,
+                version: None,
+                game_version: Some(version.clone()),
+            })
+            .collect::<Vec<_>>();
+
+        // Check equals
+        // [GVER] equals is true if the plugin version matches the given version
+        {
+            let expr = GVER::new(Atomic::from(A), EGVerOperator::Equal, "1.0.0".to_string());
+            assert!(expr.eval(&mods).is_some());
+        }
+
+        // [GVER] equals is false if the plugin version does not matches the given version
+        {
+            let expr = GVER::new(Atomic::from(A), EGVerOperator::Equal, "1.1.0".to_string());
+            assert!(expr.eval(&mods).is_none());
+        }
+
+        // Check greater
+        // [Note this is a newer version, it's broken] [GVER > 0.1 foo.esp]
+        // [GVER] greater is true if the plugin version is greater than the rule version
+        {
+            let expr = GVER::new(Atomic::from(A), EGVerOperator::Greater, "0.1.0".to_string());
+            assert!(expr.eval(&mods).is_some());
+        }
+
+        // [GVER] greater is false if the plugin version is less than the given version
+        {
+            let expr = GVER::new(Atomic::from(A), EGVerOperator::Greater, "1.2.0".to_string());
+            assert!(expr.eval(&mods).is_none());
+        }
+
+        // [GVER] greater is false if the plugin version is equal to the given version
+        {
+            let expr = GVER::new(Atomic::from(A), EGVerOperator::Greater, "1.0.0".to_string());
+            assert!(expr.eval(&mods).is_none());
+        }
+
+        // Check less
+        // [Note this is an old version, please upgrade] [GVER < 1.2 foo.esp]
+        // [GVER] less is true if the plugin version is less than the rule version
+        {
+            let expr = GVER::new(Atomic::from(A), EGVerOperator::Less, "1.2.0".to_string());
+            assert!(expr.eval(&mods).is_some());
+        }
+
+        // [GVER] less is false if the plugin version is greater than the given version
+        {
+            let expr = GVER::new(Atomic::from(A), EGVerOperator::Less, "0.1.0".to_string());
+            assert!(expr.eval(&mods).is_none());
+        }
+
+        // [GVER] less is false if the plugin version is equal to the given version
+        {
+            let expr = GVER::new(Atomic::from(A), EGVerOperator::Less, "1.0.0".to_string());
+            assert!(expr.eval(&mods).is_none());
+        }
+    }
+
+    #[test]
     fn test_ver_problem() {
         // check specific problem
         // [Conflict]
@@ -259,6 +333,7 @@ mod unit_tests {
                 description: None,
                 masters: None,
                 version: None,
+                game_version: None,
             })
             .collect::<Vec<_>>();
 
