@@ -314,7 +314,7 @@ where
         plugins.for_each(|p| {
             if let Ok(file) = p {
                 let file_path = file.path();
-                if file_path.is_file() {
+                if !file_path.is_dir() {
                     if let Some(ext_os) = file_path.extension() {
                         let ext = ext_os.to_ascii_lowercase();
                         if ext == "esm"
