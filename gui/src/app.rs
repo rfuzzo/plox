@@ -7,7 +7,7 @@ use std::{
 use egui::{Color32, Id, Label, Modal, Sense};
 
 use log::{error, info, LevelFilter};
-use plox::{rules::EWarningRule, update_new_load_order, GRAPH_FILE};
+use plox::{rules::EWarningRule, update_new_load_order, ESupportedGame, GRAPH_FILE};
 use simplelog::WriteLogger;
 
 use crate::{init_parser, AppData, AppSettings, ELoadStatus, PLOX_CONF_FILE, PLOX_LOG_FILE};
@@ -457,12 +457,21 @@ impl eframe::App for TemplateApp {
                 } else {
                     "Unknown".to_string()
                 };
-                ui.heading(format!(
-                    "PLOX v{} - {:?} v{:?}",
-                    crate::CARGO_PKG_VERSION,
-                    data.game,
-                    game_version
-                ));
+
+                if data.game == ESupportedGame::Cyberpunk {
+                    ui.heading(format!(
+                        "PLOX v{} - {:?} v{:?}",
+                        crate::CARGO_PKG_VERSION,
+                        data.game,
+                        game_version
+                    ));
+                } else {
+                    ui.heading(format!(
+                        "PLOX v{} - {:?}",
+                        crate::CARGO_PKG_VERSION,
+                        data.game
+                    ));
+                }
 
                 // filters
                 ui.horizontal(|ui| {

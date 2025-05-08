@@ -41,7 +41,7 @@ pub enum EWarningRule {
 /// A rule as specified in the rules document
 pub trait TWarningRule {
     /// every rule may have a comment describing why it failed
-    fn get_comment(&self) -> &str;
+    fn get_comment(&self) -> String;
     fn get_plugins(&self) -> Vec<String>;
 
     fn set_comment(&mut self, comment: String);
@@ -50,7 +50,7 @@ pub trait TWarningRule {
 }
 
 impl TWarningRule for EWarningRule {
-    fn get_comment(&self) -> &str {
+    fn get_comment(&self) -> String {
         match self {
             EWarningRule::Note(x) => x.get_comment(),
             EWarningRule::Conflict(x) => x.get_comment(),
@@ -417,8 +417,8 @@ impl Note {
     }
 }
 impl TWarningRule for Note {
-    fn get_comment(&self) -> &str {
-        self.comment.as_str()
+    fn get_comment(&self) -> String {
+        self.comment.clone()
     }
     fn get_plugins(&self) -> Vec<String> {
         self.plugins.clone()
@@ -499,8 +499,8 @@ impl Conflict {
     }
 }
 impl TWarningRule for Conflict {
-    fn get_comment(&self) -> &str {
-        self.comment.as_str()
+    fn get_comment(&self) -> String {
+        self.comment.clone()
     }
     fn get_plugins(&self) -> Vec<String> {
         self.plugins.clone()
@@ -578,8 +578,17 @@ impl Requires {
     }
 }
 impl TWarningRule for Requires {
-    fn get_comment(&self) -> &str {
-        self.comment.as_str()
+    fn get_comment(&self) -> String {
+        let mut comment = self.comment.clone();
+
+        // automatically set the comment to the two expressions
+        if let Some(expr_a) = &self.expression_a {
+            if let Some(expr_b) = &self.expression_b {
+                comment = format!("'{}' requires '{}' ({})", expr_a, expr_b, self.comment);
+            }
+        }
+
+        comment
     }
     fn get_plugins(&self) -> Vec<String> {
         self.plugins.clone()
@@ -670,8 +679,8 @@ impl Patch {
     }
 }
 impl TWarningRule for Patch {
-    fn get_comment(&self) -> &str {
-        self.comment.as_str()
+    fn get_comment(&self) -> String {
+        self.comment.clone()
     }
     fn get_plugins(&self) -> Vec<String> {
         self.plugins.clone()
