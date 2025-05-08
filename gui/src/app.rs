@@ -510,7 +510,7 @@ impl eframe::App for TemplateApp {
                                 .to_lowercase()
                                 .contains(&self.text_filter.to_lowercase())
                             && !w
-                                .get_comment()
+                                .get_ui_comment()
                                 .to_lowercase()
                                 .contains(&self.text_filter.to_lowercase())
                         {
@@ -542,7 +542,7 @@ impl eframe::App for TemplateApp {
                                 .content_ui
                                 .colored_label(fore_color, w.get_rule_name());
 
-                            frame.content_ui.label(w.get_comment());
+                            frame.content_ui.label(w.get_ui_comment());
 
                             frame.content_ui.push_id(i, |ui| {
                                 ui.collapsing("Plugins Affected", |ui| {

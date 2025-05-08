@@ -80,11 +80,17 @@ pub struct Warning {
 
 impl Warning {
     pub fn get_comment(&self) -> String {
-        self.rule.get_comment().to_owned()
+        self.rule.get_comment()
     }
+
+    pub fn get_ui_comment(&self) -> String {
+        self.rule.get_ui_comment()
+    }
+
     pub fn get_plugins(&self) -> Vec<String> {
         self.rule.get_plugins()
     }
+
     pub fn get_rule_name(&self) -> String {
         match self.rule {
             EWarningRule::Conflict(_) => "Conflict".to_owned(),

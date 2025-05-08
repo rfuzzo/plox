@@ -42,6 +42,7 @@ pub enum EWarningRule {
 pub trait TWarningRule {
     /// every rule may have a comment describing why it failed
     fn get_comment(&self) -> String;
+    fn get_ui_comment(&self) -> String;
     fn get_plugins(&self) -> Vec<String>;
 
     fn set_comment(&mut self, comment: String);
@@ -56,6 +57,15 @@ impl TWarningRule for EWarningRule {
             EWarningRule::Conflict(x) => x.get_comment(),
             EWarningRule::Requires(x) => x.get_comment(),
             EWarningRule::Patch(x) => x.get_comment(),
+        }
+    }
+
+    fn get_ui_comment(&self) -> String {
+        match self {
+            EWarningRule::Note(x) => x.get_ui_comment(),
+            EWarningRule::Conflict(x) => x.get_ui_comment(),
+            EWarningRule::Requires(x) => x.get_ui_comment(),
+            EWarningRule::Patch(x) => x.get_ui_comment(),
         }
     }
 
@@ -420,6 +430,9 @@ impl TWarningRule for Note {
     fn get_comment(&self) -> String {
         self.comment.clone()
     }
+    fn get_ui_comment(&self) -> String {
+        self.comment.clone()
+    }
     fn get_plugins(&self) -> Vec<String> {
         self.plugins.clone()
     }
@@ -502,6 +515,9 @@ impl TWarningRule for Conflict {
     fn get_comment(&self) -> String {
         self.comment.clone()
     }
+    fn get_ui_comment(&self) -> String {
+        self.comment.clone()
+    }
     fn get_plugins(&self) -> Vec<String> {
         self.plugins.clone()
     }
@@ -579,6 +595,9 @@ impl Requires {
 }
 impl TWarningRule for Requires {
     fn get_comment(&self) -> String {
+        self.comment.clone()
+    }
+    fn get_ui_comment(&self) -> String {
         let mut comment = self.comment.clone();
 
         // automatically set the comment to the two expressions
@@ -680,6 +699,9 @@ impl Patch {
 }
 impl TWarningRule for Patch {
     fn get_comment(&self) -> String {
+        self.comment.clone()
+    }
+    fn get_ui_comment(&self) -> String {
         self.comment.clone()
     }
     fn get_plugins(&self) -> Vec<String> {
